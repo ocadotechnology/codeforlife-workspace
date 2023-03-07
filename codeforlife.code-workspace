@@ -1,0 +1,31 @@
+{
+  "folders": [
+    {
+      "path": ".",
+      "name": "workspace"
+    },
+    {
+      "path": "../codeforlife",
+      "name": "package"
+    },
+    {
+      "path": "../codeforlife-portal",
+      "name": "portal"
+    },
+    {
+      "path": "../aimmo",
+      "name": "aimmo"
+    },
+    {
+      "path": "../rapid-router",
+      "name": "rapid-router"
+    },
+    {
+      "path": "../codeforlife-deploy-appengine",
+      "name": "appengine"
+    }
+  ],
+  "settings": {
+    "python.terminal.activateEnvironment": false
+  }
+}
