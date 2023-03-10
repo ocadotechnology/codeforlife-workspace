@@ -34,7 +34,8 @@
     }
   ],
   "settings": {
-    "python.terminal.activateEnvironment": false
+    "python.terminal.activateEnvironment": false,
+    "editor.tabSize": 2
   },
   "extensions": {
     "recommendations": [
