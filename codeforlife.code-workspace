@@ -5,10 +5,6 @@
       "name": "workspace"
     },
     {
-      "path": "../codeforlife",
-      "name": "package"
-    },
-    {
       "path": "../codeforlife-portal",
       "name": "portal"
     },
