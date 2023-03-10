@@ -23,6 +23,18 @@
     {
       "path": "../codeforlife-deploy-appengine",
       "name": "appengine"
+    },
+    {
+      "path": "../codeforlife-package-python",
+      "name": "package-python"
+    },
+    {
+      "path": "../codeforlife-package-javascript",
+      "name": "package-javascript"
+    },
+    {
+      "path": "../codeforlife-service-template",
+      "name": "service-template"
     }
   ],
   "settings": {
