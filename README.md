@@ -1,8 +1,6 @@
 # codeforlife-workspace
 
-This repo collects all of CFL's repos. Furthermore, this repo supports the cloning of all CFL repos using a single command.
-
-This is achieved using [Git Submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules), which is [supported by GitHub](https://github.blog/2016-02-01-working-with-submodules/).
+This repo collects all of CFL's repos. Furthermore, this repo supports the cloning of all CFL repos using a single command. This is achieved using [Git Submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules), which is [supported by GitHub](https://github.blog/2016-02-01-working-with-submodules/).
 
 ## Setup Workspace
 
