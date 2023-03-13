@@ -9,6 +9,10 @@
       "name": "portal"
     },
     {
+      "path": "./codeforlife-portal-react",
+      "name": "portal-react"
+    },
+    {
       "path": "./aimmo",
       "name": "aimmo"
     },
