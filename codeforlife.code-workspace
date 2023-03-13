@@ -35,7 +35,13 @@
   ],
   "settings": {
     "python.terminal.activateEnvironment": false,
-    "editor.tabSize": 2
+    "editor.tabSize": 2,
+    "[md]": {
+      "editor.tabSize": 4
+    },
+    "cSpell.words": [
+      "codeforlife"
+    ]
   },
   "extensions": {
     "recommendations": [
