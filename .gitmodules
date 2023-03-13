@@ -1,0 +1,21 @@
+[submodule "codeforlife-portal"]
+	path = codeforlife-portal
+	url = https://github.com/ocadotechnology/codeforlife-portal.git
+[submodule "aimmo"]
+	path = aimmo
+	url = https://github.com/ocadotechnology/aimmo.git
+[submodule "rapid-router"]
+	path = rapid-router
+	url = https://github.com/ocadotechnology/rapid-router.git
+[submodule "codeforlife-deploy-appengine"]
+	path = codeforlife-deploy-appengine
+	url = https://github.com/ocadotechnology/codeforlife-deploy-appengine.git
+[submodule "codeforlife-package-python"]
+	path = codeforlife-package-python
+	url = https://github.com/ocadotechnology/codeforlife-package-python.git
+[submodule "codeforlife-package-javascript"]
+	path = codeforlife-package-javascript
+	url = https://github.com/ocadotechnology/codeforlife-package-javascript.git
+[submodule "codeforlife-service-template"]
+	path = codeforlife-service-template
+	url = https://github.com/ocadotechnology/codeforlife-service-template.git
