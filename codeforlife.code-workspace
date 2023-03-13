@@ -5,31 +5,31 @@
       "name": "workspace"
     },
     {
-      "path": "../codeforlife-portal",
+      "path": "./codeforlife-portal",
       "name": "portal"
     },
     {
-      "path": "../aimmo",
+      "path": "./aimmo",
       "name": "aimmo"
     },
     {
-      "path": "../rapid-router",
+      "path": "./rapid-router",
       "name": "rapid-router"
     },
     {
-      "path": "../codeforlife-deploy-appengine",
+      "path": "./codeforlife-deploy-appengine",
       "name": "appengine"
     },
     {
-      "path": "../codeforlife-package-python",
+      "path": "./codeforlife-package-python",
       "name": "package-python"
     },
     {
-      "path": "../codeforlife-package-javascript",
+      "path": "./codeforlife-package-javascript",
       "name": "package-javascript"
     },
     {
-      "path": "../codeforlife-service-template",
+      "path": "./codeforlife-service-template",
       "name": "service-template"
     }
   ],
