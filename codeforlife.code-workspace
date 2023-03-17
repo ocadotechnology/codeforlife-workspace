@@ -70,7 +70,8 @@
       "redhat.vscode-yaml",
       "mtxr.sqltools",
       "mtxr.sqltools-driver-sqlite",
-      "davidanson.vscode-markdownlint"
+      "davidanson.vscode-markdownlint",
+      "jock.svg"
     ]
   }
 }
