@@ -17,6 +17,10 @@
       "name": "aimmo"
     },
     {
+      "path": "./codeforlife-kurono-badges",
+      "name": "kurono-badges"
+    },
+    {
       "path": "./rapid-router",
       "name": "rapid-router"
     },
