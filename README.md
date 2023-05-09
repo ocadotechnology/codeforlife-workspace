@@ -28,6 +28,16 @@ To add a new submodule to CFL's workspace:
 1. Add the new folder to CFL's [code-workspace](codeforlife.code-workspace).
 1. Git commit and push the changes.
 
+### Update Submodules
+
+To sync your local submodules with the submodules in CFL's remote workspace:
+
+```bash
+git submodule update --remote
+```
+
+(***NOTE**: this will clone new submodules added by someone else*)
+
 ### Remove Submodule
 
 To remove an existing submodule from CFL's workspace:
