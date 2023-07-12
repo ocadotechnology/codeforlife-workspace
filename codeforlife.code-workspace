@@ -44,6 +44,12 @@
   "settings": {
     "python.terminal.activateEnvironment": false,
     "editor.tabSize": 2,
+    "editor.rulers": [
+      80
+    ],
+    "workbench.colorCustomizations": {
+      "editorRuler.foreground": "#008000"
+    },
     "[md]": {
       "editor.tabSize": 4
     },
