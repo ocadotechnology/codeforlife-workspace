@@ -11,16 +11,6 @@ cron:
     timezone: Europe/London
     target: default
 
-  - url: /mail/weekly/
-    schedule: every friday 09:00
-    timezone: Europe/London
-    target: dev
-
-  - url: /mail/weekly/
-    schedule: every friday 09:00
-    timezone: Europe/London
-    target: staging
-
   # /cron/user/unverified/send-first-reminder/
 
   - url: /cron/user/unverified/send-first-reminder/
