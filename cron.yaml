@@ -1,0 +1,145 @@
+# https://cloud.google.com/appengine/docs/flexible/scheduling-jobs-with-cron-yaml#about
+cron:
+  # ----------------------------------------------------------------------------
+  # Legacy system
+  # ----------------------------------------------------------------------------
+
+  # /mail/weekly/
+
+  - url: /mail/weekly/
+    schedule: every friday 09:00
+    timezone: Europe/London
+    target: default
+
+  - url: /mail/weekly/
+    schedule: every friday 09:00
+    timezone: Europe/London
+    target: dev
+
+  - url: /mail/weekly/
+    schedule: every friday 09:00
+    timezone: Europe/London
+    target: staging
+
+  # /cron/user/unverified/send-first-reminder/
+
+  - url: /cron/user/unverified/send-first-reminder/
+    schedule: every day 10:00
+    timezone: Europe/London
+    target: default
+
+  - url: /cron/user/unverified/send-first-reminder/
+    schedule: every day 10:00
+    timezone: Europe/London
+    target: dev
+
+  - url: /cron/user/unverified/send-first-reminder/
+    schedule: every day 10:00
+    timezone: Europe/London
+    target: staging
+
+  # /cron/user/unverified/send-second-reminder/
+
+  - url: /cron/user/unverified/send-second-reminder/
+    schedule: every day 10:00
+    timezone: Europe/London
+    target: default
+
+  - url: /cron/user/unverified/send-second-reminder/
+    schedule: every day 10:00
+    timezone: Europe/London
+    target: dev
+
+  - url: /cron/user/unverified/send-second-reminder/
+    schedule: every day 10:00
+    timezone: Europe/London
+    target: staging
+
+  # /cron/user/unverified/delete/
+
+  # - url: /cron/user/unverified/delete/
+  #   schedule: every day 10:00
+  #   timezone: Europe/London
+  #   target: default
+
+  # - url: /cron/user/unverified/delete/
+  #   schedule: every day 10:00
+  #   timezone: Europe/London
+  #   target: dev
+
+  # - url: /cron/user/unverified/delete/
+  #   schedule: every day 10:00
+  #   timezone: Europe/London
+  #   target: staging
+
+  # ----------------------------------------------------------------------------
+  # New system
+  # ----------------------------------------------------------------------------
+
+  # /api/cron/session/clear-expired/
+
+  - url: /api/cron/session/clear-expired/
+    schedule: every day 00:00
+    timezone: Europe/London
+    target: development-portal
+
+  - url: /api/cron/session/clear-expired/
+    schedule: every day 00:00
+    timezone: Europe/London
+    target: staging-portal
+
+  - url: /api/cron/session/clear-expired/
+    schedule: every day 00:00
+    timezone: Europe/London
+    target: production-portal
+
+  # /api/cron/user/unverified/send-first-reminder/
+
+  - url: /api/cron/user/unverified/send-first-reminder/
+    schedule: every 24 hours
+    timezone: Europe/London
+    target: development-portal
+
+  - url: /api/cron/user/unverified/send-first-reminder/
+    schedule: every 24 hours
+    timezone: Europe/London
+    target: staging-portal
+
+  - url: /api/cron/user/unverified/send-first-reminder/
+    schedule: every 24 hours
+    timezone: Europe/London
+    target: production-portal
+
+  # /api/cron/user/unverified/send-second-reminder/
+
+  - url: /api/cron/user/unverified/send-second-reminder/
+    schedule: every 24 hours
+    timezone: Europe/London
+    target: development-portal
+
+  - url: /api/cron/user/unverified/send-second-reminder/
+    schedule: every 24 hours
+    timezone: Europe/London
+    target: staging-portal
+
+  - url: /api/cron/user/unverified/send-second-reminder/
+    schedule: every 24 hours
+    timezone: Europe/London
+    target: production-portal
+
+  # /api/cron/user/unverified/delete/
+
+  - url: /api/cron/user/unverified/delete/
+    schedule: every 24 hours
+    timezone: Europe/London
+    target: development-portal
+
+  - url: /api/cron/user/unverified/delete/
+    schedule: every 24 hours
+    timezone: Europe/London
+    target: staging-portal
+
+  - url: /api/cron/user/unverified/delete/
+    schedule: every 24 hours
+    timezone: Europe/London
+    target: production-portal
