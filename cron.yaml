@@ -52,10 +52,10 @@ cron:
   #   timezone: Europe/London
   #   target: default
 
-  # - url: /cron/user/unverified/delete/
-  #   schedule: every day 10:00
-  #   timezone: Europe/London
-  #   target: dev
+  - url: /cron/user/unverified/delete/
+    schedule: every day 10:00
+    timezone: Europe/London
+    target: dev
 
   # - url: /cron/user/unverified/delete/
   #   schedule: every day 10:00
@@ -86,50 +86,50 @@ cron:
   # /api/cron/user/unverified/send-first-reminder/
 
   - url: /api/cron/user/unverified/send-first-reminder/
-    schedule: every 24 hours
+    schedule: every day 10:00
     timezone: Europe/London
     target: development-portal
 
   - url: /api/cron/user/unverified/send-first-reminder/
-    schedule: every 24 hours
+    schedule: every day 10:00
     timezone: Europe/London
     target: staging-portal
 
   - url: /api/cron/user/unverified/send-first-reminder/
-    schedule: every 24 hours
+    schedule: every day 10:00
     timezone: Europe/London
     target: production-portal
 
   # /api/cron/user/unverified/send-second-reminder/
 
   - url: /api/cron/user/unverified/send-second-reminder/
-    schedule: every 24 hours
+    schedule: every day 10:00
     timezone: Europe/London
     target: development-portal
 
   - url: /api/cron/user/unverified/send-second-reminder/
-    schedule: every 24 hours
+    schedule: every day 10:00
     timezone: Europe/London
     target: staging-portal
 
   - url: /api/cron/user/unverified/send-second-reminder/
-    schedule: every 24 hours
+    schedule: every day 10:00
     timezone: Europe/London
     target: production-portal
 
   # /api/cron/user/unverified/delete/
 
   - url: /api/cron/user/unverified/delete/
-    schedule: every 24 hours
+    schedule: every day 10:00
     timezone: Europe/London
     target: development-portal
 
   - url: /api/cron/user/unverified/delete/
-    schedule: every 24 hours
+    schedule: every day 10:00
     timezone: Europe/London
     target: staging-portal
 
   - url: /api/cron/user/unverified/delete/
-    schedule: every 24 hours
+    schedule: every day 10:00
     timezone: Europe/London
     target: production-portal
