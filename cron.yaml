@@ -47,20 +47,20 @@ cron:
 
   # /cron/user/unverified/delete/
 
-  # - url: /cron/user/unverified/delete/
-  #   schedule: every day 10:00
-  #   timezone: Europe/London
-  #   target: default
+  - url: /cron/user/unverified/delete/
+    schedule: every day 10:00
+    timezone: Europe/London
+    target: default
 
   - url: /cron/user/unverified/delete/
     schedule: every day 10:00
     timezone: Europe/London
     target: dev
 
-  # - url: /cron/user/unverified/delete/
-  #   schedule: every day 10:00
-  #   timezone: Europe/London
-  #   target: staging
+  - url: /cron/user/unverified/delete/
+    schedule: every day 10:00
+    timezone: Europe/London
+    target: staging
 
   # ----------------------------------------------------------------------------
   # New system
