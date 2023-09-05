@@ -48,7 +48,7 @@ cron:
   # /cron/user/unverified/delete/
 
   - url: /cron/user/unverified/delete/
-    schedule: every day 10:00
+    schedule: every hour
     timezone: Europe/London
     target: default
 
