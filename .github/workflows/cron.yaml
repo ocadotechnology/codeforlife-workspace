@@ -1,0 +1,27 @@
+name: Cron
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'cron.yaml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🛫 Checkout
+        uses: actions/checkout@v3
+
+      - name: 🗝 Authenticate with GCloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      - name: 🤖 Set up GCloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
+      - name: 🚀 Deploy Cron Jobs on GCloud
+        run: gcloud app deploy cron.yaml

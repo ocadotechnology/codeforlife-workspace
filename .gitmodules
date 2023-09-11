@@ -25,3 +25,6 @@
 [submodule "codeforlife-kurono-badges"]
 	path = codeforlife-kurono-badges
 	url = https://github.com/ocadotechnology/codeforlife-kurono-badges.git
+[submodule "codeforlife-sso"]
+	path = codeforlife-sso
+	url = https://github.com/ocadotechnology/codeforlife-sso.git
