@@ -39,6 +39,10 @@
     {
       "name": "service-template",
       "path": "codeforlife-service-template"
+    },
+    {
+      "name": "sso",
+      "path": "codeforlife-sso"
     }
   ],
   "settings": {
