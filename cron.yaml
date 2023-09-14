@@ -13,10 +13,10 @@ cron:
 
   # /cron/user/unverified/send-first-reminder/
 
-  - url: /cron/user/unverified/send-first-reminder/
-    schedule: every day 10:00
-    timezone: Europe/London
-    target: default
+#  - url: /cron/user/unverified/send-first-reminder/
+#    schedule: every day 10:00
+#    timezone: Europe/London
+#    target: default
 
   - url: /cron/user/unverified/send-first-reminder/
     schedule: every day 10:00
@@ -30,10 +30,10 @@ cron:
 
   # /cron/user/unverified/send-second-reminder/
 
-  - url: /cron/user/unverified/send-second-reminder/
-    schedule: every day 10:00
-    timezone: Europe/London
-    target: default
+#  - url: /cron/user/unverified/send-second-reminder/
+#    schedule: every day 10:00
+#    timezone: Europe/London
+#    target: default
 
   - url: /cron/user/unverified/send-second-reminder/
     schedule: every day 10:00
@@ -47,10 +47,10 @@ cron:
 
   # /cron/user/unverified/delete/
 
-  - url: /cron/user/unverified/delete/
-    schedule: every day 10:00
-    timezone: Europe/London
-    target: default
+#  - url: /cron/user/unverified/delete/
+#    schedule: every day 10:00
+#    timezone: Europe/London
+#    target: default
 
   - url: /cron/user/unverified/delete/
     schedule: every day 10:00
