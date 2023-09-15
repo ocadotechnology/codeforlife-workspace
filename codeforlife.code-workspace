@@ -104,6 +104,58 @@
         "program": "${file}",
         "console": "integratedTerminal",
         "justMyCode": true
+      },
+      {
+        "name": "Django Server",
+        "type": "python",
+        "request": "launch",
+        "django": true,
+        "justMyCode": false,
+        "program": "${fileWorkspaceFolder}/backend/manage.py",
+        "args": [
+          "runserver",
+          "localhost:8000"
+        ],
+        "preLaunchTask": "run-sso-server"
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "install-dev-deps",
+        "type": "shell",
+        "options": {
+          "cwd": "${fileWorkspaceFolder}/backend"
+        },
+        "command": "pipenv install --dev"
+      },
+      {
+        "label": "migrate-db",
+        "type": "shell",
+        "options": {
+          "cwd": "${fileWorkspaceFolder}/backend"
+        },
+        "dependsOn": [
+          "install-dev-deps"
+        ],
+        "command": "pipenv run ./manage.py migrate"
+      },
+      {
+        "label": "run-sso-server",
+        "type": "shell",
+        "isBackground": true,
+        "options": {
+          "cwd": "${workspaceFolder}/codeforlife-sso/backend",
+          "env": {
+            "DB_NAME": "${fileWorkspaceFolder}/backend/db.sqlite3"
+          }
+        },
+        "dependsOn": [
+          "migrate-db"
+        ],
+        "command": "pipenv run ./manage.py runserver localhost:8001"
       }
     ]
   }
