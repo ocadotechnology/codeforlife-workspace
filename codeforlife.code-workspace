@@ -106,7 +106,7 @@
         "justMyCode": true
       },
       {
-        "name": "Django Server",
+        "name": "Django Server (+SSO)",
         "type": "python",
         "request": "launch",
         "django": true,
@@ -140,7 +140,7 @@
         "dependsOn": [
           "install-dev-deps"
         ],
-        "command": "pipenv run ./manage.py migrate"
+        "command": "pipenv run python ./manage.py migrate"
       },
       {
         "label": "run-sso-server",
@@ -155,7 +155,7 @@
         "dependsOn": [
           "migrate-db"
         ],
-        "command": "pipenv run ./manage.py runserver localhost:8001"
+        "command": "pipenv run python ./manage.py runserver localhost:8001"
       }
     ]
   }
