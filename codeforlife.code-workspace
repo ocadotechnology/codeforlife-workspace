@@ -149,7 +149,9 @@
         "options": {
           "cwd": "${workspaceFolder}/codeforlife-sso/backend",
           "env": {
-            "DB_NAME": "${fileWorkspaceFolder}/backend/db.sqlite3"
+            "DB_NAME": "${fileWorkspaceFolder}/backend/db.sqlite3",
+            "SERVICE_NAME": "sso",
+            "SERVICE_PORT": "8001"
           }
         },
         "dependsOn": [
