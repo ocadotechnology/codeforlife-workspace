@@ -48,12 +48,18 @@
   "settings": {
     "python.terminal.activateEnvironment": false,
     "files.exclude": {
-      "**/__pycache__": true
+      "**/__pycache__": true,
+      "**/.pytest_cache": true,
+      "**/.hypothesis": true
     },
     "editor.tabSize": 2,
     "editor.rulers": [
       80
     ],
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": true
+    },
     "workbench.colorCustomizations": {
       "editorRuler.foreground": "#008000"
     },
