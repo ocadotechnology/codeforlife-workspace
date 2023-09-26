@@ -5,11 +5,11 @@ dispatch:
   - url: "codeforlife.education/development-sso/*"
     service: development-sso
 
-  - url: "codeforlife.education/staging-sso/*"
-    service: staging-sso
+  # - url: "codeforlife.education/staging-sso/*"
+  #   service: staging-sso
 
-  - url: "codeforlife.education/sso/*"
-    service: production-sso
+  # - url: "codeforlife.education/sso/*"
+  #   service: production-sso
 
   # Portal
 
