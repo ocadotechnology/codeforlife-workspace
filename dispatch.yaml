@@ -5,26 +5,22 @@ dispatch:
   - url: "www.codeforlife.education/development-sso/*"
     service: development-sso
 
-  # - url: "codeforlife.education/staging-sso/*"
-  #   service: staging-sso
+  - url: "www.codeforlife.education/staging-sso/*"
+    service: staging-sso
 
-  # - url: "codeforlife.education/sso/*"
-  #   service: production-sso
+  - url: "www.codeforlife.education/sso/*"
+    service: production-sso
 
   # Portal
 
-  - url: "codeforlife.education/development-portal/*"
+  - url: "www.codeforlife.education/development-portal/*"
     service: development-portal
 
-  - url: "codeforlife.education/staging-portal/*"
+  - url: "www.codeforlife.education/staging-portal/*"
     service: staging-portal
 
-  - url: "codeforlife.education/portal/*"
+  - url: "www.codeforlife.education/portal/*"
     service: production-portal
-
-  # TODO: route to new portal service.
-  - url: "codeforlife.education/*"
-    service: default
 
   # TODO: route to new portal service.
   - url: "www.codeforlife.education/*"
