@@ -23,5 +23,5 @@ jobs:
       - name: 🤖 Set up GCloud SDK
         uses: google-github-actions/setup-gcloud@v1
 
-      - name: 🚀 Deploy Cron Jobs on GCloud
+      - name: 🚀 Deploy Routing Rules on GCloud
         run: gcloud app deploy dispatch.yaml
