@@ -48,12 +48,18 @@
   "settings": {
     "python.terminal.activateEnvironment": false,
     "files.exclude": {
-      "**/__pycache__": true
+      "**/__pycache__": true,
+      "**/.pytest_cache": true,
+      "**/.hypothesis": true
     },
     "editor.tabSize": 2,
     "editor.rulers": [
       80
     ],
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": true
+    },
     "workbench.colorCustomizations": {
       "editorRuler.foreground": "#008000"
     },
@@ -104,6 +110,60 @@
         "program": "${file}",
         "console": "integratedTerminal",
         "justMyCode": true
+      },
+      {
+        "name": "Django Server (+SSO)",
+        "type": "python",
+        "request": "launch",
+        "django": true,
+        "justMyCode": false,
+        "program": "${fileWorkspaceFolder}/backend/manage.py",
+        "args": [
+          "runserver",
+          "localhost:8000"
+        ],
+        "preLaunchTask": "run-sso-server"
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "install-dev-deps",
+        "type": "shell",
+        "options": {
+          "cwd": "${fileWorkspaceFolder}/backend"
+        },
+        "command": "pipenv install --dev"
+      },
+      {
+        "label": "migrate-db",
+        "type": "shell",
+        "options": {
+          "cwd": "${fileWorkspaceFolder}/backend"
+        },
+        "dependsOn": [
+          "install-dev-deps"
+        ],
+        "command": "pipenv run python ./manage.py migrate"
+      },
+      {
+        "label": "run-sso-server",
+        "type": "shell",
+        "isBackground": true,
+        "options": {
+          "cwd": "${workspaceFolder}/codeforlife-sso/backend",
+          "env": {
+            "DB_NAME": "${fileWorkspaceFolder}/backend/db.sqlite3",
+            "SERVICE_NAME": "sso",
+            "SERVICE_PORT": "8001"
+          }
+        },
+        "dependsOn": [
+          "migrate-db"
+        ],
+        "command": "pipenv run python ./manage.py runserver localhost:8001"
       }
     ]
   }

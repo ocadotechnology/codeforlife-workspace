@@ -68,20 +68,20 @@ cron:
 
   # /api/cron/session/clear-expired/
 
-  - url: /api/cron/session/clear-expired/
+  - url: /development-sso/api/session/clear-expired/
     schedule: every day 00:00
     timezone: Europe/London
-    target: development-portal
+    target: development-sso
 
-  - url: /api/cron/session/clear-expired/
+  - url: /staging-sso/api/session/clear-expired/
     schedule: every day 00:00
     timezone: Europe/London
-    target: staging-portal
+    target: staging-sso
 
-  - url: /api/cron/session/clear-expired/
+  - url: /sso/api/session/clear-expired/
     schedule: every day 00:00
     timezone: Europe/London
-    target: production-portal
+    target: production-sso
 
   # /api/cron/user/unverified/send-first-reminder/
 
