@@ -13,13 +13,13 @@ dispatch:
 
   # Portal
 
-  - url: "development-portal.codeforlife.education/*"
+  - url: "codeforlife.education/development-portal/*"
     service: development-portal
 
-  - url: "staging-portal.codeforlife.education/*"
+  - url: "codeforlife.education/staging-portal/*"
     service: staging-portal
 
-  - url: "portal.codeforlife.education/*"
+  - url: "codeforlife.education/portal/*"
     service: production-portal
 
   # TODO: route to new portal service.
