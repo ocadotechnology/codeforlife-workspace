@@ -1,34 +1,35 @@
 # https://cloud.google.com/appengine/docs/legacy/standard/python/reference/dispatch-yaml
 dispatch:
+  []
   # SSO
 
-  - url: "codeforlife.education/development-sso/*"
-    service: development-sso
+  # - url: "codeforlife.education/development-sso/*"
+  #   service: development-sso
 
-  - url: "codeforlife.education/staging-sso/*"
-    service: staging-sso
+  # - url: "codeforlife.education/staging-sso/*"
+  #   service: staging-sso
 
-  - url: "codeforlife.education/sso/*"
-    service: production-sso
+  # - url: "codeforlife.education/sso/*"
+  #   service: production-sso
 
   # Portal
 
-  - url: "codeforlife.education/development-portal/*"
-    service: development-portal
+  # - url: "codeforlife.education/development-portal/*"
+  #   service: development-portal
 
-  - url: "codeforlife.education/staging-portal/*"
-    service: staging-portal
+  # - url: "codeforlife.education/staging-portal/*"
+  #   service: staging-portal
 
-  - url: "codeforlife.education/portal/*"
-    service: production-portal
+  # - url: "codeforlife.education/portal/*"
+  #   service: production-portal
 
-  # TODO: route to new portal service.
-  - url: "codeforlife.education/*"
-    service: default
+  # # TODO: route to new portal service.
+  # - url: "codeforlife.education/*"
+  #   service: default
 
-  # TODO: route to new portal service.
-  - url: "www.codeforlife.education/*"
-    service: default
+  # # TODO: route to new portal service.
+  # - url: "www.codeforlife.education/*"
+  #   service: default
 
   # Rapid Router
 
