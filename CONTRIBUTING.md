@@ -108,3 +108,34 @@ construed in accordance with English law and the parties submit to the irrevocab
 6.2. This Agreement is the entire agreement between You and Us, and supersedes any and all prior agreements,
 understandings or communications, written or oral, between You and Us relating to its subject matter. This Agreement may
 be assigned by Us.
+
+## Become a Contributor
+
+To contribute to Code for Life you must sign your git username below, affirming
+that have you have read and agree to the contribution terms stated above. All
+your future contributions must be made with the git username you sign below.
+
+### How to sign
+
+To sign, you must:
+
+1. [Fork this repo](https://docs.github.com/en/get-started/quickstart/fork-a-repo).
+1. On the **main** branch of your forked repo, create a new line at the *bottom*
+  of this file (press **Enter**).
+1. Run `git config user.name` to print your git username.
+1. Write your git username on the second last line.
+1. Run `git commit -m "git.user.name"` and replace *git.user.name* with your git
+  username.
+1. Run `git push`.
+1. [Create a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork)
+  from the **main** branch of your forked repo to the **main** branch of this
+  repo.
+
+You must not:
+
+1. Edit any other parts of this document.
+1. Make contributions using a git username other than the one you sign below.
+
+Failure to comply will result in the immediate rejection of any contributions.
+
+### ✨ Contributors ✨
