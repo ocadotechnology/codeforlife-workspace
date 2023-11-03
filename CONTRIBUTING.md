@@ -111,9 +111,9 @@ be assigned by Us.
 
 ## Become a Contributor
 
-To contribute to Code for Life you must sign your email below, affirming that
-have you have read and agree to the contribution terms stated above. All your
-future contributions must signed with the same email.
+To contribute to Code for Life you must sign your email address below, affirming
+that you have read and agree to the contribution terms stated above. All your
+future contributions must be signed with the same email address.
 
 ### How to sign
 
