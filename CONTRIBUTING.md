@@ -139,3 +139,5 @@ You must not:
 Failure to comply will result in the immediate rejection of any contributions.
 
 ### 👨‍💻 Contributors 👩‍💻
+
+SKOcadoContributor
