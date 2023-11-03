@@ -111,32 +111,75 @@ be assigned by Us.
 
 ## Become a Contributor
 
-To contribute to Code for Life you must sign your git username below, affirming
-that have you have read and agree to the contribution terms stated above. All
-your future contributions must be made with the git username you sign below.
+To contribute to Code for Life you must sign your email below, affirming that
+have you have read and agree to the contribution terms stated above. All your
+future contributions must signed with the same email.
 
 ### How to sign
 
 To sign, you must:
 
-1. [Fork this repo](https://docs.github.com/en/get-started/quickstart/fork-a-repo).
+1. [Set up your git identity](https://git-scm.com/book/en/v2/Getting-Started-First-Time-Git-Setup)
+    on your computer.
+
+    ```bash
+    git config --global user.name "John Doe"
+    git config --global user.email johndoe@example.com
+    ```
+
+    Set `user.name` to be anything you like.
+
+    Set `user.email` to be an email address that you own. Note that:
+
+    1. This email address will be forever publicly visible! If you wish to keep
+      your personal email address private, then we recommend you create a new
+      email address for the sole purpose of making contributions. If you have a
+      GitHub account, you can [add the new email address](https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-personal-account-on-github/managing-email-preferences/adding-an-email-address-to-your-github-account) to it.
+    1. You cannot use a private/noreply email address. If you have a GitHub
+      account, this is enabled by default and can be turned off at
+      **Settings > Emails > Keep my email addresses private**.
+
+1. Fork this repo. [See](https://docs.github.com/en/get-started/quickstart/fork-a-repo)
+  how to do this on GitHub. Note that you only need to fork the **main**
+  branch.
+
 1. On the **main** branch of your forked repo, create a new line at the *bottom*
-  of this file (press **Enter**).
-1. Run `git config user.name` to print your git username.
-1. Write your git username on the second last line.
-1. Run `git commit -m "git.user.name"` and replace *git.user.name* with your git
-  username.
-1. Run `git push`.
-1. [Create a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork)
-  from the **main** branch of your forked repo to the **main** branch of this
-  repo.
+  of this file (press **Enter**). Note that you must not make any other edits.
 
-You must not:
+1. Write your email address on the second last line.
 
-1. Edit any other parts of this document.
-1. Make contributions using a git username other than the one you sign below.
+1. Commit your changes.
 
-Failure to comply will result in the immediate rejection of any contributions.
+    ```bash
+    git commit -m "user.email"
+    ```
+
+    Replace `user.email` with your email address.
+
+1. Push your changes.
+
+    ```bash
+    git push
+    ```
+
+1. Create a pull request from the **main** branch of your forked repo to the
+  **main** branch of this repo. [See](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork)
+  how to do this on GitHub.
+
+1. To affirm that you own the email address you provided, an email will be sent
+  to the email address. The email will contain a link to the commit that added
+  the email address as a contributor. You must respond to the email from the
+  same email address stating:
+
+    ```txt
+    I confirm that I made this commit and I agree to being a contributor to the
+    Code for Life project under the terms found in my commit.
+    ```
+
+Your email address is now approved to make contributions! 🥳
+
+If you have any trouble with the above process, please reach out to
+<support@codeforlife.education>.
 
 ### 👨‍💻 Contributors 👩‍💻
 
