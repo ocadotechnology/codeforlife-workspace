@@ -183,4 +183,4 @@ If you have any trouble with the above process, please reach out to
 
 ### 👨‍💻 Contributors 👩‍💻
 
-SKOcadoContributor
+<stefan.kairinos@ocado.com>
