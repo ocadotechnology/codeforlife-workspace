@@ -71,7 +71,8 @@
     },
     "cSpell.words": [
       "codeforlife"
-    ]
+    ],
+    "autoDocstring.customTemplatePath": "docs/python/docstring.mustache"
   },
   "extensions": {
     "recommendations": [
@@ -97,7 +98,8 @@
       "mtxr.sqltools",
       "mtxr.sqltools-driver-sqlite",
       "davidanson.vscode-markdownlint",
-      "jock.svg"
+      "jock.svg",
+      "donjayamanne.python-extension-pack"
     ]
   },
   "launch": {
