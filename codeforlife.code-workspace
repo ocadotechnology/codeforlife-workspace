@@ -85,7 +85,6 @@
       "streetsidesoftware.code-spell-checker",
       "bierner.markdown-mermaid",
       "redhat.vscode-yaml",
-      "mtxr.sqltools",
       "davidanson.vscode-markdownlint",
       "jock.svg",
       "donjayamanne.python-extension-pack",
@@ -102,6 +101,7 @@
       "ms-toolsai.vscode-jupyter-slideshow",
       "ms-kubernetes-tools.vscode-kubernetes-tools",
       "ms-azuretools.vscode-docker",
+      "qwtel.sqlite-viewer"
     ]
   },
   "launch": {
