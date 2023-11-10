@@ -73,7 +73,8 @@
       "editor.defaultFormatter": "ms-python.black-formatter",
     },
     "cSpell.words": [
-      "codeforlife"
+      "codeforlife",
+      "klass"
     ]
   },
   "extensions": {
