@@ -51,6 +51,7 @@
     "files.exclude": {
       "**/__pycache__": true,
       "**/.pytest_cache": true,
+      "**/.mypy_cache": true,
       "**/.hypothesis": true
     },
     "editor.tabSize": 2,
