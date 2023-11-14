@@ -47,9 +47,11 @@
   ],
   "settings": {
     "python.terminal.activateEnvironment": false,
+    "autoDocstring.customTemplatePath": "docs/python/docstring.mustache",
     "files.exclude": {
       "**/__pycache__": true,
       "**/.pytest_cache": true,
+      "**/.mypy_cache": true,
       "**/.hypothesis": true
     },
     "editor.tabSize": 2,
@@ -67,21 +69,33 @@
       "editor.tabSize": 4
     },
     "[python]": {
-      "editor.tabSize": 4
+      "editor.tabSize": 4,
+      "editor.defaultFormatter": "ms-python.black-formatter",
     },
     "cSpell.words": [
-      "codeforlife"
+      "codeforlife",
+      "klass"
     ]
   },
   "extensions": {
     "recommendations": [
       "dbaeumer.vscode-eslint",
-      "ms-python.black-formatter",
       "dsznajder.es7-react-js-snippets",
       "tamasfe.even-better-toml",
       "github.vscode-pull-request-github",
       "ecmel.vscode-html-css",
+      "streetsidesoftware.code-spell-checker",
+      "bierner.markdown-mermaid",
+      "redhat.vscode-yaml",
+      "davidanson.vscode-markdownlint",
+      "jock.svg",
+      "donjayamanne.python-extension-pack",
+      "ms-python.python",
+      "ms-python.pylint",
       "ms-python.isort",
+      "ms-python.vscode-pylance",
+      "ms-python.mypy-type-checker",
+      "ms-python.black-formatter",
       "ms-toolsai.jupyter",
       "ms-toolsai.vscode-jupyter-cell-tags",
       "ms-toolsai.jupyter-keymap",
@@ -89,15 +103,7 @@
       "ms-toolsai.vscode-jupyter-slideshow",
       "ms-kubernetes-tools.vscode-kubernetes-tools",
       "ms-azuretools.vscode-docker",
-      "streetsidesoftware.code-spell-checker",
-      "bierner.markdown-mermaid",
-      "ms-python.vscode-pylance",
-      "ms-python.python",
-      "redhat.vscode-yaml",
-      "mtxr.sqltools",
-      "mtxr.sqltools-driver-sqlite",
-      "davidanson.vscode-markdownlint",
-      "jock.svg"
+      "qwtel.sqlite-viewer"
     ]
   },
   "launch": {
