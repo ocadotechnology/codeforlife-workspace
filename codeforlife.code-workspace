@@ -47,7 +47,7 @@
   ],
   "settings": {
     "python.terminal.activateEnvironment": false,
-    "autoDocstring.customTemplatePath": "docs/python/docstring.mustache",
+    "autoDocstring.customTemplatePath": ".vscode/extensions/autoDocstring/docstring.mustache",
     "files.exclude": {
       "**/__pycache__": true,
       "**/.pytest_cache": true,
