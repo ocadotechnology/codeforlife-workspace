@@ -1,0 +1,33 @@
+{
+  "module.docstring": {
+    "prefix": [
+      "module.docstring",
+      "\"\"\"",
+      "'''"
+    ],
+    "scope": "python",
+    "body": [
+      "\"\"\"",
+      "© Ocado Group",
+      "Created on $CURRENT_DATE/$CURRENT_MONTH/$CURRENT_YEAR at $CURRENT_HOUR:$CURRENT_MINUTE:$CURRENT_SECOND($CURRENT_TIMEZONE_OFFSET)."
+      "",
+      "${1:__description__}",      
+      "\"\"\""
+    ]
+  },
+  "module.doccomment": {
+    "prefix": [
+      "module.doccomment",
+      "/"
+    ],
+    "scope": "javascript,typescript,javascriptreact,typescriptreact",
+    "body": [
+      "/**",
+      " * © Ocado Group",
+      " * Created on $CURRENT_DATE/$CURRENT_MONTH/$CURRENT_YEAR at $CURRENT_HOUR:$CURRENT_MINUTE:$CURRENT_SECOND($CURRENT_TIMEZONE_OFFSET)."
+      " *",
+      " * ${1:__description__}",      
+      " */"
+    ]
+  }
+}
