@@ -184,3 +184,4 @@ If you have any trouble with the above process, please reach out to
 ### 👨‍💻 Contributors 👩‍💻
 
 <stefan.kairinos@ocado.com>
+<juanl.bnr@gmail.com>
