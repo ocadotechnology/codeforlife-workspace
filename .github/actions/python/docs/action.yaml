@@ -1,5 +1,5 @@
-name: "Code for Life - Python - Test"
-description: "Tests python code written in the CFL workspace."
+name: "Code for Life - Python - Docs"
+description: "Documents python code written in the CFL workspace."
 inputs:
   python-version:
     description: "The python version to set up."
@@ -9,8 +9,8 @@ inputs:
     description: "The current working directory."
     required: true
     default: "."
-  check-django-migrations:
-    description: "Check if there are pending Django migrations."
+  graph-django-models:
+    description: "If there are Django models to graph."
     required: true
     default: "true"
 runs:
@@ -32,24 +32,17 @@ runs:
         python -m pip install pipenv
         pipenv install --dev
 
-    - name: 🔎 Check Code Format
+    - name: 📈 Graph Django Models
+      if: inputs.graph-django-models == 'true'
       shell: bash
       working-directory: ${{ inputs.working-directory }}
-      run: if ! pipenv run black --check .; then exit 1; fi
+      run: pipenv run python manage.py graph_models
 
-    # TODO: check static type hints with mypy
+    - uses: ocadotechnology/codeforlife-workspace/.github/actions/git/setup-bot@actions # TODO: use @main
+      if: inputs.graph-django-models == 'true'
 
-    # TODO: check linter error with pylint
-
-    - name: 🔎 Check Django Migrations
-      if: inputs.check-django-migrations == 'true'
-      shell: bash
-      working-directory: ${{ inputs.working-directory }}
-      run: pipenv run python manage.py makemigrations --check --dry-run
-
-    # TODO: assert code coverage target.
-
-    - name: 🧪 Test Code Units
-      shell: bash
-      working-directory: ${{ inputs.working-directory }}
-      run: pipenv run pytest
+    - uses: ocadotechnology/codeforlife-workspace/.github/actions/git/commit-and-push@actions # TODO: use @main
+      if: inputs.graph-django-models == 'true'
+      with:
+        add: docs/entity_relationship_diagram.png
+        commit-message: "entity relationship diagram"
