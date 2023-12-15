@@ -25,6 +25,7 @@ runs:
         python-version: ${{ inputs.python-version }}
 
     - name: 🛠 Install Graphviz
+      if: inputs.graph-django-models == 'true'
       shell: bash
       run: sudo apt-get install python3-dev graphviz libgraphviz-dev pkg-config
 
