@@ -16,7 +16,7 @@ runs:
 
     - name: 📝 Git Commit
       # Only commit if there are differences.
-      if: ! git diff --staged --quiet
+      if: ${{ ! git diff --staged --quiet }}
       shell: bash
       run: 'git commit -m "chore: ${{ inputs.commit-message }} [skip ci]"'
 
