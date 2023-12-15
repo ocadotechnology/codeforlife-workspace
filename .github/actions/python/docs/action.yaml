@@ -32,6 +32,10 @@ runs:
         python -m pip install pipenv
         pipenv install --dev
 
+    - name: 🛠 Install Graphviz
+      shell: bash
+      run: apt-get install python3-dev graphviz libgraphviz-dev pkg-config
+
     - name: 📈 Graph Django Models
       if: inputs.graph-django-models == 'true'
       shell: bash
