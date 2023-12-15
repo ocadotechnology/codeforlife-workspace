@@ -1,0 +1,53 @@
+name: "Code for Life - Python - Docs"
+description: "Documents python code written in the CFL workspace."
+inputs:
+  python-version:
+    description: "The python version to set up."
+    required: true
+    default: "3.8"
+  working-directory:
+    description: "The current working directory."
+    required: true
+    default: "."
+  graph-django-models:
+    description: "If there are Django models to graph."
+    required: true
+    default: "true"
+runs:
+  using: composite
+  steps:
+    - name: 🛫 Checkout
+      uses: actions/checkout@v4
+
+    - name: 🐍 Set up Python ${{ inputs.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: 🛠 Install Graphviz
+      if: inputs.graph-django-models == 'true'
+      shell: bash
+      run: sudo apt-get install python3-dev graphviz libgraphviz-dev pkg-config
+
+    - name: 🛠 Install Dependencies
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install pipenv
+        pipenv install --dev
+
+    - name: 📈 Graph Django Models
+      if: inputs.graph-django-models == 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: pipenv run python manage.py graph_models
+
+    - uses: ocadotechnology/codeforlife-workspace/.github/actions/git/setup-bot@main
+      if: inputs.graph-django-models == 'true'
+
+    - uses: ocadotechnology/codeforlife-workspace/.github/actions/git/add-commit-push@main
+      if: inputs.graph-django-models == 'true'
+      with:
+        add: docs/entity_relationship_diagram.png
+        commit-message: "entity relationship diagram"
