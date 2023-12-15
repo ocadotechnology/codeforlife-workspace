@@ -26,7 +26,7 @@ runs:
 
     - name: 🛠 Install Graphviz
       shell: bash
-      run: apt-get install python3-dev graphviz libgraphviz-dev pkg-config
+      run: sudo apt-get install python3-dev graphviz libgraphviz-dev pkg-config
 
     - name: 🛠 Install Dependencies
       shell: bash
