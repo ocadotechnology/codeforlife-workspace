@@ -45,7 +45,7 @@ runs:
     - uses: ocadotechnology/codeforlife-workspace/.github/actions/git/setup-bot@actions # TODO: use @main
       if: inputs.graph-django-models == 'true'
 
-    - uses: ocadotechnology/codeforlife-workspace/.github/actions/git/commit-and-push@actions # TODO: use @main
+    - uses: ocadotechnology/codeforlife-workspace/.github/actions/git/add-commit-push@actions # TODO: use @main
       if: inputs.graph-django-models == 'true'
       with:
         add: docs/entity_relationship_diagram.png

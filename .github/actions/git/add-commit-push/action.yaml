@@ -1,0 +1,27 @@
+name: "Code for Life - Git - Add, Commit and Push"
+description: "Git add and, if there are differences, commit and push."
+inputs:
+  add:
+    description: "The changes to add."
+    required: true
+  commit-message:
+    description: "The commit message. Prepended with 'chore: ' and post-pended with ' [skip ci]'."
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: ➕ Git Add
+      shell: bash
+      run: git add ${{ inputs.add }}
+
+    - name: 📝 Git Commit
+      # Only commit if there are differences.
+      if: ! git diff --staged --quiet
+      shell: bash
+      run: 'git commit -m "chore: ${{ inputs.commit-message }} [skip ci]"'
+
+    - name: 🔄 Git Push
+      # Only push if there are differences.
+      if: ! git diff --staged --quiet
+      shell: bash
+      run: git push
