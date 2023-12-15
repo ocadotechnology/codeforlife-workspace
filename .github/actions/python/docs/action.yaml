@@ -24,6 +24,10 @@ runs:
       with:
         python-version: ${{ inputs.python-version }}
 
+    - name: 🛠 Install Graphviz
+      shell: bash
+      run: apt-get install python3-dev graphviz libgraphviz-dev pkg-config
+
     - name: 🛠 Install Dependencies
       shell: bash
       working-directory: ${{ inputs.working-directory }}
@@ -31,10 +35,6 @@ runs:
         python -m pip install --upgrade pip
         python -m pip install pipenv
         pipenv install --dev
-
-    - name: 🛠 Install Graphviz
-      shell: bash
-      run: apt-get install python3-dev graphviz libgraphviz-dev pkg-config
 
     - name: 📈 Graph Django Models
       if: inputs.graph-django-models == 'true'
