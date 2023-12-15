@@ -42,7 +42,7 @@ runs:
     # TODO: check linter error with pylint
 
     - name: 🔎 Check Django Migrations
-      if: ${{ inputs.check-django-migrations == "true" }}
+      if: inputs.check-django-migrations == "true"
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: pipenv run python manage.py makemigrations --check --dry-run
