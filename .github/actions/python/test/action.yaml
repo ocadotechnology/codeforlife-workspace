@@ -47,9 +47,9 @@ runs:
       working-directory: ${{ inputs.working-directory }}
       run: pipenv run python manage.py makemigrations --check --dry-run
 
-    # TODO: assert code coverage target.
-
     - name: 🧪 Test Code Units
       shell: bash
       working-directory: ${{ inputs.working-directory }}
-      run: pipenv run pytest
+      run: pipenv run pytest -n auto
+
+    # TODO: assert code coverage target.
