@@ -43,10 +43,10 @@ runs:
       working-directory: ${{ inputs.working-directory }}
       run: pipenv run python manage.py graph_models
 
-    - uses: ocadotechnology/codeforlife-workspace/.github/actions/git/setup-bot@actions # TODO: use @main
+    - uses: ocadotechnology/codeforlife-workspace/.github/actions/git/setup-bot@main
       if: inputs.graph-django-models == 'true'
 
-    - uses: ocadotechnology/codeforlife-workspace/.github/actions/git/add-commit-push@actions # TODO: use @main
+    - uses: ocadotechnology/codeforlife-workspace/.github/actions/git/add-commit-push@main
       if: inputs.graph-django-models == 'true'
       with:
         add: docs/entity_relationship_diagram.png
