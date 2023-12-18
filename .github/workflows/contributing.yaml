@@ -1,0 +1,16 @@
+name: Contributing
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'CONTRIBUTING.md'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🛫 Checkout
+        uses: actions/checkout@v4
