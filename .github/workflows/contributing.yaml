@@ -2,11 +2,14 @@ name: Contributing
 
 on:
   push:
-    branches:
+    branches-ignore:
       - main
     paths:
       - 'CONTRIBUTING.md'
   workflow_dispatch:
+
+env:
+  PYTHON_VERSION: 3.12
 
 jobs:
   deploy:
@@ -14,3 +17,11 @@ jobs:
     steps:
       - name: 🛫 Checkout
         uses: actions/checkout@v4
+
+      - name: 🐍 Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: 🏃 Run Script
+        run: python .github/scripts/handle_new_contributor.py
