@@ -36,9 +36,9 @@ def assert_diff_stats():
 
     # Get diff stats per file.
     diff_stats_per_file = diff_stats_str.splitlines()
-    # assert (
-    #     len(diff_stats_per_file) == 1
-    # ), f"Only {CONTRIBUTING_FILE_NAME} should be different."
+    assert (
+        len(diff_stats_per_file) == 1
+    ), f"Only {CONTRIBUTING_FILE_NAME} should be different."
 
     # Parse and assert diff stats.
     diff_stats = diff_stats_per_file[2].split("\t")  # TODO: 0
@@ -69,14 +69,6 @@ def get_diff_line():
         check=True,
         stdout=subprocess.PIPE,
     ).stdout.decode("utf-8")
-
-    diff_str = diff_str[
-        diff_str.index(
-            "diff --git a/CONTRIBUTING.md b/CONTRIBUTING.md\nindex 5b1b8c9..af7a8b8 100644"
-        ) : diff_str.index(
-            "diff --git a/codeforlife-deploy-appengine b/codeforlife-deploy-appengine\nindex b8b84e1..e6fccfc 160000"
-        )
-    ]
 
     logging.debug("Diff:\n\n%s", diff_str)
 
