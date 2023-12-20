@@ -1,8 +1,8 @@
 name: Contributing
 
 on:
-  push:
-    branches-ignore:
+  pull_request:
+    branches:
       - main
     paths:
       - 'CONTRIBUTING.md'
