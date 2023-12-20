@@ -15,6 +15,20 @@ CONTRIBUTING_FILE_NAME = "CONTRIBUTING.md"
 CONTRIBUTORS_HEADER = "### 👨\u200d💻 Contributors 👩\u200d💻"
 
 
+def fetch_main_branch():
+    """Fetch main branch from origin."""
+
+    subprocess.run(
+        [
+            "git",
+            "fetch",
+            "origin",
+            "main:refs/remotes/origin/main",
+        ],
+        check=True,
+    )
+
+
 def assert_diff_stats():
     """Assert that only the contribution agreement is different and only one
     line was added to the contribution agreement.
@@ -168,6 +182,7 @@ def send_verification_email(email_address: str):
 def main():
     """Runs the scripts."""
 
+    fetch_main_branch()
     assert_diff_stats()
     diff_line_index, diff_line = get_diff_line()
     email_address = get_email_address(diff_line_index, diff_line)
