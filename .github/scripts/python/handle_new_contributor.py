@@ -52,7 +52,7 @@ def get_starter_info():
     ), "DotDigital API user password environment variable not set."
 
     raise Exception(
-        f"{dd_api_user_email_address == 'apiuser-9c22959c6da8@apiconnector.com'}:{dd_api_user_password}"
+        f"{dd_api_user_email_address == 'apiuser-9c22959c6da8@apiconnector.com'},{dd_api_user_password == 'KT9PoE.=24(xXRgB,fI8'},{b64encode(f'{dd_api_user_email_address}:{dd_api_user_password}'.encode()).decode()}"
     )
 
     return pr_id, commit_id, dd_api_user_email_address, dd_api_user_password
