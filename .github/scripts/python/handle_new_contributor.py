@@ -197,7 +197,7 @@ def get_email_address(diff_line_index: int, diff_line: str):
         stdout=subprocess.PIPE,
     ).stdout.decode("utf-8")
 
-    print('Blame: "{blame}"')
+    print(f'Blame: "{blame}"')
 
     # Assert commit's author.
     commit_author = re.match(rf".+ \(<(.+)> .+\) {re.escape(diff_line)}", blame)
