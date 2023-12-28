@@ -8,6 +8,7 @@ Handles adding a new contributor to the contribution agreement.
 import os
 import re
 import subprocess
+from base64 import b64encode
 from email.utils import parseaddr
 
 import requests
@@ -23,11 +24,11 @@ def get_starter_info():
 
     Returns:
         A tuple where the values are (the ID of the pull request, the ID of the
-        commit, the header to authorize with DotDigital).
+        commit, an email address for a DotDigital API user, the DotDigital API
+        user's password).
     """
 
     pr_id = int(os.getenv("PR_ID", "-1"))
-
     assert pr_id != -1, "Pull request ID environment variable not set."
 
     commit_id = subprocess.run(
@@ -40,13 +41,17 @@ def get_starter_info():
         stdout=subprocess.PIPE,
     ).stdout.decode("utf-8")
 
-    dd_auth = os.getenv("DOTDIGITAL_AUTH")
-
+    dd_api_user_email_address = os.getenv("DOTDIGITAL_API_USER_EMAIL_ADDRESS")
     assert (
-        dd_auth is not None
-    ), "DotDigital authorization environment variable not set."
+        dd_api_user_email_address is not None
+    ), "DotDigital API user email address environment variable not set."
 
-    return pr_id, commit_id, dd_auth
+    dd_api_user_password = os.getenv("DOTDIGITAL_API_USER_PASSWORD")
+    assert (
+        dd_api_user_password is not None
+    ), "DotDigital API user password environment variable not set."
+
+    return pr_id, commit_id, dd_api_user_email_address, dd_api_user_password
 
 
 def fetch_main_branch():
@@ -216,7 +221,8 @@ def get_email_address(diff_line_index: int, diff_line: str):
 def send_verify_new_contributor_email(
     pr_id: str,
     commit_id,
-    auth_header: str,
+    dd_api_user_email_address: str,
+    dd_api_user_password: str,
     email_address: str,
 ):
     """Send an email to verify that the new contributor owns the email address.
@@ -226,7 +232,8 @@ def send_verify_new_contributor_email(
     Args:
         pr_id: The ID of the pull request.
         commit_id: The ID of the current commit.
-        auth_header: Header to authorize with DotDigital.
+        dd_api_user_email_address: An email address for a DotDigital API user.
+        dd_api_user_password: The DotDigital API user's password.
         email_address: The new contributor's email address.
     """
 
@@ -262,8 +269,10 @@ def send_verify_new_contributor_email(
         },
         headers={
             "accept": "text/plain",
-            # TODO: remove
-            "authorization": "Basic YXBpdXNlci01OGJiNTRmOWFiYzRAYXBpY29ubmVjdG9yLmNvbTpGVXdnPVMuKHk7M05wejM3LkZdbA==",
+            "authorization": "Basic "
+            + b64encode(
+                f"{dd_api_user_email_address}:{dd_api_user_password}".encode()
+            ).decode(),
         },
         timeout=60,
     )
@@ -274,11 +283,26 @@ def send_verify_new_contributor_email(
 def main():
     """Runs the scripts."""
 
-    pr_id, commit_id, dd_auth = get_starter_info()
+    (
+        pr_id,
+        commit_id,
+        dd_api_user_email_address,
+        dd_api_user_password,
+    ) = get_starter_info()
+
     fetch_main_branch()
+
     diff_line_index, diff_line = get_diff_line()
+
     email_address = get_email_address(diff_line_index, diff_line)
-    send_verify_new_contributor_email(pr_id, commit_id, dd_auth, email_address)
+
+    send_verify_new_contributor_email(
+        pr_id,
+        commit_id,
+        dd_api_user_email_address,
+        dd_api_user_password,
+        email_address,
+    )
 
 
 if __name__ == "__main__":
