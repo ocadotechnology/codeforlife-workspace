@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 env:
-  PYTHON_VERSION: 3.12
+  PYTHON_VERSION: 3.11
 
 jobs:
   handle_new_contributor:
@@ -24,4 +24,4 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: 🏃 Run Script
-        run: python .github/scripts/handle_new_contributor.py
+        run: python .github/scripts/python/handle_new_contributor.py

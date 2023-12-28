@@ -1,0 +1,26 @@
+{
+  "black-formatter.path": [
+    ".github/scripts/python/.venv/bin/python",
+    "-m",
+    "black"
+  ],
+  "black-formatter.args": [
+    "--config",
+    ".github/scripts/python/pyproject.toml"
+  ],
+  "mypy-type-checker.path": [
+    ".github/scripts/python/.venv/bin/python",
+    "-m",
+    "mypy"
+  ],
+  "pylint.path": [
+    ".github/scripts/python/.venv/bin/python",
+    "-m",
+    "pylint"
+  ],
+  "pylint.args": [
+    "--rcfile=.github/scripts/python/pyproject.toml"
+  ],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true
+}

@@ -55,11 +55,13 @@ def assert_diff_stats():
     ), f"Only {CONTRIBUTING_FILE_NAME} should be different."
 
     # Parse and assert diff stats.
-    diff_stats = diff_stats_per_file[2].split("\t")  # TODO: 0
+    diff_stats = diff_stats_per_file[0].split("\t")
     assert (
         diff_stats[2] == CONTRIBUTING_FILE_NAME
     ), f"Only {CONTRIBUTING_FILE_NAME} should be different."
-    assert int(diff_stats[1]) == 0, "You cannot modify or delete existing lines."
+    assert (
+        int(diff_stats[1]) == 0
+    ), "You cannot modify or delete existing lines."
     assert int(diff_stats[0]) == 1, "You must add just one line."
 
 
@@ -68,9 +70,12 @@ def get_diff_line():
     the line is located in the list of contributors.
 
     Returns:
-        The index and string of the one differing line from the contribution
-        agreement.
+        The one-based index and string of the one differing line from the
+        contribution agreement.
     """
+
+    # Easier to parse diff stats for assertions.
+    assert_diff_stats()
 
     # Get raw diff from main.
     diff_str = subprocess.run(
@@ -101,7 +106,9 @@ def get_diff_line():
 
     original_line_count = int(diff_line_range.group(2))
     new_line_count = int(diff_line_range.group(4))
-    assert new_line_count - original_line_count == 1, "One line should be different."
+    assert (
+        new_line_count - original_line_count == 1
+    ), "One line should be different."
 
     diff_line_index = original_line_start + original_line_count
 
@@ -128,8 +135,8 @@ def get_email_address(diff_line_index: int, diff_line: str):
     used to sign the commit is the same as the signed email address.
 
     Args:
-        diff_line_index: The index of the differing line in the contribution
-        agreement. 1 based indexing.
+        diff_line_index: The one-based index of the differing line in the
+            contribution agreement.
         diff_line: The differing line in the contribution agreement.
 
     Returns:
@@ -160,7 +167,9 @@ def get_email_address(diff_line_index: int, diff_line: str):
 
     # Assert commit's author.
     commit_author = re.match(rf".+ \(<(.+)> .+\) {re.escape(diff_line)}", blame)
-    assert commit_author is not None, "Failed to match commit author from git blame."
+    assert (
+        commit_author is not None
+    ), "Failed to match commit author from git blame."
 
     commit_author_email_address = commit_author.group(1)
     assert (
@@ -183,7 +192,6 @@ def main():
     """Runs the scripts."""
 
     fetch_main_branch()
-    assert_diff_stats()
     diff_line_index, diff_line = get_diff_line()
     email_address = get_email_address(diff_line_index, diff_line)
     send_verification_email(email_address)
