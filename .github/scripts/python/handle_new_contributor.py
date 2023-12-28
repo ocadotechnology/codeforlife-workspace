@@ -273,7 +273,7 @@ def main():
     """Runs the scripts."""
 
     pr_id, commit_id, dd_auth = get_starter_info()
-    # fetch_main_branch()
+    fetch_main_branch()
     diff_line_index, diff_line = get_diff_line()
     email_address = get_email_address(diff_line_index, diff_line)
     send_verify_new_contributor_email(pr_id, commit_id, dd_auth, email_address)
