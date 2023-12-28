@@ -3,7 +3,7 @@ name: Contributing
 on:
   pull_request:
     branches:
-      - main
+      - new_contributor_validations # TODO: use main
     paths:
       - 'CONTRIBUTING.md'
   workflow_dispatch:
