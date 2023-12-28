@@ -267,7 +267,7 @@ def send_verify_new_contributor_email(
         timeout=60,
     )
 
-    assert response.ok, response.reason
+    assert response.ok, response.json()
 
 
 def main():
