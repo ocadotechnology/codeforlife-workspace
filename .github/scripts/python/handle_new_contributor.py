@@ -5,7 +5,6 @@ Created on 19/12/2023 at 16:07:39(+00:00).
 Handles adding a new contributor to the contribution agreement.
 """
 
-import logging
 import os
 import re
 import subprocess
@@ -80,7 +79,7 @@ def assert_diff_stats():
         stdout=subprocess.PIPE,
     ).stdout.decode("utf-8")
 
-    logging.debug("Diff Stats:\n\n%s", diff_stats_str)
+    print(f"Diff Stats:\n\n{diff_stats_str}")
 
     # Get diff stats per file.
     diff_stats_per_file = diff_stats_str.splitlines()
@@ -123,7 +122,7 @@ def get_diff_line():
         stdout=subprocess.PIPE,
     ).stdout.decode("utf-8")
 
-    logging.debug("Diff:\n\n%s", diff_str)
+    print(f"Diff:\n\n{diff_str}")
 
     # Match the diff line range.
     diff_line_range = re.match(
@@ -159,7 +158,7 @@ def get_diff_line():
 
     diff_line = lines[diff_line_index - 1]
 
-    logging.debug("Diff Line:\n\n%s", diff_line)
+    print(f"Diff Line:\n\n{diff_line}")
 
     return diff_line_index, diff_line
 
@@ -197,7 +196,7 @@ def get_email_address(diff_line_index: int, diff_line: str):
         stdout=subprocess.PIPE,
     ).stdout.decode("utf-8")
 
-    logging.debug("Blame:\n\n%s", blame)
+    print(f"Blame:\n\n{blame}")
 
     # Assert commit's author.
     commit_author = re.match(rf".+ \(<(.+)> .+\) {re.escape(diff_line)}", blame)
