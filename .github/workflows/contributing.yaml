@@ -10,18 +10,21 @@ on:
 
 env:
   PYTHON_VERSION: 3.11
+  WORKING_DIR: .github/scripts/python
 
 jobs:
   handle_new_contributor:
     runs-on: ubuntu-latest
     steps:
-      - name: 🛫 Checkout
-        uses: actions/checkout@v4
-
-      - name: 🐍 Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v4
+      - uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@new_contributor_validations # TODO: use @main
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+          working-directory: ${{ env.WORKING_DIR }}
+          install-args: "--dev"
 
       - name: 🏃 Run Script
-        run: python .github/scripts/python/handle_new_contributor.py
+        working-directory: ${{ env.WORKING_DIR }}
+        run: pipenv run python handle_new_contributor.py
+        env:
+          PR_ID: ${{ github.event.number }}
+          DOTDIGITAL_AUTH: ${{ secrets.DOTDIGITAL_AUTH }}

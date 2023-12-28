@@ -6,13 +6,47 @@ Handles adding a new contributor to the contribution agreement.
 """
 
 import logging
+import os
 import re
 import subprocess
 from email.utils import parseaddr
 
+import requests
+
 # Global settings.
 CONTRIBUTING_FILE_NAME = "CONTRIBUTING.md"
 CONTRIBUTORS_HEADER = "### 👨\u200d💻 Contributors 👩\u200d💻"
+
+
+def get_starter_info():
+    """Gets the info needed to start this script.
+
+    Returns:
+        A tuple where the values are (the ID of the pull request, the ID of the
+        commit, the header to authorize with DotDigital).
+    """
+
+    pr_id = int(os.getenv("PR_ID", "-1"))
+
+    assert pr_id != -1, "Pull request ID environment variable not set."
+
+    commit_id = subprocess.run(
+        [
+            "git",
+            "rev-parse",
+            "HEAD",
+        ],
+        check=True,
+        stdout=subprocess.PIPE,
+    ).stdout.decode("utf-8")
+
+    dd_auth = os.getenv("DOTDIGITAL_AUTH")
+
+    assert (
+        dd_auth is not None
+    ), "DotDigital authorization environment variable not set."
+
+    return pr_id, commit_id, dd_auth
 
 
 def fetch_main_branch():
@@ -179,22 +213,67 @@ def get_email_address(diff_line_index: int, diff_line: str):
     return signed_email_address
 
 
-def send_verification_email(email_address: str):
-    """_summary_
+def send_verify_new_contributor_email(
+    pr_id: str,
+    commit_id,
+    auth_header: str,
+    email_address: str,
+):
+    """Send an email to verify that the new contributor owns the email address.
+
+    https://developer.dotdigital.com/reference/send-transactional-email-using-a-triggered-campaign
 
     Args:
-        email_address: _description_
+        pr_id: The ID of the pull request.
+        commit_id: The ID of the current commit.
+        auth_header: Header to authorize with DotDigital.
+        email_address: The new contributor's email address.
     """
-    pass
+
+    response = requests.post(
+        url="https://r1-api.dotdigital.com/v2/email/triggered-campaign",
+        json={
+            "campaignId": 1506387,
+            "toAddresses": [
+                email_address,
+            ],
+            "personalizationValues": [
+                {
+                    "name": "PR_ID",
+                    "value": pr_id,
+                },
+                {
+                    "name": "PR_LINK",
+                    "value": f"https://github.com/ocadotechnology/codeforlife-workspace/pull/{pr_id}",
+                },
+                {
+                    "name": "COMMIT_ID",
+                    "value": commit_id,
+                },
+                {
+                    "name": "COMMIT_LINK",
+                    "value": f"https://github.com/ocadotechnology/codeforlife-workspace/pull/{pr_id}/commits/{commit_id}",
+                },
+            ],
+        },
+        headers={
+            "accept": "text/plain",
+            "authorization": auth_header,
+        },
+        timeout=60,
+    )
+
+    assert response.ok, response.reason
 
 
 def main():
     """Runs the scripts."""
 
+    pr_id, commit_id, dd_auth = get_starter_info()
     fetch_main_branch()
     diff_line_index, diff_line = get_diff_line()
     email_address = get_email_address(diff_line_index, diff_line)
-    send_verification_email(email_address)
+    send_verify_new_contributor_email(pr_id, commit_id, dd_auth, email_address)
 
 
 if __name__ == "__main__":
