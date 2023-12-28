@@ -51,6 +51,8 @@ def get_starter_info():
         dd_api_user_password is not None
     ), "DotDigital API user password environment variable not set."
 
+    raise Exception(f"{dd_api_user_email_address}:{dd_api_user_password}")
+
     return pr_id, commit_id, dd_api_user_email_address, dd_api_user_password
 
 

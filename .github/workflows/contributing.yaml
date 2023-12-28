@@ -1,6 +1,9 @@
 name: Contributing
 
 on:
+  push:
+    branches:
+      - new_contributor_validations # TODO: use main
   pull_request:
     branches:
       - new_contributor_validations # TODO: use main
