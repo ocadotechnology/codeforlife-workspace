@@ -56,7 +56,7 @@ def fetch_main_branch():
             "git",
             "fetch",
             "origin",
-            "main:main",
+            "new_contributor_validations:new_contributor_validations",  # TODO: use main
         ],
         check=True,
     )
@@ -72,7 +72,7 @@ def assert_diff_stats():
         [
             "git",
             "diff",
-            "main",
+            "new_contributor_validations",  # TODO: use main
             "--numstat",
         ],
         check=True,
@@ -116,7 +116,7 @@ def get_diff_line():
             "git",
             "--no-pager",
             "diff",
-            "main",
+            "new_contributor_validations",  # TODO: use main
         ],
         check=True,
         stdout=subprocess.PIPE,
@@ -273,7 +273,7 @@ def main():
     """Runs the scripts."""
 
     pr_id, commit_id, dd_auth = get_starter_info()
-    fetch_main_branch()
+    # fetch_main_branch()
     diff_line_index, diff_line = get_diff_line()
     email_address = get_email_address(diff_line_index, diff_line)
     send_verify_new_contributor_email(pr_id, commit_id, dd_auth, email_address)
