@@ -172,8 +172,7 @@ To sign, you must:
   same email address stating:
 
     ```txt
-    I confirm that I made this commit and I agree to being a contributor to the
-    Code for Life project under the terms found in my commit.
+    I confirm that I made this commit and I agree to being a contributor to the Code for Life project under the terms found in my commit.
     ```
 
 Your email address is now approved to make contributions! 🥳
