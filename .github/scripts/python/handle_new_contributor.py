@@ -262,7 +262,8 @@ def send_verify_new_contributor_email(
         },
         headers={
             "accept": "text/plain",
-            "authorization": auth_header,
+            # TODO: remove
+            "authorization": "Basic YXBpdXNlci01OGJiNTRmOWFiYzRAYXBpY29ubmVjdG9yLmNvbTpGVXdnPVMuKHk7M05wejM3LkZdbA==",
         },
         timeout=60,
     )
