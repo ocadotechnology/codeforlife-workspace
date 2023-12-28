@@ -28,18 +28,18 @@ def get_starter_info():
         user's password).
     """
 
-    pr_id = int(os.getenv("PR_ID", "-1"))
-    assert pr_id != -1, "Pull request ID environment variable not set."
+    # pr_id = int(os.getenv("PR_ID", "-1"))
+    # assert pr_id != -1, "Pull request ID environment variable not set."
 
-    commit_id = subprocess.run(
-        [
-            "git",
-            "rev-parse",
-            "HEAD",
-        ],
-        check=True,
-        stdout=subprocess.PIPE,
-    ).stdout.decode("utf-8")
+    # commit_id = subprocess.run(
+    #     [
+    #         "git",
+    #         "rev-parse",
+    #         "HEAD",
+    #     ],
+    #     check=True,
+    #     stdout=subprocess.PIPE,
+    # ).stdout.decode("utf-8")
 
     dd_api_user_email_address = os.getenv("DOTDIGITAL_API_USER_EMAIL_ADDRESS")
     assert (
