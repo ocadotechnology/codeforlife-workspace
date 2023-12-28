@@ -230,6 +230,10 @@ def send_verify_new_contributor_email(
         email_address: The new contributor's email address.
     """
 
+    pr_link = (
+        f"https://github.com/ocadotechnology/codeforlife-workspace/pull/{pr_id}"
+    )
+
     response = requests.post(
         url="https://r1-api.dotdigital.com/v2/email/triggered-campaign",
         json={
@@ -244,7 +248,7 @@ def send_verify_new_contributor_email(
                 },
                 {
                     "name": "PR_LINK",
-                    "value": f"https://github.com/ocadotechnology/codeforlife-workspace/pull/{pr_id}",
+                    "value": pr_link,
                 },
                 {
                     "name": "COMMIT_ID",
@@ -252,7 +256,7 @@ def send_verify_new_contributor_email(
                 },
                 {
                     "name": "COMMIT_LINK",
-                    "value": f"https://github.com/ocadotechnology/codeforlife-workspace/pull/{pr_id}/commits/{commit_id}",
+                    "value": f"{pr_link}/commits/{commit_id}",
                 },
             ],
         },
