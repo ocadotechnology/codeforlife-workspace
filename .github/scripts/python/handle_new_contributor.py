@@ -146,7 +146,11 @@ def get_diff_line():
     diff_line_index = original_line_start + original_line_count
 
     # Split contribution agreement into lines.
-    with open(CONTRIBUTING_FILE_NAME, "r", encoding="utf-8") as contributing:
+    with open(
+        f"../../../{CONTRIBUTING_FILE_NAME}",
+        "r",
+        encoding="utf-8",
+    ) as contributing:
         lines = contributing.read().splitlines()
 
     # Assert diff line is after the contributors header.
