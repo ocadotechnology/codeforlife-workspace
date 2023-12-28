@@ -1,0 +1,24 @@
+{
+  "name": "codeforlife",
+  "image": "mcr.microsoft.com/vscode/devcontainers/python:3.8",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "16"
+    },
+    "ghcr.io/devcontainers-contrib/features/pipenv:2": {
+      "version": "2023.11.15"
+    }
+  },
+  // "mounts": [
+  //   "source=../codeforlife-portal,target=home/root/codeforlife-portal,type=bind,consistency=cached"
+  // ]
+  "customizations": {
+    "vscode": {
+      "settings": {},
+      "extensions": [
+        "ms-python.python",
+        "dbaeumer.vscode-eslint"
+      ]
+    }
+  }
+}
