@@ -57,7 +57,7 @@ def fetch_main_branch():
             "git",
             "fetch",
             "origin",
-            "main:refs/remotes/origin/main",
+            "main:main",
         ],
         check=True,
     )
