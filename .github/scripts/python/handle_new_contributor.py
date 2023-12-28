@@ -14,6 +14,7 @@ import requests
 
 # Global settings.
 CONTRIBUTING_FILE_NAME = "CONTRIBUTING.md"
+CONTRIBUTING_FILE_PATH = f"../../../{CONTRIBUTING_FILE_NAME}"
 CONTRIBUTORS_HEADER = "### 👨\u200d💻 Contributors 👩\u200d💻"
 
 
@@ -79,7 +80,7 @@ def assert_diff_stats():
         stdout=subprocess.PIPE,
     ).stdout.decode("utf-8")
 
-    print(f"Diff Stats:\n\n{diff_stats_str}")
+    print(f'Diff Stats: "{diff_stats_str}"')
 
     # Get diff stats per file.
     diff_stats_per_file = diff_stats_str.splitlines()
@@ -122,7 +123,7 @@ def get_diff_line():
         stdout=subprocess.PIPE,
     ).stdout.decode("utf-8")
 
-    print(f"Diff:\n\n{diff_str}")
+    print(f'Diff: "{diff_str}"')
 
     # Match the diff line range.
     diff_line_range = re.match(
@@ -146,11 +147,7 @@ def get_diff_line():
     diff_line_index = original_line_start + original_line_count
 
     # Split contribution agreement into lines.
-    with open(
-        f"../../../{CONTRIBUTING_FILE_NAME}",
-        "r",
-        encoding="utf-8",
-    ) as contributing:
+    with open(CONTRIBUTING_FILE_PATH, "r", encoding="utf-8") as contributing:
         lines = contributing.read().splitlines()
 
     # Assert diff line is after the contributors header.
@@ -162,7 +159,7 @@ def get_diff_line():
 
     diff_line = lines[diff_line_index - 1]
 
-    print(f"Diff Line:\n\n{diff_line}")
+    print(f'Diff Line: "{diff_line}"')
 
     return diff_line_index, diff_line
 
@@ -193,14 +190,14 @@ def get_email_address(diff_line_index: int, diff_line: str):
             "blame",
             "-L",
             f"{diff_line_index},{diff_line_index}",
-            CONTRIBUTING_FILE_NAME,
+            CONTRIBUTING_FILE_PATH,
             "--show-email",
         ],
         check=True,
         stdout=subprocess.PIPE,
     ).stdout.decode("utf-8")
 
-    print(f"Blame:\n\n{blame}")
+    print('Blame: "{blame}"')
 
     # Assert commit's author.
     commit_author = re.match(rf".+ \(<(.+)> .+\) {re.escape(diff_line)}", blame)
