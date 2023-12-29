@@ -46,4 +46,17 @@ runs:
 
     - name: 📧 Send Email
       shell: bash
-      run: pipenv run python ${{ github.action_path }}
+      working-directory: ${{ github.action_path }}
+      run: pipenv run python .
+      env:
+        REGION: ${{ inputs.region }}
+        AUTH: ${{ inputs.auth }}
+        TIMEOUT: ${{ inputs.timeout }}
+        TO_ADDRESSES: ${{ inputs.to-addresses }}
+        CC_ADDRESSES: ${{ inputs.cc-addresses }}
+        BCC_ADDRESSES: ${{ inputs.bcc-addresses }}
+        FROM_ADDRESS: ${{ inputs.from-address }}
+        CAMPAIGN_ID: ${{ inputs.campaign-id }}
+        PERSONALIZATION_VALUES: ${{ inputs.personalization-values }}
+        METADATA: ${{ inputs.metadata }}
+        ATTACHMENTS: ${{ inputs.attachments }}
