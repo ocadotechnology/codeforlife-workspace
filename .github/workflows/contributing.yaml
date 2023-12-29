@@ -22,7 +22,7 @@ jobs:
 
       - name: 🕵️ Validate New Contributor
         working-directory: ${{ env.WORKING_DIR }}
-        run: pipenv run python handle_new_contributor.py
+        run: pipenv run python validate_new_contributor.py
 
       - name: 📧 Send Verification Email
         uses: ocadotechnology/codeforlife-workspace/.github/actions/python/send-email@new_contributor_validations # TODO: use @main
