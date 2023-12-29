@@ -1,6 +1,9 @@
 name: Contributing
 
 on:
+  push:
+    branches:
+      - new_contributor_validations # TODO: use main
   pull_request:
     branches:
       - new_contributor_validations # TODO: use main
@@ -15,19 +18,19 @@ jobs:
   handle_new_contributor:
     runs-on: ubuntu-latest
     steps:
-      - uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@new_contributor_validations # TODO: use @main
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          working-directory: ${{ env.WORKING_DIR }}
+      # - uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@new_contributor_validations # TODO: use @main
+      #   with:
+      #     python-version: ${{ env.PYTHON_VERSION }}
+      #     working-directory: ${{ env.WORKING_DIR }}
 
-      - name: 🕵️ Validate New Contributor
-        working-directory: ${{ env.WORKING_DIR }}
-        run: pipenv run python validate_new_contributor.py
+      # - name: 🕵️ Validate New Contributor
+      #   working-directory: ${{ env.WORKING_DIR }}
+      #   run: pipenv run python validate_new_contributor.py
 
       - name: 📧 Send Verification Email
         uses: ocadotechnology/codeforlife-workspace/.github/actions/python/send-email@new_contributor_validations # TODO: use @main
         with:
           auth: ${{ secrets.DOTDIGITAL_API_USER_AUTH }}
-          to-addresses: '["${{ env.CONTRIBUTOR_EMAIL_ADDRESS }}"]'
+          to-addresses: '["stefan.kairinos@ocado.com"]' #'["${{ env.CONTRIBUTOR_EMAIL_ADDRESS }}"]'
           campaign-id: 1506387
-          personalization-values: '[{"name": "PR_URL", "value": "${{ github.event.pull_request.html_url }}"}]'
+          personalization-values: '[{"name": "PR_URL", "value": "12345"}]'
