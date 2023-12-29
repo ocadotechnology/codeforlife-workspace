@@ -29,6 +29,5 @@ jobs:
         working-directory: ${{ env.WORKING_DIR }}
         run: pipenv run python handle_new_contributor.py
         env:
-          PR_ID: ${{ github.event.number }}
-          DOTDIGITAL_API_USER_EMAIL_ADDRESS: ${{ secrets.DOTDIGITAL_API_USER_EMAIL_ADDRESS }}
-          DOTDIGITAL_API_USER_PASSWORD: ${{ secrets.DOTDIGITAL_API_USER_PASSWORD }}
+          PR_URL: "https://www.codeforlife.education/"
+          DOTDIGITAL_API_USER_AUTH: ${{ secrets.DOTDIGITAL_API_USER_AUTH }}

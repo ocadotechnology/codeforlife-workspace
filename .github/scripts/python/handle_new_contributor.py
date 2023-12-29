@@ -8,7 +8,6 @@ Handles adding a new contributor to the contribution agreement.
 import os
 import re
 import subprocess
-from base64 import b64encode
 from email.utils import parseaddr
 
 import requests
@@ -23,35 +22,29 @@ def get_starter_info():
     """Gets the info needed to start this script.
 
     Returns:
-        A tuple where the values are (the ID of the pull request, the ID of the
-        commit, an email address for a DotDigital API user, the DotDigital API
-        user's password).
+        A tuple where the values are (the URL of the pull request, the
+        DotDigital API user's authorization).
     """
 
-    # pr_id = int(os.getenv("PR_ID", "-1"))
-    # assert pr_id != -1, "Pull request ID environment variable not set."
+    pr_url = os.getenv("PR_URL")
+    assert pr_url is not None, "Pull request URL environment variable not set."
 
-    # commit_id = subprocess.run(
-    #     [
-    #         "git",
-    #         "rev-parse",
-    #         "HEAD",
-    #     ],
-    #     check=True,
-    #     stdout=subprocess.PIPE,
-    # ).stdout.decode("utf-8")
+    # dd_api_user_email_address = os.getenv("DOTDIGITAL_API_USER_EMAIL_ADDRESS")
+    # assert (
+    #     dd_api_user_email_address is not None
+    # ), "DotDigital API user email address environment variable not set."
 
-    dd_api_user_email_address = os.getenv("DOTDIGITAL_API_USER_EMAIL_ADDRESS")
+    # dd_api_user_password = os.getenv("DOTDIGITAL_API_USER_PASSWORD")
+    # assert (
+    #     dd_api_user_password is not None
+    # ), "DotDigital API user password environment variable not set."
+
+    dd_api_user_auth = os.getenv("DOTDIGITAL_API_USER_AUTH")
     assert (
-        dd_api_user_email_address is not None
-    ), "DotDigital API user email address environment variable not set."
+        dd_api_user_auth is not None
+    ), "DotDigital API user authorization environment variable not set."
 
-    dd_api_user_password = os.getenv("DOTDIGITAL_API_USER_PASSWORD")
-    assert (
-        dd_api_user_password is not None
-    ), "DotDigital API user password environment variable not set."
-
-    return pr_id, commit_id, dd_api_user_email_address, dd_api_user_password
+    return pr_url, dd_api_user_auth
 
 
 def fetch_main_branch():
@@ -219,10 +212,8 @@ def get_email_address(diff_line_index: int, diff_line: str):
 
 
 def send_verify_new_contributor_email(
-    pr_id: str,
-    commit_id,
-    dd_api_user_email_address: str,
-    dd_api_user_password: str,
+    pr_url: str,
+    dd_api_user_auth: str,
     email_address: str,
 ):
     """Send an email to verify that the new contributor owns the email address.
@@ -230,15 +221,14 @@ def send_verify_new_contributor_email(
     https://developer.dotdigital.com/reference/send-transactional-email-using-a-triggered-campaign
 
     Args:
-        pr_id: The ID of the pull request.
-        commit_id: The ID of the current commit.
-        dd_api_user_email_address: An email address for a DotDigital API user.
-        dd_api_user_password: The DotDigital API user's password.
+        pr_url: The URL of the pull request.
+        dd_api_user_auth: The DotDigital API user's authorization.
         email_address: The new contributor's email address.
     """
 
-    pr_link = (
-        f"https://github.com/ocadotechnology/codeforlife-workspace/pull/{pr_id}"
+    assert (
+        dd_api_user_auth
+        == "Basic YXBpdXNlci0zZTFkMGQwNTY0ZDdAYXBpY29ubmVjdG9yLmNvbTpRM0BLMyFhczVrUDVoa2M="
     )
 
     response = requests.post(
@@ -250,29 +240,14 @@ def send_verify_new_contributor_email(
             ],
             "personalizationValues": [
                 {
-                    "name": "PR_ID",
-                    "value": pr_id,
-                },
-                {
-                    "name": "PR_LINK",
-                    "value": pr_link,
-                },
-                {
-                    "name": "COMMIT_ID",
-                    "value": commit_id,
-                },
-                {
-                    "name": "COMMIT_LINK",
-                    "value": f"{pr_link}/commits/{commit_id}",
+                    "name": "PR_URL",
+                    "value": pr_url,
                 },
             ],
         },
         headers={
             "accept": "text/plain",
-            "authorization": "Basic "
-            + b64encode(
-                f"{dd_api_user_email_address}:{dd_api_user_password}".encode()
-            ).decode(),
+            "authorization": dd_api_user_auth,
         },
         timeout=60,
     )
@@ -283,27 +258,22 @@ def send_verify_new_contributor_email(
 def main():
     """Runs the scripts."""
 
-    (
-        pr_id,
-        commit_id,
-        dd_api_user_email_address,
-        dd_api_user_password,
-    ) = get_starter_info()
+    pr_url, dd_api_user_auth = get_starter_info()
 
-    fetch_main_branch()
+    # fetch_main_branch()
 
-    diff_line_index, diff_line = get_diff_line()
+    # diff_line_index, diff_line = get_diff_line()
 
-    email_address = get_email_address(diff_line_index, diff_line)
+    # email_address = get_email_address(diff_line_index, diff_line)
 
     send_verify_new_contributor_email(
-        pr_id,
-        commit_id,
-        dd_api_user_email_address,
-        dd_api_user_password,
-        email_address,
+        pr_url,
+        dd_api_user_auth,
+        email_address="stefan.kairinos@ocado.com",
     )
 
 
 if __name__ == "__main__":
     main()
+
+# ${{ github.event.pull_request.url }}
