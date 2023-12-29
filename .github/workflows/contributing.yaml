@@ -32,6 +32,9 @@ jobs:
         #   PR_URL: ${{ github.event.pull_request.url }}
         #   DOTDIGITAL_API_USER_AUTH: ${{ secrets.DOTDIGITAL_API_USER_AUTH }}
 
-      - name: Set Env Var
+      - name: Hello Env Var
         run: echo ${{ env.HELLO }}
+      
+      - name: Foo Env Var
+        run: echo ${{ env.FOO }}
 

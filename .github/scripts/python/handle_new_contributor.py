@@ -254,7 +254,17 @@ def main():
     """Runs the scripts."""
 
     with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as github_env:
-        github_env.write("HELLO=WORLD!!")
+        github_env.write(
+            "\n".join(
+                [
+                    f"{key}={value}"
+                    for key, value in {
+                        "HELLO": "WORLD",
+                        "FOO": "POW",
+                    }.items()
+                ]
+            )
+        )
 
     with open(os.environ["GITHUB_ENV"], "r", encoding="utf-8") as github_env:
         print(github_env.read())
