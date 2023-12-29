@@ -18,14 +18,16 @@ JsonBody = t.Dict[str, t.Any]
 
 
 def get_settings():
-    """_summary_
+    """Gets the general settings from environment variables. Variables are
+    parsed to the correct type.
 
     Returns:
-        _description_
+        A tuple with the values (region, auth, timeout).
     """
 
     region = os.getenv("REGION", "")
     assert region != "", "Region path parameter not set."
+    raise Exception(region)
 
     auth = os.getenv("AUTH", "")
     assert auth != "", "Authorization header not set."
@@ -37,10 +39,11 @@ def get_settings():
 
 
 def get_json_body() -> JsonBody:
-    """_summary_
+    """Gets the JSON body from environment variables. Variables are parsed to
+    the correct type.
 
     Returns:
-        _description_
+        A dictionary containing the request's JSON body.
     """
 
     body: JsonBody = {}
@@ -107,13 +110,13 @@ def get_json_body() -> JsonBody:
 
 
 def send_email(region: str, auth: str, timeout: int, body: JsonBody):
-    """_summary_
+    """Sends the email.
 
     Args:
-        region: _description_
-        auth: _description_
-        timeout: _description_
-        body: _description_
+        region: The API region to use.
+        auth: The authorization header used to authenticate with the API.
+        timeout: The number of seconds to wait before the request times out.
+        body: The request's JSON body.
     """
 
     response = requests.post(
@@ -130,9 +133,7 @@ def send_email(region: str, auth: str, timeout: int, body: JsonBody):
 
 
 def main():
-    """Entry point"""
-
-    raise Exception("abc")
+    """Entry point."""
 
     region, auth, timeout = get_settings()
     body = get_json_body()
