@@ -2,7 +2,7 @@
 © Ocado Group
 Created on 19/12/2023 at 16:07:39(+00:00).
 
-Handles adding a new contributor to the contribution agreement.
+Validates adding a new contributor to the contributor agreement.
 """
 
 import os
