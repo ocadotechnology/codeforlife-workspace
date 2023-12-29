@@ -25,7 +25,7 @@ def get_settings():
         A tuple with the values (region, auth, timeout).
     """
 
-    region = os.getenv("REGION", "")
+    region = json.loads(os.getenv("REGION", ""))
     assert region != "", "Region path parameter not set."
     raise Exception(region)
 

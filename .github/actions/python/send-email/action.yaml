@@ -55,8 +55,8 @@ runs:
         TO_ADDRESSES: ${{ inputs.to-addresses }}
         CC_ADDRESSES: ${{ inputs.cc-addresses }}
         BCC_ADDRESSES: ${{ inputs.bcc-addresses }}
-        FROM_ADDRESS: ${{ inputs.from-address }}
+        FROM_ADDRESS: "${{ inputs.from-address }}"
         CAMPAIGN_ID: ${{ inputs.campaign-id }}
         PERSONALIZATION_VALUES: ${{ inputs.personalization-values }}
-        METADATA: ${{ inputs.metadata }}
+        METADATA: "${{ inputs.metadata }}"
         ATTACHMENTS: ${{ inputs.attachments }}
