@@ -45,4 +45,4 @@ runs:
 
     - name: Send email
       shell: bash
-      run: pipenv run python ${{ github.action_path }}
+      run: cat ${{ github.action_path }}/__main__.py
