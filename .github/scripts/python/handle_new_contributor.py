@@ -266,9 +266,6 @@ def main():
             )
         )
 
-    with open(os.environ["GITHUB_ENV"], "r", encoding="utf-8") as github_env:
-        print(github_env.read())
-
     # pr_url, dd_api_user_auth = get_starter_info()
 
     # fetch_main_branch()
