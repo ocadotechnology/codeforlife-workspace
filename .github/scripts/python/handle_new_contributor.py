@@ -253,7 +253,9 @@ def send_verify_new_contributor_email(
 def main():
     """Runs the scripts."""
 
-    pr_url, dd_api_user_auth = get_starter_info()
+    os.environ["HELLO"] = "WORLD!!!"
+
+    # pr_url, dd_api_user_auth = get_starter_info()
 
     # fetch_main_branch()
 
@@ -261,14 +263,12 @@ def main():
 
     # email_address = get_email_address(diff_line_index, diff_line)
 
-    send_verify_new_contributor_email(
-        pr_url,
-        dd_api_user_auth,
-        email_address="stefan.kairinos@ocado.com",
-    )
+    # send_verify_new_contributor_email(
+    #     pr_url,
+    #     dd_api_user_auth,
+    #     email_address="stefan.kairinos@ocado.com",
+    # )
 
 
 if __name__ == "__main__":
     main()
-
-# ${{ github.event.pull_request.url }}

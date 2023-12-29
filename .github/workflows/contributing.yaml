@@ -28,6 +28,10 @@ jobs:
       - name: 🏃 Run Script
         working-directory: ${{ env.WORKING_DIR }}
         run: pipenv run python handle_new_contributor.py
-        env:
-          PR_URL: "https://www.codeforlife.education/"
-          DOTDIGITAL_API_USER_AUTH: ${{ secrets.DOTDIGITAL_API_USER_AUTH }}
+        # env:
+        #   PR_URL: ${{ github.event.pull_request.url }}
+        #   DOTDIGITAL_API_USER_AUTH: ${{ secrets.DOTDIGITAL_API_USER_AUTH }}
+
+      - name: Set Env Var
+        run: echo ${{ env.HELLO }}
+
