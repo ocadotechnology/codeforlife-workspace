@@ -226,11 +226,6 @@ def send_verify_new_contributor_email(
         email_address: The new contributor's email address.
     """
 
-    assert (
-        dd_api_user_auth
-        == "Basic YXBpdXNlci0zZTFkMGQwNTY0ZDdAYXBpY29ubmVjdG9yLmNvbTpRM0BLMyFhczVrUDVoa2M="
-    )
-
     response = requests.post(
         url="https://r1-api.dotdigital.com/v2/email/triggered-campaign",
         json={
