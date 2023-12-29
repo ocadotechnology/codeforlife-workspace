@@ -1,15 +1,11 @@
 name: Contributing
 
 on:
-  push:
-    branches:
-      - new_contributor_validations # TODO: use main
   pull_request:
     branches:
       - new_contributor_validations # TODO: use main
     paths:
       - 'CONTRIBUTING.md'
-  workflow_dispatch:
 
 env:
   PYTHON_VERSION: 3.11
@@ -23,7 +19,6 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           working-directory: ${{ env.WORKING_DIR }}
-          install-args: "--dev"
 
       - name: 🕵️ Validate New Contributor
         working-directory: ${{ env.WORKING_DIR }}
