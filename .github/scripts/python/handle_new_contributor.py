@@ -10,41 +10,10 @@ import re
 import subprocess
 from email.utils import parseaddr
 
-import requests
-
 # Global settings.
 CONTRIBUTING_FILE_NAME = "CONTRIBUTING.md"
 CONTRIBUTING_FILE_PATH = f"../../../{CONTRIBUTING_FILE_NAME}"
 CONTRIBUTORS_HEADER = "### 👨\u200d💻 Contributors 👩\u200d💻"
-
-
-def get_starter_info():
-    """Gets the info needed to start this script.
-
-    Returns:
-        A tuple where the values are (the URL of the pull request, the
-        DotDigital API user's authorization).
-    """
-
-    pr_url = os.getenv("PR_URL")
-    assert pr_url is not None, "Pull request URL environment variable not set."
-
-    # dd_api_user_email_address = os.getenv("DOTDIGITAL_API_USER_EMAIL_ADDRESS")
-    # assert (
-    #     dd_api_user_email_address is not None
-    # ), "DotDigital API user email address environment variable not set."
-
-    # dd_api_user_password = os.getenv("DOTDIGITAL_API_USER_PASSWORD")
-    # assert (
-    #     dd_api_user_password is not None
-    # ), "DotDigital API user password environment variable not set."
-
-    dd_api_user_auth = os.getenv("DOTDIGITAL_API_USER_AUTH")
-    assert (
-        dd_api_user_auth is not None
-    ), "DotDigital API user authorization environment variable not set."
-
-    return pr_url, dd_api_user_auth
 
 
 def fetch_main_branch():
@@ -211,74 +180,25 @@ def get_email_address(diff_line_index: int, diff_line: str):
     return signed_email_address
 
 
-def send_verify_new_contributor_email(
-    pr_url: str,
-    dd_api_user_auth: str,
-    email_address: str,
-):
-    """Send an email to verify that the new contributor owns the email address.
+def write_to_github_env(**env_vars):
+    """Write the environment variables to GitHub's environment."""
 
-    https://developer.dotdigital.com/reference/send-transactional-email-using-a-triggered-campaign
-
-    Args:
-        pr_url: The URL of the pull request.
-        dd_api_user_auth: The DotDigital API user's authorization.
-        email_address: The new contributor's email address.
-    """
-
-    response = requests.post(
-        url="https://r1-api.dotdigital.com/v2/email/triggered-campaign",
-        json={
-            "campaignId": 1506387,
-            "toAddresses": [
-                email_address,
-            ],
-            "personalizationValues": [
-                {
-                    "name": "PR_URL",
-                    "value": pr_url,
-                },
-            ],
-        },
-        headers={
-            "accept": "text/plain",
-            "authorization": dd_api_user_auth,
-        },
-        timeout=60,
-    )
-
-    assert response.ok, response.json()
+    with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as github_env:
+        github_env.write(
+            "\n".join([f"{key}={value}" for key, value in env_vars.items()])
+        )
 
 
 def main():
     """Runs the scripts."""
 
-    with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as github_env:
-        github_env.write(
-            "\n".join(
-                [
-                    f"{key}={value}"
-                    for key, value in {
-                        "HELLO": "WORLD",
-                        "FOO": "POW",
-                    }.items()
-                ]
-            )
-        )
+    fetch_main_branch()
 
-    # pr_url, dd_api_user_auth = get_starter_info()
+    diff_line_index, diff_line = get_diff_line()
 
-    # fetch_main_branch()
+    email_address = get_email_address(diff_line_index, diff_line)
 
-    # diff_line_index, diff_line = get_diff_line()
-
-    # email_address = get_email_address(diff_line_index, diff_line)
-
-    # send_verify_new_contributor_email(
-    #     pr_url,
-    #     dd_api_user_auth,
-    #     email_address="stefan.kairinos@ocado.com",
-    # )
+    write_to_github_env(CONTRIBUTOR_EMAIL_ADDRESS=email_address)
 
 
 if __name__ == "__main__":
