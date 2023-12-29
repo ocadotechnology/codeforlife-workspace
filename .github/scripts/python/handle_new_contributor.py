@@ -253,7 +253,11 @@ def send_verify_new_contributor_email(
 def main():
     """Runs the scripts."""
 
-    os.environ["HELLO"] = "WORLD!!!"
+    with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as github_env:
+        github_env.write("HELLO=WORLD!!")
+
+    with open(os.environ["GITHUB_ENV"], "r", encoding="utf-8") as github_env:
+        print(github_env.read())
 
     # pr_url, dd_api_user_auth = get_starter_info()
 
