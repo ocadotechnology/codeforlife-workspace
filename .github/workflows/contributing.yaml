@@ -19,22 +19,22 @@ jobs:
   handle_new_contributor:
     runs-on: ubuntu-latest
     steps:
-      - uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@new_contributor_validations # TODO: use @main
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          working-directory: ${{ env.WORKING_DIR }}
-          install-args: "--dev"
+      # - uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@new_contributor_validations # TODO: use @main
+      #   with:
+      #     python-version: ${{ env.PYTHON_VERSION }}
+      #     working-directory: ${{ env.WORKING_DIR }}
+      #     install-args: "--dev"
 
-      - name: 🏃 Run Script
-        working-directory: ${{ env.WORKING_DIR }}
-        run: pipenv run python handle_new_contributor.py
+      # - name: 🏃 Run Script
+      #   working-directory: ${{ env.WORKING_DIR }}
+      #   run: pipenv run python handle_new_contributor.py
         # env:
         #   PR_URL: ${{ github.event.pull_request.url }}
         #   DOTDIGITAL_API_USER_AUTH: ${{ secrets.DOTDIGITAL_API_USER_AUTH }}
 
-      - name: Hello Env Var
-        run: echo ${{ env.HELLO }}
-      
-      - name: Foo Env Var
-        run: echo ${{ env.FOO }}
-
+      - name: 📧 Send Email
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/python/send-email@new_contributor_validations # TODO: use @main
+        with:
+          auth: ""
+          to-addresses: ""
+          campaign-id: 123
