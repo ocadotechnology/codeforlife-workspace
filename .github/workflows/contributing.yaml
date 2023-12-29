@@ -35,6 +35,7 @@ jobs:
       - name: 📧 Send Email
         uses: ocadotechnology/codeforlife-workspace/.github/actions/python/send-email@new_contributor_validations # TODO: use @main
         with:
-          auth: ""
-          to-addresses: ""
-          campaign-id: 123
+          auth: ${{ secrets.DOTDIGITAL_API_USER_AUTH }}
+          to-addresses: '["stefan.kairinos@ocado.com"]' #${{ env.TO_ADDRESSES }}
+          campaign-id: 1506387
+          personalization-values: '[{"name": "PR_URL", "value": "https://www.codeforlife.education/"}]'

@@ -25,9 +25,8 @@ def get_settings():
         A tuple with the values (region, auth, timeout).
     """
 
-    region = json.loads(os.getenv("REGION", ""))
+    region = os.getenv("REGION", "")
     assert region != "", "Region path parameter not set."
-    raise Exception(region)
 
     auth = os.getenv("AUTH", "")
     assert auth != "", "Authorization header not set."
@@ -48,13 +47,20 @@ def get_json_body() -> JsonBody:
 
     body: JsonBody = {}
 
-    def set_value(env_key: str, body_key: str, required: bool):
+    def set_value(
+        env_key: str,
+        body_key: str,
+        required: bool,
+        json_loads: bool = True,
+    ):
         """Helper to parse environment variables into body parameters.
 
         Args:
             env_key: The key of the environment variable.
             body_key: The key of the body parameter.
             required: If this value is required in the request.
+            json_loads: If the value should be parsed as a JSON object. Strings
+                don't need to be parsed as JSON.
         """
 
         raw_value = os.getenv(env_key, "")
@@ -63,7 +69,7 @@ def get_json_body() -> JsonBody:
             assert raw_value != "", f'"{env_key}" environment variable not set.'
 
         if raw_value != "":
-            body[body_key] = json.loads(raw_value)
+            body[body_key] = json.loads(raw_value) if json_loads else raw_value
 
     set_value(
         env_key="TO_ADDRESSES",
@@ -84,6 +90,7 @@ def get_json_body() -> JsonBody:
         env_key="FROM_ADDRESS",
         body_key="fromAddress",
         required=False,
+        json_loads=False,
     )
     set_value(
         env_key="CAMPAIGN_ID",
@@ -99,6 +106,7 @@ def get_json_body() -> JsonBody:
         env_key="METADATA",
         body_key="metadata",
         required=False,
+        json_loads=False,
     )
     set_value(
         env_key="ATTACHMENTS",
