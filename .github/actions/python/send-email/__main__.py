@@ -144,7 +144,9 @@ def main():
     """Entry point."""
 
     region, auth, timeout = get_settings()
+
     body = get_json_body()
+
     send_email(region, auth, timeout, body)
 
 
