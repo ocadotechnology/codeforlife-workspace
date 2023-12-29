@@ -49,7 +49,7 @@ runs:
       working-directory: ${{ github.action_path }}
       run: pipenv run python .
       env:
-        REGION: ${{ inputs.region }}
+        REGION: "${{ inputs.region }}"
         AUTH: ${{ inputs.auth }}
         TIMEOUT: ${{ inputs.timeout }}
         TO_ADDRESSES: ${{ inputs.to-addresses }}
