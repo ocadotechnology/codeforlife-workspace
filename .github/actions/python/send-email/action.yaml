@@ -39,10 +39,11 @@ inputs:
 runs:
   using: composite
   steps:
-    # - uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@new_contributor_validations # TODO: use @main
-    #   with:
-    #     python-version: 3.11
+    - uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@new_contributor_validations # TODO: use @main
+      with:
+        python-version: 3.11
+        working-directory: ${{ github.action_path }}
 
-    - name: Send email
+    - name: 📧 Send Email
       shell: bash
-      run: cat ${{ github.action_path }}/__main__.py
+      run: pipenv run python ${{ github.action_path }}
