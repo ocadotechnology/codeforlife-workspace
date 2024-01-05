@@ -21,16 +21,13 @@ env:
   WORKING_DIR: .github/scripts/python
 
 jobs:
-  validate:
-    runs-on: ubuntu-latest
-    steps:
-      - name: 🛫 Checkout
-        uses: actions/checkout@v4
-
-      - name: Validate Pull Request Status
-        run: gh pr view 53 --json reviews
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  validate-pr-review-state:
+    uses: ocadotechnology/codeforlife-workspace/.github/workflows/validate-pull-request.yaml@new_contributor_validations # TODO: use @main
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    with:
+      number: 53
+      review-state: APPROVED
 
       # - name: 🛫 Checkout Pull Request
       #   if: ${{ github.event_name == 'workflow_call' }}
