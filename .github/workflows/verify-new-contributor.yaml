@@ -10,7 +10,8 @@ on:
 jobs:
   validate-pr-review-state:
     uses: ocadotechnology/codeforlife-workspace/.github/workflows/validate-pull-request/workflow.yaml@new_contributor_validations # TODO: use @main
-    secrets: inherit
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     with:
       number: ${{ inputs.pull-request-number }}
       review-state: APPROVED
