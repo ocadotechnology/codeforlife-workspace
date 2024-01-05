@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Validate Pull Request Status
-        run: gh pr view 53
+        run: gh pr view 53 --json reviews
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
