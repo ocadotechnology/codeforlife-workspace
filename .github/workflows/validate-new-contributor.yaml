@@ -30,8 +30,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 🛫 Checkout Pull Request
-        # TODO: set to 'workflow_dispatch'
-        if: github.event_name == 'push' 
+        if: github.event_name != 'pull_request' 
         run: gh pr checkout ${{ inputs.pull-request-number }}
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -47,7 +46,6 @@ jobs:
       #   run: pipenv run python validate_new_contributor.py
 
       - name: 📧 Output Email Address
-        # TODO: set to 'workflow_dispatch'
-        if: github.event_name == 'push'
+        if: github.event_name != 'pull_request'
         id: output-email-address
         run: echo "EMAIL_ADDRESS=stefan.kairinos@ocado.com" >> "$GITHUB_OUTPUT"
