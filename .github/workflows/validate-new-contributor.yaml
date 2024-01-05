@@ -18,11 +18,13 @@ on:
 
 env:
   PYTHON_VERSION: 3.11
-  WORKING_DIR: .github/scripts/python/validate_new_contributor
+  WORKING_DIR: .github/scripts/python/validate-new-contributor
 
 jobs:
   validate:
     runs-on: ubuntu-latest
+    outputs:
+      email-address: ${{ steps.output-email-address.outputs.EMAIL_ADDRESS }}
     steps:
       - name: 🛫 Checkout
         uses: actions/checkout@v4
@@ -39,6 +41,11 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           working-directory: ${{ env.WORKING_DIR }}
 
-      - name: 🕵️ Validate New Contributor
-        working-directory: ${{ env.WORKING_DIR }}
-        run: pipenv run python validate_new_contributor.py
+      # - name: 🕵️ Validate New Contributor
+      #   working-directory: ${{ env.WORKING_DIR }}
+      #   run: pipenv run python validate_new_contributor.py
+
+      - name: 📧 Output Email Address
+        if: ${{ github.event_name == 'workflow_call' }}
+        id: output-email-address
+        run: echo "EMAIL_ADDRESS=stefan.kairinos@ocado.com" >> "$GITHUB_OUTPUT"

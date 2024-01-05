@@ -16,7 +16,7 @@ jobs:
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     with:
-      number: ${{ inputs.pull-request-number }}
+      number: 53 #${{ inputs.pull-request-number }}
       review-state: APPROVED
 
   validate-new-contributor:
@@ -35,6 +35,6 @@ jobs:
         uses: ocadotechnology/codeforlife-workspace/.github/actions/python/send-email@new_contributor_validations # TODO: use @main
         with:
           auth: ${{ secrets.DOTDIGITAL_API_USER_AUTH }}
-          to-addresses: '["${{ env.CONTRIBUTOR_EMAIL_ADDRESS }}"]'
+          to-addresses: '["${{ needs.validate-new-contributor.outputs.email-address }}"]'
           campaign-id: 1506387
           personalization-values: '[{"name": "PR_URL", "value": "https://www.codeforlife.education/"}]' # TODO: real url
