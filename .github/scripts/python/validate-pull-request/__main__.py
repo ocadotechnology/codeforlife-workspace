@@ -46,6 +46,7 @@ def validate_reviews(number: int, state: t.Optional[str] = None):
             "reviews",
         ],
         check=True,
+        stdout=subprocess.PIPE,
     ).stdout.decode("utf-8")
 
     print(view)
