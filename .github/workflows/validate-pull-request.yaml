@@ -1,4 +1,4 @@
-# name: Validate Pull Request
+name: Validate Pull Request
 
 on:
   workflow_call:
@@ -13,22 +13,23 @@ on:
       GH_TOKEN:
         required: true
 
+env:
+  PYTHON_VERSION: 3.11
+  WORKING_DIR: .github/scripts/python/validate-pull-request
+
 jobs:
   validate-pr:
     runs-on: ubuntu-latest
     steps:
-      - name: Echo Path
-        run: echo "${{ github.workflow }}"
-      
       - uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@new_contributor_validations # TODO: use @main
         with:
-          python-version: 3.11
-          working-directory: ${{ github.workflow }}
+          python-version: ${{ env.PYTHON_VERSION }}
+          working-directory: ${{ env.WORKING_DIR }}
 
       - name: Validate Pull Request
         shell: bash
-        working-directory: ${{ github.workflow }}
-        run: pipenv run python validate-pull-request
+        working-directory: ${{ env.WORKING_DIR }}
+        run: pipenv run python .
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           NUMBER: ${{ inputs.number }}
