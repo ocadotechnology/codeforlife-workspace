@@ -38,9 +38,11 @@ jobs:
         
       - name: 🛫 Checkout
         uses: actions/checkout@v4
+        with:
+          ref: refs/pull/${{ inputs.pull-request-number }}/head
 
       - name: 🛫 Checkout
-        run: gh pr checkout ${{ inputs.pull-request-number}}
+        run: gh pr checkout ${{ inputs.pull-request-number }}
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
