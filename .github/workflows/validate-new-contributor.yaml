@@ -1,0 +1,41 @@
+name: Validate New Contributor
+
+on:
+  push:
+    branches:
+      - new_contributor_validations 
+  # pull_request:
+  #   types: [opened, edited]
+  #   branches:
+  #     - new_contributor_validations # TODO: use main
+  #   paths:
+  #     - 'CONTRIBUTING.md'
+  # workflow_call:
+  #   inputs:
+  #     pull-request-number:
+  #       required: true
+  #       type: number
+
+env:
+  PYTHON_VERSION: 3.11
+  WORKING_DIR: .github/scripts/python
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate Pull Request Status
+        run: gh pr view 53
+
+      # - name: 🛫 Checkout Pull Request
+      #   if: ${{ github.event_name == 'workflow_call' }}
+      #   run: gh pr checkout ${{ inputs.pull-request-number }}
+
+      - uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@new_contributor_validations # TODO: use @main
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          working-directory: ${{ env.WORKING_DIR }}
+
+      - name: 🕵️ Validate New Contributor
+        working-directory: ${{ env.WORKING_DIR }}
+        run: pipenv run python validate_new_contributor.py
