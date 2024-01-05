@@ -1,4 +1,4 @@
-name: Verify New Contributor 2
+name: Verify New Contributor
 
 on:
   workflow_dispatch:
@@ -19,6 +19,10 @@ jobs:
   validate-new-contributor:
     needs: [validate-pr-review-state]
     uses: ocadotechnology/codeforlife-workspace/.github/workflows/validate-new-contributor.yaml@new_contributor_validations # TODO: use @main
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    with:
+      pull-request-number: ${{ inputs.pull-request-number }}
 
   verify-new-contributor:
     needs: [validate-new-contributor]
@@ -30,4 +34,4 @@ jobs:
           auth: ${{ secrets.DOTDIGITAL_API_USER_AUTH }}
           to-addresses: '["${{ env.CONTRIBUTOR_EMAIL_ADDRESS }}"]'
           campaign-id: 1506387
-          personalization-values: '[{"name": "PR_URL", "value": "${{ github.event.pull_request.html_url }}"}]'
+          personalization-values: '[{"name": "PR_URL", "value": "https://www.codeforlife.education/"}]' # TODO: real url
