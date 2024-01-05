@@ -36,10 +36,10 @@ jobs:
       #       echo "PR_NUM=${{ inputs.pull-request-number }}" >> $GITHUB_ENV
       #     fi
         
-      # - name: 🛫 Checkout
-      #   uses: actions/checkout@v4
-      #   with:
-      #     ref: refs/pull/${{ inputs.pull-request-number }}/head
+      - name: 🛫 Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: refs/pull/${{ inputs.pull-request-number }}/head
 
       # - name: 🛫 Checkout
       #   run: gh pr checkout ${{ inputs.pull-request-number }}

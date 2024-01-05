@@ -20,9 +20,8 @@ runs:
   using: composite
   steps:
     - name: 🛫 Checkout
+      if: ${{ inputs.checkout == 'true' }}
       uses: actions/checkout@v4
-      with:
-        ref: refs/pull/53/head
 
     - name: 🐍 Set up Python ${{ inputs.python-version }}
       uses: actions/setup-python@v4
@@ -39,5 +38,5 @@ runs:
 
     - name: 🛠 Install Dependencies
       shell: bash
-      working-directory: .github/scripts/python
-      run: python -m pipenv install ${{ inputs.install-args }}
+      working-directory: ${{ inputs.working-directory }}
+      run: pipenv install ${{ inputs.install-args }}
