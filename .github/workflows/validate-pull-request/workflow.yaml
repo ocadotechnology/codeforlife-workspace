@@ -1,0 +1,35 @@
+# name: Validate Pull Request
+
+on:
+  workflow_call:
+    inputs:
+      number:
+        required: true
+        type: number
+      review-state:
+        required: false
+        type: string
+    secrets:
+      GITHUB_TOKEN:
+        required: true
+
+jobs:
+  validate-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo Path
+        run: echo "${{ github.workflow }}"
+      
+      - uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@new_contributor_validations # TODO: use @main
+        with:
+          python-version: 3.11
+          working-directory: ${{ github.workflow }}
+
+      - name: Validate Pull Request
+        shell: bash
+        working-directory: ${{ github.workflow }}
+        run: pipenv run python .
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NUMBER: ${{ inputs.number }}
+          REVIEW_STATE: ${{ inputs.review-state }}
