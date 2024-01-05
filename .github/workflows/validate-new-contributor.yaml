@@ -42,7 +42,7 @@ jobs:
           ref: refs/pull/${{ inputs.pull-request-number }}/head
 
       - name: 🛫 Checkout
-        run: gh pr checkout ${{ inputs.pull-request-number }}
+        run: gh pr checkout ${{ inputs.pull-request-number }} --force
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
