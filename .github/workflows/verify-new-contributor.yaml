@@ -25,7 +25,7 @@ jobs:
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     with:
-      pull-request-number: 53 #${{ inputs.pull-request-number }}
+      pull-request-number: 54 #${{ inputs.pull-request-number }}
 
   verify-new-contributor:
     needs: [validate-new-contributor]
