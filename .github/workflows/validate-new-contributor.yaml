@@ -1,4 +1,4 @@
-name: Validate New Contributor
+# name: Validate New Contributor
 
 on:
   push:
