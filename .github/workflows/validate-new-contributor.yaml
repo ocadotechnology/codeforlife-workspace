@@ -26,19 +26,25 @@ jobs:
     outputs:
       email-address: ${{ steps.output-email-address.outputs.EMAIL_ADDRESS }}
     steps:
-      - name: Set Pull Request Number
-        run: |
-          if [ "${{ github.event_name }}" == "pull_request" ]
-          then
-            echo "PR_NUM=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
-          else
-            echo "PR_NUM=${{ inputs.pull-request-number }}" >> $GITHUB_ENV
-          fi
+      # - name: Set Pull Request Number
+      #   run: |
+      #     if [ "${{ github.event_name }}" == "pull_request" ]
+      #     then
+      #       echo "PR_NUM=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+      #       echo "PR_NUM=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+      #     else
+      #       echo "PR_NUM=${{ inputs.pull-request-number }}" >> $GITHUB_ENV
+      #     fi
         
+      # - name: 🛫 Checkout
+      #   uses: actions/checkout@v4
+      #   with:
+      #     ref: refs/pull/${{ env.PR_NUM }}/head
+
       - name: 🛫 Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: refs/pull/${{ env.PR_NUM }}/head
+        run: gh pr checkout ${{ inputs.pull-request-number}}
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@new_contributor_validations # TODO: use @main
         with:
