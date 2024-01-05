@@ -1,6 +1,10 @@
 name: "Code for Life - Python - Setup Environment"
 description: "Set up a python environment."
 inputs:
+  checkout:
+    description: "A flag to designate if the code should be checked out."
+    required: true
+    default: "true"
   python-version:
     description: "The python version to set up."
     required: true
@@ -16,6 +20,7 @@ runs:
   using: composite
   steps:
     - name: 🛫 Checkout
+      if: ${{ inputs.checkout == 'true' }}
       uses: actions/checkout@v4
 
     - name: 🐍 Set up Python ${{ inputs.python-version }}
