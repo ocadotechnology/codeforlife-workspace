@@ -28,7 +28,7 @@ jobs:
       - name: Validate Pull Request
         shell: bash
         working-directory: ${{ github.workflow }}
-        run: pipenv run python .
+        run: pipenv run python validate-pull-request
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NUMBER: ${{ inputs.number }}
