@@ -26,16 +26,18 @@ jobs:
     steps:
       - name: Validate Pull Request Status
         run: gh pr view 53
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # - name: 🛫 Checkout Pull Request
       #   if: ${{ github.event_name == 'workflow_call' }}
       #   run: gh pr checkout ${{ inputs.pull-request-number }}
 
-      - uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@new_contributor_validations # TODO: use @main
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          working-directory: ${{ env.WORKING_DIR }}
+      # - uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@new_contributor_validations # TODO: use @main
+      #   with:
+      #     python-version: ${{ env.PYTHON_VERSION }}
+      #     working-directory: ${{ env.WORKING_DIR }}
 
-      - name: 🕵️ Validate New Contributor
-        working-directory: ${{ env.WORKING_DIR }}
-        run: pipenv run python validate_new_contributor.py
+      # - name: 🕵️ Validate New Contributor
+      #   working-directory: ${{ env.WORKING_DIR }}
+      #   run: pipenv run python validate_new_contributor.py
