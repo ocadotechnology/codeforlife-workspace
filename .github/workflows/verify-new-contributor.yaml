@@ -1,6 +1,9 @@
 name: Verify New Contributor
 
 on:
+  push:
+    branches:
+      - new_contributor_validations # TODO: use main
   workflow_dispatch:
     inputs:
       pull-request-number:
