@@ -55,7 +55,7 @@ def validate_reviews(number: int, state: t.Optional[str] = None):
     reviews.sort(key=lambda review: review["submittedAt"])
 
     if state is not None:
-        assert not reviews or reviews[-1]["state"] != state, (
+        assert reviews and reviews[-1]["state"] == state, (
             "The latest review is not in the expected state."
             f' Latest: "{reviews[-1]["state"]}". Expected: "{state}".'
         )
