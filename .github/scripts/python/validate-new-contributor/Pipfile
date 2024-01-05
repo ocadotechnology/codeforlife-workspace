@@ -6,11 +6,6 @@ name = "pypi"
 [packages]
 
 [dev-packages]
-black = "==23.1.0"
-pytest = "==7.2.1"
-mypy = "==1.6.1"
-pylint = "==3.0.2"
-types-requests = "==2.31.0.10"
 
 [requires]
 python_version = "3.11"
