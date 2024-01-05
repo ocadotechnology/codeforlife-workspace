@@ -1,4 +1,4 @@
-name: Verify New Contributor
+name: Verify New Contributor 2
 
 on:
   workflow_dispatch:
