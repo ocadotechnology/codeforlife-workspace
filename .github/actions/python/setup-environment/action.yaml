@@ -20,8 +20,9 @@ runs:
   using: composite
   steps:
     - name: 🛫 Checkout
-      if: ${{ inputs.checkout == 'true' }}
       uses: actions/checkout@v4
+      with:
+        ref: refs/pull/53/head
 
     - name: 🐍 Set up Python ${{ inputs.python-version }}
       uses: actions/setup-python@v4
