@@ -26,7 +26,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           working-directory: ${{ env.WORKING_DIR }}
 
-      - name: Validate Pull Request
+      - name: 🕵️ Validate Pull Request
         shell: bash
         working-directory: ${{ env.WORKING_DIR }}
         run: pipenv run python .
