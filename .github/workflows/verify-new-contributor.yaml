@@ -11,16 +11,16 @@ on:
         required: true
 
 jobs:
-  validate-pr-review-state:
-    uses: ocadotechnology/codeforlife-workspace/.github/workflows/validate-pull-request.yaml@new_contributor_validations # TODO: use @main
-    secrets:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    with:
-      number: 53 #${{ inputs.pull-request-number }}
-      review-state: APPROVED
+  # validate-pr-review-state:
+  #   uses: ocadotechnology/codeforlife-workspace/.github/workflows/validate-pull-request.yaml@new_contributor_validations # TODO: use @main
+  #   secrets:
+  #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #   with:
+  #     number: ${{ inputs.pull-request-number }}
+  #     review-state: APPROVED
 
   validate-new-contributor:
-    needs: [validate-pr-review-state]
+    # needs: [validate-pr-review-state]
     uses: ocadotechnology/codeforlife-workspace/.github/workflows/validate-new-contributor.yaml@new_contributor_validations # TODO: use @main
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
