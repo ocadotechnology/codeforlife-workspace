@@ -28,7 +28,7 @@ jobs:
           ref: refs/pull/54/head
 
       - name: View PR
-        run: gh pr view 54
+        run: gh pr view 54 --json reviews,url
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
