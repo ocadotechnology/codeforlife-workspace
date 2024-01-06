@@ -22,8 +22,6 @@ jobs:
   validate-new-contributor:
     # needs: [validate-pr-review-state]
     uses: ocadotechnology/codeforlife-workspace/.github/workflows/validate-new-contributor.yaml@new_contributor_validations # TODO: use @main
-    secrets:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     with:
       pull-request-number: 54 #${{ inputs.pull-request-number }}
 
