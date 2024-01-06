@@ -12,7 +12,7 @@ from email.utils import parseaddr
 
 # Global settings.
 CONTRIBUTING_FILE_NAME = "CONTRIBUTING.md"
-CONTRIBUTING_FILE_PATH = f"../../../{CONTRIBUTING_FILE_NAME}"
+CONTRIBUTING_FILE_PATH = f"../../../../{CONTRIBUTING_FILE_NAME}"
 CONTRIBUTORS_HEADER = "### 👨\u200d💻 Contributors 👩\u200d💻"
 
 
