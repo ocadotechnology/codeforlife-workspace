@@ -16,24 +16,24 @@ jobs:
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     with:
-      number: 54 #${{ inputs.pull-request-number }}
+      number: ${{ inputs.pull-request-number }}
       outputs: url
-      # review-state: APPROVED
+      review-state: APPROVED
 
-  # validate-new-contributor:
-  #   # needs: [validate-pr-review-state]
-  #   uses: ocadotechnology/codeforlife-workspace/.github/workflows/validate-new-contributor.yaml@new_contributor_validations # TODO: use @main
-  #   with:
-  #     pull-request-number: 54 #${{ inputs.pull-request-number }}
+  validate-new-contributor:
+    needs: [view-pr]
+    uses: ocadotechnology/codeforlife-workspace/.github/workflows/validate-new-contributor.yaml@new_contributor_validations # TODO: use @main
+    with:
+      pull-request-number: 54 #${{ inputs.pull-request-number }}
 
   verify-new-contributor:
-    needs: [view-pr] #[validate-new-contributor]
+    needs: [view-pr, validate-new-contributor]
     runs-on: ubuntu-latest
     steps:
       - name: 📧 Send Verification Email
         uses: ocadotechnology/codeforlife-workspace/.github/actions/python/send-email@new_contributor_validations # TODO: use @main
         with:
           auth: ${{ secrets.DOTDIGITAL_API_USER_AUTH }}
-          to-addresses: '["stefan.kairinos@ocado.com"]' #'["${{ needs.validate-new-contributor.outputs.email-address }}"]'
+          to-addresses: '["${{ needs.validate-new-contributor.outputs.email-address }}"]'
           campaign-id: 1506387
           personalization-values: '[{"name": "PR_URL", "value": "${{ needs.view-pr.outputs.url }}"}]'
