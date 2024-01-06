@@ -12,6 +12,10 @@ on:
       pull-request-number:
         required: true
         type: number
+    outputs:
+      email-address:
+        description: "The new contributor's email address."
+        value: ${{ jobs.validate.outputs.email-address }}
 
 env:
   PYTHON_VERSION: 3.11
@@ -50,4 +54,4 @@ jobs:
       - name: 📧 Output Email Address
         if: github.event_name != 'pull_request'
         id: output-email-address
-        run: echo "EMAIL_ADDRESS=stefan.kairinos@ocado.com" >> "$GITHUB_OUTPUT"
+        run: echo "EMAIL_ADDRESS=stefan.kairinos@ocado.com" >> $GITHUB_OUTPUT
