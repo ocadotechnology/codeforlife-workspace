@@ -19,6 +19,14 @@ jobs:
   #     number: ${{ inputs.pull-request-number }}
   #     review-state: APPROVED
 
+  view-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: View PR
+        run: gh pr view 54
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   validate-new-contributor:
     # needs: [validate-pr-review-state]
     uses: ocadotechnology/codeforlife-workspace/.github/workflows/validate-new-contributor.yaml@new_contributor_validations # TODO: use @main
