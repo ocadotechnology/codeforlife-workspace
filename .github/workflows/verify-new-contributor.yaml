@@ -22,6 +22,11 @@ jobs:
   view-pr:
     runs-on: ubuntu-latest
     steps:
+      - name: 🛫 Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: refs/pull/54/head
+
       - name: View PR
         run: gh pr view 54
         env:
