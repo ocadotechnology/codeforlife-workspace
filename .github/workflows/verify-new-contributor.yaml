@@ -16,7 +16,7 @@ jobs:
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     with:
-      number: ${{ inputs.pull-request-number }}
+      number: 54 #${{ inputs.pull-request-number }}
       outputs: url
       review-state: APPROVED
 
