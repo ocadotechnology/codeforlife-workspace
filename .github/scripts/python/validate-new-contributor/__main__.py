@@ -180,11 +180,11 @@ def get_email_address(diff_line_index: int, diff_line: str):
     return signed_email_address
 
 
-def write_to_github_env(**env_vars):
-    """Write the environment variables to GitHub's environment."""
+def write_to_github_output(**env_vars):
+    """Write to GitHub's output."""
 
-    with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as github_env:
-        github_env.write(
+    with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as github_out:
+        github_out.write(
             "\n".join([f"{key}={value}" for key, value in env_vars.items()])
         )
 
@@ -198,7 +198,7 @@ def main():
 
     email_address = get_email_address(diff_line_index, diff_line)
 
-    write_to_github_env(CONTRIBUTOR_EMAIL_ADDRESS=email_address)
+    write_to_github_output(EMAIL_ADDRESS=email_address)
 
 
 if __name__ == "__main__":

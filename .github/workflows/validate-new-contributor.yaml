@@ -15,17 +15,17 @@ on:
     outputs:
       email-address:
         description: "The new contributor's email address."
-        value: ${{ jobs.validate.outputs.email-address }}
+        value: ${{ jobs.validate-new-contributor.outputs.email-address }}
 
 env:
   PYTHON_VERSION: 3.11
   WORKING_DIR: .github/scripts/python/validate-new-contributor
 
 jobs:
-  validate:
+  validate-new-contributor:
     runs-on: ubuntu-latest
     outputs:
-      email-address: ${{ steps.output-email-address.outputs.EMAIL_ADDRESS }}
+      email-address: ${{ steps.validate-new-contributor.outputs.EMAIL_ADDRESS }}
     steps:
       - name: ⚙️ Set Pull Request Number
         run: |
@@ -47,11 +47,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           working-directory: ${{ env.WORKING_DIR }}
 
-      # - name: 🕵️ Validate New Contributor
-      #   working-directory: ${{ env.WORKING_DIR }}
-      #   run: pipenv run python validate_new_contributor.py
-
-      - name: 📧 Output Email Address
-        if: github.event_name != 'pull_request'
-        id: output-email-address
-        run: echo "EMAIL_ADDRESS=stefan.kairinos@ocado.com" >> $GITHUB_OUTPUT
+      - name: 🕵️ Validate New Contributor
+        id: validate-new-contributor  
+        working-directory: ${{ env.WORKING_DIR }}
+        run: pipenv run python .
