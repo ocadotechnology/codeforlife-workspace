@@ -18,7 +18,7 @@ jobs:
     with:
       number: 54 #${{ inputs.pull-request-number }}
       outputs: url
-      review-state: APPROVED
+      # review-state: APPROVED
 
   # validate-new-contributor:
   #   # needs: [validate-pr-review-state]
