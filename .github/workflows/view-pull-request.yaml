@@ -6,6 +6,9 @@ on:
       number:
         required: true
         type: number
+      outputs:
+        required: false
+        type: string
       review-state:
         required: false
         type: string
@@ -33,4 +36,5 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           NUMBER: ${{ inputs.number }}
+          OUTPUTS: ${{ inputs.outputs }}
           REVIEW_STATE: ${{ inputs.review-state }}

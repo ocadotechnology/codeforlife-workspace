@@ -180,12 +180,13 @@ def get_email_address(diff_line_index: int, diff_line: str):
     return signed_email_address
 
 
-def write_to_github_output(**env_vars):
+# TODO: create a codeforlife.ci submodule for all CI helpers.
+def write_to_github_output(**outputs: str):
     """Write to GitHub's output."""
 
     with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as github_out:
         github_out.write(
-            "\n".join([f"{key}={value}" for key, value in env_vars.items()])
+            "\n".join([f"{key}={value}" for key, value in outputs.items()])
         )
 
 
