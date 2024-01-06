@@ -11,20 +11,21 @@ import subprocess
 from email.utils import parseaddr
 
 # Global settings.
+DEFAULT_BRANCH = "main"
 CONTRIBUTING_FILE_NAME = "CONTRIBUTING.md"
 CONTRIBUTING_FILE_PATH = f"../../../../{CONTRIBUTING_FILE_NAME}"
 CONTRIBUTORS_HEADER = "### 👨\u200d💻 Contributors 👩\u200d💻"
 
 
-def fetch_main_branch():
-    """Fetch main branch from origin."""
+def fetch_default_branch():
+    """Fetch default branch from origin."""
 
     subprocess.run(
         [
             "git",
             "fetch",
             "origin",
-            "new_contributor_validations:new_contributor_validations",  # TODO: use main
+            f"{DEFAULT_BRANCH}:{DEFAULT_BRANCH}",
         ],
         check=True,
     )
@@ -35,12 +36,12 @@ def assert_diff_stats():
     line was added to the contribution agreement.
     """
 
-    # Get raw diff stats from main.
+    # Get raw diff stats from default branch.
     diff_stats_str = subprocess.run(
         [
             "git",
             "diff",
-            "new_contributor_validations",  # TODO: use main
+            DEFAULT_BRANCH,
             "--numstat",
         ],
         check=True,
@@ -78,13 +79,13 @@ def get_diff_line():
     # Easier to parse diff stats for assertions.
     assert_diff_stats()
 
-    # Get raw diff from main.
+    # Get raw diff from default branch.
     diff_str = subprocess.run(
         [
             "git",
             "--no-pager",
             "diff",
-            "new_contributor_validations",  # TODO: use main
+            DEFAULT_BRANCH,
         ],
         check=True,
         stdout=subprocess.PIPE,
@@ -193,7 +194,7 @@ def write_to_github_output(**outputs: str):
 def main():
     """Runs the scripts."""
 
-    fetch_main_branch()
+    fetch_default_branch()
 
     diff_line_index, diff_line = get_diff_line()
 
