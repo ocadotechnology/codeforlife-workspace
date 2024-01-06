@@ -16,7 +16,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@new_contributor_validations # TODO: use @main
+    - uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
       with:
         python-version: ${{ inputs.python-version }}
         working-directory: ${{ inputs.working-directory }}

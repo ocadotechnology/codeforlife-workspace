@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 📧 Send Verification Email
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/python/send-email@main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/email/send@main
         with:
           auth: ${{ secrets.DOTDIGITAL_API_USER_AUTH }}
           to-addresses: '["${{ needs.validate-new-contributor.outputs.email-address }}"]'

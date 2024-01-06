@@ -1,4 +1,4 @@
-name: "Code for Life - Python - Send Email"
+name: "Code for Life - Email - Send"
 description: "Using DotDigital, send a transactional email using a triggered campaign as its content."
 inputs:
   region:
@@ -39,7 +39,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@new_contributor_validations # TODO: use @main
+    - uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
       with:
         python-version: 3.11
         working-directory: ${{ github.action_path }}

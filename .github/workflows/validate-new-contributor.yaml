@@ -4,7 +4,7 @@ on:
   pull_request:
     types: [opened, edited]
     branches:
-      - new_contributor_validations # TODO: use main
+      - main
     paths:
       - 'CONTRIBUTING.md'
   workflow_call:
@@ -41,7 +41,7 @@ jobs:
         with:
           ref: refs/pull/${{ env.PR_NUM }}/head
 
-      - uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@new_contributor_validations # TODO: use @main
+      - uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
         with:
           checkout: 'false'
           python-version: ${{ env.PYTHON_VERSION }}
