@@ -106,7 +106,7 @@ def main():
     
     pull_request = get_pull_request(number, pull_request_fields)
 
-    validate_reviews(number, review_state)
+    validate_reviews(pull_request, review_state)
     
     write_to_github_output(
         **{
