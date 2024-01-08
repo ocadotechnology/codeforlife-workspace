@@ -6,6 +6,7 @@ on:
       pull-request-number:
         description: "The number of the new contributor's PR."
         required: true
+        type: number
 
 jobs:
   view-pr:
