@@ -1,4 +1,4 @@
-name: Validate Existing Contributor
+name: Validate Existing Contributors
 
 on:
   workflow_call:
@@ -10,10 +10,10 @@ on:
 
 env:
   PYTHON_VERSION: 3.11
-  WORKING_DIR: .github/scripts/python/validate-existing-contributor
+  WORKING_DIR: .github/scripts/python/validate-existing-contributors
 
 jobs:
-  validate-existing-contributor:
+  validate-existing-contributors:
     runs-on: ubuntu-latest
     steps:
       - name: 🐍 Set up Python ${{ env.PYTHON_VERSION }}
@@ -22,7 +22,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           working-directory: ${{ env.WORKING_DIR }}
 
-      - name: 🕵️ Validate Existing Contributor
+      - name: 🕵️ Validate Existing Contributors
         working-directory: ${{ env.WORKING_DIR }}
         run: pipenv run python .
         env:
