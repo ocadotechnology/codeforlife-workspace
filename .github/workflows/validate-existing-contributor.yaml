@@ -1,0 +1,29 @@
+name: Validate Existing Contributor
+
+on:
+  workflow_call:
+    inputs:
+      prod-branch:
+        required: true
+        type: string
+        default: production
+
+env:
+  PYTHON_VERSION: 3.11
+  WORKING_DIR: .github/scripts/python/validate-existing-contributor
+
+jobs:
+  validate-existing-contributor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🐍 Set up Python ${{ env.PYTHON_VERSION }}
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          working-directory: ${{ env.WORKING_DIR }}
+
+      - name: 🕵️ Validate Existing Contributor
+        working-directory: ${{ env.WORKING_DIR }}
+        run: pipenv run python .
+        env:
+          PROD_BRANCH: ${{ inputs.prod-branch }}
