@@ -11,7 +11,7 @@ on:
     inputs:
       pull-request-number:
         required: true
-        type: number
+        type: string # NOTE: github has a bug with type: number
     outputs:
       email-address:
         description: "The new contributor's email address."
