@@ -35,7 +35,7 @@ jobs:
           else
             echo "PR_NUM=${{ inputs.pull-request-number }}" >> $GITHUB_ENV
           fi
-        
+
       - name: 🛫 Checkout
         uses: actions/checkout@v4
         with:
@@ -48,6 +48,6 @@ jobs:
           working-directory: ${{ env.WORKING_DIR }}
 
       - name: 🕵️ Validate New Contributor
-        id: validate-new-contributor  
+        id: validate-new-contributor
         working-directory: ${{ env.WORKING_DIR }}
         run: pipenv run python .
