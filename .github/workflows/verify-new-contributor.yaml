@@ -1,0 +1,36 @@
+name: Verify New Contributor
+
+on:
+  workflow_dispatch:
+    inputs:
+      pull-request-number:
+        description: "The number of the new contributor's PR."
+        required: true
+
+jobs:
+  view-pr:
+    uses: ocadotechnology/codeforlife-workspace/.github/workflows/view-pull-request.yaml@main
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    with:
+      number: ${{ inputs.pull-request-number }}
+      outputs: url
+      review-state: APPROVED
+
+  validate-new-contributor:
+    needs: [view-pr]
+    uses: ocadotechnology/codeforlife-workspace/.github/workflows/validate-new-contributor.yaml@main
+    with:
+      pull-request-number: ${{ inputs.pull-request-number }}
+
+  verify-new-contributor:
+    needs: [view-pr, validate-new-contributor]
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📧 Send Verification Email
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/email/send@main
+        with:
+          auth: ${{ secrets.DOTDIGITAL_API_USER_AUTH }}
+          to-addresses: '["${{ needs.validate-new-contributor.outputs.email-address }}"]'
+          campaign-id: 1506387
+          personalization-values: '[{"name": "PR_URL", "value": "${{ needs.view-pr.outputs.url }}"}]'
