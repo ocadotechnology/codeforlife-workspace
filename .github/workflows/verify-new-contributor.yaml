@@ -6,7 +6,7 @@ on:
       pull-request-number:
         description: "The number of the new contributor's PR."
         required: true
-        type: string # NOTE: github has bug with type number
+        type: string # NOTE: github has a bug with type: number
 
 jobs:
   view-pr:
