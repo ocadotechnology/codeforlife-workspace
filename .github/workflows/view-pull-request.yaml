@@ -5,7 +5,7 @@ on:
     inputs:
       number:
         required: true
-        type: number
+        type: string # NOTE: github has bug with type number
       outputs:
         required: false
         type: string
