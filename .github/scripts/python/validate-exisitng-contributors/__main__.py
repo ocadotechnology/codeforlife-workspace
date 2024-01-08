@@ -92,6 +92,7 @@ def get_signed_contributors() -> Contributors:
 
     lines = response.text.splitlines()
 
+    # NOTE: +2 because we don't want the header and its proceeding blank line.
     lines = lines[lines.index(CONTRIBUTORS_HEADER) + 2 :]
 
     return {parseaddr(line)[1] for line in lines}
