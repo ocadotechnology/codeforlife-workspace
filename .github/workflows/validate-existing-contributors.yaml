@@ -19,10 +19,10 @@ jobs:
   validate-existing-contributors:
     runs-on: ubuntu-latest
     steps:
-      - name: 🛫 Checkout
+      - name: 🛫 Checkout Pull Request
         uses: actions/checkout@v4
 
-      - name: 🛫 Checkout
+      - name: 🛫 Checkout Workspace
         uses: actions/checkout@v4
         with:
           repository: ocadotechnology/codeforlife-workspace
