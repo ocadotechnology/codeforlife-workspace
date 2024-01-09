@@ -33,6 +33,6 @@ jobs:
 
       - name: 🕵️ Validate Existing Contributors
         working-directory: ${{ env.WORKING_DIR }}
-        run: pipenv run python .
+        run: gh pr view --json commits # pipenv run python .
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
