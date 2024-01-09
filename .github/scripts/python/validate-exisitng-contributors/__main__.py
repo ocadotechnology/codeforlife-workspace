@@ -23,17 +23,17 @@ def get_inputs():
 
     Returns:
         A tuple with the values:
-            pr_repo: The repository the pull request was made to.
+            repo: The repository the pull request was made to.
             pr_num: The pull request's number.
             prod_branch: The name of the production branch. Defaults to
                 production.
     """
 
-    pr_repo = os.environ["PR_REPO"]
+    repo = os.environ["REPO"]
     pr_num = int(os.environ["PR_NUM"])
     prod_branch = os.getenv("PROD_BRANCH", "production")
 
-    return pr_repo, pr_num, prod_branch
+    return repo, pr_num, prod_branch
 
 
 def checkout_pull_request(repo: str, num: int):
@@ -143,11 +143,11 @@ def assert_contributors(
 def main():
     """Entry point."""
 
-    pr_repo, pr_num, prod_branch = get_inputs()
+    repo, pr_num, prod_branch = get_inputs()
 
     signed_contributors = get_signed_contributors()
 
-    checkout_pull_request(pr_repo, pr_num)
+    checkout_pull_request(repo, pr_num)
 
     fetch_prod_branch(prod_branch)
 

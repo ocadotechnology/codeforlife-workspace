@@ -26,11 +26,6 @@ jobs:
           ref: validate_existing_contributor # TODO: set to main
           path: './codeforlife-workspace'
 
-      - name: Echo Repos
-        run: |
-          echo "${{ github.repository }}"
-          echo "${{ github.event.pull_request.repository }}"
-
       - name: CD
         run: cd codeforlife-workspace
 
@@ -47,6 +42,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           PROD_BRANCH: ${{ inputs.prod-branch }}
-          PR_REPO: ${{ github.repository }}
+          REPO: ${{ github.repository }}
           PR_NUM: ${{ github.event.pull_request.number }}
 
