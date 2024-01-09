@@ -5,6 +5,7 @@ Created on 08/01/2024 at 09:47:25(+00:00).
 Validate all contributors have signed the contribution agreement.
 """
 
+import json
 import os
 import subprocess
 import typing as t
@@ -17,66 +18,37 @@ CONTRIBUTING_FILE_NAME = "CONTRIBUTING.md"
 CONTRIBUTORS_HEADER = "### 👨\u200d💻 Contributors 👩\u200d💻"
 
 
-def get_inputs():
-    """Get the script's inputs.
-
-    Returns:
-        The name of the production branch. Defaults to production.
-    """
-
-    prod_branch = os.getenv("PROD_BRANCH", "production")
-
-    return prod_branch
-
-
-def fetch_prod_branch(prod_branch: str):
-    """Fetches the production branch.
-
-    Args:
-        repo: The pull request's repository.
-        prod_branch: The name of the production branch.
-    """
-
-    # Navigate to pull request's repo.
-    os.chdir("../../../../..")
-
-    subprocess.run(
-        [
-            "git",
-            "fetch",
-            "origin",
-            f"{prod_branch}:{prod_branch}",
-        ],
-        check=True,
-    )
-
-
-def get_contributors(prod_branch: str) -> Contributors:
-    """Get the contributors that have made changes to the current branch.
-
-    Args:
-        prod_branch: The name of the production branch.
+def get_contributors() -> Contributors:
+    """Get authors that have made commits to the current pull request.
 
     Returns:
         A set of the contributors' email addresses.
     """
 
-    shortlog = subprocess.run(
+    # Navigate to pull request's repo.
+    os.chdir("../../../../..")
+
+    pull_request_str = subprocess.run(
         [
-            "git",
-            "shortlog",
-            "--summary",
-            "--numbered",
-            "--email",
-            f"{prod_branch}..HEAD",
+            "gh",
+            "pr",
+            "view",
+            "--json",
+            "commits",
         ],
         check=True,
         stdout=subprocess.PIPE,
     ).stdout.decode("utf-8")
 
-    print(shortlog)
+    print(pull_request_str)
 
-    return {parseaddr(log.split("\t")[1])[1] for log in shortlog.splitlines()}
+    pull_request = json.loads(pull_request_str)
+
+    return {
+        author["email"]
+        for commit in pull_request["commits"]
+        for author in commit["authors"]
+    }
 
 
 def get_signed_contributors() -> Contributors:
@@ -123,13 +95,9 @@ def assert_contributors(
 def main():
     """Entry point."""
 
-    prod_branch = get_inputs()
-
     signed_contributors = get_signed_contributors()
 
-    fetch_prod_branch(prod_branch)
-
-    contributors = get_contributors(prod_branch)
+    contributors = get_contributors()
 
     assert_contributors(contributors, signed_contributors)
 

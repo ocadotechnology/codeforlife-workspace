@@ -7,6 +7,9 @@ on:
         required: true
         type: string
         default: production
+    secrets:
+      GH_TOKEN:
+        required: true
 
 env:
   PYTHON_VERSION: 3.11
@@ -18,12 +21,6 @@ jobs:
     steps:
       - name: 🛫 Checkout Pull Request
         uses: actions/checkout@v4
-
-      - name: git shortlog
-        run: |
-          git fetch origin validate_existing_contributor:validate_existing_contributor
-          git fetch origin test_validate_existing_contributor:test_validate_existing_contributor
-          git shortlog -sne validate_existing_contributor..test_validate_existing_contributor
 
       - name: 🛫 Checkout Workspace
         uses: actions/checkout@v4
@@ -43,4 +40,5 @@ jobs:
         working-directory: ${{ env.WORKING_DIR }}
         run: pipenv run python .
         env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
           PROD_BRANCH: ${{ inputs.prod-branch }}
