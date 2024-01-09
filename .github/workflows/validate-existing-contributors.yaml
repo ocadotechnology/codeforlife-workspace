@@ -22,6 +22,7 @@ jobs:
       - name: git shortlog
         run: |
           git fetch origin validate_existing_contributor:validate_existing_contributor
+          git fetch origin test_validate_existing_contributor:test_validate_existing_contributor
           git shortlog -sne validate_existing_contributor..test_validate_existing_contributor
 
       - name: 🛫 Checkout Workspace
