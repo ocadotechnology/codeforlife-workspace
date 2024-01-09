@@ -64,6 +64,10 @@ def fetch_prod_branch(prod_branch: str):
         prod_branch: The name of the production branch.
     """
 
+    os.chdir("../../../../..")
+
+    print(os.getcwd())
+
     subprocess.run(
         [
             "git",
