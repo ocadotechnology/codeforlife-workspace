@@ -7,6 +7,9 @@ on:
         required: true
         type: string
         default: production
+    secrets:
+      GH_TOKEN:
+        required: true
 
 env:
   PYTHON_VERSION: 3.11
@@ -16,14 +19,30 @@ jobs:
   validate-existing-contributors:
     runs-on: ubuntu-latest
     steps:
+      - name: 🛫 Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: ocadotechnology/codeforlife-workspace
+          ref: validate_existing_contributor # TODO: set to main
+
       - name: 🐍 Set up Python ${{ env.PYTHON_VERSION }}
         uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
         with:
+          checkout: 'false'
           python-version: ${{ env.PYTHON_VERSION }}
           working-directory: ${{ env.WORKING_DIR }}
+
+      - name: Echo Repos
+        run: |
+          echo "${{ github.repository }}"
+          echo "${{ github.event.pull_request.repository }}"
 
       - name: 🕵️ Validate Existing Contributors
         working-directory: ${{ env.WORKING_DIR }}
         run: pipenv run python .
         env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
           PROD_BRANCH: ${{ inputs.prod-branch }}
+          PR_REPO: ${{ github.repository }}
+          PR_NUM: ${{ github.event.pull_request.number }}
+

@@ -10,12 +10,11 @@ import subprocess
 import typing as t
 from email.utils import parseaddr
 
-import requests
-
 Contributors = t.Set[str]
 
 # pylint: disable-next=line-too-long
-CONTRIBUTING_RAW_FILE_URL = "https://raw.githubusercontent.com/ocadotechnology/codeforlife-workspace/main/CONTRIBUTING.md"
+CONTRIBUTING_FILE_NAME = "CONTRIBUTING.md"
+CONTRIBUTING_FILE_PATH = f"../../../../{CONTRIBUTING_FILE_NAME}"
 CONTRIBUTORS_HEADER = "### 👨\u200d💻 Contributors 👩\u200d💻"
 
 
@@ -24,13 +23,38 @@ def get_inputs():
 
     Returns:
         A tuple with the values:
+            pr_repo: The repository the pull request was made to.
+            pr_num: The pull request's number.
             prod_branch: The name of the production branch. Defaults to
                 production.
     """
 
+    pr_repo = os.environ["PR_REPO"]
+    pr_num = int(os.environ["PR_NUM"])
     prod_branch = os.getenv("PROD_BRANCH", "production")
 
-    return prod_branch
+    return pr_repo, pr_num, prod_branch
+
+
+def checkout_pull_request(repo: str, num: int):
+    """Checkout the pull request.
+
+    Args:
+        repo: The pull request's repository.
+        num: The pull request's number.
+    """
+
+    subprocess.run(
+        [
+            "gh",
+            "pr",
+            "checkout",
+            str(num),
+            "--repo",
+            repo,
+        ],
+        check=True,
+    )
 
 
 def fetch_prod_branch(prod_branch: str):
@@ -86,11 +110,8 @@ def get_signed_contributors() -> Contributors:
         A set of the contributors' email addresses.
     """
 
-    response = requests.get(CONTRIBUTING_RAW_FILE_URL, timeout=30)
-
-    assert response.ok, "Failed to get latest contribution agreement."
-
-    lines = response.text.splitlines()
+    with open(CONTRIBUTING_FILE_PATH, "r", encoding="utf-8") as contributing:
+        lines = contributing.read().splitlines()
 
     # NOTE: +2 because we don't want the header and its proceeding blank line.
     lines = lines[lines.index(CONTRIBUTORS_HEADER) + 2 :]
@@ -122,13 +143,15 @@ def assert_contributors(
 def main():
     """Entry point."""
 
-    prod_branch = get_inputs()
+    pr_repo, pr_num, prod_branch = get_inputs()
+
+    signed_contributors = get_signed_contributors()
+
+    checkout_pull_request(pr_repo, pr_num)
 
     fetch_prod_branch(prod_branch)
 
     contributors = get_contributors(prod_branch)
-
-    signed_contributors = get_signed_contributors()
 
     assert_contributors(contributors, signed_contributors)
 
