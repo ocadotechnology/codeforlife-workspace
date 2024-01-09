@@ -28,6 +28,8 @@ def get_contributors() -> Contributors:
     # Navigate to pull request's repo.
     os.chdir("../../../../..")
 
+    print(os.getcwd())
+
     pull_request_str = subprocess.run(
         [
             "gh",
