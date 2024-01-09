@@ -26,10 +26,8 @@ jobs:
           ref: validate_existing_contributor # TODO: set to main
           path: './codeforlife-workspace'
 
-      - name: CD
-        run: |
-          cd codeforlife-workspace
-          echo "$PWD"
+      - name: echo pwd
+        run: echo "$PWD"
 
       - name: 🐍 Set up Python ${{ env.PYTHON_VERSION }}
         uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
