@@ -19,6 +19,9 @@ jobs:
       - name: 🛫 Checkout Pull Request
         uses: actions/checkout@v4
 
+      - name: git shortlog
+        uses: git shortlog -sne validate_existing_contributor..HEAD
+
       - name: 🛫 Checkout Workspace
         uses: actions/checkout@v4
         with:
