@@ -10,7 +10,7 @@ on:
 
 env:
   PYTHON_VERSION: 3.11
-  WORKING_DIR: ../codeforlife-workspace/.github/scripts/python/validate-existing-contributors
+  WORKING_DIR: codeforlife-workspace/.github/scripts/python/validate-existing-contributors
 
 jobs:
   validate-existing-contributors:
@@ -24,7 +24,7 @@ jobs:
         with:
           repository: ocadotechnology/codeforlife-workspace
           ref: validate_existing_contributor # TODO: set to main
-          path: ../codeforlife-workspace
+          path: codeforlife-workspace
 
       - name: 🐍 Set up Python ${{ env.PYTHON_VERSION }} Environment
         uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
@@ -38,4 +38,3 @@ jobs:
         run: pipenv run python .
         env:
           PROD_BRANCH: ${{ inputs.prod-branch }}
-          REPO: ${{ github.repository }}

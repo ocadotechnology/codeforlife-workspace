@@ -21,19 +21,15 @@ def get_inputs():
     """Get the script's inputs.
 
     Returns:
-        A tuple with the values:
-            repo: The repository the pull request was made to.
-            prod_branch: The name of the production branch. Defaults to
-                production.
+        The name of the production branch. Defaults to production.
     """
 
-    repo = os.environ["REPO"]
     prod_branch = os.getenv("PROD_BRANCH", "production")
 
-    return repo, prod_branch
+    return prod_branch
 
 
-def fetch_prod_branch(repo: str, prod_branch: str):
+def fetch_prod_branch(prod_branch: str):
     """Fetches the production branch.
 
     Args:
@@ -42,7 +38,7 @@ def fetch_prod_branch(repo: str, prod_branch: str):
     """
 
     # Navigate to pull request's repo.
-    os.chdir(f"../../../../../{repo}")
+    os.chdir("../../../../..")
 
     subprocess.run(
         [
@@ -127,11 +123,11 @@ def assert_contributors(
 def main():
     """Entry point."""
 
-    repo, prod_branch = get_inputs()
+    prod_branch = get_inputs()
 
     signed_contributors = get_signed_contributors()
 
-    fetch_prod_branch(repo, prod_branch)
+    fetch_prod_branch(prod_branch)
 
     contributors = get_contributors(prod_branch)
 
