@@ -13,7 +13,7 @@ on:
 
 env:
   PYTHON_VERSION: 3.11
-  WORKING_DIR: codeforlife-workspace/.github/scripts/python/validate-existing-contributors
+  SCRIPT_DIR: codeforlife-workspace/.github/scripts/python/validate-existing-contributors
 
 jobs:
   validate-existing-contributors:
@@ -34,11 +34,13 @@ jobs:
         with:
           checkout: 'false'
           python-version: ${{ env.PYTHON_VERSION }}
-          working-directory: ${{ env.WORKING_DIR }}
+          working-directory: ${{ env.SCRIPT_DIR }}
 
       - name: 🕵️ Validate Existing Contributors
-        working-directory: ${{ env.WORKING_DIR }}
-        run: pipenv run python .
+        # working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          cd ${{ env.SCRIPT_DIR }}
+          pipenv run python .
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           PROD_BRANCH: ${{ inputs.prod-branch }}
