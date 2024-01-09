@@ -2,11 +2,6 @@ name: Validate Existing Contributors
 
 on:
   workflow_call:
-    inputs:
-      prod-branch:
-        required: true
-        type: string
-        default: production
     secrets:
       GH_TOKEN:
         required: true
@@ -41,4 +36,3 @@ jobs:
         run: pipenv run python .
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          PROD_BRANCH: ${{ inputs.prod-branch }}
