@@ -13,7 +13,7 @@ on:
 
 env:
   PYTHON_VERSION: 3.11
-  WORKING_DIR: codeforlife-workspace/.github/scripts/python/validate-existing-contributors
+  WORKING_DIR: ../codeforlife-workspace/.github/scripts/python/validate-existing-contributors
 
 jobs:
   validate-existing-contributors:
@@ -25,9 +25,6 @@ jobs:
           repository: ocadotechnology/codeforlife-workspace
           ref: validate_existing_contributor # TODO: set to main
           path: './codeforlife-workspace'
-
-      - name: CD
-        run: cd codeforlife-workspace
 
       - name: 🐍 Set up Python ${{ env.PYTHON_VERSION }}
         uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
