@@ -26,6 +26,11 @@ jobs:
           ref: validate_existing_contributor # TODO: set to main
           path: './codeforlife-workspace'
 
+      - name: Echo Repos
+        run: |
+          echo "${{ github.repository }}"
+          echo "${{ github.event.pull_request.repository }}"
+
       - name: CD
         run: cd codeforlife-workspace
 
@@ -35,11 +40,6 @@ jobs:
           checkout: 'false'
           python-version: ${{ env.PYTHON_VERSION }}
           working-directory: ${{ env.WORKING_DIR }}
-
-      - name: Echo Repos
-        run: |
-          echo "${{ github.repository }}"
-          echo "${{ github.event.pull_request.repository }}"
 
       - name: 🕵️ Validate Existing Contributors
         working-directory: ${{ env.WORKING_DIR }}
