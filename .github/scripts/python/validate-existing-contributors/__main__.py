@@ -14,7 +14,6 @@ Contributors = t.Set[str]
 
 # pylint: disable-next=line-too-long
 CONTRIBUTING_FILE_NAME = "CONTRIBUTING.md"
-CONTRIBUTING_FILE_PATH = f"../../../../{CONTRIBUTING_FILE_NAME}"
 CONTRIBUTORS_HEADER = "### 👨\u200d💻 Contributors 👩\u200d💻"
 
 
@@ -24,49 +23,26 @@ def get_inputs():
     Returns:
         A tuple with the values:
             repo: The repository the pull request was made to.
-            pr_num: The pull request's number.
             prod_branch: The name of the production branch. Defaults to
                 production.
     """
 
     repo = os.environ["REPO"]
-    pr_num = int(os.environ["PR_NUM"])
     prod_branch = os.getenv("PROD_BRANCH", "production")
 
-    return repo, pr_num, prod_branch
+    return repo, prod_branch
 
 
-def checkout_pull_request(repo: str, num: int):
-    """Checkout the pull request.
-
-    Args:
-        repo: The pull request's repository.
-        num: The pull request's number.
-    """
-
-    subprocess.run(
-        [
-            "gh",
-            "pr",
-            "checkout",
-            str(num),
-            "--repo",
-            repo,
-        ],
-        check=True,
-    )
-
-
-def fetch_prod_branch(prod_branch: str):
+def fetch_prod_branch(repo: str, prod_branch: str):
     """Fetches the production branch.
 
     Args:
+        repo: The pull request's repository.
         prod_branch: The name of the production branch.
     """
 
-    os.chdir("../../../../..")
-
-    print(os.getcwd())
+    # Navigate to pull request's repo.
+    os.chdir(f"../../../../../{repo}")
 
     subprocess.run(
         [
@@ -114,7 +90,11 @@ def get_signed_contributors() -> Contributors:
         A set of the contributors' email addresses.
     """
 
-    with open(CONTRIBUTING_FILE_PATH, "r", encoding="utf-8") as contributing:
+    with open(
+        f"../../../../{CONTRIBUTING_FILE_NAME}",
+        "r",
+        encoding="utf-8",
+    ) as contributing:
         lines = contributing.read().splitlines()
 
     # NOTE: +2 because we don't want the header and its proceeding blank line.
@@ -147,13 +127,11 @@ def assert_contributors(
 def main():
     """Entry point."""
 
-    repo, pr_num, prod_branch = get_inputs()
+    repo, prod_branch = get_inputs()
 
     signed_contributors = get_signed_contributors()
 
-    # checkout_pull_request(repo, pr_num)
-
-    fetch_prod_branch(prod_branch)
+    fetch_prod_branch(repo, prod_branch)
 
     contributors = get_contributors(prod_branch)
 
