@@ -25,6 +25,9 @@ jobs:
           repository: ocadotechnology/codeforlife-workspace
           ref: validate_existing_contributor # TODO: set to main
 
+      - name: CD
+        run: cd codeforlife-workspace
+
       - name: 🐍 Set up Python ${{ env.PYTHON_VERSION }}
         uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
         with:
