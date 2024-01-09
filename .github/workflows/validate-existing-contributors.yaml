@@ -24,6 +24,7 @@ jobs:
         with:
           repository: ocadotechnology/codeforlife-workspace
           ref: validate_existing_contributor # TODO: set to main
+          path: './codeforlife-workspace'
 
       - name: CD
         run: cd codeforlife-workspace
