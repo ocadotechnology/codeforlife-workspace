@@ -147,7 +147,7 @@ def main():
 
     signed_contributors = get_signed_contributors()
 
-    checkout_pull_request(repo, pr_num)
+    # checkout_pull_request(repo, pr_num)
 
     fetch_prod_branch(prod_branch)
 

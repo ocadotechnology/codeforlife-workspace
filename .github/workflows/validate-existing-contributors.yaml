@@ -21,6 +21,9 @@ jobs:
     steps:
       - name: 🛫 Checkout
         uses: actions/checkout@v4
+
+      - name: 🛫 Checkout
+        uses: actions/checkout@v4
         with:
           repository: ocadotechnology/codeforlife-workspace
           ref: validate_existing_contributor # TODO: set to main
