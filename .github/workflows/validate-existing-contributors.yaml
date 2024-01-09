@@ -20,7 +20,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: git shortlog
-        run: git shortlog -sne validate_existing_contributor..HEAD
+        run: |
+          git fetch origin validate_existing_contributor:validate_existing_contributor
+          git shortlog -sne validate_existing_contributor..HEAD
 
       - name: 🛫 Checkout Workspace
         uses: actions/checkout@v4
