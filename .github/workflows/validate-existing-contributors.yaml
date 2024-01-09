@@ -13,7 +13,7 @@ on:
 
 env:
   PYTHON_VERSION: 3.11
-  WORKING_DIR: .github/scripts/python/validate-existing-contributors
+  WORKING_DIR: codeforlife-workspace/.github/scripts/python/validate-existing-contributors
 
 jobs:
   validate-existing-contributors:
