@@ -1,6 +1,7 @@
 name: Validate Existing Contributors
 
 on:
+  pull_request:
   workflow_call:
 
 env:
