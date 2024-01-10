@@ -7,10 +7,10 @@ Validate all contributors have signed the contribution agreement.
 
 import json
 import os
-import subprocess
 import typing as t
 from email.utils import parseaddr
 
+PullRequest = t.Dict[str, t.Any]
 Contributors = t.Set[str]
 
 # pylint: disable-next=line-too-long
@@ -18,39 +18,16 @@ CONTRIBUTING_FILE_NAME = "CONTRIBUTING.md"
 CONTRIBUTORS_HEADER = "### 👨\u200d💻 Contributors 👩\u200d💻"
 
 
-def get_contributors() -> Contributors:
-    """Get authors that have made commits to the current pull request.
+def get_inputs():
+    """Get script's inputs.
 
     Returns:
-        A set of the contributors' email addresses.
+        A JSON object of the pull request.
     """
 
-    # Navigate to pull request's repo.
-    os.chdir("../../../../..")
+    pull_request: PullRequest = json.loads(os.environ["PULL_REQUEST"])
 
-    print(os.getcwd())
-
-    pull_request_str = subprocess.run(
-        [
-            "gh",
-            "pr",
-            "view",
-            "--json",
-            "commits",
-        ],
-        check=True,
-        stdout=subprocess.PIPE,
-    ).stdout.decode("utf-8")
-
-    print(pull_request_str)
-
-    pull_request = json.loads(pull_request_str)
-
-    return {
-        author["email"]
-        for commit in pull_request["commits"]
-        for author in commit["authors"]
-    }
+    return pull_request
 
 
 def get_signed_contributors() -> Contributors:
@@ -74,17 +51,22 @@ def get_signed_contributors() -> Contributors:
 
 
 def assert_contributors(
-    contributors: Contributors,
+    pull_request: PullRequest,
     signed_contributors: Contributors,
 ):
     """Assert that all contributors have signed the contribution agreement.
 
     Args:
-        contributors: The contributors that have made changes to the current
-            branch.
+        pull_request: The JSON object of the pull request.
         signed_contributors: The contributors that have signed the contribution
             agreement.
     """
+
+    contributors: Contributors = {
+        author["email"]
+        for commit in pull_request["commits"]
+        for author in commit["authors"]
+    }
 
     unsigned_contributors = contributors.difference(signed_contributors)
 
@@ -97,11 +79,11 @@ def assert_contributors(
 def main():
     """Entry point."""
 
+    pull_request = get_inputs()
+
     signed_contributors = get_signed_contributors()
 
-    contributors = get_contributors()
-
-    assert_contributors(contributors, signed_contributors)
+    assert_contributors(pull_request, signed_contributors)
 
 
 if __name__ == "__main__":

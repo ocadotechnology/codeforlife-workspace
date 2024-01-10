@@ -17,6 +17,12 @@ jobs:
       - name: 🛫 Checkout Pull Request
         uses: actions/checkout@v4
 
+      - name: View Pull Request's Commits
+        id: view-pr
+        run: echo "PULL_REQUEST=$(gh pr view --json commits)" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }} # TODO: test removal
+
       - name: 🛫 Checkout Workspace
         uses: actions/checkout@v4
         with:
@@ -35,4 +41,4 @@ jobs:
         working-directory: ${{ env.WORKING_DIR }}
         run: pipenv run python .
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          PULL_REQUEST: ${{ steps.view-pr.outputs.PULL_REQUEST }}
