@@ -16,6 +16,9 @@ Contributors = t.Set[str]
 # pylint: disable-next=line-too-long
 CONTRIBUTING_FILE_NAME = "CONTRIBUTING.md"
 CONTRIBUTORS_HEADER = "### 👨\u200d💻 Contributors 👩\u200d💻"
+BOTS = {
+    "49699333+dependabot[bot]@users.noreply.github.com",
+}
 
 
 def get_inputs():
@@ -68,7 +71,9 @@ def assert_contributors(
         for author in commit["authors"]
     }
 
-    unsigned_contributors = contributors.difference(signed_contributors)
+    unsigned_contributors = contributors.difference(
+        signed_contributors.union(BOTS),
+    )
 
     assert not unsigned_contributors, (
         "The following contributors have not signed the agreement:"
