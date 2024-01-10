@@ -1,0 +1,40 @@
+name: Notify New Contribution Agreement Version
+
+on:
+  push:
+    # branches:
+    #   - main
+    # paths:
+    #   - CONTRIBUTING.md
+
+jobs:
+  get-contributors:
+    runs-on: ubuntu-latest
+    outputs:
+      contributors: ${{ steps.get-contributors.outputs.CONTRIBUTORS }}
+    steps:
+      - name: Get Contributors
+        id: get-contributors
+        run: |
+          echo 'CONTRIBUTORS=["a@codeforelife.com","b@codeforlife.com"]' >> $GITHUB_OUTPUT
+
+    # uses: .
+    # - name: 👨‍💻 Get Contributors
+    #     working-directory: .
+    #     run: pipenv run python .
+
+  send-email:
+    runs-on: ubuntu-latest
+    needs: [get-contributors]
+    strategy:
+      matrix:
+        contributor: ${{ fromJSON(needs.get-contributors.outputs.contributors) }}
+    steps:
+      - name: Echo Contributor
+        run: echo "${{ matrix.contributor }}"
+      # - name: 📧 Send Email
+      #   uses: ocadotechnology/codeforlife-workspace/.github/actions/email/send@main
+      #   with:
+      #     auth: ${{ secrets.DOTDIGITAL_API_USER_AUTH }}
+      #     to-addresses: '["${{ matrix.contributor }}"]'
+
