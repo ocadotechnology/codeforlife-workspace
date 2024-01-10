@@ -162,7 +162,6 @@ To sign, you must:
     git push
     ```
 
-
 1. Create a pull request from the **main** branch of your forked repo to the
   **main** branch of this repo. [See](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork)
   how to do this on GitHub.
