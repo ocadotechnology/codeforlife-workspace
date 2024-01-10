@@ -61,9 +61,7 @@ def assert_diff_stats():
     assert (
         diff_stats[2] == CONTRIBUTING_FILE_NAME
     ), f"Only {CONTRIBUTING_FILE_NAME} should be different."
-    assert (
-        int(diff_stats[1]) == 0
-    ), "You cannot modify or delete existing lines."
+    assert int(diff_stats[1]) == 0, "You cannot modify or delete existing lines."
     assert int(diff_stats[0]) == 1, "You must add just one line."
 
 
@@ -93,41 +91,34 @@ def get_diff_line():
 
     print(f'Diff: "{diff_str}"')
 
-    # Match the diff line range.
-    diff_line_range = re.match(
-        r".*\@\@ -(\d+),(\d+) \+(\d+),(\d+) \@\@.*",
+    # Match the diff snippet.
+    diff_snippet = re.match(
+        r".*\@\@ -\d+,\d+ \+\d+,\d+ \@\@(.*)",
         diff_str,
         flags=re.DOTALL,
     )
-    assert diff_line_range is not None, "Failed to match line-difference range."
+    assert diff_snippet is not None, "Failed to match difference snippet."
 
-    # Assert diff line range is of size one.
-    original_line_start = int(diff_line_range.group(1))
-    new_line_start = int(diff_line_range.group(3))
-    assert original_line_start == new_line_start, "Line starts must be equal."
+    diff_line = next(
+        line for line in diff_snippet.group(1).splitlines() if line.startswith("+")
+    )[1:]
 
-    original_line_count = int(diff_line_range.group(2))
-    new_line_count = int(diff_line_range.group(4))
-    assert (
-        new_line_count - original_line_count == 1
-    ), "One line should be different."
-
-    diff_line_index = original_line_start + original_line_count
+    print(f'Diff Line: "{diff_line}"')
 
     # Split contribution agreement into lines.
     with open(CONTRIBUTING_FILE_PATH, "r", encoding="utf-8") as contributing:
         lines = contributing.read().splitlines()
 
-    # Assert diff line is after the contributors header.
-    # NOTE: -1 to convert 1 based indexing to 0.
-    # NOTE: +1 because there should be a space after the header.
-    assert (
-        diff_line_index - 1 > lines.index(CONTRIBUTORS_HEADER) + 1
-    ), "Contributor must be added to the list of contributors."
-
-    diff_line = lines[diff_line_index - 1]
-
-    print(f'Diff Line: "{diff_line}"')
+    # Assert diff line is in the list of contributors.
+    # NOTE: +2 because we don't want the header or the space after it.
+    # NOTE: +1 to convert 0 based indexing to 1.
+    try:
+        diff_line_index = 1 + lines.index(
+            diff_line,
+            lines.index(CONTRIBUTORS_HEADER) + 2,
+        )
+    except ValueError as ex:
+        raise AssertionError("Diff line must be in list of contributors.") from ex
 
     return diff_line_index, diff_line
 
@@ -169,9 +160,7 @@ def get_email_address(diff_line_index: int, diff_line: str):
 
     # Assert commit's author.
     commit_author = re.match(rf".+ \(<(.+)> .+\) {re.escape(diff_line)}", blame)
-    assert (
-        commit_author is not None
-    ), "Failed to match commit author from git blame."
+    assert commit_author is not None, "Failed to match commit author from git blame."
 
     commit_author_email_address = commit_author.group(1)
     assert (
