@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: 🛫 Checkout Pull Request
         uses: actions/checkout@v4
+        with:
+          ref: refs/pull/${{ github.event.pull_request.number }}/head
 
       - name: 🔎 View Pull Request's Commits 1
         run: gh pr view --json commits
