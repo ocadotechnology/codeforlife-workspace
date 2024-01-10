@@ -2,9 +2,6 @@ name: Validate Existing Contributors
 
 on:
   workflow_call:
-    # secrets:
-    #   GH_TOKEN:
-    #     required: true
 
 env:
   PYTHON_VERSION: 3.11
@@ -16,19 +13,12 @@ jobs:
     steps:
       - name: 🛫 Checkout Pull Request
         uses: actions/checkout@v4
-        # with:
-        #   ref: refs/pull/${{ github.event.pull_request.number }}/head
-
-      - name: 🔎 View Pull Request's Commits 1
-        run: gh pr view ${{ github.event.pull_request.number }} --json commits
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 🔎 View Pull Request's Commits
         id: view-pr
-        run: echo "PULL_REQUEST=$(gh pr view --json commits)" >> $GITHUB_OUTPUT
-        # env:
-        #   GH_TOKEN: ${{ secrets.GH_TOKEN }} # TODO: test removal
+        run: echo "PULL_REQUEST=$(gh pr view ${{ github.event.pull_request.number }} --json commits)" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 🛫 Checkout Workspace
         uses: actions/checkout@v4
