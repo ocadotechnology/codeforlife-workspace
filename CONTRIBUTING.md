@@ -182,6 +182,7 @@ If you have any trouble with the above process, please reach out to
 
 ### 👨‍💻 Contributors 👩‍💻
 
+<f.aucomte@hotmail.co.uk>
 <stefan.kairinos@ocado.com>
 <abdelrahman.deghedy@gmail.com>
 <juanl.bnr@gmail.com>
