@@ -2,6 +2,8 @@ name: Validate Existing Contributors
 
 on:
   pull_request:
+    paths-ignore:
+      - 'CONTRIBUTING.md'
   workflow_call:
 
 env:
