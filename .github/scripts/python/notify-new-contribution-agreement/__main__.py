@@ -72,6 +72,7 @@ def agreement_is_different():
 
     # Check if the contributing file is different.
     if all(file != CONTRIBUTING_FILE_NAME for file in diff_output.splitlines()):
+        print(f"{CONTRIBUTING_FILE_NAME} is not different.")
         return False
 
     previous_agreement_end_line_index = get_previous_agreement_end_line_index()
@@ -123,6 +124,7 @@ def agreement_is_different():
         except StopIteration:
             pass
 
+    print("All differences are after the end of the agreement.")
     return False
 
 
@@ -167,8 +169,6 @@ def send_emails(auth: str, contributors: Contributors):
         auth: The auth header used when making requests to DotDigital's API.
         contributors: The email addresses to send the email to.
     """
-
-    contributors = {"stefan.kairinos@ocado.com"}  # TODO: remove
 
     failed_sends = False
 

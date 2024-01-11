@@ -17,20 +17,17 @@ jobs:
       - name: 🛫 Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # get current and previous commit
+          fetch-depth: 2 # get current and previous commit
 
-      - name: Test
-        run: echo "test $(git --no-pager diff HEAD~1:CONTRIBUTING.md CONTRIBUTING.md)"
+      - name: 🐍 Set up Python ${{ env.PYTHON_VERSION }} Environment
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
+        with:
+          checkout: 'false'
+          python-version: ${{ env.PYTHON_VERSION }}
+          working-directory: ${{ env.WORKING_DIR }}
 
-      # - name: 🐍 Set up Python ${{ env.PYTHON_VERSION }} Environment
-      #   uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
-      #   with:
-      #     checkout: 'false'
-      #     python-version: ${{ env.PYTHON_VERSION }}
-      #     working-directory: ${{ env.WORKING_DIR }}
-
-      # - name: 🏃 Run Script
-      #   working-directory: ${{ env.WORKING_DIR }}
-      #   run: pipenv run python .
-      #   env:
-      #     AUTH: ${{ secrets.DOTDIGITAL_API_USER_AUTH }}
+      - name: 🏃 Run Script
+        working-directory: ${{ env.WORKING_DIR }}
+        run: pipenv run python .
+        env:
+          AUTH: ${{ secrets.DOTDIGITAL_API_USER_AUTH }}
