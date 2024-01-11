@@ -7,6 +7,8 @@ been released.
 """
 
 import os
+import re
+import subprocess
 import typing as t
 from email.utils import parseaddr
 
@@ -14,8 +16,87 @@ import requests
 
 Contributors = t.Set[str]
 
+CONTRIBUTING_FILE_NAME = "CONTRIBUTING.md"
+AGREEMENT_END_LINE = "## Become a Contributor"
 CONTRIBUTORS_HEADER = "### 👨\u200d💻 Contributors 👩\u200d💻"
 CAMPAIGN_ID = 1512393
+
+
+def agreement_is_different():
+    """Checks that the contributor agreement is different.
+
+    Returns:
+        A flag designating if the contributor agreement is different.
+    """
+
+    # Get previous agreement.
+    previous_contributing = subprocess.run(
+        [
+            "git",
+            "--no-pager",
+            "show",
+            f"HEAD~1:{CONTRIBUTING_FILE_NAME}",
+        ],
+        check=True,
+        stdout=subprocess.PIPE,
+    ).stdout.decode("utf-8")
+
+    print(previous_contributing)
+
+    # Get index of line where previous agreement ended.
+    # NOTE: +1 to convert 0 based indexing to 1.
+    previous_agreement_end_line_index = (
+        previous_contributing.splitlines().index(AGREEMENT_END_LINE) + 1
+    )
+
+    # Get diff between current and previous contributing file.
+    diff_output = subprocess.run(
+        [
+            "git",
+            "--no-pager",
+            "diff",
+            f"HEAD~1:{CONTRIBUTING_FILE_NAME}",
+            CONTRIBUTING_FILE_NAME,
+        ],
+        check=True,
+        stdout=subprocess.PIPE,
+    ).stdout.decode("utf-8")
+
+    print(diff_output)
+
+    # Split diffs following git's diff format.
+    # NOTE: We're capturing the index of the diff's start line.
+    # NOTE: [1:] because we don't need the diff context info.
+    diffs = re.split(
+        r"^\@\@ -(\d+),\d+ \+\d+,\d+ \@\@.*$\n",
+        diff_output,
+        flags=re.MULTILINE,
+    )[1:]
+
+    # Parse the split diff-data.
+    for diff_start_line_index, diff in zip(
+        [int(diff_start_line_index) for diff_start_line_index in diffs[::2]],
+        diffs[1::2],
+    ):
+        # Only want to know which lines where removed or edited.
+        diff_lines = [line for line in diff.splitlines() if not line.startswith("+")]
+
+        try:
+            # Get index of first line that was removed or edited in previous file.
+            diff_line_index = next(
+                diff_start_line_index + diff_line_index
+                for diff_line_index, diff_line in enumerate(diff_lines)
+                if diff_line.startswith("-")
+            )
+
+            # Check if line came before the end of the agreement.
+            if diff_line_index < previous_agreement_end_line_index:
+                return True
+
+        except StopIteration:
+            pass
+
+    return False
 
 
 def get_inputs():
@@ -38,12 +119,13 @@ def get_contributors() -> Contributors:
     """
 
     with open(
-        "../../../../CONTRIBUTING.md",
+        f"../../../../{CONTRIBUTING_FILE_NAME}",
         "r",
         encoding="utf-8",
     ) as contributing:
         lines = contributing.read().splitlines()
 
+    # NOTE: +2 because we don't want the header or the space after it.
     return {
         parseaddr(contributor)[1]
         for contributor in lines[lines.index(CONTRIBUTORS_HEADER) + 2 :]
@@ -58,6 +140,8 @@ def send_emails(auth: str, contributors: Contributors):
         auth: The auth header used when making requests to DotDigital's API.
         contributors: The email addresses to send the email to.
     """
+
+    contributors = {"stefan.kairinos@ocado.com"}  # TODO: remove
 
     failed_sends = False
 
@@ -92,11 +176,12 @@ def send_emails(auth: str, contributors: Contributors):
 def main():
     """Entry point."""
 
-    auth = get_inputs()
+    if agreement_is_different():
+        auth = get_inputs()
 
-    contributors = get_contributors()
+        contributors = get_contributors()
 
-    send_emails(auth, contributors)
+        send_emails(auth, contributors)
 
 
 if __name__ == "__main__":
