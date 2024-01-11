@@ -16,8 +16,8 @@ jobs:
     steps:
       - name: 🛫 Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
+        # with:
+        #   fetch-depth: 2
 
       - name: git diff
         run: echo "test $(git --no-pager diff HEAD~1:CONTRIBUTING.md CONTRIBUTING.md)"

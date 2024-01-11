@@ -109,8 +109,6 @@ construed in accordance with English law and the parties submit to the irrevocab
 understandings or communications, written or oral, between You and Us relating to its subject matter. This Agreement may
 be assigned by Us.
 
-test string.
-
 ## Become a Contributor
 
 To contribute to Code for Life you must sign your email address below, affirming
