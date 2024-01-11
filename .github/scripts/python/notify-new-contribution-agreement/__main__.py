@@ -59,10 +59,6 @@ def send_emails(auth: str, contributors: Contributors):
         contributors: The email addresses to send the email to.
     """
 
-    # TODO: remove
-    print(contributors)
-    contributors = {"stefan.kairinos@ocado.com"}
-
     failed_sends = False
 
     for contributor in contributors:

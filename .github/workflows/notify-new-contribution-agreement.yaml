@@ -2,10 +2,10 @@ name: Notify New Contribution Agreement
 
 on:
   push:
-    # branches:
-    #   - main
-    # paths:
-    #   - CONTRIBUTING.md
+    branches:
+      - main
+    paths:
+      - CONTRIBUTING.md
 
 jobs:
   run-script:
