@@ -143,10 +143,9 @@ To sign, you must:
   how to do this on GitHub. Note that you only need to fork the **main**
   branch.
 
-1. On the **main** branch of your forked repo, create a new line at the *bottom*
-  of this file (press **Enter**). Note that you must not make any other edits.
-
-1. Write your email address on the second last line.
+1. On the **main** branch of your forked repo, write your email address on a new
+  line at the *bottom* of this file. Note that you must not make any other
+  edits.
 
 1. Commit your changes.
 
@@ -167,12 +166,13 @@ To sign, you must:
   how to do this on GitHub.
 
 1. To affirm that you own the email address you provided, an email will be sent
-  to the email address. The email will contain a link to the commit that added
-  the email address as a contributor. You must respond to the email from the
-  same email address stating:
+  to the email address after your pull request has been reviewed and approved by
+  a member of our team. The email will contain a link to the pull request that
+  added the email address as a contributor. You must forward the email to
+  <codeforlife@ocado.com> from the same email address and state:
 
     ```txt
-    I confirm that I made this commit and I agree to being a contributor to the Code for Life project under the terms found in my commit.
+    I confirm that I created this pull request and I agree to being a contributor to the Code for Life project.
     ```
 
 Your email address is now approved to make contributions! 🥳
