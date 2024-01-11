@@ -22,11 +22,11 @@ CONTRIBUTORS_HEADER = "### 👨\u200d💻 Contributors 👩\u200d💻"
 CAMPAIGN_ID = 1512393
 
 
-def agreement_is_different():
-    """Checks that the contributor agreement is different.
+def get_previous_agreement_end_line_index():
+    """Get the index of the previous agreement's end line.
 
     Returns:
-        A flag designating if the contributor agreement is different.
+        The index of the previous agreement's end line.
     """
 
     # Get previous agreement.
@@ -45,9 +45,36 @@ def agreement_is_different():
 
     # Get index of line where previous agreement ended.
     # NOTE: +1 to convert 0 based indexing to 1.
-    previous_agreement_end_line_index = (
-        previous_contributing.splitlines().index(AGREEMENT_END_LINE) + 1
-    )
+    return previous_contributing.splitlines().index(AGREEMENT_END_LINE) + 1
+
+
+def agreement_is_different():
+    """Checks that the contributor agreement is different.
+
+    Returns:
+        A flag designating if the contributor agreement is different.
+    """
+
+    # Get diff file names.
+    diff_output = subprocess.run(
+        [
+            "git",
+            "--no-pager",
+            "diff",
+            "--name-only",
+            "HEAD~1",
+        ],
+        check=True,
+        stdout=subprocess.PIPE,
+    ).stdout.decode("utf-8")
+
+    print(diff_output)
+
+    # Check if the contributing file is different.
+    if all(file != CONTRIBUTING_FILE_NAME for file in diff_output.splitlines()):
+        return False
+
+    previous_agreement_end_line_index = get_previous_agreement_end_line_index()
 
     # Get diff between current and previous contributing file.
     diff_output = subprocess.run(
