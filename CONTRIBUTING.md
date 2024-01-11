@@ -147,6 +147,10 @@ To sign, you must:
   line at the *bottom* of this file. Note that you must not make any other
   edits.
 
+    ```md
+    <example@gmail.com>
+    ```
+
 1. Commit your changes.
 
     ```bash
