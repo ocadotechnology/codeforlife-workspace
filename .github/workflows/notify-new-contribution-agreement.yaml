@@ -20,7 +20,7 @@ jobs:
           fetch-depth: 2
 
       - name: git diff
-        run: echo "$(git --no-pager diff HEAD~1:CONTRIBUTING.md CONTRIBUTING.md)"
+        run: echo "test $(git --no-pager diff HEAD~1:CONTRIBUTING.md CONTRIBUTING.md)"
 
       # - name: 🐍 Set up Python ${{ env.PYTHON_VERSION }} Environment
       #   uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
