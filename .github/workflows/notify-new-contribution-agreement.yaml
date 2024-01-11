@@ -2,10 +2,10 @@ name: Notify New Contribution Agreement
 
 on:
   push:
-    branches:
-      - main
-    paths:
-      - CONTRIBUTING.md
+    # branches:
+    #   - main
+    # paths:
+    #   - CONTRIBUTING.md
 
 jobs:
   run-script:
@@ -14,14 +14,22 @@ jobs:
       PYTHON_VERSION: 3.11
       WORKING_DIR: .github/scripts/python/notify-new-contribution-agreement
     steps:
-      - name: 🐍 Set up Python ${{ env.PYTHON_VERSION }} Environment
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
+      - name: 🛫 Checkout
+        uses: actions/checkout@v4
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          working-directory: ${{ env.WORKING_DIR }}
+          fetch-depth: 2
 
-      - name: 🏃 Run Script
-        working-directory: ${{ env.WORKING_DIR }}
-        run: pipenv run python .
-        env:
-          AUTH: ${{ secrets.DOTDIGITAL_API_USER_AUTH }}
+      - name: git diff
+        run: git --no-pager diff HEAD~1:CONTRIBUTING.md CONTRIBUTING.md
+
+      # - name: 🐍 Set up Python ${{ env.PYTHON_VERSION }} Environment
+      #   uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
+      #   with:
+      #     python-version: ${{ env.PYTHON_VERSION }}
+      #     working-directory: ${{ env.WORKING_DIR }}
+
+      # - name: 🏃 Run Script
+      #   working-directory: ${{ env.WORKING_DIR }}
+      #   run: pipenv run python .
+      #   env:
+      #     AUTH: ${{ secrets.DOTDIGITAL_API_USER_AUTH }}
