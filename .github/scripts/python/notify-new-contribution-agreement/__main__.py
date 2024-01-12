@@ -106,7 +106,7 @@ def agreement_is_different():
         [int(diff_start_line_index) for diff_start_line_index in diffs[::2]],
         diffs[1::2],
     ):
-        # Only want to know which lines where removed or edited.
+        # Only want to know which lines were removed or edited.
         diff_lines = [line for line in diff.splitlines() if not line.startswith("+")]
 
         try:
