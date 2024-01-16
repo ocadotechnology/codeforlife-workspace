@@ -9,6 +9,10 @@ inputs:
     description: "The current working directory."
     required: true
     default: "."
+  source-path:
+    description: "The path of the source files."
+    required: true
+    default: "."
   check-django-migrations:
     description: "Check if there are pending Django migrations."
     required: true
@@ -22,14 +26,25 @@ runs:
         working-directory: ${{ inputs.working-directory }}
         install-args: "--dev"
 
+    - name: 🔎 Check Import Sort
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: pipenv run isort --settings-file=pyproject.toml --check ${{ inputs.source-path }}
+
     - name: 🔎 Check Code Format
       shell: bash
       working-directory: ${{ inputs.working-directory }}
-      run: if ! pipenv run black --check .; then exit 1; fi
+      run: if ! pipenv run black --config=pyproject.toml --check ${{ inputs.source-path }}; then exit 1; fi
 
-    # TODO: check static type hints with mypy
+    - name: 🔎 Check Static Type Hints
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: pipenv run mypy --config-file=pyproject.toml ${{ inputs.source-path }}
 
-    # TODO: check linter error with pylint
+    - name: 🔎 Check Static Code
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: pipenv run pylint --rcfile=pyproject.toml ${{ inputs.source-path }}
 
     - name: 🔎 Check Django Migrations
       if: inputs.check-django-migrations == 'true'
@@ -40,6 +55,6 @@ runs:
     - name: 🧪 Test Code Units
       shell: bash
       working-directory: ${{ inputs.working-directory }}
-      run: pipenv run pytest -n auto
+      run: pipenv run pytest -n=auto -c=pyproject.toml ${{ inputs.source-path }}
 
     # TODO: assert code coverage target.
