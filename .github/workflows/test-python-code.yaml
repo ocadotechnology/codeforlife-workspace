@@ -1,0 +1,69 @@
+name: Test Python Code
+
+on:
+  workflow_call:
+    inputs:
+      python-version:
+        description: "The python version to set up."
+        type: number
+        required: true
+        default: 3.8
+      working-directory:
+        description: "The current working directory."
+        type: string
+        required: true
+        default: "."
+      source-path:
+        description: "The path of the source files."
+        type: string
+        required: true
+        default: "."
+      check-django-migrations:
+        description: "Check if there are pending Django migrations."
+        type: boolean
+        required: true
+        default: true
+      pyproject-toml:
+        description: "The path to the pyproject.toml file."
+        type: string
+        required: true
+        default: "pyproject.toml"
+
+jobs:
+  test-py-code:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🐍 Set up Python ${{ inputs.python-version }} Environment
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
+        with:
+          python-version: ${{ inputs.python-version }}
+          working-directory: ${{ inputs.working-directory }}
+          install-args: --dev
+
+      - name: 🔎 Check Import Sort
+        working-directory: ${{ inputs.working-directory }}
+        run: pipenv run isort --settings-file=${{ inputs.pyproject-toml }} --check ${{ inputs.source-path }}
+
+      - name: 🔎 Check Code Format
+        working-directory: ${{ inputs.working-directory }}
+        run: if ! pipenv run black --config=${{ inputs.pyproject-toml }} --check ${{ inputs.source-path }}; then exit 1; fi
+
+      - name: 🔎 Check Static Type Hints
+        working-directory: ${{ inputs.working-directory }}
+        run: pipenv run mypy --config-file=${{ inputs.pyproject-toml }} ${{ inputs.source-path }}
+
+      - name: 🔎 Check Static Code
+        working-directory: ${{ inputs.working-directory }}
+        run: pipenv run pylint --rcfile=${{ inputs.pyproject-toml }} ${{ inputs.source-path }}
+
+      - name: 🔎 Check Django Migrations
+        if: inputs.check-django-migrations
+        working-directory: ${{ inputs.working-directory }}
+        run: pipenv run python manage.py makemigrations --check --dry-run
+
+      - name: 🧪 Test Code Units
+        working-directory: ${{ inputs.working-directory }}
+        run: pipenv run pytest -n=auto -c=${{ inputs.pyproject-toml }} ${{ inputs.source-path }}
+
+      # TODO: assert code coverage target.
+        
