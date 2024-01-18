@@ -1,0 +1,62 @@
+name: "Code for Life - Email - Send"
+description: "Using DotDigital, send a transactional email using a triggered campaign as its content."
+inputs:
+  region:
+    description: "The Dotdigital region id your account belongs to e.g. r1, r2 or r3."
+    required: true
+    default: "r1"
+  auth:
+    description: "The authorization header used to authenticate with the api."
+    required: true
+  timeout:
+    description: "The number of seconds to wait for a response before timing out."
+    required: true
+    default: "60"
+  to-addresses:
+    description: "The email address(es) to send to."
+    required: true
+  cc-addresses:
+    description: "The CC email address or address to to send to. separate email addresses with a comma. Maximum: 100."
+    required: false
+  bcc-addresses:
+    description: "The BCC email address or address to to send to. separate email addresses with a comma. Maximum: 100."
+    required: false
+  from-address:
+    description: "The From address for your email. Note: The From address must already be added to your account. Otherwise, your account's default From address is used."
+    required: false
+  campaign-id:
+    description: "The ID of the triggered campaign, which needs to be included within the request body."
+    required: true
+  personalization-values:
+    description: "Each personalisation value is a key-value pair; the placeholder name of the personalization value needs to be included in the request body."
+    required: false
+  metadata:
+    description: "The metadata for your email. It can be either a single value or a series of values in a JSON object."
+    required: false
+  attachments:
+    description: "A Base64 encoded string. All attachment types are supported. Maximum file size: 15 MB."
+    required: false
+runs:
+  using: composite
+  steps:
+    - uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
+      with:
+        python-version: 3.11
+        working-directory: ${{ github.action_path }}
+
+    - name: 📧 Send Email
+      shell: bash
+      working-directory: ${{ github.action_path }}
+      run: pipenv run python .
+      env:
+        REGION: ${{ inputs.region }}
+        AUTH: ${{ inputs.auth }}
+        TIMEOUT: ${{ inputs.timeout }}
+        TO_ADDRESSES: ${{ inputs.to-addresses }}
+        CC_ADDRESSES: ${{ inputs.cc-addresses }}
+        BCC_ADDRESSES: ${{ inputs.bcc-addresses }}
+        FROM_ADDRESS: ${{ inputs.from-address }}
+        CAMPAIGN_ID: ${{ inputs.campaign-id }}
+        PERSONALIZATION_VALUES: ${{ inputs.personalization-values }}
+        METADATA: ${{ inputs.metadata }}
+        ATTACHMENTS: ${{ inputs.attachments }}
