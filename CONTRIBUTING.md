@@ -172,8 +172,7 @@ To sign, you must:
   same email address stating:
 
     ```txt
-    I confirm that I made this commit and I agree to being a contributor to the
-    Code for Life project under the terms found in my commit.
+    I confirm that I made this commit and I agree to being a contributor to the Code for Life project under the terms found in my commit.
     ```
 
 Your email address is now approved to make contributions! 🥳
@@ -183,6 +182,7 @@ If you have any trouble with the above process, please reach out to
 
 ### 👨‍💻 Contributors 👩‍💻
 
+<f.aucomte@hotmail.co.uk>
 <stefan.kairinos@ocado.com>
 <abdelrahman.deghedy@gmail.com>
 <juanl.bnr@gmail.com>

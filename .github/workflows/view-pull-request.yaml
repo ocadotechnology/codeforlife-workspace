@@ -1,0 +1,46 @@
+name: View Pull Request
+
+on:
+  workflow_call:
+    inputs:
+      number:
+        required: true
+        type: string # NOTE: github has a bug with type: number
+      outputs:
+        required: false
+        type: string
+      review-state:
+        required: false
+        type: string
+    outputs:
+      url:
+        value: ${{ jobs.view-pr.outputs.url }}
+    secrets:
+      GH_TOKEN:
+        required: true
+
+env:
+  PYTHON_VERSION: 3.11
+  WORKING_DIR: .github/scripts/python/view-pull-request
+
+jobs:
+  view-pr:
+    runs-on: ubuntu-latest
+    outputs:
+      url: ${{ steps.view-pr.outputs.URL }}
+    steps:
+      - uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          working-directory: ${{ env.WORKING_DIR }}
+
+      - name: 🕵️ View Pull Request
+        id: view-pr
+        shell: bash
+        working-directory: ${{ env.WORKING_DIR }}
+        run: pipenv run python .
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          NUMBER: ${{ inputs.number }}
+          OUTPUTS: ${{ inputs.outputs }}
+          REVIEW_STATE: ${{ inputs.review-state }}
