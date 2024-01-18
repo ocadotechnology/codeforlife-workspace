@@ -6,27 +6,27 @@ on:
       python-version:
         description: "The python version to set up."
         type: number
-        required: true
+        required: false
         default: 3.8
       working-directory:
         description: "The current working directory."
         type: string
-        required: true
+        required: false
         default: "."
       source-path:
         description: "The path of the source files."
         type: string
-        required: true
+        required: false
         default: "."
       check-django-migrations:
         description: "Check if there are pending Django migrations."
         type: boolean
-        required: true
+        required: false
         default: true
       pyproject-toml-directory:
         description: "The directory where pyproject.toml is located."
         type: string
-        required: true
+        required: false
         default: "."
 
 jobs:
@@ -35,6 +35,9 @@ jobs:
     env:
       PYPROJECT_TOML: ${{ inputs.pyproject-toml-directory }}/pyproject.toml
     steps:
+      - name: 🛫 Checkout
+        uses: actions/checkout@v4
+
       - name: 🐍 Set up Python ${{ inputs.python-version }} Environment
         uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
         with:
