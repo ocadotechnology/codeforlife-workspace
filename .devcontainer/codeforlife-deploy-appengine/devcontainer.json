@@ -1,0 +1,33 @@
+{
+  "name": "codeforlife-deploy-appengine",
+  "dockerComposeFile": [
+    "../../docker-compose.yml"
+  ],
+  "service": "base-service",
+  "shutdownAction": "none",
+  "workspaceFolder": "/workspace/codeforlife-deploy-appengine",
+  "remoteUser": "root",
+  // "postCreateCommand": "pipenv install --dev",
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.8"
+    },
+    "ghcr.io/devcontainers/features/terraform:1": {
+      "version": "1.6.6",
+      "tflint": "none",
+      "terragrunt": "none"
+    },
+    "ghcr.io/dhoeric/features/google-cloud-cli:1": {
+      "version": "447.0.0"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      //TODO: Specify preferred settings and extensions once defined
+      "settings": {},
+      "extensions": [
+        "ms-python.python"
+      ]
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "codeforlife-package-javascript",
+  "dockerComposeFile": [
+    "../../docker-compose.yml"
+  ],
+  "service": "base-service",
+  "shutdownAction": "none",
+  "workspaceFolder": "/workspace/codeforlife-package-javascript",
+  "remoteUser": "root",
+  "postCreateCommand": "npm install",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "18"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      //TODO: Specify preferred settings and extensions once defined
+      "settings": {},
+      "extensions": []
+    }
+  }
+}

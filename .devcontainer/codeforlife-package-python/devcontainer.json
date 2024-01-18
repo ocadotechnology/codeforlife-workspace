@@ -1,0 +1,27 @@
+{
+  "name": "codeforlife-package-python",
+  "dockerComposeFile": [
+    "../../docker-compose.yml"
+  ],
+  "service": "base-service",
+  "shutdownAction": "none",
+  "workspaceFolder": "/workspace/codeforlife-package-python",
+  "remoteUser": "root",
+  "postCreateCommand": "pipenv install --dev",
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.8"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      //TODO: Specify preferred settings and extensions once defined
+      "settings": {
+        "python.defaultInterpreterPath": ".venv/bin/python"
+      },
+      "extensions": [
+        "ms-python.python"
+      ]
+    }
+  }
+}
