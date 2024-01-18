@@ -1,19 +1,16 @@
 {
-  "name": "codeforlife-portal-react",
+  "name": "codeforlife-sso",
   "dockerComposeFile": [
     "../../docker-compose.yml"
   ],
   "service": "base-service",
   "shutdownAction": "none",
-  "workspaceFolder": "/workspace/codeforlife-portal-react",
+  "workspaceFolder": "/workspace/codeforlife-sso",
   "remoteUser": "root",
   "postCreateCommand": "./run",
   "features": {
     "ghcr.io/devcontainers/features/python:1": {
       "version": "3.8"
-    },
-    "ghcr.io/devcontainers/features/node:1": {
-      "version": "18"
     }
   },
   "customizations": {

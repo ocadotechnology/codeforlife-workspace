@@ -18,6 +18,7 @@
   },
   "customizations": {
     "vscode": {
+      //TODO: Specify preferred settings and extensions once defined
       "settings": {
         "python.defaultInterpreterPath": ".venv/bin/python"
       },
