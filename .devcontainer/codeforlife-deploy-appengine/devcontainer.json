@@ -7,7 +7,6 @@
   "shutdownAction": "none",
   "workspaceFolder": "/workspace/codeforlife-deploy-appengine",
   "remoteUser": "root",
-  // "postCreateCommand": "pipenv install --dev",
   "features": {
     "ghcr.io/devcontainers/features/python:1": {
       "version": "3.8"

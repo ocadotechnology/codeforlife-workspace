@@ -7,7 +7,7 @@
   "shutdownAction": "none",
   "workspaceFolder": "/workspace/codeforlife-package-javascript",
   "remoteUser": "root",
-  "postCreateCommand": "npm install",
+  "postCreateCommand": "yarn install",
   "features": {
     "ghcr.io/devcontainers/features/node:1": {
       "version": "18"
