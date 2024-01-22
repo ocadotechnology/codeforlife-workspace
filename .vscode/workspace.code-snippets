@@ -29,5 +29,23 @@
       " * ${1:__description__}",      
       " */"
     ]
+  },
+  "pylint.disable-next": {
+    "prefix": [
+      "# pylint"
+    ],
+    "scope": "python",
+    "body": [
+      "# pylint: disable-next=${1:__code_name__}"
+    ]
+  },
+  "mypy.ignore": {
+    "prefix": [
+      "# type"
+    ],
+    "scope": "python",
+    "body": [
+      "# type: ignore[${1:__code_name__}]"
+    ]
   }
 }
