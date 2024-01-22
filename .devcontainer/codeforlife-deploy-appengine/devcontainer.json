@@ -9,7 +9,8 @@
   "remoteUser": "root",
   "features": {
     "ghcr.io/devcontainers/features/python:1": {
-      "version": "3.8"
+      "version": "3.8",
+      "installTools": false
     },
     "ghcr.io/devcontainers/features/terraform:1": {
       "version": "1.6.6",
@@ -25,7 +26,24 @@
       //TODO: Specify preferred settings and extensions once defined
       "settings": {},
       "extensions": [
-        "ms-python.python"
+        "github.vscode-pull-request-github",
+        "redhat.vscode-yaml",
+        "davidanson.vscode-markdownlint",
+        "bierner.markdown-mermaid",
+        "ms-python.python",
+        "ms-python.pylint",
+        "ms-python.isort",
+        "ms-python.vscode-pylance",
+        "ms-python.mypy-type-checker",
+        "ms-python.black-formatter",
+        "streetsidesoftware.code-spell-checker",
+        "tamasfe.even-better-toml",
+        "kevinrose.vsc-python-indent",
+        "batisteo.vscode-django",
+        "njpwerner.autodocstring",
+        "visualstudioexptteam.vscodeintellicode",
+        "wholroyd.jinja",
+        "qwtel.sqlite-viewer"
       ]
     }
   }
