@@ -7,7 +7,7 @@
   "shutdownAction": "none",
   "workspaceFolder": "/workspace/codeforlife-portal-react",
   "remoteUser": "root",
-  "postCreateCommand": "./setup.sh",
+  "postCreateCommand": "./setup",
   "features": {
     "ghcr.io/devcontainers/features/python:1": {
       "version": "3.8",
@@ -24,7 +24,39 @@
     "vscode": {
       //TODO: Specify preferred settings and extensions once defined
       "settings": {
-        "python.defaultInterpreterPath": "backend/.venv/bin/python"
+        "python.defaultInterpreterPath": "backend/.venv/bin/python",
+        "autoDocstring.customTemplatePath": ".vscode/extensions/autoDocstring/docstring.mustache",
+        "files.exclude": {
+          "**/__pycache__": true,
+          "**/.pytest_cache": true,
+          "**/.mypy_cache": true,
+          "**/.hypothesis": true
+        },
+        "editor.tabSize": 2,
+        "editor.rulers": [
+          80
+        ],
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.organizeImports": "explicit"
+        },
+        "workbench.colorCustomizations": {
+          "editorRuler.foreground": "#008000"
+        },
+        "[md]": {
+          "editor.tabSize": 4
+        },
+        "[python]": {
+          "editor.tabSize": 4,
+          "editor.defaultFormatter": "ms-python.black-formatter",
+        },
+        "cSpell.words": [
+          "codeforlife",
+          "klass",
+          "ocado",
+          "kurono",
+          "pipenv"
+        ]
       },
       "extensions": [
         "github.vscode-pull-request-github",
