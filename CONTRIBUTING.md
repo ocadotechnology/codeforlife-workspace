@@ -109,11 +109,6 @@ construed in accordance with English law and the parties submit to the irrevocab
 understandings or communications, written or oral, between You and Us relating to its subject matter. This Agreement may
 be assigned by Us.
 
-6.3. This Agreement is subject to change. By signing this Agreement, You are
-agreeing to the current version and all future versions. It is Your
-responsibility to stay up-to-date with the latest version and inform Us if you
-disagree with our latest version by contacting <codeforlife@ocado.com>.
-
 ## Become a Contributor
 
 To contribute to Code for Life you must sign your email address below, affirming
