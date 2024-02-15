@@ -1,0 +1,33 @@
+name: Notify New Contribution Agreement
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - CONTRIBUTING.md
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+    env:
+      PYTHON_VERSION: 3.11
+      WORKING_DIR: .github/scripts/python/notify-new-contribution-agreement
+    steps:
+      - name: 🛫 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2 # get current and previous commit
+
+      - name: 🐍 Set up Python ${{ env.PYTHON_VERSION }} Environment
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
+        with:
+          checkout: 'false'
+          python-version: ${{ env.PYTHON_VERSION }}
+          working-directory: ${{ env.WORKING_DIR }}
+
+      - name: 🏃 Run Script
+        working-directory: ${{ env.WORKING_DIR }}
+        run: pipenv run python .
+        env:
+          AUTH: ${{ secrets.DOTDIGITAL_API_USER_AUTH }}
