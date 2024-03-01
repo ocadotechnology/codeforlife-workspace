@@ -1,8 +1,8 @@
 import typing as t
-
 import re
 import json
 from dataclasses import dataclass
+from io import TextIOWrapper
 
 JsonList = t.List["JsonValue"]
 JsonDict = t.Dict[str, "JsonValue"]
@@ -11,26 +11,35 @@ JsonValue = t.Union[None, int, str, bool, JsonList, JsonDict]
 
 @dataclass(frozen=True)
 class VSCode:
+    """JSON files contained within the .vscode directory."""
+
+    # The config for tasks.json.
     tasks: t.Optional[JsonDict] = None
+    # The config for launch.json.
     launch: t.Optional[JsonDict] = None
 
 
 @dataclass(frozen=True)
 class SubmoduleConfig:
+    """A configuration for a submodule."""
+
+    # The configs this config inherits.
     inherits: t.Optional[t.List[str]] = None
+    # The submodules this config should be merged into.
     submodules: t.Optional[t.List[str]] = None
+    # A description of this config's target.
     description: t.Optional[str] = None
+    # The VSCode config files to merge with.
     vscode: t.Optional[VSCode] = None
+    # The devcontainer config.
     devcontainer: t.Optional[JsonDict] = None
 
 
 ConfigDict = t.Dict[str, SubmoduleConfig]
 
 
-def load_jsonc_file(path: str) -> JsonValue:
-    with open(path, "r+", encoding="utf-8") as jsonc_file:
-        jsonc_file.
-        raw_json_with_comments = jsonc_file.read()
+def load_jsonc_file(jsonc_file: TextIOWrapper) -> JsonValue:
+    raw_json_with_comments = jsonc_file.read()
 
     # Remove single-line comments.
     raw_json_with_comments = re.sub(
@@ -115,30 +124,80 @@ def merge_json_dicts(current: JsonValue, latest: JsonDict):
 
 
 def merge_devcontainer(submodule: str, devcontainer: JsonDict):
-    devcontainer_path = f"{submodule}/.devcontainer.json"
+    with open(
+        f"{submodule}/.devcontainer.json", "w+", encoding="utf-8"
+    ) as devcontainer_file:
+        current_devcontainer = load_jsonc_file(devcontainer_file)
 
-    current_devcontainer = load_jsonc_file(devcontainer_path)
-    assert isinstance(current_devcontainer, dict)
+        devcontainer = merge_json_dicts(current_devcontainer, devcontainer)
 
-    devcontainer = merge_json_dicts(current_devcontainer, devcontainer)
-
-    with open(devcontainer_path, "w+", encoding="utf-8") as devcontainer_file:
-        json.dump(devcontainer, devcontainer_file)
+        json.dump(devcontainer, devcontainer_file, indent=2)
 
 
 def merge_vscode_tasks(submodule: str, tasks: JsonDict):
-    
-    current_tasks = 
-    
-    _tasks = tasks.pop("tasks")
-    
-    merge_json_dicts()
-    
-    for task in tasks["tasks"]
+    with open(f"{submodule}/.vscode/tasks.json", "w+", encoding="utf-8") as tasks_file:
+        current_tasks = load_jsonc_file(tasks_file)
+        assert isinstance(current_tasks, dict)
+
+        current_task_configs = current_tasks.pop("tasks")
+        assert isinstance(current_task_configs, list)
+        task_configs = tasks.pop("tasks")
+        assert isinstance(task_configs, list)
+
+        tasks = merge_json_dicts(current_tasks, tasks)
+
+        merged_task_configs = current_task_configs.copy()
+        for task_config in task_configs:
+            assert isinstance(task_config, dict)
+
+            for current_task_config in current_task_configs.copy():
+                assert isinstance(current_task_config, dict)
+
+                if task_config["label"] == current_task_config["label"]:
+                    current_task_configs.remove(current_task_config)
+                    merged_task_configs.remove(current_task_config)
+                    task_config = merge_json_dicts(current_task_config, task_config)
+                    break
+
+            merged_task_configs.append(task_config)
+
+        tasks["tasks"] = merged_task_configs
+
+        json.dump(tasks, tasks_file, indent=2)
 
 
 def merge_vscode_launch(submodule: str, launch: JsonDict):
-    pass
+    with open(
+        f"{submodule}/.vscode/launch.json", "w+", encoding="utf-8"
+    ) as launch_file:
+        current_launch = load_jsonc_file(launch_file)
+        assert isinstance(current_launch, dict)
+
+        current_launch_configs = current_launch.pop("configurations")
+        assert isinstance(current_launch_configs, list)
+        launch_configs = launch.pop("configurations")
+        assert isinstance(launch_configs, list)
+
+        launch = merge_json_dicts(current_launch, launch)
+
+        merged_launch_configs = current_launch_configs.copy()
+        for launch_config in launch_configs:
+            assert isinstance(launch_config, dict)
+
+            for current_launch_config in current_launch_configs.copy():
+                assert isinstance(current_launch_config, dict)
+
+                if launch_config["name"] == current_launch_config["name"]:
+                    current_launch_configs.remove(current_launch_config)
+                    merged_launch_configs.remove(current_launch_config)
+                    task_config = merge_json_dicts(current_launch_config, launch_config)
+                    break
+
+            merged_launch_configs.append(task_config)
+
+        launch["configurations"] = merged_launch_configs
+
+        json.dump(launch, launch_file, indent=2)
 
 
 def merge_config(submodule: str, config: SubmoduleConfig):
@@ -152,30 +211,41 @@ def merge_config(submodule: str, config: SubmoduleConfig):
 
 
 def main() -> None:
-    # JSON parse the file.
-    json_configs: t.Dict[str, JsonDict] = load_jsonc_file("submodules.config.jsonc")
+    # Load the config file.
+    with open("submodules.config.jsonc", "r", encoding="utf-8") as config_file:
+        json_configs = load_jsonc_file(config_file)
 
-    # Convert JSON objects to classes.
-    configs = {key: SubmoduleConfig(**config) for key, config in json_configs.items()}
+    # Convert the JSON objects to Python objects.
+    assert isinstance(json_configs, dict)
+    configs: ConfigDict = {}
+    for key, json_config in json_configs.items():
+        assert isinstance(json_config, dict)
+        configs[key] = SubmoduleConfig(**json_config)  # type: ignore[arg-type]
 
+    # Process each config.
     for key, config in configs.items():
+        # Skip config if it's not going to merged into any submodules.
         if not config.submodules:
             continue
 
+        # Print config details.
         print(f"Config: {key}")
         if config.description:
             print(f"Description: {config.description}")
 
+        # Get and print config inheritances.
         inheritances = get_inheritances(config, configs)
         if inheritances:
             print("Inherits:")
             for inheritance in inheritances:
                 print(f"    - {inheritance}")
 
+        # Print config submodules.
         print("Submodules:")
         for submodule in config.submodules:
             print(f"    - {submodule}")
 
+        # Merge inherited configs and config into submodule in order.
         for submodule in config.submodules:
             for inheritance in inheritances:
                 merge_config(submodule, configs[inheritance])
