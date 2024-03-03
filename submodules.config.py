@@ -51,38 +51,9 @@ class SubmoduleConfig:
 
 ConfigDict = t.Dict[str, SubmoduleConfig]
 
-
-def load_configs() -> ConfigDict:
-    # Load the config file.
-    with open("submodules.config.jsonc", "r", encoding="utf-8") as config_file:
-        json_configs = load_jsonc(config_file)
-
-    # Convert the JSON objects to Python objects.
-    assert isinstance(json_configs, dict)
-    configs: ConfigDict = {}
-    for key, json_config in json_configs.items():
-        assert isinstance(json_config, dict)
-
-        json_vscode = json_config.pop("vscode", None)
-        if json_vscode is None:
-            vscode = None
-        else:
-            assert isinstance(json_vscode, dict)
-            vscode = VSCode(**json_vscode)  # type: ignore[arg-type]
-
-        configs[key] = SubmoduleConfig(vscode=vscode, **json_config)  # type: ignore[arg-type]
-
-    # Assert each submodule is specified only once.
-    for submodule, count in Counter(
-        [
-            submodule
-            for config in configs.values()
-            for submodule in (config.submodules or [])
-        ]
-    ).items():
-        assert count == 1, f"Submodule: {submodule} specified more than once."
-
-    return configs
+# ------------------------------------------------------------------------------
+# General helpers
+# ------------------------------------------------------------------------------
 
 
 def load_jsonc(file: TextIOWrapper) -> JsonValue:
@@ -99,34 +70,9 @@ def load_jsonc(file: TextIOWrapper) -> JsonValue:
     return json.loads(raw_json_without_comments)
 
 
-def get_inheritances(config: SubmoduleConfig, configs: ConfigDict):
-
-    def _get_inheritances(
-        config: SubmoduleConfig, inheritances: t.List[str], index: int
-    ):
-        if not config.inherits:
-            return
-
-        config_inheritances = []
-        for inheritance in config.inherits:
-            if inheritance not in inheritances:
-                config_inheritances.append(inheritance)
-
-        for inheritance in config_inheritances[::-1]:
-            inheritances.insert(index, inheritance)
-
-        for inheritance in config_inheritances:
-            _get_inheritances(
-                configs[inheritance],
-                inheritances,
-                inheritances.index(inheritance),
-            )
-
-    inheritances: t.List[str] = []
-
-    _get_inheritances(config, inheritances, index=0)
-
-    return tuple(inheritances)
+# ------------------------------------------------------------------------------
+# Config handlers
+# ------------------------------------------------------------------------------
 
 
 def merge_json_lists(current: JsonValue, latest: JsonList):
@@ -313,6 +259,74 @@ def merge_config(submodule: str, config: SubmoduleConfig):
             merge_vscode_code_snippets(submodule, config.vscode.codeSnippets)
     if config.workspace:
         merge_workspace(submodule, config.workspace)
+
+
+# ------------------------------------------------------------------------------
+# Main script
+# ------------------------------------------------------------------------------
+
+
+def load_configs() -> ConfigDict:
+    # Load the config file.
+    with open("submodules.config.jsonc", "r", encoding="utf-8") as config_file:
+        json_configs = load_jsonc(config_file)
+
+    # Convert the JSON objects to Python objects.
+    assert isinstance(json_configs, dict)
+    configs: ConfigDict = {}
+    for key, json_config in json_configs.items():
+        assert isinstance(json_config, dict)
+
+        json_vscode = json_config.pop("vscode", None)
+        if json_vscode is None:
+            vscode = None
+        else:
+            assert isinstance(json_vscode, dict)
+            vscode = VSCode(**json_vscode)  # type: ignore[arg-type]
+
+        configs[key] = SubmoduleConfig(vscode=vscode, **json_config)  # type: ignore[arg-type]
+
+    # Assert each submodule is specified only once.
+    for submodule, count in Counter(
+        [
+            submodule
+            for config in configs.values()
+            for submodule in (config.submodules or [])
+        ]
+    ).items():
+        assert count == 1, f"Submodule: {submodule} specified more than once."
+
+    return configs
+
+
+def get_inheritances(config: SubmoduleConfig, configs: ConfigDict):
+
+    def _get_inheritances(
+        config: SubmoduleConfig, inheritances: t.List[str], index: int
+    ):
+        if not config.inherits:
+            return
+
+        config_inheritances = []
+        for inheritance in config.inherits:
+            if inheritance not in inheritances:
+                config_inheritances.append(inheritance)
+
+        for inheritance in config_inheritances[::-1]:
+            inheritances.insert(index, inheritance)
+
+        for inheritance in config_inheritances:
+            _get_inheritances(
+                configs[inheritance],
+                inheritances,
+                inheritances.index(inheritance),
+            )
+
+    inheritances: t.List[str] = []
+
+    _get_inheritances(config, inheritances, index=0)
+
+    return tuple(inheritances)
 
 
 def main() -> None:
