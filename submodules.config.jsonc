@@ -46,7 +46,7 @@
       }
     }
   },
-  "env.javascript": {
+  "javascript": {
     "inherits": [
       "base"
     ],
@@ -75,7 +75,7 @@
       }
     }
   },
-  "env.python": {
+  "python": {
     "inherits": [
       "base"
     ],
