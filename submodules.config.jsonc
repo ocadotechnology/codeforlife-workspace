@@ -1,26 +1,7 @@
-/* TODO: Write comment.
-
-The submodule config format:
-
-class Submodule:
-  description(str:optional)
-    A string describing this set of configurations.
-  devcontainer(Devcontainer:optional)
-    Text
-  .vscode(VSCode:optional)
-    Text
-
-class DevContainer:
-  text
-
-class VSCode:
-  tasks.json(json:optional)
-  launch.json(json:optional)
-    text
-*/
+// TODO: Write comment.
 {
   "base": {
-    "description": "Base configurations that apply to all devcontainers.",
+    "description": "Base configuration to be inherited by all other configurations.",
     "devcontainer": {
       "dockerComposeFile": [
         "../docker-compose.yml"
@@ -64,200 +45,253 @@ class VSCode:
         }
       }
     }
+  },
+  "env.javascript": {
+    "inherits": [
+      "base"
+    ],
+    "description": "A devcontainer with a javascript environment.",
+    "submodules": [
+      "codeforlife-package-javascript"
+    ],
+    "devcontainer": {
+      "features": {
+        "ghcr.io/devcontainers/features/node:1": {
+          "version": "18"
+        }
+      },
+      "customizations": {
+        "vscode": {
+          "settings": {
+            "typescript.preferences.quoteStyle": "single"
+          },
+          "extensions": [
+            "dbaeumer.vscode-eslint"
+            // "dsznajder.es7-react-js-snippets",
+            // "ecmel.vscode-html-css",
+            // "jock.svg"
+          ]
+        }
+      }
+    }
+  },
+  "env.python": {
+    "inherits": [
+      "base"
+    ],
+    "description": "A devcontainer with a python environment.",
+    "submodules": [
+      "codeforlife-deploy-appengine",
+      "codeforlife-package-python",
+      "codeforlife-portal",
+      "rapid-router"
+    ],
+    "devcontainer": {
+      "features": {
+        "ghcr.io/devcontainers/features/python:1": {
+          "version": "3.8",
+          "installTools": false
+        },
+        "ghcr.io/devcontainers-contrib/features/pipenv:2": {
+          "version": "2023.11.15"
+        }
+      },
+      "customizations": {
+        "vscode": {
+          "settings": {
+            "python.defaultInterpreterPath": ".venv/bin/python",
+            "python.testing.unittestEnabled": false,
+            "python.testing.pytestEnabled": true,
+            "[python]": {
+              "editor.tabSize": 4,
+              "editor.defaultFormatter": "ms-python.black-formatter"
+            },
+            "files.exclude": {
+              "**/__pycache__": true,
+              "**/.pytest_cache": true,
+              "**/.mypy_cache": true,
+              "**/.hypothesis": true
+            },
+            "autoDocstring.customTemplatePath": ".vscode/extensions/autoDocstring/docstring.mustache",
+            "isort.path": [
+              ".venv/bin/python",
+              "-m",
+              "isort"
+            ],
+            "isort.args": [
+              "--settings-file=pyproject.toml"
+            ],
+            "black-formatter.path": [
+              ".venv/bin/python",
+              "-m",
+              "black"
+            ],
+            "black-formatter.args": [
+              "--config",
+              "pyproject.toml"
+            ],
+            "mypy-type-checker.path": [
+              ".venv/bin/python",
+              "-m",
+              "mypy"
+            ],
+            "mypy-type-checker.args": [
+              "--config-file=pyproject.toml"
+            ],
+            "pylint.path": [
+              ".venv/bin/python",
+              "-m",
+              "pylint"
+            ],
+            "pylint.args": [
+              "--rcfile=pyproject.toml"
+            ],
+            "python.testing.pytestArgs": [
+              "-n=auto",
+              "-c=pyproject.toml",
+              "."
+            ]
+          },
+          "extensions": [
+            "ms-python.python",
+            "ms-python.pylint",
+            "ms-python.isort",
+            "ms-python.vscode-pylance",
+            "ms-python.mypy-type-checker",
+            "ms-python.black-formatter",
+            "qwtel.sqlite-viewer",
+            "njpwerner.autodocstring"
+          ]
+        }
+      }
+    },
+    "vscode": {
+      "launch": {
+        "version": "0.2.0",
+        "configurations": [
+          {
+            "name": "Python: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": false
+          },
+          {
+            "name": "Pytest",
+            "type": "debugpy",
+            "request": "test",
+            "justMyCode": false,
+            "presentation": {
+              "hidden": true
+            }
+          }
+        ]
+      }
+    }
+  },
+  "service": {
+    "inherits": [
+      "env.javascript",
+      "env.python"
+    ],
+    "description": "A devcontainer for a micro-service.",
+    "submodules": [
+      "codeforlife-service-template",
+      "codeforlife-portal-react",
+      "codeforlife-sso"
+    ],
+    "devcontainer": {
+      "postCreateCommand": "./setup",
+      "mounts": [
+        "source=./codeforlife-package-python,target=/workspace/codeforlife-package-python,type=bind,consistency=cached"
+      ],
+      "customizations": {
+        "vscode": {
+          "settings": {
+            "python.defaultInterpreterPath": "backend/.venv/bin/python",
+            "python.analysis.extraPaths": [
+              "../codeforlife-package-python"
+            ],
+            "isort.path": [
+              "backend/.venv/bin/python",
+              "-m",
+              "isort"
+            ],
+            "isort.args": [
+              "--settings-file=backend/pyproject.toml"
+            ],
+            "black-formatter.cwd": "${workspaceFolder}/backend",
+            "mypy-type-checker.cwd": "${workspaceFolder}/backend",
+            "pylint.cwd": "${workspaceFolder}/backend",
+            "python.testing.cwd": "${workspaceFolder}/backend"
+          }
+        }
+      }
+    },
+    "vscode": {
+      "tasks": {
+        "version": "2.0.0",
+        "tasks": [
+          {
+            "label": "start-react-dev-server",
+            "isBackground": true,
+            "type": "npm",
+            "script": "start",
+            "options": {
+              "env": {
+                "BROWSER": "none"
+              }
+            },
+            "path": "frontend",
+            "problemMatcher": []
+          },
+          {
+            "label": "pipenv-install-dev",
+            "type": "shell",
+            "options": {
+              "cwd": "${workspaceFolder}/backend"
+            },
+            "command": "pipenv install --dev"
+          },
+          {
+            "label": "migrate-db",
+            "type": "shell",
+            "options": {
+              "cwd": "${workspaceFolder}/backend"
+            },
+            "dependsOn": [
+              "pipenv-install-dev"
+            ],
+            "command": "pipenv run python ./manage.py migrate"
+          }
+        ]
+      },
+      "launch": {
+        "version": "0.2.0",
+        "configurations": [
+          {
+            "name": "React Dev Server",
+            "type": "chrome",
+            "request": "launch",
+            "url": "http://localhost:3000",
+            "preLaunchTask": "start-react-dev-server"
+          },
+          {
+            "name": "Django Server",
+            "type": "debugpy",
+            "request": "launch",
+            "django": true,
+            "justMyCode": false,
+            "program": "${workspaceFolder}/backend/manage.py",
+            "args": [
+              "runserver",
+              "localhost:8000"
+            ],
+            "preLaunchTask": "migrate-db"
+          }
+        ]
+      }
+    }
   }
-  // "env.javascript": {
-  //   "inherits": [
-  //     "base"
-  //   ],
-  //   "description": "",
-  //   "paths": [
-  //     "codeforlife-package-javascript/.devcontainer.json"
-  //   ],
-  //   "devcontainer": {
-  //     "customizations": {
-  //       "vscode": {
-  //         "settings": {
-  //           "typescript.preferences.quoteStyle": "single"
-  //         },
-  //         "extensions": [
-  //           "dbaeumer.vscode-eslint"
-  //           // "dsznajder.es7-react-js-snippets",
-  //           // "ecmel.vscode-html-css",
-  //           // "jock.svg"
-  //         ]
-  //       }
-  //     }
-  //   }
-  // },
-  // "env.python": {
-  //   "inherits": [
-  //     "base"
-  //   ],
-  //   "description": "Devcontainers with python environments.",
-  //   "paths": [
-  //     "codeforlife-deploy-appengine/.devcontainer.json",
-  //     "codeforlife-package-python/.devcontainer.json",
-  //     "codeforlife-portal/.devcontainer.json",
-  //     "rapid-router/.devcontainer.json"
-  //   ],
-  //   "devcontainer": {
-  //     "features": {
-  //       "ghcr.io/devcontainers/features/python:1": {
-  //         "version": "3.8",
-  //         "installTools": false
-  //       },
-  //       "ghcr.io/devcontainers-contrib/features/pipenv:2": {
-  //         "version": "2023.11.15"
-  //       },
-  //       "ghcr.io/devcontainers/features/node:1": {
-  //         "version": "18"
-  //       }
-  //     },
-  //     "customizations": {
-  //       "vscode": {
-  //         "settings": {
-  //           "python.defaultInterpreterPath": ".venv/bin/python",
-  //           "python.testing.unittestEnabled": false,
-  //           "python.testing.pytestEnabled": true,
-  //           "[python]": {
-  //             "editor.tabSize": 4,
-  //             "editor.defaultFormatter": "ms-python.black-formatter"
-  //           },
-  //           "files.exclude": {
-  //             "**/__pycache__": true,
-  //             "**/.pytest_cache": true,
-  //             "**/.mypy_cache": true,
-  //             "**/.hypothesis": true
-  //           },
-  //           "autoDocstring.customTemplatePath": ".vscode/extensions/autoDocstring/docstring.mustache"
-  //         },
-  //         "extensions": [
-  //           "ms-python.python",
-  //           "ms-python.pylint",
-  //           "ms-python.isort",
-  //           "ms-python.vscode-pylance",
-  //           "ms-python.mypy-type-checker",
-  //           "ms-python.black-formatter",
-  //           "qwtel.sqlite-viewer"
-  //         ]
-  //       }
-  //     }
-  //   },
-  //   "vscode": {
-  //     "launch": {
-  //       "version": "0.2.0",
-  //       "configurations": [
-  //         {
-  //           "name": "Python: Current File",
-  //           "type": "debugpy",
-  //           "request": "launch",
-  //           "program": "${file}",
-  //           "console": "integratedTerminal",
-  //           "justMyCode": false
-  //         },
-  //         {
-  //           "name": "Pytest",
-  //           "type": "debugpy",
-  //           "request": "test",
-  //           "justMyCode": false,
-  //           "presentation": {
-  //             "hidden": true
-  //           }
-  //         }
-  //       ]
-  //     }
-  //   }
-  // },
-  // "service": {
-  //   "inherits": [
-  //     // "env.javascript"
-  //     "env.python"
-  //   ],
-  //   "description": "Configurations that apply to devcontainers for services.",
-  //   "paths": [
-  //     "codeforlife-service-template/.devcontainer.json",
-  //     "codeforlife-portal-react/.devcontainer.json",
-  //     "codeforlife-sso/.devcontainer.json"
-  //   ],
-  //   "devcontainer": {
-  //     "postCreateCommand": "./setup",
-  //     "mounts": [
-  //       "source=./codeforlife-package-python,target=/workspace/codeforlife-package-python,type=bind,consistency=cached"
-  //     ],
-  //     "customizations": {
-  //       "vscode": {
-  //         "settings": {
-  //           "python.defaultInterpreterPath": "backend/.venv/bin/python",
-  //           "python.analysis.extraPaths": [
-  //             "../codeforlife-package-python"
-  //           ]
-  //         }
-  //       }
-  //     }
-  //   },
-  //   "vscode": {
-  //     "tasks": {
-  //       "version": "2.0.0",
-  //       "tasks": [
-  //         {
-  //           "label": "start-react-dev-server",
-  //           "isBackground": true,
-  //           "type": "npm",
-  //           "script": "start",
-  //           "options": {
-  //             "env": {
-  //               "BROWSER": "none"
-  //             }
-  //           },
-  //           "path": "frontend",
-  //           "problemMatcher": []
-  //         },
-  //         {
-  //           "label": "pipenv-install-dev",
-  //           "type": "shell",
-  //           "options": {
-  //             "cwd": "${workspaceFolder}/backend"
-  //           },
-  //           "command": "pipenv install --dev"
-  //         },
-  //         {
-  //           "label": "migrate-db",
-  //           "type": "shell",
-  //           "options": {
-  //             "cwd": "${workspaceFolder}/backend"
-  //           },
-  //           "dependsOn": [
-  //             "pipenv-install-dev"
-  //           ],
-  //           "command": "pipenv run python ./manage.py migrate"
-  //         }
-  //       ]
-  //     },
-  //     "launch": {
-  //       "version": "0.2.0",
-  //       "configurations": [
-  //         {
-  //           "type": "chrome",
-  //           "request": "launch",
-  //           "name": "React Dev Server",
-  //           "url": "http://localhost:3000",
-  //           "preLaunchTask": "start-react-dev-server"
-  //         },
-  //         {
-  //           "name": "Django Server",
-  //           "type": "debugpy",
-  //           "request": "launch",
-  //           "django": true,
-  //           "justMyCode": false,
-  //           "program": "${workspaceFolder}/backend/manage.py",
-  //           "args": [
-  //             "runserver",
-  //             "localhost:8000"
-  //           ],
-  //           "preLaunchTask": "migrate-db"
-  //         }
-  //       ]
-  //     }
-  //   }
-  // }
 }

@@ -1,9 +1,19 @@
-import typing as t
-import re
+"""
+© Ocado Group
+Created on 02/03/2024 at 23:46:28(+00:00).
+
+TODO: write script description.
+"""
+
 import json
+import re
+import typing as t
+from collections import Counter
 from dataclasses import dataclass
 from io import TextIOWrapper
+from pathlib import Path
 
+# JSON type hints.
 JsonList = t.List["JsonValue"]
 JsonDict = t.Dict[str, "JsonValue"]
 JsonValue = t.Union[None, int, str, bool, JsonList, JsonDict]
@@ -38,20 +48,48 @@ class SubmoduleConfig:
 ConfigDict = t.Dict[str, SubmoduleConfig]
 
 
-def load_jsonc_file(jsonc_file: TextIOWrapper) -> JsonValue:
-    raw_json_with_comments = jsonc_file.read()
+def load_configs() -> ConfigDict:
+    # Load the config file.
+    with open("submodules.config.jsonc", "r", encoding="utf-8") as config_file:
+        json_configs = load_jsonc(config_file)
 
-    # Remove single-line comments.
-    raw_json_with_comments = re.sub(
-        r"^ *\/\/.*", "", raw_json_with_comments, flags=re.MULTILINE
-    )
+    # Convert the JSON objects to Python objects.
+    assert isinstance(json_configs, dict)
+    configs: ConfigDict = {}
+    for key, json_config in json_configs.items():
+        assert isinstance(json_config, dict)
 
-    # Remove multi-line comments.
+        json_vscode = json_config.pop("vscode", None)
+        if json_vscode is None:
+            vscode = None
+        else:
+            assert isinstance(json_vscode, dict)
+            vscode = VSCode(**json_vscode)  # type: ignore[arg-type]
+
+        configs[key] = SubmoduleConfig(vscode=vscode, **json_config)  # type: ignore[arg-type]
+
+    # Assert each submodule is specified only once.
+    for submodule, count in Counter(
+        [
+            submodule
+            for config in configs.values()
+            for submodule in (config.submodules or [])
+        ]
+    ).items():
+        assert count == 1, f"Submodule: {submodule} specified more than once."
+
+    return configs
+
+
+def load_jsonc(file: TextIOWrapper) -> JsonValue:
+    file.seek(0)
+    raw_json_with_comments = file.read()
+    if not raw_json_with_comments:
+        return None
+
+    # Remove single-line comments that are only preceded by white spaces.
     raw_json_without_comments = re.sub(
-        r"^ *\/\*.*\*\/",
-        "",
-        raw_json_with_comments,
-        flags=re.MULTILINE | re.DOTALL,
+        r"^ *\/\/.*", "", raw_json_with_comments, flags=re.MULTILINE
     )
 
     return json.loads(raw_json_without_comments)
@@ -125,77 +163,88 @@ def merge_json_dicts(current: JsonValue, latest: JsonDict):
 
 def merge_devcontainer(submodule: str, devcontainer: JsonDict):
     with open(
-        f"{submodule}/.devcontainer.json", "w+", encoding="utf-8"
+        f"{submodule}/.devcontainer.json", "a+", encoding="utf-8"
     ) as devcontainer_file:
-        current_devcontainer = load_jsonc_file(devcontainer_file)
+        current_devcontainer = load_jsonc(devcontainer_file)
 
         devcontainer = merge_json_dicts(current_devcontainer, devcontainer)
 
+        devcontainer_file.truncate(0)
         json.dump(devcontainer, devcontainer_file, indent=2)
 
 
-def merge_vscode_tasks(submodule: str, tasks: JsonDict):
-    with open(f"{submodule}/.vscode/tasks.json", "w+", encoding="utf-8") as tasks_file:
-        current_tasks = load_jsonc_file(tasks_file)
-        assert isinstance(current_tasks, dict)
+def merge_json_lists_of_json_objects(
+    current: JsonDict,
+    latest: JsonDict,
+    list_names_and_obj_id_fields: t.Iterable[t.Tuple[str, str]],
+):
+    latest = latest.copy()
 
-        current_task_configs = current_tasks.pop("tasks")
-        assert isinstance(current_task_configs, list)
-        task_configs = tasks.pop("tasks")
-        assert isinstance(task_configs, list)
+    obj_lists: t.Dict[str, t.Tuple[JsonList, JsonList]] = {}
+    for list_name, _ in list_names_and_obj_id_fields:
+        current_list = current.pop(list_name)
+        assert isinstance(current_list, list)
+        latest_list = latest.pop(list_name)
+        assert isinstance(latest_list, list)
 
-        tasks = merge_json_dicts(current_tasks, tasks)
+        obj_lists[list_name] = (current_list, latest_list)
 
-        merged_task_configs = current_task_configs.copy()
-        for task_config in task_configs:
-            assert isinstance(task_config, dict)
+    merged = merge_json_dicts(current, latest)
 
-            for current_task_config in current_task_configs.copy():
-                assert isinstance(current_task_config, dict)
+    for list_name, obj_id_field in list_names_and_obj_id_fields:
+        current_list, latest_list = obj_lists[list_name]
 
-                if task_config["label"] == current_task_config["label"]:
-                    current_task_configs.remove(current_task_config)
-                    merged_task_configs.remove(current_task_config)
-                    task_config = merge_json_dicts(current_task_config, task_config)
+        merged_list = current_list.copy()
+        for obj in latest_list:
+            assert isinstance(obj, dict)
+
+            for current_obj in current_list.copy():
+                assert isinstance(current_obj, dict)
+
+                if obj[obj_id_field] == current_obj[obj_id_field]:
+                    current_list.remove(current_obj)
+                    merged_list.remove(current_obj)
+
+                    obj = merge_json_dicts(current_obj, obj)
                     break
 
-            merged_task_configs.append(task_config)
+            merged_list.append(obj)
 
-        tasks["tasks"] = merged_task_configs
+        merged[list_name] = merged_list
+
+    return merged
+
+
+def merge_vscode_tasks(submodule: str, tasks: JsonDict):
+    with open(f"{submodule}/.vscode/tasks.json", "a+", encoding="utf-8") as tasks_file:
+        current_tasks = load_jsonc(tasks_file)
+        if current_tasks is not None:
+            assert isinstance(current_tasks, dict)
+            tasks = merge_json_lists_of_json_objects(
+                current_tasks,
+                tasks,
+                list_names_and_obj_id_fields=[("tasks", "label")],
+            )
+
+            tasks_file.truncate(0)
 
         json.dump(tasks, tasks_file, indent=2)
 
 
 def merge_vscode_launch(submodule: str, launch: JsonDict):
     with open(
-        f"{submodule}/.vscode/launch.json", "w+", encoding="utf-8"
+        f"{submodule}/.vscode/launch.json", "a+", encoding="utf-8"
     ) as launch_file:
-        current_launch = load_jsonc_file(launch_file)
-        assert isinstance(current_launch, dict)
+        current_launch = load_jsonc(launch_file)
+        if current_launch is not None:
+            assert isinstance(current_launch, dict)
+            launch = merge_json_lists_of_json_objects(
+                current_launch,
+                launch,
+                list_names_and_obj_id_fields=[("configurations", "name")],
+            )
 
-        current_launch_configs = current_launch.pop("configurations")
-        assert isinstance(current_launch_configs, list)
-        launch_configs = launch.pop("configurations")
-        assert isinstance(launch_configs, list)
-
-        launch = merge_json_dicts(current_launch, launch)
-
-        merged_launch_configs = current_launch_configs.copy()
-        for launch_config in launch_configs:
-            assert isinstance(launch_config, dict)
-
-            for current_launch_config in current_launch_configs.copy():
-                assert isinstance(current_launch_config, dict)
-
-                if launch_config["name"] == current_launch_config["name"]:
-                    current_launch_configs.remove(current_launch_config)
-                    merged_launch_configs.remove(current_launch_config)
-                    task_config = merge_json_dicts(current_launch_config, launch_config)
-                    break
-
-            merged_launch_configs.append(task_config)
-
-        launch["configurations"] = merged_launch_configs
+            launch_file.truncate(0)
 
         json.dump(launch, launch_file, indent=2)
 
@@ -204,6 +253,8 @@ def merge_config(submodule: str, config: SubmoduleConfig):
     if config.devcontainer:
         merge_devcontainer(submodule, config.devcontainer)
     if config.vscode:
+        # Create .vscode directory if not exists.
+        Path(f"{submodule}/.vscode").mkdir(exist_ok=True)
         if config.vscode.tasks:
             merge_vscode_tasks(submodule, config.vscode.tasks)
         if config.vscode.launch:
@@ -211,16 +262,7 @@ def merge_config(submodule: str, config: SubmoduleConfig):
 
 
 def main() -> None:
-    # Load the config file.
-    with open("submodules.config.jsonc", "r", encoding="utf-8") as config_file:
-        json_configs = load_jsonc_file(config_file)
-
-    # Convert the JSON objects to Python objects.
-    assert isinstance(json_configs, dict)
-    configs: ConfigDict = {}
-    for key, json_config in json_configs.items():
-        assert isinstance(json_config, dict)
-        configs[key] = SubmoduleConfig(**json_config)  # type: ignore[arg-type]
+    configs = load_configs()
 
     # Process each config.
     for key, config in configs.items():
@@ -229,7 +271,7 @@ def main() -> None:
             continue
 
         # Print config details.
-        print(f"Config: {key}")
+        print(f"Key: {key}")
         if config.description:
             print(f"Description: {config.description}")
 
@@ -238,7 +280,15 @@ def main() -> None:
         if inheritances:
             print("Inherits:")
             for inheritance in inheritances:
-                print(f"    - {inheritance}")
+                inheritance_description = configs[inheritance].description
+                print(
+                    f"    - {inheritance}"
+                    + (
+                        f": {inheritance_description}"
+                        if inheritance_description
+                        else ""
+                    )
+                )
 
         # Print config submodules.
         print("Submodules:")
@@ -251,6 +301,10 @@ def main() -> None:
                 merge_config(submodule, configs[inheritance])
 
             merge_config(submodule, config)
+
+        print("---")
+
+    print("Success!")
 
 
 if __name__ == "__main__":
