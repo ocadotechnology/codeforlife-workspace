@@ -13,6 +13,11 @@ from dataclasses import dataclass
 from io import TextIOWrapper
 from pathlib import Path
 
+
+# ------------------------------------------------------------------------------
+# Data types and classes
+# ------------------------------------------------------------------------------
+
 # JSON type hints.
 JsonList = t.List["JsonValue"]
 JsonDict = t.Dict[str, "JsonValue"]
