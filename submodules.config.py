@@ -27,6 +27,8 @@ class VSCode:
     tasks: t.Optional[JsonDict] = None
     # The config for launch.json.
     launch: t.Optional[JsonDict] = None
+    # The config for codeforlife.code-snippets.
+    codeSnippets: t.Optional[JsonDict] = None
 
 
 @dataclass(frozen=True)
@@ -110,8 +112,7 @@ def get_inheritances(config: SubmoduleConfig, configs: ConfigDict):
             if inheritance not in inheritances:
                 config_inheritances.append(inheritance)
 
-        config_inheritances.reverse()
-        for inheritance in config_inheritances:
+        for inheritance in config_inheritances[::-1]:
             inheritances.insert(index, inheritance)
 
         for inheritance in config_inheritances:
@@ -153,12 +154,24 @@ def merge_json_dicts(current: JsonValue, latest: JsonDict):
     json_dict = current.copy()
 
     for key, value in latest.items():
+        override_value = key.startswith("!")
+        if override_value:
+            key = key[1:]
+
         if key not in json_dict or value is None or isinstance(value, (str, int, bool)):
             json_dict[key] = value
         elif isinstance(value, dict):
-            json_dict[key] = merge_json_dicts(json_dict[key], value)
+            json_dict[key] = (
+                value.copy()
+                if override_value
+                else merge_json_dicts(json_dict[key], value)
+            )
         elif isinstance(value, list):
-            json_dict[key] = merge_json_lists(json_dict[key], value)
+            json_dict[key] = (
+                value.copy()
+                if override_value
+                else merge_json_lists(json_dict[key], value)
+            )
 
     return json_dict
 
@@ -172,7 +185,7 @@ def merge_devcontainer(submodule: str, devcontainer: JsonDict):
         devcontainer = merge_json_dicts(current_devcontainer, devcontainer)
 
         devcontainer_file.truncate(0)
-        json.dump(devcontainer, devcontainer_file, indent=2)
+        json.dump(devcontainer, devcontainer_file, indent=2, sort_keys=True)
 
 
 def merge_json_lists_of_json_objects(
@@ -230,7 +243,7 @@ def merge_vscode_tasks(submodule: str, tasks: JsonDict):
 
             tasks_file.truncate(0)
 
-        json.dump(tasks, tasks_file, indent=2)
+        json.dump(tasks, tasks_file, indent=2, sort_keys=True)
 
 
 def merge_vscode_launch(submodule: str, launch: JsonDict):
@@ -248,7 +261,24 @@ def merge_vscode_launch(submodule: str, launch: JsonDict):
 
             launch_file.truncate(0)
 
-        json.dump(launch, launch_file, indent=2)
+        json.dump(launch, launch_file, indent=2, sort_keys=True)
+
+
+def merge_vscode_code_snippets(submodule: str, code_snippets: JsonDict):
+    with open(
+        f"{submodule}/.vscode/codeforlife.code-snippets", "a+", encoding="utf-8"
+    ) as code_snippets_file:
+        current_code_snippets = load_jsonc(code_snippets_file)
+        if current_code_snippets is not None:
+            assert isinstance(current_code_snippets, dict)
+
+            for key, code_snippet in code_snippets.items():
+                current_code_snippets[key] = code_snippet
+            code_snippets = current_code_snippets
+
+            code_snippets_file.truncate(0)
+
+        json.dump(code_snippets, code_snippets_file, indent=2, sort_keys=True)
 
 
 def merge_workspace(submodule: str, workspace: JsonDict):
@@ -266,7 +296,7 @@ def merge_workspace(submodule: str, workspace: JsonDict):
 
             workspace_file.truncate(0)
 
-        json.dump(workspace, workspace_file, indent=2)
+        json.dump(workspace, workspace_file, indent=2, sort_keys=True)
 
 
 def merge_config(submodule: str, config: SubmoduleConfig):
@@ -279,6 +309,8 @@ def merge_config(submodule: str, config: SubmoduleConfig):
             merge_vscode_tasks(submodule, config.vscode.tasks)
         if config.vscode.launch:
             merge_vscode_launch(submodule, config.vscode.launch)
+        if config.vscode.codeSnippets:
+            merge_vscode_code_snippets(submodule, config.vscode.codeSnippets)
     if config.workspace:
         merge_workspace(submodule, config.workspace)
 
