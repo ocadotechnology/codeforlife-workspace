@@ -1,4 +1,4 @@
-// TODO: Write comment.
+// TODO: Write comment, add workspace support
 {
   "base": {
     "description": "Base configuration to be inherited by all other configurations.",
@@ -192,8 +192,8 @@
   },
   "service": {
     "inherits": [
-      "env.javascript",
-      "env.python"
+      "javascript",
+      "python"
     ],
     "description": "A devcontainer for a micro-service.",
     "submodules": [
@@ -204,6 +204,7 @@
     "devcontainer": {
       "postCreateCommand": "./setup",
       "mounts": [
+        "source=./codeforlife-package-javascript,target=/workspace/codeforlife-package-javascript,type=bind,consistency=cached",
         "source=./codeforlife-package-python,target=/workspace/codeforlife-package-python,type=bind,consistency=cached"
       ],
       "customizations": {
@@ -289,6 +290,61 @@
               "localhost:8000"
             ],
             "preLaunchTask": "migrate-db"
+          }
+        ]
+      }
+    }
+  },
+  "service+sso": {
+    "inherits": [
+      "service"
+    ],
+    "description": "A service that also runs the SSO service in the background.",
+    // TODO: set submodules after testing how this would work.
+    "submodules": [],
+    "devcontainer": {
+      "mounts": [
+        "source=./codeforlife-sso,target=/workspace/codeforlife-sso,type=bind,consistency=cached"
+      ]
+    },
+    "vscode": {
+      "tasks": {
+        "version": "2.0.0",
+        "tasks": [
+          {
+            "label": "run-sso-server",
+            "type": "shell",
+            "isBackground": true,
+            "options": {
+              "cwd": "${workspaceFolder}/../codeforlife-sso/backend",
+              "env": {
+                "DB_NAME": "${fileWorkspaceFolder}/backend/db.sqlite3",
+                "SERVICE_NAME": "sso",
+                "SERVICE_PORT": "8001"
+              }
+            },
+            "dependsOn": [
+              "migrate-db"
+            ],
+            "command": "pipenv run python ./manage.py runserver localhost:8001"
+          }
+        ]
+      },
+      "launch": {
+        "version": "0.2.0",
+        "configurations": [
+          {
+            "name": "Django Server",
+            "type": "python",
+            "request": "launch",
+            "django": true,
+            "justMyCode": false,
+            "program": "${fileWorkspaceFolder}/backend/manage.py",
+            "args": [
+              "runserver",
+              "localhost:8000"
+            ],
+            "preLaunchTask": "run-sso-server"
           }
         ]
       }
