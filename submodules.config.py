@@ -43,6 +43,8 @@ class SubmoduleConfig:
     vscode: t.Optional[VSCode] = None
     # The devcontainer config.
     devcontainer: t.Optional[JsonDict] = None
+    # The workspace config.
+    workspace: t.Optional[JsonDict] = None
 
 
 ConfigDict = t.Dict[str, SubmoduleConfig]
@@ -249,6 +251,24 @@ def merge_vscode_launch(submodule: str, launch: JsonDict):
         json.dump(launch, launch_file, indent=2)
 
 
+def merge_workspace(submodule: str, workspace: JsonDict):
+    with open(
+        f"{submodule}/codeforlife.code-workspace", "a+", encoding="utf-8"
+    ) as workspace_file:
+        current_workspace = load_jsonc(workspace_file)
+        if current_workspace is not None:
+            assert isinstance(current_workspace, dict)
+            workspace = merge_json_lists_of_json_objects(
+                current_workspace,
+                workspace,
+                list_names_and_obj_id_fields=[("folders", "path")],
+            )
+
+            workspace_file.truncate(0)
+
+        json.dump(workspace, workspace_file, indent=2)
+
+
 def merge_config(submodule: str, config: SubmoduleConfig):
     if config.devcontainer:
         merge_devcontainer(submodule, config.devcontainer)
@@ -259,6 +279,8 @@ def merge_config(submodule: str, config: SubmoduleConfig):
             merge_vscode_tasks(submodule, config.vscode.tasks)
         if config.vscode.launch:
             merge_vscode_launch(submodule, config.vscode.launch)
+    if config.workspace:
+        merge_workspace(submodule, config.workspace)
 
 
 def main() -> None:

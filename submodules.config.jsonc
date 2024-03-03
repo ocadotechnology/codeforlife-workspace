@@ -1,4 +1,4 @@
-// TODO: Write comment, add workspace support
+// TODO: Write comment
 {
   "base": {
     "description": "Base configuration to be inherited by all other configurations.",
@@ -293,6 +293,14 @@
           }
         ]
       }
+    },
+    "workspace": {
+      "folders": [
+        {
+          "path": "../codeforlife-package-python",
+          "name": "package-python"
+        }
+      ]
     }
   },
   "service+sso": {
@@ -348,6 +356,14 @@
           }
         ]
       }
+    },
+    "workspace": {
+      "folders": [
+        {
+          "path": "../codeforlife-sso",
+          "name": "sso"
+        }
+      ]
     }
   }
 }
