@@ -1,0 +1,22 @@
+{
+  "configurations": [
+    {
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "name": "Python: Current File",
+      "program": "${file}",
+      "request": "launch",
+      "type": "debugpy"
+    },
+    {
+      "justMyCode": false,
+      "name": "Pytest",
+      "presentation": {
+        "hidden": true
+      },
+      "request": "test",
+      "type": "debugpy"
+    }
+  ],
+  "version": "0.2.0"
+}
