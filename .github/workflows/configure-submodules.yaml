@@ -2,8 +2,8 @@ name: Configure Submodules
 
 on:
   push:
-    # branches:
-    #   - main
+    branches:
+      - main
     paths:
       - '.submodules/**'
   workflow_dispatch:
