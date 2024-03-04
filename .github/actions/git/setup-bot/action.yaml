@@ -3,7 +3,7 @@ description: "Sets up CFL's bot as the Git user."
 runs:
   using: composite
   steps:
-    - name: ⚙️ Set up cfl-bot as Git user
+    - name: 🤖 Set up cfl-bot as Git user
       shell: bash
       run: |
         git config --local user.name cfl-bot
