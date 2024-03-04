@@ -6,6 +6,7 @@ TODO: write script description.
 """
 
 import json
+import os
 import re
 import typing as t
 from collections import Counter
@@ -137,7 +138,7 @@ def merge_json_dicts(current: JsonValue, latest: JsonDict):
 
 def merge_devcontainer(submodule: str, devcontainer: JsonDict):
     with open(
-        f"{submodule}/.devcontainer.json", "a+", encoding="utf-8"
+        f"../{submodule}/.devcontainer.json", "a+", encoding="utf-8"
     ) as devcontainer_file:
         current_devcontainer = load_jsonc(devcontainer_file)
 
@@ -191,7 +192,7 @@ def merge_json_lists_of_json_objects(
 
 def merge_vscode_settings(submodule: str, settings: JsonDict):
     with open(
-        f"{submodule}/.vscode/settings.json", "a+", encoding="utf-8"
+        f"../{submodule}/.vscode/settings.json", "a+", encoding="utf-8"
     ) as settings_file:
         current_settings = load_jsonc(settings_file)
         if current_settings is not None:
@@ -204,7 +205,9 @@ def merge_vscode_settings(submodule: str, settings: JsonDict):
 
 
 def merge_vscode_tasks(submodule: str, tasks: JsonDict):
-    with open(f"{submodule}/.vscode/tasks.json", "a+", encoding="utf-8") as tasks_file:
+    with open(
+        f"../{submodule}/.vscode/tasks.json", "a+", encoding="utf-8"
+    ) as tasks_file:
         current_tasks = load_jsonc(tasks_file)
         if current_tasks is not None:
             assert isinstance(current_tasks, dict)
@@ -221,7 +224,7 @@ def merge_vscode_tasks(submodule: str, tasks: JsonDict):
 
 def merge_vscode_launch(submodule: str, launch: JsonDict):
     with open(
-        f"{submodule}/.vscode/launch.json", "a+", encoding="utf-8"
+        f"../{submodule}/.vscode/launch.json", "a+", encoding="utf-8"
     ) as launch_file:
         current_launch = load_jsonc(launch_file)
         if current_launch is not None:
@@ -239,7 +242,7 @@ def merge_vscode_launch(submodule: str, launch: JsonDict):
 
 def merge_vscode_code_snippets(submodule: str, code_snippets: JsonDict):
     with open(
-        f"{submodule}/.vscode/codeforlife.code-snippets", "a+", encoding="utf-8"
+        f"../{submodule}/.vscode/codeforlife.code-snippets", "a+", encoding="utf-8"
     ) as code_snippets_file:
         current_code_snippets = load_jsonc(code_snippets_file)
         if current_code_snippets is not None:
@@ -256,7 +259,7 @@ def merge_vscode_code_snippets(submodule: str, code_snippets: JsonDict):
 
 def merge_workspace(submodule: str, workspace: JsonDict):
     with open(
-        f"{submodule}/codeforlife.code-workspace", "a+", encoding="utf-8"
+        f"../{submodule}/codeforlife.code-workspace", "a+", encoding="utf-8"
     ) as workspace_file:
         current_workspace = load_jsonc(workspace_file)
         if current_workspace is not None:
@@ -277,7 +280,7 @@ def merge_config(submodule: str, config: SubmoduleConfig):
         merge_devcontainer(submodule, config.devcontainer)
     if config.vscode:
         # Create .vscode directory if not exists.
-        Path(f"{submodule}/.vscode").mkdir(exist_ok=True)
+        Path(f"../{submodule}/.vscode").mkdir(exist_ok=True)
         if config.vscode.settings:
             merge_vscode_settings(submodule, config.vscode.settings)
         if config.vscode.tasks:
@@ -297,7 +300,7 @@ def merge_config(submodule: str, config: SubmoduleConfig):
 
 def load_configs() -> ConfigDict:
     # Load the config file.
-    with open("submodules.config.jsonc", "r", encoding="utf-8") as config_file:
+    with open("config.jsonc", "r", encoding="utf-8") as config_file:
         json_configs = load_jsonc(config_file)
 
     # Convert the JSON objects to Python objects.
@@ -359,6 +362,9 @@ def get_inheritances(config: SubmoduleConfig, configs: ConfigDict):
 
 
 def main() -> None:
+    # Change directory to file's directory.
+    os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
     configs = load_configs()
 
     # Process each config.
