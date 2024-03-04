@@ -8,16 +8,26 @@ TODO: write script description.
 import json
 import os
 import re
+import subprocess
 import typing as t
 from collections import Counter
 from dataclasses import dataclass
 from io import TextIOWrapper
 from pathlib import Path
 
+# ------------------------------------------------------------------------------
+# Global and environment variables
+# ------------------------------------------------------------------------------
+
+
+GIT_PUSH_CHANGES = bool(int(os.getenv("GIT_PUSH_CHANGES", "0")))
+CONFIG_DIR = os.path.dirname(os.path.realpath(__file__))
+
 
 # ------------------------------------------------------------------------------
 # Data types and classes
 # ------------------------------------------------------------------------------
+
 
 # JSON type hints.
 JsonList = t.List["JsonValue"]
@@ -78,6 +88,16 @@ def load_jsonc(file: TextIOWrapper) -> JsonValue:
     return json.loads(raw_json_without_comments)
 
 
+def git_commit_and_push(message: str):
+    git_diff = subprocess.run(
+        ["git", "diff", "--cached"], check=True, stdout=subprocess.PIPE
+    ).stdout.decode("utf-8")
+
+    if git_diff:
+        subprocess.run(["git", "commit", "-m", f'"{message}"'], check=True)
+        subprocess.run(["git", "push"], check=True)
+
+
 # ------------------------------------------------------------------------------
 # Config handlers
 # ------------------------------------------------------------------------------
@@ -136,16 +156,17 @@ def merge_json_dicts(current: JsonValue, latest: JsonDict):
     return json_dict
 
 
-def merge_devcontainer(submodule: str, devcontainer: JsonDict):
-    with open(
-        f"../{submodule}/.devcontainer.json", "a+", encoding="utf-8"
-    ) as devcontainer_file:
+def _merge_devcontainer(devcontainer: JsonDict):
+    with open(".devcontainer.json", "a+", encoding="utf-8") as devcontainer_file:
         current_devcontainer = load_jsonc(devcontainer_file)
 
         devcontainer = merge_json_dicts(current_devcontainer, devcontainer)
 
         devcontainer_file.truncate(0)
         json.dump(devcontainer, devcontainer_file, indent=2, sort_keys=True)
+
+    if GIT_PUSH_CHANGES:
+        subprocess.run(["git", "add", ".devcontainer.json"], check=True)
 
 
 def merge_json_lists_of_json_objects(
@@ -190,10 +211,8 @@ def merge_json_lists_of_json_objects(
     return merged
 
 
-def merge_vscode_settings(submodule: str, settings: JsonDict):
-    with open(
-        f"../{submodule}/.vscode/settings.json", "a+", encoding="utf-8"
-    ) as settings_file:
+def _merge_vscode_settings(settings: JsonDict):
+    with open(".vscode/settings.json", "a+", encoding="utf-8") as settings_file:
         current_settings = load_jsonc(settings_file)
         if current_settings is not None:
             assert isinstance(current_settings, dict)
@@ -203,11 +222,12 @@ def merge_vscode_settings(submodule: str, settings: JsonDict):
 
         json.dump(settings, settings_file, indent=2, sort_keys=True)
 
+    if GIT_PUSH_CHANGES:
+        subprocess.run(["git", "add", ".vscode/settings.json"], check=True)
 
-def merge_vscode_tasks(submodule: str, tasks: JsonDict):
-    with open(
-        f"../{submodule}/.vscode/tasks.json", "a+", encoding="utf-8"
-    ) as tasks_file:
+
+def _merge_vscode_tasks(tasks: JsonDict):
+    with open(".vscode/tasks.json", "a+", encoding="utf-8") as tasks_file:
         current_tasks = load_jsonc(tasks_file)
         if current_tasks is not None:
             assert isinstance(current_tasks, dict)
@@ -221,11 +241,12 @@ def merge_vscode_tasks(submodule: str, tasks: JsonDict):
 
         json.dump(tasks, tasks_file, indent=2, sort_keys=True)
 
+    if GIT_PUSH_CHANGES:
+        subprocess.run(["git", "add", ".vscode/tasks.json"], check=True)
 
-def merge_vscode_launch(submodule: str, launch: JsonDict):
-    with open(
-        f"../{submodule}/.vscode/launch.json", "a+", encoding="utf-8"
-    ) as launch_file:
+
+def _merge_vscode_launch(launch: JsonDict):
+    with open(".vscode/launch.json", "a+", encoding="utf-8") as launch_file:
         current_launch = load_jsonc(launch_file)
         if current_launch is not None:
             assert isinstance(current_launch, dict)
@@ -239,10 +260,13 @@ def merge_vscode_launch(submodule: str, launch: JsonDict):
 
         json.dump(launch, launch_file, indent=2, sort_keys=True)
 
+    if GIT_PUSH_CHANGES:
+        subprocess.run(["git", "add", ".vscode/launch.json"], check=True)
 
-def merge_vscode_code_snippets(submodule: str, code_snippets: JsonDict):
+
+def _merge_vscode_code_snippets(code_snippets: JsonDict):
     with open(
-        f"../{submodule}/.vscode/codeforlife.code-snippets", "a+", encoding="utf-8"
+        ".vscode/codeforlife.code-snippets", "a+", encoding="utf-8"
     ) as code_snippets_file:
         current_code_snippets = load_jsonc(code_snippets_file)
         if current_code_snippets is not None:
@@ -256,11 +280,15 @@ def merge_vscode_code_snippets(submodule: str, code_snippets: JsonDict):
 
         json.dump(code_snippets, code_snippets_file, indent=2, sort_keys=True)
 
+    if GIT_PUSH_CHANGES:
+        subprocess.run(
+            ["git", "add", ".vscode/codeforlife.code-snippets"],
+            check=True,
+        )
 
-def merge_workspace(submodule: str, workspace: JsonDict):
-    with open(
-        f"../{submodule}/codeforlife.code-workspace", "a+", encoding="utf-8"
-    ) as workspace_file:
+
+def _merge_workspace(workspace: JsonDict):
+    with open("codeforlife.code-workspace", "a+", encoding="utf-8") as workspace_file:
         current_workspace = load_jsonc(workspace_file)
         if current_workspace is not None:
             assert isinstance(current_workspace, dict)
@@ -274,23 +302,26 @@ def merge_workspace(submodule: str, workspace: JsonDict):
 
         json.dump(workspace, workspace_file, indent=2, sort_keys=True)
 
+    if GIT_PUSH_CHANGES:
+        subprocess.run(["git", "add", "codeforlife.code-workspace"], check=True)
 
-def merge_config(submodule: str, config: SubmoduleConfig):
+
+def merge_config(config: SubmoduleConfig):
     if config.devcontainer:
-        merge_devcontainer(submodule, config.devcontainer)
+        _merge_devcontainer(config.devcontainer)
     if config.vscode:
         # Create .vscode directory if not exists.
-        Path(f"../{submodule}/.vscode").mkdir(exist_ok=True)
+        Path(".vscode").mkdir(exist_ok=True)
         if config.vscode.settings:
-            merge_vscode_settings(submodule, config.vscode.settings)
+            _merge_vscode_settings(config.vscode.settings)
         if config.vscode.tasks:
-            merge_vscode_tasks(submodule, config.vscode.tasks)
+            _merge_vscode_tasks(config.vscode.tasks)
         if config.vscode.launch:
-            merge_vscode_launch(submodule, config.vscode.launch)
+            _merge_vscode_launch(config.vscode.launch)
         if config.vscode.codeSnippets:
-            merge_vscode_code_snippets(submodule, config.vscode.codeSnippets)
+            _merge_vscode_code_snippets(config.vscode.codeSnippets)
     if config.workspace:
-        merge_workspace(submodule, config.workspace)
+        _merge_workspace(config.workspace)
 
 
 # ------------------------------------------------------------------------------
@@ -299,6 +330,9 @@ def merge_config(submodule: str, config: SubmoduleConfig):
 
 
 def load_configs() -> ConfigDict:
+    # Change directory to config's directory.
+    os.chdir(CONFIG_DIR)
+
     # Load the config file.
     with open("config.jsonc", "r", encoding="utf-8") as config_file:
         json_configs = load_jsonc(config_file)
@@ -362,9 +396,6 @@ def get_inheritances(config: SubmoduleConfig, configs: ConfigDict):
 
 
 def main() -> None:
-    # Change directory to file's directory.
-    os.chdir(os.path.dirname(os.path.realpath(__file__)))
-
     configs = load_configs()
 
     # Process each config.
@@ -400,12 +431,23 @@ def main() -> None:
 
         # Merge inherited configs and config into submodule in order.
         for submodule in config.submodules:
-            for inheritance in inheritances:
-                merge_config(submodule, configs[inheritance])
+            # Change directory to submodule's directory.
+            os.chdir(f"{CONFIG_DIR}/../{submodule}")
 
-            merge_config(submodule, config)
+            for inheritance in inheritances:
+                merge_config(configs[inheritance])
+
+            merge_config(config)
+
+            if GIT_PUSH_CHANGES:
+                git_commit_and_push(message="Configured submodule [skip ci]")
+                os.chdir(f"{CONFIG_DIR}/..")
+                subprocess.run(["git", "add", submodule], check=True)
 
         print("---")
+
+    if GIT_PUSH_CHANGES:
+        git_commit_and_push(message="Configured submodules [skip ci]")
 
     print("Success!")
 
