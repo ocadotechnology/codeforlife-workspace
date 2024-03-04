@@ -2,7 +2,15 @@
 © Ocado Group
 Created on 02/03/2024 at 23:46:28(+00:00).
 
-TODO: write script description.
+This file is used to configure CFL's submodules using the global-config defined
+in the config.jsonc file in this directory.
+
+By default, the global-config is *merged* into any existing config within each
+submodule. That is, any values defined in the global-config will override the
+values found in a submodule's config but if a submodule has key:value pairs not
+present in the global-config, they will remain. However, in some cases, the
+behavior is to override the values (values not present in the global-config will
+be removed).  
 """
 
 import json

@@ -1,4 +1,18 @@
-// TODO: Write comment
+// This file is used to define a global-config for the submodules within CFL's
+// workspace. This saves us having to manually repeat common configurations
+// across 2+ submodules and avoids human error when accidentally copy/pasting
+// something incorrectly.
+//
+// WARNING: This file is written in JSONC format (JSON with comments). However,
+//  only single lines comments with no preceding text are allowed. For example:
+//  - "// single-line comment, no preceding text" ✅
+//  - "{"age": 27} // single-line comment, some preceding text" 🚫
+//  - "/* multi-line comment, no preceding text */" 🚫
+//  - "{"age": 27} /* multi-line comment, some preceding text */" 🚫
+//
+// This config is processed by the __main__.py file in this directory. To
+// understand more about this shape of the config data and how it's processed,
+// please read __main__.py.
 {
   "base": {
     "description": "Base configuration to be inherited by all other configurations.",
