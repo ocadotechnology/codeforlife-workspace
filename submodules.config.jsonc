@@ -11,29 +11,6 @@
       "remoteUser": "root",
       "customizations": {
         "vscode": {
-          "settings": {
-            "editor.tabSize": 2,
-            "editor.rulers": [
-              80
-            ],
-            "editor.formatOnSave": true,
-            "editor.codeActionsOnSave": {
-              "source.organizeImports": "explicit"
-            },
-            "[md]": {
-              "editor.tabSize": 4
-            },
-            "workbench.colorCustomizations": {
-              "editorRuler.foreground": "#008000"
-            },
-            "cSpell.words": [
-              "codeforlife",
-              "klass",
-              "ocado",
-              "kurono",
-              "pipenv"
-            ]
-          },
           "extensions": [
             "visualstudioexptteam.vscodeintellicode",
             "github.vscode-pull-request-github",
@@ -45,12 +22,39 @@
         }
       }
     },
+    "vscode": {
+      "settings": {
+        "editor.tabSize": 2,
+        "editor.rulers": [
+          80
+        ],
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.organizeImports": "explicit"
+        },
+        "[md]": {
+          "editor.tabSize": 4
+        },
+        "cSpell.words": [
+          "codeforlife",
+          "klass",
+          "ocado",
+          "kurono",
+          "pipenv"
+        ]
+      }
+    },
     "workspace": {
       "folders": [
         {
           "path": "."
         }
-      ]
+      ],
+      "settings": {
+        "workbench.colorCustomizations": {
+          "editorRuler.foreground": "#008000"
+        }
+      }
     }
   },
   "javascript": {
@@ -69,9 +73,6 @@
       },
       "customizations": {
         "vscode": {
-          "settings": {
-            "typescript.preferences.quoteStyle": "single"
-          },
           "extensions": [
             "dbaeumer.vscode-eslint"
             // "dsznajder.es7-react-js-snippets",
@@ -82,6 +83,9 @@
       }
     },
     "vscode": {
+      "settings": {
+        "typescript.preferences.quoteStyle": "single"
+      },
       "codeSnippets": {
         "javascript.module.doccomment": {
           "prefix": [
@@ -123,62 +127,9 @@
       },
       "customizations": {
         "vscode": {
-          "settings": {
-            "python.defaultInterpreterPath": ".venv/bin/python",
-            "python.testing.unittestEnabled": false,
-            "python.testing.pytestEnabled": true,
-            "[python]": {
-              "editor.tabSize": 4,
-              "editor.defaultFormatter": "ms-python.black-formatter"
-            },
-            "files.exclude": {
-              "**/__pycache__": true,
-              "**/.pytest_cache": true,
-              "**/.mypy_cache": true,
-              "**/.hypothesis": true
-            },
-            "autoDocstring.customTemplatePath": ".vscode/extensions/autoDocstring/docstring.mustache",
-            "isort.path": [
-              ".venv/bin/python",
-              "-m",
-              "isort"
-            ],
-            "isort.args": [
-              "--settings-file=pyproject.toml"
-            ],
-            "black-formatter.path": [
-              ".venv/bin/python",
-              "-m",
-              "black"
-            ],
-            "black-formatter.args": [
-              "--config",
-              "pyproject.toml"
-            ],
-            "mypy-type-checker.path": [
-              ".venv/bin/python",
-              "-m",
-              "mypy"
-            ],
-            "mypy-type-checker.args": [
-              "--config-file=pyproject.toml"
-            ],
-            "pylint.path": [
-              ".venv/bin/python",
-              "-m",
-              "pylint"
-            ],
-            "pylint.args": [
-              "--rcfile=pyproject.toml"
-            ],
-            "python.testing.pytestArgs": [
-              "-n=auto",
-              "-c=pyproject.toml",
-              "."
-            ]
-          },
           "extensions": [
             "ms-python.python",
+            "ms-python.debugpy",
             "ms-python.pylint",
             "ms-python.isort",
             "ms-python.vscode-pylance",
@@ -191,6 +142,59 @@
       }
     },
     "vscode": {
+      "settings": {
+        "python.defaultInterpreterPath": ".venv/bin/python",
+        "python.testing.unittestEnabled": false,
+        "python.testing.pytestEnabled": true,
+        "[python]": {
+          "editor.tabSize": 4,
+          "editor.defaultFormatter": "ms-python.black-formatter"
+        },
+        "files.exclude": {
+          "**/__pycache__": true,
+          "**/.pytest_cache": true,
+          "**/.mypy_cache": true,
+          "**/.hypothesis": true
+        },
+        "isort.path": [
+          ".venv/bin/python",
+          "-m",
+          "isort"
+        ],
+        "isort.args": [
+          "--settings-file=pyproject.toml"
+        ],
+        "black-formatter.path": [
+          ".venv/bin/python",
+          "-m",
+          "black"
+        ],
+        "black-formatter.args": [
+          "--config",
+          "pyproject.toml"
+        ],
+        "mypy-type-checker.path": [
+          ".venv/bin/python",
+          "-m",
+          "mypy"
+        ],
+        "mypy-type-checker.args": [
+          "--config-file=pyproject.toml"
+        ],
+        "pylint.path": [
+          ".venv/bin/python",
+          "-m",
+          "pylint"
+        ],
+        "pylint.args": [
+          "--rcfile=pyproject.toml"
+        ],
+        "python.testing.pytestArgs": [
+          "-n=auto",
+          "-c=pyproject.toml",
+          "."
+        ]
+      },
       "launch": {
         "version": "0.2.0",
         "configurations": [
@@ -248,6 +252,12 @@
           ]
         }
       }
+    },
+    "workspace": {
+      "folders": [],
+      "settings": {
+        "autoDocstring.customTemplatePath": ".vscode/extensions/autoDocstring/docstring.mustache"
+      }
     }
   },
   "service": {
@@ -266,31 +276,27 @@
       "mounts": [
         "source=./codeforlife-package-javascript,target=/workspace/codeforlife-package-javascript,type=bind,consistency=cached",
         "source=./codeforlife-package-python,target=/workspace/codeforlife-package-python,type=bind,consistency=cached"
-      ],
-      "customizations": {
-        "vscode": {
-          "settings": {
-            "python.defaultInterpreterPath": "backend/.venv/bin/python",
-            "python.analysis.extraPaths": [
-              "../codeforlife-package-python"
-            ],
-            "!isort.path": [
-              "backend/.venv/bin/python",
-              "-m",
-              "isort"
-            ],
-            "!isort.args": [
-              "--settings-file=backend/pyproject.toml"
-            ],
-            "black-formatter.cwd": "${workspaceFolder}/backend",
-            "mypy-type-checker.cwd": "${workspaceFolder}/backend",
-            "pylint.cwd": "${workspaceFolder}/backend",
-            "python.testing.cwd": "${workspaceFolder}/backend"
-          }
-        }
-      }
+      ]
     },
     "vscode": {
+      "settings": {
+        "python.defaultInterpreterPath": "backend/.venv/bin/python",
+        "python.analysis.extraPaths": [
+          "../codeforlife-package-python"
+        ],
+        "!isort.path": [
+          "backend/.venv/bin/python",
+          "-m",
+          "isort"
+        ],
+        "!isort.args": [
+          "--settings-file=backend/pyproject.toml"
+        ],
+        "black-formatter.cwd": "${workspaceFolder}/backend",
+        "mypy-type-checker.cwd": "${workspaceFolder}/backend",
+        "pylint.cwd": "${workspaceFolder}/backend",
+        "python.testing.cwd": "${workspaceFolder}/backend"
+      },
       "tasks": {
         "version": "2.0.0",
         "tasks": [
@@ -345,7 +351,7 @@
             "django": true,
             "justMyCode": false,
             "program": "${workspaceFolder}/backend/manage.py",
-            "args": [
+            "?args": [
               "runserver",
               "localhost:8000"
             ],

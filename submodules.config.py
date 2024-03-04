@@ -28,6 +28,8 @@ JsonValue = t.Union[None, int, str, bool, JsonList, JsonDict]
 class VSCode:
     """JSON files contained within the .vscode directory."""
 
+    # The config for settings.json.
+    settings: t.Optional[JsonDict] = None
     # The config for tasks.json.
     tasks: t.Optional[JsonDict] = None
     # The config for launch.json.
@@ -106,10 +108,16 @@ def merge_json_dicts(current: JsonValue, latest: JsonDict):
 
     for key, value in latest.items():
         override_value = key.startswith("!")
-        if override_value:
+        keep_value = key.startswith("?")
+        if override_value or keep_value:
             key = key[1:]
 
-        if key not in json_dict or value is None or isinstance(value, (str, int, bool)):
+        if key not in json_dict:
+            json_dict[key] = value
+        elif keep_value:
+            continue
+
+        if value is None or isinstance(value, (str, int, bool)):
             json_dict[key] = value
         elif isinstance(value, dict):
             json_dict[key] = (
@@ -179,6 +187,20 @@ def merge_json_lists_of_json_objects(
         merged[list_name] = merged_list
 
     return merged
+
+
+def merge_vscode_settings(submodule: str, settings: JsonDict):
+    with open(
+        f"{submodule}/.vscode/settings.json", "a+", encoding="utf-8"
+    ) as settings_file:
+        current_settings = load_jsonc(settings_file)
+        if current_settings is not None:
+            assert isinstance(current_settings, dict)
+            settings = merge_json_dicts(current_settings, settings)
+
+            settings_file.truncate(0)
+
+        json.dump(settings, settings_file, indent=2, sort_keys=True)
 
 
 def merge_vscode_tasks(submodule: str, tasks: JsonDict):
@@ -256,6 +278,8 @@ def merge_config(submodule: str, config: SubmoduleConfig):
     if config.vscode:
         # Create .vscode directory if not exists.
         Path(f"{submodule}/.vscode").mkdir(exist_ok=True)
+        if config.vscode.settings:
+            merge_vscode_settings(submodule, config.vscode.settings)
         if config.vscode.tasks:
             merge_vscode_tasks(submodule, config.vscode.tasks)
         if config.vscode.launch:
