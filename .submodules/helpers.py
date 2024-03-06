@@ -13,10 +13,12 @@ import typing as t
 from io import TextIOWrapper
 
 if t.TYPE_CHECKING:
-    from config import JsonDict, JsonList, JsonValue
+    from configs import AnyJsonValue, JsonDict, JsonList, JsonValue
 
 # Path to the .submodules directory.
-CONFIG_DIR = os.path.dirname(os.path.realpath(__file__))
+DOT_SUBMODULES_DIR = os.path.dirname(os.path.realpath(__file__))
+# Whether or not to git-push the changes.
+GIT_PUSH_CHANGES = bool(int(os.getenv("GIT_PUSH_CHANGES", "0")))
 
 
 def load_jsonc(file: TextIOWrapper) -> "JsonValue":
@@ -97,11 +99,14 @@ def merge_json_dicts(current: "JsonValue", latest: "JsonDict"):
 
 
 def merge_json_lists_of_json_objects(
-    current: "JsonDict",
+    current: "JsonValue",
     latest: "JsonDict",
     list_names_and_obj_id_fields: t.Iterable[t.Tuple[str, str]],
 ):
     latest = latest.copy()
+
+    if not isinstance(current, dict):
+        return latest
 
     obj_lists: t.Dict[str, t.Tuple[JsonList, JsonList]] = {}
     for list_name, _ in list_names_and_obj_id_fields:
@@ -136,3 +141,22 @@ def merge_json_lists_of_json_objects(
         merged[list_name] = merged_list
 
     return merged
+
+
+def merge_submodule_file(
+    file: str,
+    global_value: "AnyJsonValue",
+    merge: t.Callable[["JsonValue", "AnyJsonValue"], "JsonValue"],
+):
+    with open(file, "a+", encoding="utf-8") as submodule_file:
+        submodule_value = load_jsonc(submodule_file)
+        if submodule_file is None:
+            value = global_value
+        else:
+            value = merge(submodule_value, global_value)
+            submodule_file.truncate(0)
+
+        json.dump(value, submodule_file, indent=2, sort_keys=True)
+
+    if GIT_PUSH_CHANGES:
+        subprocess.run(["git", "add", file], check=True)
