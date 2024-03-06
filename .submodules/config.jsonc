@@ -379,6 +379,10 @@
         {
           "path": "../codeforlife-package-python",
           "name": "package-python"
+        },
+        {
+          "path": "../codeforlife-package-javascript",
+          "name": "package-javascript"
         }
       ]
     }

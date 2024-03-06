@@ -10,158 +10,24 @@ submodule. That is, any values defined in the global-config will override the
 values found in a submodule's config but if a submodule has key:value pairs not
 present in the global-config, they will remain. However, in some cases, the
 behavior is to override the values (values not present in the global-config will
-be removed).  
+be removed).
 """
 
 import json
 import os
-import re
 import subprocess
-import typing as t
-from collections import Counter
-from dataclasses import dataclass
-from io import TextIOWrapper
 from pathlib import Path
 
-# ------------------------------------------------------------------------------
-# Global and environment variables
-# ------------------------------------------------------------------------------
-
+from config import JsonDict, SubmoduleConfig, load_configs
+from helpers import (
+    CONFIG_DIR,
+    git_commit_and_push,
+    load_jsonc,
+    merge_json_dicts,
+    merge_json_lists_of_json_objects,
+)
 
 GIT_PUSH_CHANGES = bool(int(os.getenv("GIT_PUSH_CHANGES", "0")))
-CONFIG_DIR = os.path.dirname(os.path.realpath(__file__))
-
-
-# ------------------------------------------------------------------------------
-# Data types and classes
-# ------------------------------------------------------------------------------
-
-
-# JSON type hints.
-JsonList = t.List["JsonValue"]
-JsonDict = t.Dict[str, "JsonValue"]
-JsonValue = t.Union[None, int, str, bool, JsonList, JsonDict]
-
-
-@dataclass(frozen=True)
-class VSCode:
-    """JSON files contained within the .vscode directory."""
-
-    # The config for settings.json.
-    settings: t.Optional[JsonDict] = None
-    # The config for tasks.json.
-    tasks: t.Optional[JsonDict] = None
-    # The config for launch.json.
-    launch: t.Optional[JsonDict] = None
-    # The config for codeforlife.code-snippets.
-    codeSnippets: t.Optional[JsonDict] = None
-
-
-@dataclass(frozen=True)
-class SubmoduleConfig:
-    """A configuration for a submodule."""
-
-    # The configs this config inherits.
-    inherits: t.Optional[t.List[str]] = None
-    # The submodules this config should be merged into.
-    submodules: t.Optional[t.List[str]] = None
-    # A description of this config's target.
-    description: t.Optional[str] = None
-    # The VSCode config files to merge with.
-    vscode: t.Optional[VSCode] = None
-    # The devcontainer config.
-    devcontainer: t.Optional[JsonDict] = None
-    # The workspace config.
-    workspace: t.Optional[JsonDict] = None
-
-
-ConfigDict = t.Dict[str, SubmoduleConfig]
-
-# ------------------------------------------------------------------------------
-# General helpers
-# ------------------------------------------------------------------------------
-
-
-def load_jsonc(file: TextIOWrapper) -> JsonValue:
-    file.seek(0)
-    raw_json_with_comments = file.read()
-    if not raw_json_with_comments:
-        return None
-
-    # Remove single-line comments that are only preceded by white spaces.
-    raw_json_without_comments = re.sub(
-        r"^ *\/\/.*", "", raw_json_with_comments, flags=re.MULTILINE
-    )
-
-    return json.loads(raw_json_without_comments)
-
-
-def git_commit_and_push(message: str):
-    git_diff = subprocess.run(
-        ["git", "diff", "--cached"], check=True, stdout=subprocess.PIPE
-    ).stdout.decode("utf-8")
-
-    if git_diff:
-        subprocess.run(["git", "commit", "-m", f'"{message}"'], check=True)
-        subprocess.run(["git", "push"], check=True)
-
-
-# ------------------------------------------------------------------------------
-# Config handlers
-# ------------------------------------------------------------------------------
-
-
-def merge_json_lists(current: JsonValue, latest: JsonList):
-    if not isinstance(current, list):
-        return latest
-
-    json_list = current.copy()
-
-    for value in latest:
-        if isinstance(value, (int, str)):
-            if value not in json_list:
-                json_list.append(value)
-        else:
-            raise NotImplementedError(
-                f"Haven't implemented support for values of type {type(value)}."
-            )
-
-    return json_list
-
-
-def merge_json_dicts(current: JsonValue, latest: JsonDict):
-    if not isinstance(current, dict):
-        return latest
-
-    json_dict = current.copy()
-
-    for key, value in latest.items():
-        override_value = key.startswith("!")
-        keep_value = key.startswith("?")
-        if override_value or keep_value:
-            key = key[1:]
-
-        if key not in json_dict:
-            json_dict[key] = value
-        elif keep_value:
-            continue
-
-        if value is None or isinstance(value, (str, int, bool)):
-            json_dict[key] = value
-        elif isinstance(value, dict):
-            json_dict[key] = (
-                value.copy()
-                if override_value
-                else merge_json_dicts(json_dict[key], value)
-            )
-        elif isinstance(value, list):
-            json_dict[key] = (
-                value.copy()
-                if override_value
-                else merge_json_lists(json_dict[key], value)
-            )
-
-    return json_dict
 
 
 def _merge_devcontainer(devcontainer: JsonDict):
@@ -175,48 +41,6 @@ def _merge_devcontainer(devcontainer: JsonDict):
 
     if GIT_PUSH_CHANGES:
         subprocess.run(["git", "add", ".devcontainer.json"], check=True)
-
-
-def merge_json_lists_of_json_objects(
-    current: JsonDict,
-    latest: JsonDict,
-    list_names_and_obj_id_fields: t.Iterable[t.Tuple[str, str]],
-):
-    latest = latest.copy()
-
-    obj_lists: t.Dict[str, t.Tuple[JsonList, JsonList]] = {}
-    for list_name, _ in list_names_and_obj_id_fields:
-        current_list = current.pop(list_name)
-        assert isinstance(current_list, list)
-        latest_list = latest.pop(list_name)
-        assert isinstance(latest_list, list)
-
-        obj_lists[list_name] = (current_list, latest_list)
-
-    merged = merge_json_dicts(current, latest)
-
-    for list_name, obj_id_field in list_names_and_obj_id_fields:
-        current_list, latest_list = obj_lists[list_name]
-
-        merged_list = current_list.copy()
-        for obj in latest_list:
-            assert isinstance(obj, dict)
-
-            for current_obj in current_list.copy():
-                assert isinstance(current_obj, dict)
-
-                if obj[obj_id_field] == current_obj[obj_id_field]:
-                    current_list.remove(current_obj)
-                    merged_list.remove(current_obj)
-
-                    obj = merge_json_dicts(current_obj, obj)
-                    break
-
-            merged_list.append(obj)
-
-        merged[list_name] = merged_list
-
-    return merged
 
 
 def _merge_vscode_settings(settings: JsonDict):
@@ -332,79 +156,8 @@ def merge_config(config: SubmoduleConfig):
         _merge_workspace(config.workspace)
 
 
-# ------------------------------------------------------------------------------
-# Main script
-# ------------------------------------------------------------------------------
-
-
-def load_configs() -> ConfigDict:
-    # Change directory to config's directory.
-    os.chdir(CONFIG_DIR)
-
-    # Load the config file.
-    with open("config.jsonc", "r", encoding="utf-8") as config_file:
-        json_configs = load_jsonc(config_file)
-
-    # Convert the JSON objects to Python objects.
-    assert isinstance(json_configs, dict)
-    configs: ConfigDict = {}
-    for key, json_config in json_configs.items():
-        assert isinstance(json_config, dict)
-
-        json_vscode = json_config.pop("vscode", None)
-        if json_vscode is None:
-            vscode = None
-        else:
-            assert isinstance(json_vscode, dict)
-            vscode = VSCode(**json_vscode)  # type: ignore[arg-type]
-
-        configs[key] = SubmoduleConfig(vscode=vscode, **json_config)  # type: ignore[arg-type]
-
-    # Assert each submodule is specified only once.
-    for submodule, count in Counter(
-        [
-            submodule
-            for config in configs.values()
-            for submodule in (config.submodules or [])
-        ]
-    ).items():
-        assert count == 1, f"Submodule: {submodule} specified more than once."
-
-    return configs
-
-
-def get_inheritances(config: SubmoduleConfig, configs: ConfigDict):
-
-    def _get_inheritances(
-        config: SubmoduleConfig, inheritances: t.List[str], index: int
-    ):
-        if not config.inherits:
-            return
-
-        config_inheritances = []
-        for inheritance in config.inherits:
-            if inheritance not in inheritances:
-                config_inheritances.append(inheritance)
-
-        for inheritance in config_inheritances[::-1]:
-            inheritances.insert(index, inheritance)
-
-        for inheritance in config_inheritances:
-            _get_inheritances(
-                configs[inheritance],
-                inheritances,
-                inheritances.index(inheritance),
-            )
-
-    inheritances: t.List[str] = []
-
-    _get_inheritances(config, inheritances, index=0)
-
-    return tuple(inheritances)
-
-
 def main() -> None:
-    configs = load_configs()
+    configs, inheritances = load_configs()
 
     # Process each config.
     for key, config in configs.items():
@@ -417,11 +170,10 @@ def main() -> None:
         if config.description:
             print(f"Description: {config.description}")
 
-        # Get and print config inheritances.
-        inheritances = get_inheritances(config, configs)
-        if inheritances:
+        # Print config inheritances.
+        if inheritances[key]:
             print("Inherits:")
-            for inheritance in inheritances:
+            for inheritance in inheritances[key]:
                 inheritance_description = configs[inheritance].description
                 print(
                     f"    - {inheritance}"
@@ -442,7 +194,7 @@ def main() -> None:
             # Change directory to submodule's directory.
             os.chdir(f"{CONFIG_DIR}/../{submodule}")
 
-            for inheritance in inheritances:
+            for inheritance in inheritances[key]:
                 merge_config(configs[inheritance])
 
             merge_config(config)
