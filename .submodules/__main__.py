@@ -114,7 +114,7 @@ def main() -> None:
 
     # Process each config.
     for key, global_config in global_configs.items():
-        # Skip config if it's not going to merged into any submodules.
+        # Skip config if it's not to be merged into any submodules.
         if not global_config.submodules:
             continue
 
