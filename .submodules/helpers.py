@@ -45,13 +45,13 @@ def git_commit_and_push(message: str):
         subprocess.run(["git", "push"], check=True)
 
 
-def merge_json_lists(current: "JsonValue", latest: "JsonList"):
-    if not isinstance(current, list):
-        return latest
+def merge_json_lists(submodule_value: "JsonValue", global_list: "JsonList"):
+    if not isinstance(submodule_value, list):
+        return global_list
 
-    json_list = current.copy()
+    json_list = submodule_value.copy()
 
-    for value in latest:
+    for value in global_list:
         if isinstance(value, (int, str)):
             if value not in json_list:
                 json_list.append(value)
@@ -63,13 +63,13 @@ def merge_json_lists(current: "JsonValue", latest: "JsonList"):
     return json_list
 
 
-def merge_json_dicts(current: "JsonValue", latest: "JsonDict"):
-    if not isinstance(current, dict):
-        return latest
+def merge_json_dicts(submodule_value: "JsonValue", global_dict: "JsonDict"):
+    if not isinstance(submodule_value, dict):
+        return global_dict
 
-    json_dict = current.copy()
+    json_dict = submodule_value.copy()
 
-    for key, value in latest.items():
+    for key, value in global_dict.items():
         override_value = key.startswith("!")
         keep_value = key.startswith("?")
         if override_value or keep_value:
@@ -99,25 +99,25 @@ def merge_json_dicts(current: "JsonValue", latest: "JsonDict"):
 
 
 def merge_json_lists_of_json_objects(
-    current: "JsonValue",
-    latest: "JsonDict",
+    submodule_value: "JsonValue",
+    global_dict: "JsonDict",
     list_names_and_obj_id_fields: t.Iterable[t.Tuple[str, str]],
 ):
-    latest = latest.copy()
+    global_dict = global_dict.copy()
 
-    if not isinstance(current, dict):
-        return latest
+    if not isinstance(submodule_value, dict):
+        return global_dict
 
     obj_lists: t.Dict[str, t.Tuple[JsonList, JsonList]] = {}
     for list_name, _ in list_names_and_obj_id_fields:
-        current_list = current.pop(list_name)
+        current_list = submodule_value.pop(list_name)
         assert isinstance(current_list, list)
-        latest_list = latest.pop(list_name)
+        latest_list = global_dict.pop(list_name)
         assert isinstance(latest_list, list)
 
         obj_lists[list_name] = (current_list, latest_list)
 
-    merged = merge_json_dicts(current, latest)
+    merged_dict = merge_json_dicts(submodule_value, global_dict)
 
     for list_name, obj_id_field in list_names_and_obj_id_fields:
         current_list, latest_list = obj_lists[list_name]
@@ -138,9 +138,9 @@ def merge_json_lists_of_json_objects(
 
             merged_list.append(obj)
 
-        merged[list_name] = merged_list
+        merged_dict[list_name] = merged_list
 
-    return merged
+    return merged_dict
 
 
 def merge_submodule_file(
