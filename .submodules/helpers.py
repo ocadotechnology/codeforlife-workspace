@@ -70,14 +70,14 @@ def merge_json_dicts(submodule_value: "JsonValue", global_dict: "JsonDict"):
     json_dict = submodule_value.copy()
 
     for key, value in global_dict.items():
-        override_value = key.startswith("!")
-        keep_value = key.startswith("?")
-        if override_value or keep_value:
+        override_submodule_value = key.startswith("!")
+        keep_submodule_value = key.startswith("?")
+        if override_submodule_value or keep_submodule_value:
             key = key[1:]
 
         if key not in json_dict:
             json_dict[key] = value
-        elif keep_value:
+        elif keep_submodule_value:
             continue
 
         if value is None or isinstance(value, (str, int, bool)):
@@ -85,13 +85,13 @@ def merge_json_dicts(submodule_value: "JsonValue", global_dict: "JsonDict"):
         elif isinstance(value, dict):
             json_dict[key] = (
                 value.copy()
-                if override_value
+                if override_submodule_value
                 else merge_json_dicts(json_dict[key], value)
             )
         elif isinstance(value, list):
             json_dict[key] = (
                 value.copy()
-                if override_value
+                if override_submodule_value
                 else merge_json_lists(json_dict[key], value)
             )
 
