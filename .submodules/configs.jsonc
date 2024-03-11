@@ -30,7 +30,8 @@
             "redhat.vscode-yaml",
             "davidanson.vscode-markdownlint",
             "bierner.markdown-mermaid",
-            "streetsidesoftware.code-spell-checker"
+            "streetsidesoftware.code-spell-checker",
+            "tamasfe.even-better-toml"
           ]
         }
       }
