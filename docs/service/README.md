@@ -6,5 +6,5 @@ The core service, which acts as users' entry point into our app, is our portal s
 
 Each service repo is broken down into 2 directories:
 
-- [backend](./backend/README.md)
-- [frontend](./frontend/README.md)
+- [backend](./backend)
+- [frontend](./frontend)
