@@ -6,7 +6,7 @@ First, understand how to [serialize a Django model](https://www.django-rest-fram
 
 ## Model Serializers
 
-For each model, we create a file with the naming convention `{model}.py` in the directory `serializers`. Within a model's serializers-file, we create one or more serializers. It's advised to create one serializer per [model-view-set](./VIEWS.md) action. Each model-serializer should inherit CFL's `ModelSerializer` by default and set the type parameter to the model being serialized.
+For each model, we create a file with the naming convention `{model}.py` in the directory `serializers`. Within a model's serializer-file, we create one or more serializers. It's advised to create one serializer per [model-view-set](./VIEWS.md) action. Each model-serializer should inherit CFL's `ModelSerializer` by default and set the type parameter to the model being serialized.
 
 ```py
 # serializers/person.py
@@ -23,7 +23,7 @@ class UpdatePersonSerializer(ModelSerializer[Person]):
     model = Person
 ```
 
-To avoid repetitively setting the model being serialized to `Person`, a base serializer may be created with the name convention `Base{model}Serializer`.
+To avoid repetitively setting the model being serialized to `Person`, a base serializer may be created with the naming convention `Base{model}Serializer`.
 
 ```py
 # serializers/person.py
@@ -40,11 +40,11 @@ class CreatePersonSerializer(BasePersonSerializer): ...
 class UpdatePersonSerializer(BasePersonSerializer): ...
 ```
 
-Any custom logic defined in a model-serializer-file should be tested in the directory `tests/serializers`, where each model has its own serializer-test-file following the naming convention `test_{model_serializer}.py`. Model-serializer-tests should inherit `ModelSerializerTestCase`, set the type parameter to be the model being serialized and set `model_serializer_class` to the model-serializer being tested. The name of the model-serializer-test-case should follow the convention `Test{model_serializer}`.
+Any custom logic defined in a model-serializer-file should be tested in the directory `tests/serializers`, where each model has its own serializer-test-file following the naming convention `test_{model}.py`. Model-serializer-test-cases should inherit `ModelSerializerTestCase`, set the type parameter to be the model being serialized and set `model_serializer_class` to the model-serializer being tested. The name of the model-serializer-test-case should follow the convention `Test{model}Serializer`.
 
 ```py
 # tests/models/test_person.py
-from codeforlife.tests import ModelTestCase
+from codeforlife.tests import ModelSerializerTestCase
 
 from ...models import Person
 from ...serializers.person import PersonSerializer
@@ -73,7 +73,7 @@ class PersonListSerializer(ModelListSerializer[Person]):
     super().validate(attrs)
 ```
 
-When overriding `update(self, instance, validated_data)`, both `instance` and `validated_data` are of equal length and sorted by the primary keys of the models. Therefore, to get the data per model, use `zip` on `instance` and `validated_data`.
+When overriding `update(self, instance, validated_data)`, both `instance` and `validated_data` are of equal length and sorted in the correct order. Therefore, to get the data per model, use `zip` on `instance` and `validated_data`.
 
 ```py
 class PersonListSerializer(ModelListSerializer[Person]):
@@ -83,7 +83,7 @@ class PersonListSerializer(ModelListSerializer[Person]):
 
 ## Validation Errors
 
-When defining validation errors, always set the `code` of the validation error so that it may be asserted in a test. Error codes **must** always be unique per validation function so that they may individually asserted in tests.
+When defining validation errors, always set the `code` of the validation error so that it may be asserted in a test. Error codes **must** always be unique per validation function so that they may be individually asserted in tests.
 
 ```py
 class PersonSerializer(ModelSerializer[Person]):
@@ -112,7 +112,7 @@ class TestPersonSerializer(ModelSerializerTestCase[Person]):
   model_serializer_class = PersonSerializer
 
   def test_validate_years_old__too_young(self):
-    """The person cannot be too young."""
+    """A person must be at least 18."""
     self.assert_validate_field(
       name="years_old",
       value=17,
@@ -120,9 +120,9 @@ class TestPersonSerializer(ModelSerializerTestCase[Person]):
     )
   
   def test_validate__gb_too_young(self):
-    """The person cannot be too young."""
+    """A person in GB must be at least 16."""
     self.assert_validate(
-      attrs={"country": "GB", "years_old": 15},
+      attrs={"country": "GB", "years_old": 16},
       error_code="gb_too_young",
     )
 ```
@@ -194,7 +194,9 @@ class TestPersonSerializer(ModelSerializerTestCase[Person]):
 
   def test_create_many(self):
     """Many people are successfully created at once."""
-    self.assert_create_many(validated_data={"years_old": 18})
+    self.assert_create_many(
+      validated_data=[{"years_old": 18}, {"years_old": 25}]
+    )
   
   def test_update_many(self):
     """Many people are successfully updated at once."""
