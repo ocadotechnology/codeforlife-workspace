@@ -4,18 +4,18 @@ Below are the conventions we follow when modelling our data.
 
 First, understand how to [define a Django model](https://docs.djangoproject.com/en/3.2/topics/db/models/).
 
-## One file per Model
+## File Structure
 
 TL;DR
 
 - [x] One file per model in the `models` directory.
-- [x] Each model-file follows naming convention `{model}.py`.
+- [x] Each model-file follows the naming convention `{model}.py`.
 - [x] Each model is imported from its file in `models/__init__.py`.
 - [x] One test-file per model in the `tests/models` directory.
-- [x] Each model-test-file follows naming convention `test_{model}.py`.
-- [x] Each model-test-case follows naming convention `Test{model}`.
+- [x] Each model-test-file follows the naming convention `test_{model}.py`.
+- [x] Each model-test-case follows the naming convention `Test{model}`.
 - [x] Each model-test-case inherits `ModelTestCase`.
-- [x] Each model-test-case set their type argument to the model being tested.
+- [x] Each model-test-case set their type parameter to the model being tested.
 
 ---
 
@@ -31,7 +31,7 @@ class Person(WarehouseModel): ...
 class Car(WarehouseModel): ...
 ```
 
-All models should be imported into `models/__init__.py` to support importing multiple models from the same module.
+All models should be imported into `models/__init__.py` to support importing multiple models from `models`.
 
 ```py
 # models/__init__.py
@@ -44,7 +44,7 @@ from .person import Person
 from path.to.models import Car, Person
 ```
 
-Any custom logic defined in a model's file should be tested in the directory `tests/models`, where each model has its own test-file following the naming convention `test_{model}.py`. Model-tests should inherit `ModelTestCase` and set their type argument to be the model they are testing. The name of the model's test-case should follow the convention `Test{model}`.
+Any custom logic defined in a model-file should be tested in the directory `tests/models`, where each model has its own test-file following the naming convention `test_{model}.py`. Model-tests should inherit `ModelTestCase` and set their type parameter to be the model they are testing. The name of the model-test-case should follow the convention `Test{model}`.
 
 ```py
 # tests/models/test_person.py
@@ -64,7 +64,7 @@ from ...models import Car
 class TestCar(ModelTestCase[Car]): ...
 ```
 
-## To Warehouse or Not to Warehouse?
+## Warehousing Data
 
 TL;DR
 
@@ -73,11 +73,11 @@ TL;DR
 
 ---
 
-We need to decide whether the data we are storing in our database needs to be warehoused. Data should be warehoused if it can contribute to analyzing users' usage behavior. By default, new models should be warehoused as it's a rare occurrence that meaningful insights cannot be gained from analyzing the data.
+Determine whether the data stored in a model needs to be warehoused. Data should be warehoused if it can contribute to analyzing users' behavior. By default, new models should be warehoused as it's a rare occurrence that meaningful insights cannot be gained from analyzing its data.
 
 Defining a model as a warehouse-model allows us to sync data from our database to our data warehouse before its deleted from our database. See our [data deletion strategy](https://code-for-life.gitbook.io/code-for-life-dev/data/storage#data-deletion-strategy).
 
-To warehouse:
+Defining a warehouse-model:
 
 ```py
 from codeforlife.models import WarehouseModel
@@ -85,7 +85,7 @@ from codeforlife.models import WarehouseModel
 class Example(WarehouseModel): ...
 ```
 
-Not to warehouse:
+Defining a non-warehouse-model:
 
 ```py
 from django.db import models
@@ -102,19 +102,19 @@ TL;DR
 
 ---
 
-When defining fields of any type, always set the verbose name and help text. These field aids future developers and super-users on the Django admin understand the purpose of these fields.
+When defining fields of any type, always set the verbose name and help text. These arguments aid future developers and super-users on the Django admin to understand the purpose of these fields.
 
 ```py
 from django.utils.translation import gettext_lazy as _
 
 class CompanyMember(WarehouseModel):
-  is_exec = models.BoolField(
-    _("is executive"),
+  is_exec = models.BooleanField(
+    verbose_name=_("is executive"),
     default=False,
     help_text=_(
       "Whether or not this company member is an executive member."
       " Executive members have elevated permissions to perform sensitive actions."
-    )
+    ),
   )
 ```
 
@@ -122,13 +122,13 @@ class CompanyMember(WarehouseModel):
 
 TL;DR
 
-- [x] Create type hints for backwards relationships.
+- [x] Create type hints for backward relationships, such as `cars: QuerySet["Car"]`.
 - [x] Import type hints for backward relationships inside of `if t.TYPE_CHECKING`.
-- [x] Set the related_name of the relationship to be the plural of the model's name.
+- [x] Set `related_name` of the relationship to be the plural of the model's name.
 
 ---
 
-When defining foreign keys between 2 models, a few steps need to be taken to inform our static type checker of implicit relationships between objects.
+When defining a foreign key between 2 models, a few steps need to be taken to inform our static type checker of backward relationships between objects.
 
 Say we have the following models:
 
@@ -146,9 +146,9 @@ class Car(WarehouseModel):
   owner = models.ForeignKey(Person, on_delete=models.CASCADE)
 ```
 
-From this we understand that an instance of `Car` has the attribute `owner` of type `Person`. Furthermore, [Django will create an attribute](https://docs.djangoproject.com/en/3.2/topics/db/queries/#following-relationships-backward) for "backwards relationships" on each related object with the naming convention `{model}_set` at **runtime**. Therefore, `Person` has the attribute `car_set` which is a set of type `Car`.
+From this we understand that an instance of `Car` has the attribute `owner` of type `Person`. [Django will create an attribute](https://docs.djangoproject.com/en/3.2/topics/db/queries/#following-relationships-backward) for "backward relationships" on each related object with the naming convention `{model}_set` at **runtime**. Therefore, `Person` has the attribute `car_set` which is a set of type `Car`.
 
-The problem is static type checkers do not know attributes for backward relationships is going to being auto-generated. Therefore, we need to explicitly add type hints.
+The problem is static type checkers do not know attributes for backward relationships are going to being auto-generated. Therefore, we need to add type hints.
 
 ```py
 # models/person.py
@@ -175,9 +175,9 @@ class Car(WarehouseModel):
   )
 ```
 
-We import the model we are type hinting inside of `if t.TYPE_CHECKING` to avoid circular-imports. We also define the name of the backwards relationships to be the plural of the model's name to improve readability.
+We import the model we are type hinting inside of `if t.TYPE_CHECKING` to avoid circular-imports. We also define the name of the backward relationships to be the plural of the model's name to improve readability.
 
-## Defining Meta Attributes
+## Defining Meta Classes
 
 Models' meta class should inherit `TypedModelMeta` to support type hinted Meta classes.
 
@@ -188,7 +188,7 @@ class Person(WarehouseModel):
   class Meta(TypedModelMeta): ...
 ```
 
-## Defining Object Managers
+## Defining Managers
 
 TL;DR
 
@@ -206,9 +206,7 @@ If you're defining an abstract model with a custom manager:
 
 ---
 
-Object managers should be defined within the model's class as `Manager`. If the model inherits `WarehouseModel`, the manager should inherit `WarehouseModel.Manager`, providing a string of the model's name for the type argument to inform the manager the type of model it will be managing. Below the manager's definition, create a class-level attribute on the model called `objects` which has its type set to `Manager` and it's value set to an instance of the `Manager` class.
-
-Note that Django requires the `User` model's manager to be defined globally (not locally nested within the model's case). This is an exception and is required by Django so that it may auto-discover the location of the user-manager.
+A model's manager should be defined within the model's class as `Manager`. If the model inherits `WarehouseModel`, the manager should inherit `WarehouseModel.Manager`, providing a string of the model's name as the type parameter to inform the manager of the type of model it will be managing. Below the manager's definition, create a class-level attribute on the model called `objects` which has its type set to `Manager` and it's value set to an instance of the `Manager` class.
 
 ```py
 class Person(WarehouseModel):
@@ -217,7 +215,9 @@ class Person(WarehouseModel):
   objects: Manager = Manager()
 ```
 
-If you need to create an abstract model with a custom manager, add a generic type parameter to the manager which is bound to the manager's model. A type variable will need to be defined before the abstract model as it will need to be used in the manager's type parameter. The type variable should follow the naming convention `Any{model}`. However, to bind the type variable to the model before the model is defined, use a lazy binding by referencing the model's name as a string. Below the abstract's manager, set the type of `objects` to be `Manager[t.Self]` so that the manager is managing the type of the inherited model.
+Note that Django requires the `User` model's manager to be defined globally (not locally nested within the `User` class). This is an exception and is required by Django so that it may auto-discover the location of the user-manager.
+
+If you need to create an abstract model with a custom manager, add a generic type parameter to the manager which is bound to the manager's model. A type variable will need to be defined before the abstract model, following the naming convention `Any{model}`. However, to bind the type variable to the model before the model is defined, use a lazy binding by referencing the model's name as a string. Below the abstract model's manager, set the type of `objects` to be `Manager[t.Self]` so that the manager is managing the type of the inherited model (not the abstract model).
 
 ```py
 import typing as t
@@ -232,8 +232,8 @@ class AbstractPerson(WarehouseModel):
 
   objects: Manager[t.Self] = Manager() 
 
-class YoungPerson(AbstractPerson):
-  class Manager(AbstractPerson.Manager["YoungPerson"]): ...
+class Musician(AbstractPerson):
+  class Manager(AbstractPerson.Manager["Musician"]): ...
 
   objects: Manager = Manager()
 ```
@@ -243,8 +243,7 @@ class YoungPerson(AbstractPerson):
 TL;DR
 
 - [x] Use constraint naming convention `{field}__{condition}`.
-- [x] Use model-test naming convention `tests/models/test_{model}.py`.
-- [x] Use unit-test naming convention `test_constraint__{constraint}`.
+- [x] Use unit-test naming convention `test_constraint__{constraint_name}`.
 - [x] Use CFL's assertion helper `assert_check_constraint`.
 
 ---
@@ -252,7 +251,6 @@ TL;DR
 When defining constraints, the naming convention is `{field}__{condition}`.
 
 ```py
-# models/person.py
 class Person(WarehouseModel):
   years_old = models.IntegerField()
 
@@ -265,10 +263,9 @@ class Person(WarehouseModel):
     ]
 ```
 
-Test your custom constraint in `tests/models/test_{model}.py`. Your test name should follow the naming convention `test_constraint__{constraint}`. The unit test should leverage CFL's assertion helper `assert_check_constraint`, which will check the constraint is enforced under the expected conditions.
+Test your custom constraint in `tests/models/test_{model}.py`. Your test name should follow the naming convention `test_constraint__{constraint_name}`. The unit test should leverage CFL's assertion helper `assert_check_constraint`, which will check the constraint is enforced under the expected conditions.
 
 ```py
-# tests/models/test_person.py
 class TestPerson(ModelTestCase[Person]):
   def test_constraint__years_old__gte__18(self):
     with self.assert_check_constraint("years_old__gte__18"):
@@ -314,9 +311,9 @@ class Person(WarehouseModel):
 
 We import `Song` outside the top level to avoid circular-imports.
 
-## Defining Model Settings
+## Defining Settings
 
-If a model has business logic that impacts functionality based on custom conditions, add custom settings in all caps to configure the conditions.
+If a model has business logic that impacts its functionality based on custom conditions, add class-level settings on the model in all caps to configure the conditions.
 
 For example, if the `Person` model has a property which checks if the person is too young:
 
