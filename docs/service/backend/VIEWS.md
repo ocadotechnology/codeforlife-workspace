@@ -218,8 +218,79 @@ class TestCarViewSet(ModelViewSetTestCase[Car]):
   ...
 ```
 
-## Testing get_serializer()
+## Testing get_serializer_class()
 
-text
+If you are overriding a model-view-set's `get_serializer_class` callback, a test will need to be created for each action least where each test follows naming convention `test_get_serializer_class__{action}`. Each test will need to use CFL's `assert_get_serializer_class` helper.
+
+```py
+from ..serializer.person import (
+  CreatePersonSerializer,
+  ListPersonSerializer,
+  PersonSerializer
+)
+
+class PersonViewSet(ModelViewSet[Person]):
+  def get_serializer_class(self):
+    if self.action == "create":
+      return CreatePersonSerializer
+    if self.action == "list":
+      return ListPersonSerializer
+
+    return PersonSerializer
+```
+
+```py
+from ...serializer.person import (
+  CreatePersonSerializer,
+  ListPersonSerializer,
+  PersonSerializer
+)
+
+class TestPersonViewSet(ModelViewSetTestCase[Person]):
+  def test_get_serializer_class__create(self):
+    """Creating a person has a dedicated serializer."""
+    self.assert_get_serializer_class(
+      serializer_class=CreatePersonSerializer,
+      action="create",
+    )
+
+  def test_get_serializer_class__list(self):
+    """Listing persons has a dedicated serializer."""
+    self.assert_get_serializer_class(
+      serializer_class=ListPersonSerializer,
+      action="list",
+    )
+
+  def test_get_serializer_class__partial_update(self):
+    """Partially updating a person uses the general serializer."""
+    self.assert_get_serializer_class(
+      serializer_class=PersonSerializer,
+      action="partial_update",
+    )
+
+  ...
+```
 
 ## Testing get_serializer_context()
+
+If you are overriding a model-view-set's `get_serializer_context` callback, only the actions that have additional context will need to each have a test created. The test should follow the naming convention `test_get_serializer_context__{action}`. Each test will need to use CFL's `assert_get_serializer_context` helper.
+
+```py
+class PersonViewSet(ModelViewSet[Person]):
+  def get_serializer_context(self):
+    context = super().get_serializer_context()
+    if self.action == "create":
+      context["favorite_color"] = "red" 
+    
+    return context
+```
+
+```py
+class TestPersonViewSet(ModelViewSetTestCase[Person]):
+  def test_get_serializer_context__create(self):
+    """Save the time the user was created."""
+    self.assert_get_serializer_context(
+      serializer_context={"favorite_color": "red"},
+      action="create",
+    )
+```
