@@ -11,8 +11,8 @@ TL;DR
 - [x] One file per model in the `models` directory.
 - [x] Each model-file follows the naming convention `{model}.py`.
 - [x] Each model is imported from its file in `models/__init__.py`.
-- [x] One test-file per model in the `tests/models` directory.
-- [x] Each model-test-file follows the naming convention `test_{model}.py`.
+- [x] One test-file per model in the `models` directory.
+- [x] Each model-test-file follows the naming convention `{model}_test.py`.
 - [x] Each model-test-case follows the naming convention `Test{model}`.
 - [x] Each model-test-case inherits `ModelTestCase`.
 - [x] Each model-test-case set their type parameter to the model being tested.
@@ -44,10 +44,10 @@ from .person import Person
 from path.to.models import Car, Person
 ```
 
-Any custom logic defined in a model-file should be tested in the directory `tests/models`, where each model has its own test-file following the naming convention `test_{model}.py`. Model-tests should inherit `ModelTestCase` and set their type parameter to be the model they are testing. The name of the model-test-case should follow the convention `Test{model}`.
+Any custom logic defined in a model-file should be tested in the directory `models`, where each model has its own test-file following the naming convention `{model}_test.py`. Model-tests should inherit `ModelTestCase` and set their type parameter to be the model they are testing. The name of the model-test-case should follow the convention `Test{model}`.
 
 ```py
-# tests/models/test_person.py
+# models/person_test.py
 from codeforlife.tests import ModelTestCase
 
 from ...models import Person
@@ -56,7 +56,7 @@ class TestPerson(ModelTestCase[Person]): ...
 ```
 
 ```py
-# tests/models/test_car.py
+# models/car_test.py
 from codeforlife.tests import ModelTestCase
 
 from ...models import Car
@@ -263,7 +263,7 @@ class Person(WarehouseModel):
     ]
 ```
 
-Test your custom constraint in `tests/models/test_{model}.py`. Your test name should follow the naming convention `test_constraint__{constraint_name}`. The unit test should leverage CFL's assertion helper `assert_check_constraint`, which will check the constraint is enforced under the expected conditions.
+Test your custom constraint in `models/{model}_test.py`. Your test name should follow the naming convention `test_constraint__{constraint_name}`. The unit test should leverage CFL's assertion helper `assert_check_constraint`, which will check the constraint is enforced under the expected conditions.
 
 ```py
 class TestPerson(ModelTestCase[Person]):

@@ -17,10 +17,10 @@ from ..models import Person
 class PersonViewSet(ModelViewSet[Person]): ...
 ```
 
-Any custom logic defined in a model-view-file should be tested in the directory `tests/views`, where each model has its own view-test-file following the naming convention `test_{model}.py`. Model-view-set-test-cases should inherit CFL's `ModelViewSetTestCase`, set the type parameter to be the model being viewed, set `model_view_set_class` to the model-view-set being tested and set `basename` to the basename used to register the model-view-set in the urls. The name of the model-view-set-test-case should follow the convention `Test{model}ViewSet`.
+Any custom logic defined in a model-view-file should be tested in the directory `views`, where each model has its own view-test-file following the naming convention `{model}_test.py`. Model-view-set-test-cases should inherit CFL's `ModelViewSetTestCase`, set the type parameter to be the model being viewed, set `model_view_set_class` to the model-view-set being tested and set `basename` to the basename used to register the model-view-set in the urls. The name of the model-view-set-test-case should follow the convention `Test{model}ViewSet`.
 
 ```py
-# tests/views/test_person.py
+# views/person_test.py
 from codeforlife.tests import ModelViewSetTestCase
 
 from ...models import Person

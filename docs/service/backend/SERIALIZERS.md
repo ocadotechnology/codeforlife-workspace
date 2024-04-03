@@ -40,10 +40,10 @@ class CreatePersonSerializer(BasePersonSerializer): ...
 class UpdatePersonSerializer(BasePersonSerializer): ...
 ```
 
-Any custom logic defined in a model-serializer-file should be tested in the directory `tests/serializers`, where each model has its own serializer-test-file following the naming convention `test_{model}.py`. Model-serializer-test-cases should inherit CFL's `ModelSerializerTestCase`, set the type parameter to be the model being serialized and set `model_serializer_class` to the model-serializer being tested. The name of the model-serializer-test-case should follow the convention `Test{model}Serializer`.
+Any custom logic defined in a model-serializer-file should be tested in the directory `serializers`, where each model has its own serializer-test-file following the naming convention `{model}_test.py`. Model-serializer-test-cases should inherit CFL's `ModelSerializerTestCase`, set the type parameter to be the model being serialized and set `model_serializer_class` to the model-serializer being tested. The name of the model-serializer-test-case should follow the convention `Test{model}Serializer`.
 
 ```py
-# tests/serializers/test_person.py
+# serializers/person_test.py
 from codeforlife.tests import ModelSerializerTestCase
 
 from ...models import Person
