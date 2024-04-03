@@ -6,7 +6,7 @@ First, understand how to [view a Django model](https://www.django-rest-framework
 
 ## Model View Sets
 
-For each model, we create a file with the naming convention `{model}.py` in the directory `views`. Within a model's view-file, we create one view set following the naming convention `{model}ViewSet`. Each model-view-set should inherit CFL's `ModelViewSet` by default and set the type parameter to the model being viewed.
+For each model, we create a file with the naming convention `{model}.py` in the directory `views`. Within a model's view-file, we create one view-set following the naming convention `{model}ViewSet`. Each model-view-set should inherit CFL's `ModelViewSet` by default and set the type parameter to the model being viewed.
 
 ```py
 # views/person.py
@@ -27,7 +27,7 @@ from ...models import Person
 from ...views import PersonViewSet
 
 class TestPersonViewSet(ModelViewSetTestCase[Person]):
-  model_serializer_class = PersonViewSet
+  model_view_set_class = PersonViewSet
   basename = "person"
 ```
 
@@ -84,9 +84,9 @@ class TestSchoolViewSet(ModelViewSetTestCase[School]):
 
 If any of a model's [default actions](https://www.django-rest-framework.org/api-guide/viewsets/#viewset-actions) should not be allowed, they can be disallowed in one of 2 ways.
 
-The first is to excluding an action's HTTP method from `http_method_names`. The should be the way if no action with that HTTP method should be allowed.
+The first is by excluding an action's HTTP method from `http_method_names`. The is the preferred way if no action with that HTTP method should be allowed.
 
-The second is to not permit some or all users to trigger the action. This should be the way if only some actions for a HTTP should be allowed.
+The second is to not permit some or all users to trigger the action. The is the preferred way if only some actions for a HTTP should be allowed.
 
 ```py
 class PersonViewSet(ModelViewSet[Person]):
@@ -99,7 +99,7 @@ class PersonViewSet(ModelViewSet[Person]):
     return [IsAuthenticated()]
 ```
 
-In the above example, actions that do not use HTTP GET are not allowed (e.g. The destroy action which uses HTTP DELETE is not allowed). Futhermore, of the 2 actions which use HTTP GET: list and retrieve, list not allowed and only authenticated users are allowed to retrieve.
+In the above example, actions that do not use HTTP GET are not allowed (e.g. The destroy action which uses HTTP DELETE is not allowed). Futhermore, of the 2 actions which use HTTP GET: list and retrieve, list is not allowed and only authenticated users are allowed to retrieve.
 
 ## Custom Actions
 
@@ -127,14 +127,16 @@ class TestPersonViewSet(ModelViewSetTestCase[Person]):
       data={
         "first_name": "John",
         "last_name": "Doe",
-        "email": "john.doe@codeforlife.education"
+        "email": "john.doe@codeforlife.education",
       },
     )
 ```
 
 ## Custom Update or Bulk-Update Actions
 
-If a custom update or bulk-update actions needs to be created for a model-view-set, use CFL's `ModelViewSet.update_action` or `ModelViewSet.bulk_update_action` helpers and pass the name of the action as the first argument. As these actions require a serializer to be provided, you'll also need to override `get_serializer_class`. Update actions use HTTP PUT and so it needs to be added to `http_method_names`.
+If a custom update or bulk-update action needs to be created for a model-view-set, use CFL's `ModelViewSet.update_action` or `ModelViewSet.bulk_update_action` helpers and pass the name of the action as the first argument. As these actions require a serializer to be provided, you'll also need to override `get_serializer_class`.
+
+**NOTE:** Update actions use HTTP PUT and so it needs to be added to `http_method_names`.
 
 ```py
 class PersonViewSet(ModelViewSet[Person]):
@@ -157,7 +159,7 @@ To test the "[happy scenarios](#testing-actions)" of each update action, use CFL
 ```py
 class TestPersonViewSet(ModelViewSetTestCase[Person]):
   def test_reset_password(self):
-    """Successfully resets a peron's password."""
+    """Successfully resets a person's password."""
     self.client.update(
       model=person,
       data={"password": "example password"},
@@ -175,7 +177,7 @@ class TestPersonViewSet(ModelViewSetTestCase[Person]):
 
 ## Testing get_queryset()
 
-If you are overriding a model-view-set's `get_queryset` callback, a test will need to be created for each action at the very least where each test follows naming convention `test_get_queryset__{action}`. Each test will need to use CFL's `assert_get_queryset` helper. Additional test dimensions can be specified if other factors affect a query-set.
+If you are overriding a model-view-set's `get_queryset` callback, a test will need to be created for each action at the very least where each test follows naming convention `test_get_queryset__{action}`. Each test will need to use CFL's `assert_get_queryset` helper. Additional test dimensions can be specified if other factors affect a queryset.
 
 ```py
 class CarViewSet(ModelViewSet[Car]):
@@ -194,7 +196,7 @@ In the above example, the default queryset is all insured cars. For the drive ac
 ```py
 class TestCarViewSet(ModelViewSetTestCase[Car]):
   def test_get_queryset__drive(self):
-    """Only cars owned by the requesting user can driven."""
+    """Only cars owned by the requesting user can be driven."""
     self.assert_get_queryset(
       values=Car.objects.filter(is_insured=True, owner=user),
       action="drive",
@@ -220,10 +222,10 @@ class TestCarViewSet(ModelViewSetTestCase[Car]):
 
 ## Testing get_serializer_class()
 
-If you are overriding a model-view-set's `get_serializer_class` callback, a test will need to be created for each action least where each test follows naming convention `test_get_serializer_class__{action}`. Each test will need to use CFL's `assert_get_serializer_class` helper.
+If you are overriding a model-view-set's `get_serializer_class` callback, a test will need to be created for each action at the very least where each test follows naming convention `test_get_serializer_class__{action}`. Each test will need to use CFL's `assert_get_serializer_class` helper.
 
 ```py
-from ..serializer.person import (
+from ..serializers.person import (
   CreatePersonSerializer,
   ListPersonSerializer,
   PersonSerializer
@@ -240,7 +242,7 @@ class PersonViewSet(ModelViewSet[Person]):
 ```
 
 ```py
-from ...serializer.person import (
+from ...serializers.person import (
   CreatePersonSerializer,
   ListPersonSerializer,
   PersonSerializer
@@ -273,7 +275,7 @@ class TestPersonViewSet(ModelViewSetTestCase[Person]):
 
 ## Testing get_serializer_context()
 
-If you are overriding a model-view-set's `get_serializer_context` callback, only the actions that have additional context will need to each have a test created. The test should follow the naming convention `test_get_serializer_context__{action}`. Each test will need to use CFL's `assert_get_serializer_context` helper.
+If you are overriding a model-view-set's `get_serializer_context` callback, only the actions that have additional context will need to have a test created. The test should follow the naming convention `test_get_serializer_context__{action}`. Each test will need to use CFL's `assert_get_serializer_context` helper.
 
 ```py
 class PersonViewSet(ModelViewSet[Person]):
@@ -288,7 +290,7 @@ class PersonViewSet(ModelViewSet[Person]):
 ```py
 class TestPersonViewSet(ModelViewSetTestCase[Person]):
   def test_get_serializer_context__create(self):
-    """Save the time the user was created."""
+    """Includes the person's favorite color."""
     self.assert_get_serializer_context(
       serializer_context={"favorite_color": "red"},
       action="create",
