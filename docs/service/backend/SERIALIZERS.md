@@ -40,6 +40,13 @@ class CreatePersonSerializer(BasePersonSerializer): ...
 class UpdatePersonSerializer(BasePersonSerializer): ...
 ```
 
+All serializers should be imported into `serializers/__init__.py` to support importing multiple serializers from `serializers`.
+
+```py
+# serializers/__init__.py
+from .person import CreatePersonSerializer, UpdatePersonSerializer
+```
+
 Any custom logic defined in a model-serializer-file should be tested in the directory `serializers`, where each model has its own serializer-test-file following the naming convention `{model}_test.py`. Model-serializer-test-cases should inherit CFL's `ModelSerializerTestCase`, set the type parameter to be the model being serialized and set `model_serializer_class` to the model-serializer being tested. The name of the model-serializer-test-case should follow the convention `Test{model}Serializer`.
 
 ```py

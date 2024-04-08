@@ -17,6 +17,13 @@ from ..models import Person
 class PersonViewSet(ModelViewSet[Person]): ...
 ```
 
+All views should be imported into `views/__init__.py` to support importing multiple views from `views`.
+
+```py
+# views/__init__.py
+from .person import PersonViewSet
+```
+
 Any custom logic defined in a model-view-file should be tested in the directory `views`, where each model has its own view-test-file following the naming convention `{model}_test.py`. Model-view-set-test-cases should inherit CFL's `ModelViewSetTestCase`, set the type parameter to be the model being viewed, set `model_view_set_class` to the model-view-set being tested and set `basename` to the basename used to register the model-view-set in the urls. The name of the model-view-set-test-case should follow the convention `Test{model}ViewSet`.
 
 ```py
@@ -29,6 +36,45 @@ from ...views import PersonViewSet
 class TestPersonViewSet(ModelViewSetTestCase[Person]):
   model_view_set_class = PersonViewSet
   basename = "person"
+```
+
+## Register URLs
+
+Each model-view-set needs to be registered in `urls.py` using DRF's `DefaultRouter`. Each registration needs to set `prefix` to be the plural name of the model with kebab-casing, `viewset` to be the model-view-set being registered and `basename` to be the singular of the singular name of the model with kebab-casing.
+
+```py
+# urls.py
+from rest_framework.routers import DefaultRouter
+
+from .views import PersonViewSet
+
+router = DefaultRouter()
+router.register(
+    prefix="persons",
+    viewset=PersonViewSet,
+    basename="person",
+)
+
+urlpatterns = router.urls
+```
+
+If a model has a foreign key to another model, it's also acceptable to set `prefix` to be a subpath of the related model, where each model's name is plural with kebab casing.
+
+```py
+from .views import PartyInvitationViewSet, VipPartyInvitationViewSet
+
+router.register(
+    prefix="parties/invitations",
+    viewset=PartyInvitationViewSet,
+    basename="party-invitation",
+)
+# in practice, `is_vip` would likely be a field of `PartyInvitationViewSet` but
+# this example is purely to demonstrate the naming convention of `prefix`.
+router.register(
+    prefix="parties/vip-invitations",
+    viewset=VipPartyInvitationViewSet,
+    basename="vip-party-invitation",
+)
 ```
 
 ## Permissions
