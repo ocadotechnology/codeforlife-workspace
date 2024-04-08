@@ -15,7 +15,7 @@ TL;DR
 - [x] Each model-test-file follows the naming convention `{model}_test.py`.
 - [x] Each model-test-case follows the naming convention `Test{model}`.
 - [x] Each model-test-case inherits `ModelTestCase`.
-- [x] Each model-test-case set their type parameter to the model being tested.
+- [x] Each model-test-case sets their type parameter to the model being tested.
 
 ---
 
@@ -75,7 +75,7 @@ TL;DR
 
 Determine whether the data stored in a model needs to be warehoused. Data should be warehoused if it can contribute to analyzing users' behavior. By default, new models should be warehoused as it's a rare occurrence that meaningful insights cannot be gained from analyzing its data.
 
-Defining a model as a warehouse-model allows us to sync data from our database to our data warehouse before its deleted from our database. See our [data deletion strategy](https://code-for-life.gitbook.io/code-for-life-dev/data/storage#data-deletion-strategy).
+Defining a model as a warehouse-model allows us to sync data from our database to our data warehouse before it's deleted from our database. See our [data deletion strategy](https://code-for-life.gitbook.io/code-for-life-dev/data/storage#data-deletion-strategy).
 
 Defining a warehouse-model:
 
@@ -195,18 +195,18 @@ TL;DR
 If you're defining a model with a custom manager:
 
 - [x] Define object manager as `Manager` within the model.
-- [x] If the model inherits `WarehouseModel`, its manager should inherit `WarehouseModel.Manger` and set the type variable to a string with the model's name.
-- [x] Write `objects: Manager = Manger()` below a custom manager.
+- [x] If the model inherits `WarehouseModel`, its manager should inherit `WarehouseModel.Manager` and set the type variable to a string with the model's name.
+- [x] Write `objects: Manager = Manager()` below a custom manager.
 
 If you're defining an abstract model with a custom manager:
 
 - [x] Create a type variable lazily bound to the abstract model with naming convention `Any{model}`.
 - [x] Add generic type parameter of type any model that inherits the abstract model on the manager.
-- [x] Write `objects: Manager[t.Self] = Manger()` below a custom manager.
+- [x] Write `objects: Manager[t.Self] = Manager()` below a custom manager.
 
 ---
 
-A model's manager should be defined within the model's class as `Manager`. If the model inherits `WarehouseModel`, the manager should inherit `WarehouseModel.Manager`, providing a string of the model's name as the type parameter to inform the manager of the type of model it will be managing. Below the manager's definition, create a class-level attribute on the model called `objects` which has its type set to `Manager` and it's value set to an instance of the `Manager` class.
+A model's manager should be defined within the model's class as `Manager`. If the model inherits `WarehouseModel`, the manager should inherit `WarehouseModel.Manager`, providing a string of the model's name as the type parameter to inform the manager of the type of model it will be managing. Below the manager's definition, create a class-level attribute on the model called `objects` which has its type set to `Manager` and its value set to an instance of the `Manager` class.
 
 ```py
 class Person(WarehouseModel):
