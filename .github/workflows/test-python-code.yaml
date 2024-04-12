@@ -59,7 +59,28 @@ jobs:
 
       - name: 🔎 Check Static Code
         working-directory: ${{ inputs.working-directory }}
-        run: if ! pipenv run pylint --rcfile=${{ env.PYPROJECT_TOML }} $(git ls-files '${{ inputs.source-path }}/*.py'); then exit 1; fi
+        run: |
+          if ! pipenv run pylint --rcfile=${{ env.PYPROJECT_TOML }} $(
+            git ls-files \
+            '${{ inputs.source-path }}/*.py' \
+            '${{ inputs.source-path }}/**/*.py' \
+            ':!${{ inputs.source-path }}/test_*.py' \
+            ':!${{ inputs.source-path }}/**/test_*.py' \
+            ':!${{ inputs.source-path }}/*_test.py' \
+            ':!${{ inputs.source-path }}/**/*_test.py'
+          )
+            then exit 1
+          fi
+
+          if ! pipenv run pylint --rcfile=${{ env.PYPROJECT_TOML }} --disable=duplicate-code $(
+            git ls-files \
+            '${{ inputs.source-path }}/test_*.py' \
+            '${{ inputs.source-path }}/**/test_*.py' \
+            '${{ inputs.source-path }}/*_test.py' \
+            '${{ inputs.source-path }}/**/*_test.py'
+          )
+            then exit 1
+          fi
 
       - name: 🔎 Check Django Migrations
         if: inputs.check-django-migrations
