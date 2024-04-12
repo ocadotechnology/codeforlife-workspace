@@ -59,7 +59,7 @@ jobs:
 
       - name: 🔎 Check Static Code
         working-directory: ${{ inputs.working-directory }}
-        run: pipenv run pylint --rcfile=${{ env.PYPROJECT_TOML }} $(git ls-files '${{ inputs.source-path }}/*.py')
+        run: if ! pipenv run pylint --rcfile=${{ env.PYPROJECT_TOML }} $(git ls-files '${{ inputs.source-path }}/*.py'); then exit 1; fi
 
       - name: 🔎 Check Django Migrations
         if: inputs.check-django-migrations
