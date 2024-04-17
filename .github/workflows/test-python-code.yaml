@@ -28,6 +28,15 @@ on:
         type: string
         required: false
         default: "."
+      codecov-slug:
+        description: "The slug provided to Codecov for the coverage report."
+        type: string
+        required: true
+      codecov-yml-path:
+        description: "The path of the Codecov YAML file."
+        type: string
+        required: false
+        default: "./codecov.yml"
 
 jobs:
   test-py-code:
@@ -95,4 +104,10 @@ jobs:
         working-directory: ${{ inputs.working-directory }}
         run: pipenv run pytest -n=auto -c=${{ env.PYPROJECT_TOML }} ${{ inputs.source-path }}
 
-      # TODO: assert code coverage target.
+      - name: 📈 Upload Coverage Reports to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: ${{ inputs.codecov-slug }}
+          codecov_yml_path: ${{ inputs.codecov-yml-path }}
+          working-directory: ${{ inputs.working-directory }}
