@@ -37,6 +37,9 @@ on:
         type: string
         required: false
         default: "./codecov.yml"
+    secrets:
+      CODECOV_TOKEN:
+        required: true
 
 jobs:
   test-py-code:
@@ -102,8 +105,9 @@ jobs:
 
       - name: 🧪 Test Code Units
         working-directory: ${{ inputs.working-directory }}
-        run: pipenv run pytest -n=auto -c=${{ env.PYPROJECT_TOML }} ${{ inputs.source-path }}
+        run: pipenv run pytest -n=auto --cov --cov-report=xml -c=${{ env.PYPROJECT_TOML }} ${{ inputs.source-path }}
 
+      # TODO: check if target is asserted
       - name: 📈 Upload Coverage Reports to Codecov
         uses: codecov/codecov-action@v4
         with:
