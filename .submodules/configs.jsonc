@@ -31,7 +31,10 @@
             "davidanson.vscode-markdownlint",
             "bierner.markdown-mermaid",
             "streetsidesoftware.code-spell-checker",
-            "tamasfe.even-better-toml"
+            "tamasfe.even-better-toml",
+            "github.vscode-github-actions",
+            "codecov.codecov",
+            "ritwickdey.liveserver"
           ]
         }
       }
@@ -170,41 +173,43 @@
           "**/.mypy_cache": true,
           "**/.hypothesis": true
         },
-        "isort.path": [
+        "!isort.path": [
           ".venv/bin/python",
           "-m",
           "isort"
         ],
-        "isort.args": [
+        "!isort.args": [
           "--settings-file=pyproject.toml"
         ],
-        "black-formatter.path": [
+        "!black-formatter.path": [
           ".venv/bin/python",
           "-m",
           "black"
         ],
-        "black-formatter.args": [
+        "!black-formatter.args": [
           "--config",
           "pyproject.toml"
         ],
-        "mypy-type-checker.path": [
+        "!mypy-type-checker.path": [
           ".venv/bin/python",
           "-m",
           "mypy"
         ],
-        "mypy-type-checker.args": [
+        "!mypy-type-checker.args": [
           "--config-file=pyproject.toml"
         ],
-        "pylint.path": [
+        "!pylint.path": [
           ".venv/bin/python",
           "-m",
           "pylint"
         ],
-        "pylint.args": [
+        "!pylint.args": [
           "--rcfile=pyproject.toml"
         ],
-        "python.testing.pytestArgs": [
+        "!python.testing.pytestArgs": [
           "-n=auto",
+          "--cov",
+          "--cov-report=html",
           "-c=pyproject.toml",
           "."
         ]
