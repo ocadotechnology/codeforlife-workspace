@@ -107,6 +107,7 @@ jobs:
         working-directory: ${{ inputs.working-directory }}
         run: pipenv run pytest -n=auto --cov --cov-report=xml -c=${{ env.PYPROJECT_TOML }} ${{ inputs.source-path }}
 
+      # TODO: check if target is asserted
       - name: 📈 Upload Coverage Reports to Codecov
         uses: codecov/codecov-action@v4
         with:
