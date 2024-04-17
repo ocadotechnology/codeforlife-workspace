@@ -110,6 +110,7 @@ jobs:
       - name: 📈 Upload Coverage Reports to Codecov
         uses: codecov/codecov-action@v4
         with:
+          fail_ci_if_error: true
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: ${{ inputs.codecov-slug }}
           codecov_yml_path: ${{ inputs.codecov-yml-path }}
