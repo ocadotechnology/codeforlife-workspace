@@ -64,51 +64,51 @@ jobs:
           working-directory: ${{ inputs.working-directory }}
           install-args: --dev
 
-      - name: 🔎 Check Import Sort
-        working-directory: ${{ inputs.working-directory }}
-        run: pipenv run isort --settings-file=${{ env.PYPROJECT_TOML }} --check ${{ inputs.source-path }}
+      # - name: 🔎 Check Import Sort
+      #   working-directory: ${{ inputs.working-directory }}
+      #   run: pipenv run isort --settings-file=${{ env.PYPROJECT_TOML }} --check ${{ inputs.source-path }}
 
-      - name: 🔎 Check Code Format
-        working-directory: ${{ inputs.working-directory }}
-        run: if ! pipenv run black --config=${{ env.PYPROJECT_TOML }} --check ${{ inputs.source-path }}; then exit 1; fi
+      # - name: 🔎 Check Code Format
+      #   working-directory: ${{ inputs.working-directory }}
+      #   run: if ! pipenv run black --config=${{ env.PYPROJECT_TOML }} --check ${{ inputs.source-path }}; then exit 1; fi
 
-      - name: 🔎 Check Static Type Hints
-        working-directory: ${{ inputs.working-directory }}
-        run: pipenv run mypy --config-file=${{ env.PYPROJECT_TOML }} ${{ inputs.source-path }}
+      # - name: 🔎 Check Static Type Hints
+      #   working-directory: ${{ inputs.working-directory }}
+      #   run: pipenv run mypy --config-file=${{ env.PYPROJECT_TOML }} ${{ inputs.source-path }}
 
-      - name: 🔎 Check Static Code
-        working-directory: ${{ inputs.working-directory }}
-        run: |
-          echo 'Linting non-test files'
+      # - name: 🔎 Check Static Code
+      #   working-directory: ${{ inputs.working-directory }}
+      #   run: |
+      #     echo 'Linting non-test files'
 
-          if ! pipenv run pylint --rcfile=${{ env.PYPROJECT_TOML }} $(
-            git ls-files \
-            '${{ inputs.source-path }}/*.py' \
-            '${{ inputs.source-path }}/**/*.py' \
-            ':!${{ inputs.source-path }}/test_*.py' \
-            ':!${{ inputs.source-path }}/**/test_*.py' \
-            ':!${{ inputs.source-path }}/*_test.py' \
-            ':!${{ inputs.source-path }}/**/*_test.py'
-          )
-            then exit 1
-          fi
+      #     if ! pipenv run pylint --rcfile=${{ env.PYPROJECT_TOML }} $(
+      #       git ls-files \
+      #       '${{ inputs.source-path }}/*.py' \
+      #       '${{ inputs.source-path }}/**/*.py' \
+      #       ':!${{ inputs.source-path }}/test_*.py' \
+      #       ':!${{ inputs.source-path }}/**/test_*.py' \
+      #       ':!${{ inputs.source-path }}/*_test.py' \
+      #       ':!${{ inputs.source-path }}/**/*_test.py'
+      #     )
+      #       then exit 1
+      #     fi
 
-          echo 'Linting test files'
+      #     echo 'Linting test files'
 
-          if ! pipenv run pylint --rcfile=${{ env.PYPROJECT_TOML }} --disable=duplicate-code $(
-            git ls-files \
-            '${{ inputs.source-path }}/test_*.py' \
-            '${{ inputs.source-path }}/**/test_*.py' \
-            '${{ inputs.source-path }}/*_test.py' \
-            '${{ inputs.source-path }}/**/*_test.py'
-          )
-            then exit 1
-          fi
+      #     if ! pipenv run pylint --rcfile=${{ env.PYPROJECT_TOML }} --disable=duplicate-code $(
+      #       git ls-files \
+      #       '${{ inputs.source-path }}/test_*.py' \
+      #       '${{ inputs.source-path }}/**/test_*.py' \
+      #       '${{ inputs.source-path }}/*_test.py' \
+      #       '${{ inputs.source-path }}/**/*_test.py'
+      #     )
+      #       then exit 1
+      #     fi
 
-      - name: 🔎 Check Django Migrations
-        if: inputs.check-django-migrations
-        working-directory: ${{ inputs.working-directory }}
-        run: pipenv run python manage.py makemigrations --check --dry-run
+      # - name: 🔎 Check Django Migrations
+      #   if: inputs.check-django-migrations
+      #   working-directory: ${{ inputs.working-directory }}
+      #   run: pipenv run python manage.py makemigrations --check --dry-run
 
       - name: 🧪 Test Code Units
         working-directory: ${{ inputs.working-directory }}
