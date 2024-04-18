@@ -232,6 +232,9 @@
             "justMyCode": false,
             "presentation": {
               "hidden": true
+            },
+            "env": {
+              "PYTEST_ADDOPTS": "--no-cov"
             }
           }
         ]
