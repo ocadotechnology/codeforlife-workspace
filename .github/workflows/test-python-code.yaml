@@ -124,7 +124,7 @@ jobs:
           slug: ${{ inputs.codecov-slug }}
           codecov_yml_path: ${{ inputs.codecov-yml-path }}
           working-directory: ${{ inputs.working-directory }}
-          file: ${{ env.COVERAGE_FILE }}
+          file: ./${{ env.COVERAGE_FILE }}
 
       - name: ☔ Assert Code Coverage
         working-directory: ${{ inputs.working-directory }}
