@@ -123,7 +123,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: ${{ inputs.codecov-slug }}
           codecov_yml_path: ${{ inputs.codecov-yml-path }}
-          working-directory: ${{ inputs.working-directory }}
+          # working-directory: ${{ inputs.working-directory }}
           files: ./${{ env.COVERAGE_FILE }}
 
       - name: ☔ Check Code Coverage
