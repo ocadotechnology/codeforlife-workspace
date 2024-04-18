@@ -64,86 +64,86 @@ jobs:
           working-directory: ${{ inputs.working-directory }}
           install-args: --dev
 
-      # - name: 🔎 Check Import Sort
-      #   working-directory: ${{ inputs.working-directory }}
-      #   run: pipenv run isort --settings-file=${{ env.PYPROJECT_TOML }} --check ${{ inputs.source-path }}
+      - name: 🔎 Check Import Sort
+        working-directory: ${{ inputs.working-directory }}
+        run: pipenv run isort --settings-file=${{ env.PYPROJECT_TOML }} --check ${{ inputs.source-path }}
 
-      # - name: 🔎 Check Code Format
-      #   working-directory: ${{ inputs.working-directory }}
-      #   run: if ! pipenv run black --config=${{ env.PYPROJECT_TOML }} --check ${{ inputs.source-path }}; then exit 1; fi
+      - name: 🔎 Check Code Format
+        working-directory: ${{ inputs.working-directory }}
+        run: if ! pipenv run black --config=${{ env.PYPROJECT_TOML }} --check ${{ inputs.source-path }}; then exit 1; fi
 
-      # - name: 🔎 Check Static Type Hints
-      #   working-directory: ${{ inputs.working-directory }}
-      #   run: pipenv run mypy --config-file=${{ env.PYPROJECT_TOML }} ${{ inputs.source-path }}
+      - name: 🔎 Check Static Type Hints
+        working-directory: ${{ inputs.working-directory }}
+        run: pipenv run mypy --config-file=${{ env.PYPROJECT_TOML }} ${{ inputs.source-path }}
 
-      # - name: 🔎 Check Static Code
-      #   working-directory: ${{ inputs.working-directory }}
-      #   run: |
-      #     echo 'Linting non-test files'
+      - name: 🔎 Check Static Code
+        working-directory: ${{ inputs.working-directory }}
+        run: |
+          echo 'Linting non-test files'
 
-      #     if ! pipenv run pylint --rcfile=${{ env.PYPROJECT_TOML }} $(
-      #       git ls-files \
-      #       '${{ inputs.source-path }}/*.py' \
-      #       '${{ inputs.source-path }}/**/*.py' \
-      #       ':!${{ inputs.source-path }}/test_*.py' \
-      #       ':!${{ inputs.source-path }}/**/test_*.py' \
-      #       ':!${{ inputs.source-path }}/*_test.py' \
-      #       ':!${{ inputs.source-path }}/**/*_test.py'
-      #     )
-      #       then exit 1
-      #     fi
+          if ! pipenv run pylint --rcfile=${{ env.PYPROJECT_TOML }} $(
+            git ls-files \
+            '${{ inputs.source-path }}/*.py' \
+            '${{ inputs.source-path }}/**/*.py' \
+            ':!${{ inputs.source-path }}/test_*.py' \
+            ':!${{ inputs.source-path }}/**/test_*.py' \
+            ':!${{ inputs.source-path }}/*_test.py' \
+            ':!${{ inputs.source-path }}/**/*_test.py'
+          )
+            then exit 1
+          fi
 
-      #     echo 'Linting test files'
+          echo 'Linting test files'
 
-      #     if ! pipenv run pylint --rcfile=${{ env.PYPROJECT_TOML }} --disable=duplicate-code $(
-      #       git ls-files \
-      #       '${{ inputs.source-path }}/test_*.py' \
-      #       '${{ inputs.source-path }}/**/test_*.py' \
-      #       '${{ inputs.source-path }}/*_test.py' \
-      #       '${{ inputs.source-path }}/**/*_test.py'
-      #     )
-      #       then exit 1
-      #     fi
+          if ! pipenv run pylint --rcfile=${{ env.PYPROJECT_TOML }} --disable=duplicate-code $(
+            git ls-files \
+            '${{ inputs.source-path }}/test_*.py' \
+            '${{ inputs.source-path }}/**/test_*.py' \
+            '${{ inputs.source-path }}/*_test.py' \
+            '${{ inputs.source-path }}/**/*_test.py'
+          )
+            then exit 1
+          fi
 
-      # - name: 🔎 Check Django Migrations
-      #   if: inputs.check-django-migrations
-      #   working-directory: ${{ inputs.working-directory }}
-      #   run: pipenv run python manage.py makemigrations --check --dry-run
+      - name: 🔎 Check Django Migrations
+        if: inputs.check-django-migrations
+        working-directory: ${{ inputs.working-directory }}
+        run: pipenv run python manage.py makemigrations --check --dry-run
 
       - name: 🧪 Test Code Units
         working-directory: ${{ inputs.working-directory }}
-        run: pipenv run pytest -n=auto --cov --cov-report=xml -c=${{ env.PYPROJECT_TOML }} ${{ inputs.source-path }}
+        run: pipenv run pytest -n=auto --cov --cov-report=xml:${{ env.COVERAGE_REPORT }} -c=${{ env.PYPROJECT_TOML }} ${{ inputs.source-path }}
 
       - name: 📈 Upload Coverage Reports to Codecov
         # Only run step if the event is triggered from within the original repo.
         # NOTE: Forked repos will not be able to set the CODECOV_TOKEN secret.
-        # if: github.event.repository.full_name == github.repository
+        if: github.event.repository.full_name == github.repository
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: ${{ inputs.codecov-slug }}
           codecov_yml_path: ${{ inputs.codecov-yml-path }}
-          # working-directory: ${{ inputs.working-directory }}
-          # files: ./${{ env.COVERAGE_FILE }}
+          working-directory: ${{ inputs.working-directory }}
+          file: ${{ env.COVERAGE_REPORT }}
 
-      # - name: ☔ Check Code Coverage
-      #   working-directory: ${{ inputs.working-directory }}
-      #   run: |
-      #     python -c <<-EOF "
-      #     import math
-      #     import xml.etree.ElementTree as ET
+      - name: ☂️ Check Code Coverage
+        working-directory: ${{ inputs.working-directory }}
+        run: |
+          python -c <<-EOF "
+          import math
+          import xml.etree.ElementTree as ET
           
-      #     root = ET.parse('${{ env.COVERAGE_FILE }}').getroot()
-      #     assert root.tag == 'coverage', 'Expected the \"coverage\" tag to be the root tag.'
+          root = ET.parse('${{ env.COVERAGE_REPORT }}').getroot()
+          assert root.tag == 'coverage', 'Expected the \"coverage\" tag to be the root tag.'
           
-      #     coverage = math.floor(
-      #         (
-      #             (100 / int(root.attrib['lines-valid']))
-      #             * int(root.attrib['lines-covered'])
-      #         ) * 100
-      #     ) / 100.0
-      #     assert (
-      #         coverage >= ${{ inputs.coverage-target }}
-      #     ), f'Coverage of {coverage}% is below the target of ${{ inputs.coverage-target }}%.'
-      #     "
-      #     EOF
+          coverage = math.floor(
+              (
+                  (100 / int(root.attrib['lines-valid']))
+                  * int(root.attrib['lines-covered'])
+              ) * 100
+          ) / 100.0
+          assert (
+              coverage >= ${{ inputs.coverage-target }}
+          ), f'Coverage of {coverage}% is below the target of ${{ inputs.coverage-target }}%.'
+          "
+          EOF
