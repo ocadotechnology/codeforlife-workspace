@@ -116,7 +116,7 @@ jobs:
 
       - name: 📈 Upload Coverage Reports to Codecov
         # Only run step if the event is triggered from within the original repo.
-        # NOTE: Forked repos will not be able to set the CODECOV_TOKEN secret.
+        # NOTE: Forked repos will not be able to set the CODECOV_TOKEN secret
         if: github.event.repository.full_name == github.repository
         uses: codecov/codecov-action@v4
         with:
