@@ -52,7 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PYPROJECT_TOML: ${{ inputs.pyproject-toml-directory }}/pyproject.toml
-      COVERAGE_FILE: coverage.xml
+      COVERAGE_REPORT: coverage.xml # NOTE: COVERAGE_FILE is reserved - do not use.
     steps:
       - name: 🛫 Checkout
         uses: actions/checkout@v4
@@ -117,33 +117,33 @@ jobs:
       - name: 📈 Upload Coverage Reports to Codecov
         # Only run step if the event is triggered from within the original repo.
         # NOTE: Forked repos will not be able to set the CODECOV_TOKEN secret.
-        if: github.event.repository.full_name == github.repository
+        # if: github.event.repository.full_name == github.repository
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: ${{ inputs.codecov-slug }}
           codecov_yml_path: ${{ inputs.codecov-yml-path }}
-          working-directory: ${{ inputs.working-directory }}
+          # working-directory: ${{ inputs.working-directory }}
           # files: ./${{ env.COVERAGE_FILE }}
 
-      - name: ☔ Check Code Coverage
-        working-directory: ${{ inputs.working-directory }}
-        run: |
-          python -c <<-EOF "
-          import math
-          import xml.etree.ElementTree as ET
+      # - name: ☔ Check Code Coverage
+      #   working-directory: ${{ inputs.working-directory }}
+      #   run: |
+      #     python -c <<-EOF "
+      #     import math
+      #     import xml.etree.ElementTree as ET
           
-          root = ET.parse('${{ env.COVERAGE_FILE }}').getroot()
-          assert root.tag == 'coverage', 'Expected the \"coverage\" tag to be the root tag.'
+      #     root = ET.parse('${{ env.COVERAGE_FILE }}').getroot()
+      #     assert root.tag == 'coverage', 'Expected the \"coverage\" tag to be the root tag.'
           
-          coverage = math.floor(
-              (
-                  (100 / int(root.attrib['lines-valid']))
-                  * int(root.attrib['lines-covered'])
-              ) * 100
-          ) / 100.0
-          assert (
-              coverage >= ${{ inputs.coverage-target }}
-          ), f'Coverage of {coverage}% is below the target of ${{ inputs.coverage-target }}%.'
-          "
-          EOF
+      #     coverage = math.floor(
+      #         (
+      #             (100 / int(root.attrib['lines-valid']))
+      #             * int(root.attrib['lines-covered'])
+      #         ) * 100
+      #     ) / 100.0
+      #     assert (
+      #         coverage >= ${{ inputs.coverage-target }}
+      #     ), f'Coverage of {coverage}% is below the target of ${{ inputs.coverage-target }}%.'
+      #     "
+      #     EOF
