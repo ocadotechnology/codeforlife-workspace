@@ -37,11 +37,6 @@ on:
         type: string
         required: false
         default: "./codecov.yml"
-      coverage-target:
-        description: "The minimum code coverage to be tested."
-        type: number
-        required: false
-        default: 90
     secrets:
       CODECOV_TOKEN:
         description: "The token used to gain access to Codecov."
@@ -125,25 +120,3 @@ jobs:
           codecov_yml_path: ${{ inputs.codecov-yml-path }}
           working-directory: ${{ inputs.working-directory }}
           file: ${{ env.COVERAGE_REPORT }}
-
-      - name: ☂️ Check Code Coverage
-        working-directory: ${{ inputs.working-directory }}
-        run: |
-          python -c <<-EOF "
-          import math
-          import xml.etree.ElementTree as ET
-          
-          root = ET.parse('${{ env.COVERAGE_REPORT }}').getroot()
-          assert root.tag == 'coverage', 'Expected the \"coverage\" tag to be the root tag.'
-          
-          coverage = math.floor(
-              (
-                  (100 / int(root.attrib['lines-valid']))
-                  * int(root.attrib['lines-covered'])
-              ) * 100
-          ) / 100.0
-          assert (
-              coverage >= ${{ inputs.coverage-target }}
-          ), f'Coverage of {coverage}% is below the target of ${{ inputs.coverage-target }}%.'
-          "
-          EOF
