@@ -31,7 +31,8 @@ on:
       codecov-slug:
         description: "The slug provided to Codecov for the coverage report."
         type: string
-        required: true
+        required: false
+        default: ${{ github.repository }}
       codecov-yml-path:
         description: "The path of the Codecov YAML file."
         type: string
