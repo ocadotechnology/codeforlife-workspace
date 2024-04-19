@@ -48,6 +48,7 @@ jobs:
     env:
       PYPROJECT_TOML: ${{ inputs.pyproject-toml-directory }}/pyproject.toml
       COVERAGE_REPORT: coverage.xml # NOTE: COVERAGE_FILE is reserved - do not use.
+      OCADO_TECH_ORG_ID: 2088731
     steps:
       - name: 🛫 Checkout
         uses: actions/checkout@v4
@@ -107,12 +108,16 @@ jobs:
 
       - name: 🧪 Test Code Units
         working-directory: ${{ inputs.working-directory }}
-        run: pipenv run pytest -n=auto --cov --cov-report=xml:${{ env.COVERAGE_REPORT }} -c=${{ env.PYPROJECT_TOML }} ${{ inputs.source-path }}
+        run: |
+          if [ ${{ github.repository_owner_id }} = ${{ env.OCADO_TECH_ORG_ID }} ]
+          then
+            pipenv run pytest -n=auto --cov --cov-report=xml:${{ env.COVERAGE_REPORT }} -c=${{ env.PYPROJECT_TOML }} ${{ inputs.source-path }}
+          else
+            pipenv run pytest -n=auto --cov --cov-fail-under=90 -c=${{ env.PYPROJECT_TOML }} ${{ inputs.source-path }}
+          fi
 
       - name: 📈 Upload Coverage Reports to Codecov
-        # Only run step if the event is triggered from within the original repo.
-        # NOTE: Forked repos will not be able to set the CODECOV_TOKEN secret
-        if: github.event.repository.full_name == github.repository
+        if: github.repository_owner_id == env.OCADO_TECH_ORG_ID
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
