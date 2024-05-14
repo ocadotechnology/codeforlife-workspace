@@ -1,0 +1,8 @@
+#!/bin/bash
+set -e
+
+cd "${BASH_SOURCE%/*}/.submodules/recurse-fork"
+
+pipenv install --dev
+
+pipenv run python .
