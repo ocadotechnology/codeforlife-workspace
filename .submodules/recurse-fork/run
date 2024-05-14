@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-cd "${BASH_SOURCE%/*}/.submodules/recurse-fork"
+cd "${BASH_SOURCE%/*}"
 
 pipenv install --dev
 
