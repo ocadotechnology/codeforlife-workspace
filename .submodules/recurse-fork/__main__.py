@@ -31,15 +31,7 @@ class Submodule:
 class Repo:
     """A GitHub repo."""
 
-    @dataclass(frozen=True)
-    class Owner:
-        """The owner of a GitHub repo."""
-
-        id: str
-        login: str
-
     # pylint: disable=invalid-name
-    owner: t.Optional[Owner] = None
     createdAt: t.Optional[str] = None
     isFork: t.Optional[bool] = None
     url: t.Optional[str] = None
@@ -98,9 +90,6 @@ def view_repo(
         )
         print(json.dumps(repo_dict, indent=2))
 
-    if "owner" in fields:
-        repo_dict["owner"] = Repo.Owner(**repo_dict["owner"])
-
     return Repo(**repo_dict)
 
 
@@ -136,7 +125,7 @@ def read_submodules() -> t.Dict[str, Submodule]:
     }
 
 
-def fork_repo(owner: str, name: str):
+def fork_repo(name: str, url: str):
     """Fork a repo on GitHub.
 
     https://cli.github.com/manual/gh_repo_fork
@@ -153,7 +142,7 @@ def fork_repo(owner: str, name: str):
                 "gh",
                 "repo",
                 "fork",
-                f"{owner}/{name}",
+                url,
                 "--default-branch-only",
                 "--clone=false",
             ],
@@ -190,11 +179,8 @@ def main() -> None:
 
     login_to_github()
 
-    workspace = view_repo(fields=["owner"])
-    workspace_owner = t.cast(Repo.Owner, workspace.owner)
-
     for name, submodule in submodules.items():
-        fork_repo(workspace_owner.login, name)
+        fork_repo(name, submodule.url)
 
         clone_repo(name, submodule.path)
 
