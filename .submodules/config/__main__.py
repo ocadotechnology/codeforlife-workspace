@@ -19,7 +19,7 @@ from pathlib import Path
 
 from configs import GlobalSubmoduleConfig, JsonDict, JsonValue, load_global_configs
 from helpers import (
-    DOT_SUBMODULES_DIR,
+    CONFIG_DIR,
     GIT_PUSH_CHANGES,
     git_commit_and_push,
     merge_json_dicts,
@@ -145,7 +145,7 @@ def main() -> None:
         # Merge inherited configs and config into submodule in order.
         for submodule in global_config.submodules:
             # Change directory to submodule's directory.
-            os.chdir(f"{DOT_SUBMODULES_DIR}/../{submodule}")
+            os.chdir(f"{CONFIG_DIR}/../../{submodule}")
 
             for inheritance in inheritances[key]:
                 merge_global_config(global_configs[inheritance])
@@ -154,7 +154,7 @@ def main() -> None:
 
             if GIT_PUSH_CHANGES:
                 git_commit_and_push(message="Configured submodule [skip ci]")
-                os.chdir(f"{DOT_SUBMODULES_DIR}/..")
+                os.chdir(f"{CONFIG_DIR}/../..")
                 subprocess.run(["git", "add", submodule], check=True)
 
         print("---")

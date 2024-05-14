@@ -10,7 +10,7 @@ import typing as t
 from collections import Counter
 from dataclasses import dataclass
 
-from helpers import DOT_SUBMODULES_DIR, load_jsonc
+from helpers import CONFIG_DIR, load_jsonc
 
 # JSON type hints.
 JsonList = t.List["JsonValue"]
@@ -61,7 +61,7 @@ InheritanceDict = t.Dict[str, t.Tuple[str, ...]]
 
 def load_global_configs() -> t.Tuple[GlobalConfigDict, InheritanceDict]:
     # Change directory to .submodules.
-    os.chdir(DOT_SUBMODULES_DIR)
+    os.chdir(CONFIG_DIR)
 
     # Load the configs file.
     with open("configs.jsonc", "r", encoding="utf-8") as configs_file:
