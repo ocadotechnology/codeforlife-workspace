@@ -109,7 +109,7 @@ def clone_repo(name: str, path: str):
 
     try:
         subprocess.run(
-            ["gh", "repo", "clone", name, path],
+            ["gh", "repo", "clone", name, str(BASE_DIR / path)],
             check=True,
         )
     except CalledProcessError:
