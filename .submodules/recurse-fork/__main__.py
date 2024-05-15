@@ -60,12 +60,18 @@ def read_submodules() -> t.Dict[str, Submodule]:
 
 
 def login_to_github():
-    """Log into GitHub with the CLI.
+    """Log into GitHub with the CLI and setup Git to use the CLI as a credential
+    helper.
 
     https://cli.github.com/manual/gh_auth_login
+    https://cli.github.com/manual/gh_auth_setup-git
     """
     subprocess.run(
         ["gh", "auth", "login", "--web"],
+        check=True,
+    )
+    subprocess.run(
+        ["gh", "auth", "setup-git"],
         check=True,
     )
 
