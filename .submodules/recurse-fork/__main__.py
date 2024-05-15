@@ -27,72 +27,6 @@ class Submodule:
     url: str
 
 
-@dataclass(frozen=True)
-class Repo:
-    """A GitHub repo."""
-
-    # pylint: disable=invalid-name
-    createdAt: t.Optional[str] = None
-    isFork: t.Optional[bool] = None
-    url: t.Optional[str] = None
-    name: t.Optional[str] = None
-    # pylint: enable=invalid-name
-
-
-def login_to_github():
-    """Log into GitHub with the CLI.
-
-    https://cli.github.com/manual/gh_auth_login
-    """
-    subprocess.run(
-        ["gh", "auth", "login", "--web"],
-        check=True,
-    )
-
-
-def view_repo(
-    fields: t.List[str],
-    name: t.Optional[str] = None,
-    print_json: bool = False,
-) -> Repo:
-    """View a repo on GitHub.
-
-    https://cli.github.com/manual/gh_repo_view
-
-    Args:
-        fields: The fields to view.
-        name: The name of the repo to view.
-        print_json: A flag designating whether to print the repo's field-values.
-
-    Returns:
-        An object of the GitHub repo.
-    """
-    args = ["gh", "repo", "view"]
-    if name:
-        args.append(name)
-    args.append("--json=" + ",".join(fields))
-
-    repo_str = subprocess.run(
-        args,
-        check=True,
-        stdout=subprocess.PIPE,
-    ).stdout.decode("utf-8")
-
-    repo_dict = json.loads(repo_str)
-
-    if print_json:
-        print(
-            Style.BRIGHT
-            + "Viewing repo"
-            + (f' "{name}"' if name else "")
-            + "."
-            + Style.RESET_ALL
-        )
-        print(json.dumps(repo_dict, indent=2))
-
-    return Repo(**repo_dict)
-
-
 def read_submodules() -> t.Dict[str, Submodule]:
     """Read the submodules from .gitmodules (located at the workspace's root).
 
@@ -123,6 +57,17 @@ def read_submodules() -> t.Dict[str, Submodule]:
         )
         for name, submodule_str in submodule_strs.items()
     }
+
+
+def login_to_github():
+    """Log into GitHub with the CLI.
+
+    https://cli.github.com/manual/gh_auth_login
+    """
+    subprocess.run(
+        ["gh", "auth", "login", "--web"],
+        check=True,
+    )
 
 
 def fork_repo(name: str, url: str):
@@ -171,6 +116,38 @@ def clone_repo(name: str, path: str):
         pass
 
 
+def view_repo(name: str):
+    """Print a repo on GitHub as a JSON object.
+
+    https://cli.github.com/manual/gh_repo_view
+
+    Args:
+        name: The name of the repo to view.
+    """
+    repo_str = subprocess.run(
+        [
+            "gh",
+            "repo",
+            "view",
+            name,
+            "--json=" + ",".join(["name", "url", "createdAt", "isFork"]),
+        ],
+        check=True,
+        stdout=subprocess.PIPE,
+    ).stdout.decode("utf-8")
+
+    repo = json.loads(repo_str)
+
+    print(
+        Style.BRIGHT
+        + "Viewing repo"
+        + (f' "{name}"' if name else "")
+        + "."
+        + Style.RESET_ALL
+    )
+    print(json.dumps(repo, indent=2))
+
+
 def main() -> None:
     """Entry point."""
     colorama_init()
@@ -184,11 +161,7 @@ def main() -> None:
 
         clone_repo(name, submodule.path)
 
-        view_repo(
-            fields=["name", "url", "createdAt", "isFork"],
-            name=name,
-            print_json=True,
-        )
+        view_repo(name)
 
     print(Style.BRIGHT + Fore.GREEN + "Setup completed." + Style.RESET_ALL)
 
