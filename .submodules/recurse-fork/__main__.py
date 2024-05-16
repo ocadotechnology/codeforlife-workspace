@@ -130,6 +130,8 @@ def view_repo(name: str):
     Args:
         name: The name of the repo to view.
     """
+    print(Style.BRIGHT + f'Viewing repo "{name}".' + Style.RESET_ALL)
+
     repo_str = subprocess.run(
         [
             "gh",
@@ -143,8 +145,6 @@ def view_repo(name: str):
     ).stdout.decode("utf-8")
 
     repo = json.loads(repo_str)
-
-    print(Style.BRIGHT + f'Viewing repo "{name}".' + Style.RESET_ALL)
     print(json.dumps(repo, indent=2))
 
 
