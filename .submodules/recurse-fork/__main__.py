@@ -144,13 +144,7 @@ def view_repo(name: str):
 
     repo = json.loads(repo_str)
 
-    print(
-        Style.BRIGHT
-        + "Viewing repo"
-        + (f' "{name}"' if name else "")
-        + "."
-        + Style.RESET_ALL
-    )
+    print(Style.BRIGHT + f'Viewing repo "{name}".' + Style.RESET_ALL)
     print(json.dumps(repo, indent=2))
 
 
