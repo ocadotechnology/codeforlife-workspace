@@ -39,7 +39,7 @@ def read_submodules() -> t.Dict[str, Submodule]:
 
     # [1:] to skip initial blank string.
     gitmodules_lines: t.List[str] = re.split(
-        r'^\[submodule \"(.*)"\]$',
+        r'^\[submodule "(.*)"\]$',
         gitmodules_str,
         flags=re.MULTILINE,
     )[1:]
