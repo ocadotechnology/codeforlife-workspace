@@ -11,12 +11,13 @@ import re
 import subprocess
 import typing as t
 from io import TextIOWrapper
+from pathlib import Path
 
 if t.TYPE_CHECKING:
     from configs import AnyJsonValue, JsonDict, JsonList, JsonValue
 
-# Path to the .submodules directory.
-DOT_SUBMODULES_DIR = os.path.dirname(os.path.realpath(__file__))
+# Path to the .submodules/config directory.
+CONFIG_DIR = Path(__file__).resolve().parent
 # Whether or not to git-push the changes.
 GIT_PUSH_CHANGES = bool(int(os.getenv("GIT_PUSH_CHANGES", "0")))
 
