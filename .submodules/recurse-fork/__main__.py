@@ -9,6 +9,7 @@ import json
 import re
 import subprocess
 import typing as t
+from argparse import ArgumentParser, Namespace
 from dataclasses import dataclass
 from pathlib import Path
 from subprocess import CalledProcessError
@@ -25,6 +26,23 @@ class Submodule:
 
     path: str
     url: str
+
+
+def get_namespace() -> Namespace:
+    """Get the command line values passed to this script.
+
+    Returns:
+        An object containing all the command line values.
+    """
+    arg_parser = ArgumentParser()
+    arg_parser.add_argument(
+        "--skip-login",
+        action="store_true",
+        dest="skip_login",
+        default=False,
+    )
+
+    return arg_parser.parse_args()
 
 
 def read_submodules() -> t.Dict[str, Submodule]:
@@ -152,9 +170,12 @@ def main() -> None:
     """Entry point."""
     colorama_init()
 
+    namespace = get_namespace()
+
     submodules = read_submodules()
 
-    login_to_github()
+    if not namespace.skip_login:
+        login_to_github()
 
     for name, submodule in submodules.items():
         fork_repo(name, submodule.url)

@@ -5,4 +5,4 @@ cd "${BASH_SOURCE%/*}"
 
 pipenv install --dev
 
-pipenv run python .
+pipenv run python . "$@"
