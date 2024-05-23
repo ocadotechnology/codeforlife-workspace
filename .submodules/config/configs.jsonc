@@ -106,7 +106,7 @@
         "typescript.format.semicolons": "remove",
         "javascript.preferences.quoteStyle": "double",
         "typescript.preferences.quoteStyle": "double",
-        "prettier.singleQuote": false,
+        "!prettier.configPath": ".prettierrc.json",
         "[javascript]": {
           "editor.tabSize": 2,
           "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -338,7 +338,8 @@
         "black-formatter.cwd": "${workspaceFolder}/backend",
         "mypy-type-checker.cwd": "${workspaceFolder}/backend",
         "pylint.cwd": "${workspaceFolder}/backend",
-        "python.testing.cwd": "${workspaceFolder}/backend"
+        "python.testing.cwd": "${workspaceFolder}/backend",
+        "!prettier.configPath": "frontend/.prettierrc.json"
       },
       "tasks": {
         "version": "2.0.0",
