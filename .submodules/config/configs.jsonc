@@ -91,7 +91,8 @@
       "customizations": {
         "vscode": {
           "extensions": [
-            "dbaeumer.vscode-eslint"
+            "dbaeumer.vscode-eslint",
+            "esbenp.prettier-vscode"
             // "dsznajder.es7-react-js-snippets",
             // "ecmel.vscode-html-css",
             // "jock.svg"
@@ -101,7 +102,27 @@
     },
     "vscode": {
       "settings": {
-        "typescript.preferences.quoteStyle": "single"
+        "javascript.format.semicolons": "remove",
+        "typescript.format.semicolons": "remove",
+        "javascript.preferences.quoteStyle": "double",
+        "typescript.preferences.quoteStyle": "double",
+        "prettier.singleQuote": false,
+        "[javascript]": {
+          "editor.tabSize": 2,
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[javascriptreact]": {
+          "editor.tabSize": 2,
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[typescript]": {
+          "editor.tabSize": 2,
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[typescriptreact]": {
+          "editor.tabSize": 2,
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        }
       },
       "codeSnippets": {
         "javascript.module.doccomment": {
