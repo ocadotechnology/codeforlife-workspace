@@ -13,27 +13,26 @@ on:
         type: string
         required: false
         default: "."
-      # codecov-slug:
-      #   description: "The slug provided to Codecov for the coverage report."
-      #   type: string
-      #   required: false
-      #   default: ${{ github.repository }}
-      # codecov-yml-path:
-      #   description: "The path of the Codecov YAML file."
-      #   type: string
-      #   required: false
-      #   default: "./codecov.yml"
-    # secrets:
-    #   CODECOV_TOKEN:
-    #     description: "The token used to gain access to Codecov."
-    #     required: false
+      codecov-slug:
+        description: "The slug provided to Codecov for the coverage report."
+        type: string
+        required: false
+        default: ${{ github.repository }}
+      codecov-yml-path:
+        description: "The path of the Codecov YAML file."
+        type: string
+        required: false
+        default: "./codecov.yml"
+    secrets:
+      CODECOV_TOKEN:
+        description: "The token used to gain access to Codecov."
+        required: false
 
 jobs:
   test-js-code:
     runs-on: ubuntu-latest
-    # env:
-    #   COVERAGE_REPORT: coverage.xml # NOTE: COVERAGE_FILE is reserved - do not use.
-    #   OCADO_TECH_ORG_ID: 2088731
+    env:
+      OCADO_TECH_ORG_ID: 2088731
     steps:
       - name: 🌐 Set up JavaScript ${{ inputs.node-version }} Environment
         uses: ocadotechnology/codeforlife-workspace/.github/actions/javascript/setup-environment@configure_js_services # TODO: set to @main
@@ -54,19 +53,17 @@ jobs:
         working-directory: ${{ inputs.working-directory }}
         run: yarn lint
 
-      # TODO: generate code coverage
       - name: 🧪 Test Code Units
         working-directory: ${{ inputs.working-directory }}
-        run: yarn test
+        run: yarn test:coverage
 
-      # TODO
-      # - name: 📈 Upload Coverage Reports to Codecov
-      #   if: github.repository_owner_id == env.OCADO_TECH_ORG_ID
-      #   uses: codecov/codecov-action@v4
-      #   with:
-      #     fail_ci_if_error: true
-      #     token: ${{ secrets.CODECOV_TOKEN }}
-      #     slug: ${{ inputs.codecov-slug }}
-      #     codecov_yml_path: ${{ inputs.codecov-yml-path }}
-      #     working-directory: ${{ inputs.working-directory }}
-      #     file: ${{ env.COVERAGE_REPORT }}
+      - name: 📈 Upload Coverage Reports to Codecov
+        if: github.repository_owner_id == env.OCADO_TECH_ORG_ID
+        uses: codecov/codecov-action@v4
+        with:
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: ${{ inputs.codecov-slug }}
+          codecov_yml_path: ${{ inputs.codecov-yml-path }}
+          working-directory: ${{ inputs.working-directory }}
+          file: coverage/coverage-final.json
