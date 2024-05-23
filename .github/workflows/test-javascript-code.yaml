@@ -23,6 +23,11 @@ on:
         type: string
         required: false
         default: "./codecov.yml"
+      codecov-file:
+        description: "The path to the coverage file to upload."
+        type: string
+        required: false
+        default: "coverage/cobertura-coverage.xml"
     secrets:
       CODECOV_TOKEN:
         description: "The token used to gain access to Codecov."
@@ -66,4 +71,4 @@ jobs:
           slug: ${{ inputs.codecov-slug }}
           codecov_yml_path: ${{ inputs.codecov-yml-path }}
           working-directory: ${{ inputs.working-directory }}
-          file: coverage/coverage-final.json
+          file: ${{ inputs.codecov-file }}
