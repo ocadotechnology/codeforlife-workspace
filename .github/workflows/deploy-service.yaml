@@ -16,6 +16,19 @@ jobs:
       - name: 🛫 Checkout
         uses: actions/checkout@v4
 
+      - name: echo
+        run: |
+          echo $(
+            # Set name with convention "{ENV_NAME}-{REPO_NAME}"
+            export name=${{ github.repository }}
+            name=${name#"ocadotechnology/codeforelife-"}
+            name="${{ github.ref_name }}-${name}"
+
+            echo '
+              .service = "${name}"
+            ' | envsubst
+          )
+
       # https://mikefarah.gitbook.io/yq/
       - name: 🖊️ Configure App Deployment
         uses: mikefarah/yq@master
