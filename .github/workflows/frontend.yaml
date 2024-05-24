@@ -33,6 +33,9 @@ jobs:
           node-version: ${{ inputs.node-version }}
           install-args: --production=false
 
+      - name: 🏗️ Build App
+        run: yarn build
+
       # https://mikefarah.gitbook.io/yq/
       - name: 🖊️ Configure App Deployment
         uses: mikefarah/yq@master
