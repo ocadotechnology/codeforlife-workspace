@@ -2,6 +2,12 @@ name: Frontend
 
 on:
   workflow_call:
+    inputs:
+      node-version:
+        description: "The Node.js version to set up."
+        type: number
+        required: false
+        default: 18
     secrets:
       CODECOV_TOKEN:
         description: "The token used to gain access to Codecov."
@@ -16,6 +22,35 @@ jobs:
     secrets: inherit
 
   deploy:
+    runs-on: ubuntu-latest
     needs: [test]
-    uses: ocadotechnology/codeforlife-workspace/.github/workflows/deploy-service.yaml@configure_js_services # TODO: set to @main
-    secrets: inherit
+    # if: github.ref_name == 'production' || github.ref_name == 'development' || github.ref_name == 'staging'
+    environment: ${{ github.ref_name }}
+    steps:
+      - name: 🌐 Set up JavaScript ${{ inputs.node-version }} Environment
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/javascript/setup-environment@configure_js_services # TODO: set to @main
+        with:
+          node-version: ${{ inputs.node-version }}
+          install-args: --production=false
+
+      - name: 🏗️ Build App
+        run: yarn build
+
+      # https://mikefarah.gitbook.io/yq/
+      - name: 🖊️ Configure App Deployment
+        uses: mikefarah/yq@master
+        with:
+          cmd: |
+            # Set name with convention "{ENV_NAME}-{REPO_NAME}"
+            name=${{ github.repository }}
+            name=${name#"ocadotechnology/codeforlife-"}
+            name="${{ github.ref_name }}-${name}"
+
+            yq -i '
+              .service = "'$name'"
+            ' app.yaml
+
+      - name: 🚀 Deploy App on GCloud
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/gcloud/deploy-app@configure_js_services # TODO: set to @main
+        with:
+          gcp-credentials: ${{ secrets.GCP_CREDENTIALS }}
