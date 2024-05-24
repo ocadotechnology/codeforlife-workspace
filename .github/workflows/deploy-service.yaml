@@ -21,12 +21,16 @@ jobs:
         uses: mikefarah/yq@master
         with:
           cmd: |
-            name=${{ github.repository }}
-            name=${name#"ocadotechnology/codeforelife-"}
+            yq -i $(
+              # Set name with convention "{ENV_NAME}-{REPO_NAME}"
+              export name=${{ github.repository }}
+              name=${name#"ocadotechnology/codeforelife-"}
+              name="${{ github.ref_name }}-${name}"
 
-            yq -i '
-              .service = "${{ github.ref_name }}-$name"
-            ' app.yaml
+              echo '
+                .service = "${name}"
+              ' | envsubst
+            ) app.yaml
 
       - name: 🚀 Deploy App on GCloud
         uses: ocadotechnology/codeforlife-workspace/.github/actions/gcloud/deploy-app@configure_js_services # TODO: set to @main
