@@ -21,7 +21,7 @@ jobs:
           echo $(
             # Set name with convention "{ENV_NAME}-{REPO_NAME}"
             export name=${{ github.repository }}
-            name=${name#"ocadotechnology/codeforelife-"}
+            name=${name#"ocadotechnology/codeforlife-"}
             name="${{ github.ref_name }}-${name}"
 
             echo '
@@ -37,7 +37,7 @@ jobs:
             yq -i $(
               # Set name with convention "{ENV_NAME}-{REPO_NAME}"
               export name=${{ github.repository }}
-              name=${name#"ocadotechnology/codeforelife-"}
+              name=${name#"ocadotechnology/codeforlife-"}
               name="${{ github.ref_name }}-${name}"
 
               echo '
