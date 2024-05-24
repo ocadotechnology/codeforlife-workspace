@@ -16,19 +16,6 @@ jobs:
       - name: 🛫 Checkout
         uses: actions/checkout@v4
 
-      - name: echo
-        run: |
-          echo $(
-            # Set name with convention "{ENV_NAME}-{REPO_NAME}"
-            export name=${{ github.repository }}
-            name=${name#"ocadotechnology/codeforlife-"}
-            name="${{ github.ref_name }}-${name}"
-
-            echo '
-              .service = "${name}"
-            ' | envsubst
-          )
-
       # https://mikefarah.gitbook.io/yq/
       - name: 🖊️ Configure App Deployment
         uses: mikefarah/yq@master
@@ -44,6 +31,9 @@ jobs:
                 .service = "${name}"
               ' | envsubst
             ) app.yaml
+
+      - name: cat app yaml
+        run: cat app.yaml
 
       - name: 🚀 Deploy App on GCloud
         uses: ocadotechnology/codeforlife-workspace/.github/actions/gcloud/deploy-app@configure_js_services # TODO: set to @main
