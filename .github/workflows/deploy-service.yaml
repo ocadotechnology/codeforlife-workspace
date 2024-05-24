@@ -21,18 +21,14 @@ jobs:
         uses: mikefarah/yq@master
         with:
           cmd: |
-            config=$(
-              # Set name with convention "{ENV_NAME}-{REPO_NAME}"
-              export name=${{ github.repository }}
-              name=${name#"ocadotechnology/codeforlife-"}
-              name="${{ github.ref_name }}-${name}"
+            # Set name with convention "{ENV_NAME}-{REPO_NAME}"
+            name=${{ github.repository }}
+            name=${name#"ocadotechnology/codeforlife-"}
+            name="${{ github.ref_name }}-${name}"
 
-              echo '
-                .service = "${name}"
-              ' | envsubst
-            )
-
-            yq -i "$config" app.yaml
+            yq -i '
+              .service = "'$name'"
+            ' app.yaml
 
       - name: cat app yaml
         run: cat app.yaml
