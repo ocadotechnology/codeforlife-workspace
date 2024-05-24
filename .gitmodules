@@ -25,3 +25,6 @@
 [submodule "codeforlife-sso"]
 	path = codeforlife-sso
 	url = https://github.com/ocadotechnology/codeforlife-sso.git
+[submodule "codeforlife-portal-frontend"]
+	path = codeforlife-portal-frontend
+	url = https://github.com/ocadotechnology/codeforlife-portal-frontend.git
