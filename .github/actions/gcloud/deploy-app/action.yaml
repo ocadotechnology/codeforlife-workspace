@@ -2,7 +2,7 @@ name: "Code for Life - GCloud - Deploy App"
 description: "Deploy an app to Google Cloud."
 inputs:
   gcp-credentials:
-    description: "The JSON credentials uses to access GCP."
+    description: "The JSON credentials used to access GCP."
     required: true
   deploy-args:
     description: "Arguments to pass to `gcloud app deploy`."

@@ -1,0 +1,30 @@
+name: Frontend
+
+on:
+  workflow_call:
+    secrets:
+      CODECOV_TOKEN:
+        description: "The token used to gain access to Codecov."
+        required: true
+      GCP_CREDENTIALS:
+        description: "The JSON credentials used to access GCP."
+        required: true
+
+jobs:
+  test:
+    uses: ocadotechnology/codeforlife-workspace/.github/workflows/test-javascript-code.yaml@configure_js_services # TODO: set to @main
+    secrets: inherit
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [test]
+    # if: github.ref_name == 'production' || github.ref_name == 'development' || github.ref_name == 'staging'
+    environment: ${{ github.ref_name }}
+    steps:
+      - name: 🛫 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🚀 Deploy App on GCloud
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/gcloud/deploy-app@configure_js_services # TODO: set to @main
+        with:
+          gcp-credentials: ${{ secrets.GCP_CREDENTIALS }}
