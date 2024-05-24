@@ -21,7 +21,7 @@ jobs:
         uses: mikefarah/yq@master
         with:
           cmd: |
-            yq -i $(
+            config=$(
               # Set name with convention "{ENV_NAME}-{REPO_NAME}"
               export name=${{ github.repository }}
               name=${name#"ocadotechnology/codeforlife-"}
@@ -30,7 +30,9 @@ jobs:
               echo '
                 .service = "${name}"
               ' | envsubst
-            ) app.yaml
+            )
+
+            yq -i "$config" app.yaml
 
       - name: cat app yaml
         run: cat app.yaml
