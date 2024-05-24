@@ -24,7 +24,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: [test]
-    # if: github.ref_name == 'production' || github.ref_name == 'development' || github.ref_name == 'staging'
+    if: github.ref_name == 'production' || github.ref_name == 'development' || github.ref_name == 'staging'
     environment: ${{ github.ref_name }}
     steps:
       - name: 🌐 Set up JavaScript ${{ inputs.node-version }} Environment
@@ -47,6 +47,7 @@ jobs:
             name="${{ github.ref_name }}-${name}"
 
             yq -i '
+              .runtime = "nodejs${{ inputs.node-version }}" |
               .service = "'$name'"
             ' app.yaml
 
