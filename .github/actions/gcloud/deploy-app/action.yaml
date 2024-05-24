@@ -1,0 +1,23 @@
+name: "Code for Life - GCloud - Deploy App"
+description: "Deploy an app to Google Cloud."
+inputs:
+  gcp-credentials:
+    description: "The JSON credentials uses to access GCP."
+    required: true
+  deploy-args:
+    description: "Arguments to pass to `gcloud app deploy`."
+    required: false
+runs:
+  using: composite
+  steps:
+    - name: 🗝 Authenticate with GCloud
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ inputs.gcp-credentials }}
+
+    - name: 🤖 Set up GCloud SDK
+      uses: google-github-actions/setup-gcloud@v2
+
+    - name: 🚀 Deploy App on GCloud
+      shell: bash
+      run: gcloud app deploy ${{ inputs.deploy-args }}
