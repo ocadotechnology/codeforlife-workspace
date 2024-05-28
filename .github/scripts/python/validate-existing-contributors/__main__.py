@@ -50,7 +50,7 @@ def get_signed_contributors() -> Contributors:
     # NOTE: +2 because we don't want the header and its proceeding blank line.
     lines = lines[lines.index(CONTRIBUTORS_HEADER) + 2 :]
 
-    return {parseaddr(line.lower())[1] for line in lines}
+    return {parseaddr(line)[1].lower() for line in lines}
 
 
 def assert_contributors(
