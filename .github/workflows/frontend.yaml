@@ -18,10 +18,10 @@ on:
 
 jobs:
   validate-pr-refs:
-    uses: ocadotechnology/codeforlife-workspace/.github/workflows/validate-pull-request-refs.yaml@configure_js_services # TODO: set to @main
+    uses: ocadotechnology/codeforlife-workspace/.github/workflows/validate-pull-request-refs.yaml@main
 
   test:
-    uses: ocadotechnology/codeforlife-workspace/.github/workflows/test-javascript-code.yaml@configure_js_services # TODO: set to @main
+    uses: ocadotechnology/codeforlife-workspace/.github/workflows/test-javascript-code.yaml@main
     secrets: inherit
     with:
       node-version: ${{ inputs.node-version }}
@@ -34,7 +34,7 @@ jobs:
     environment: ${{ github.ref_name }}
     steps:
       - name: 🌐 Set up JavaScript ${{ inputs.node-version }} Environment
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/javascript/setup-environment@configure_js_services # TODO: set to @main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/javascript/setup-environment@main
         with:
           node-version: ${{ inputs.node-version }}
           install-args: --production=false
@@ -58,6 +58,6 @@ jobs:
             ' app.yaml
 
       - name: 🚀 Deploy App on GCloud
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/gcloud/deploy-app@configure_js_services # TODO: set to @main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/gcloud/deploy-app@main
         with:
           gcp-credentials: ${{ secrets.GCP_CREDENTIALS }}

@@ -40,7 +40,7 @@ jobs:
       OCADO_TECH_ORG_ID: 2088731
     steps:
       - name: 🌐 Set up JavaScript ${{ inputs.node-version }} Environment
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/javascript/setup-environment@configure_js_services # TODO: set to @main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/javascript/setup-environment@main
         with:
           node-version: ${{ inputs.node-version }}
           working-directory: ${{ inputs.working-directory }}
