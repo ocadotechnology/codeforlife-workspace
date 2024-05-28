@@ -11,20 +11,23 @@ on:
     secrets:
       CODECOV_TOKEN:
         description: "The token used to gain access to Codecov."
-        required: true
+        required: false
       GCP_CREDENTIALS:
         description: "The JSON credentials used to access GCP."
-        required: true
+        required: false
 
 jobs:
   test:
     uses: ocadotechnology/codeforlife-workspace/.github/workflows/test-javascript-code.yaml@configure_js_services # TODO: set to @main
     secrets: inherit
+    with:
+      node-version: ${{ inputs.node-version }}
 
   deploy:
     runs-on: ubuntu-latest
     needs: [test]
-    if: github.ref_name == 'production' || github.ref_name == 'development' || github.ref_name == 'staging'
+    # Only deploy if the repo's owner is Ocado Tech. and a change is made to an environment's branch.
+    if: github.repository_owner_id == 2088731 && (github.ref_name == 'production' || github.ref_name == 'development' || github.ref_name == 'staging')
     environment: ${{ github.ref_name }}
     steps:
       - name: 🌐 Set up JavaScript ${{ inputs.node-version }} Environment
