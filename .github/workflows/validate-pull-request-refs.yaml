@@ -6,6 +6,8 @@ on:
 jobs:
   validate-pr-refs:
     runs-on: ubuntu-latest
+    # If the repo's owner is Ocado Tech. and the triggering event is a pull request.
+    if: github.repository_owner_id == 2088731 && github.event_name == 'pull_request'
     env:
       PROD_REF: production
       STAGING_REF: staging
