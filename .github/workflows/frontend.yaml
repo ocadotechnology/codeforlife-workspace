@@ -22,14 +22,13 @@ jobs:
 
   test:
     uses: ocadotechnology/codeforlife-workspace/.github/workflows/test-javascript-code.yaml@configure_js_services # TODO: set to @main
-    needs: [validate-pr-refs]
     secrets: inherit
     with:
       node-version: ${{ inputs.node-version }}
 
   deploy:
     runs-on: ubuntu-latest
-    needs: [test]
+    needs: [validate-pr-refs, test]
     # Only deploy if the repo's owner is Ocado Tech. and a change is made to an environment's branch.
     if: github.repository_owner_id == 2088731 && (github.ref_name == 'production' || github.ref_name == 'development' || github.ref_name == 'staging')
     environment: ${{ github.ref_name }}
