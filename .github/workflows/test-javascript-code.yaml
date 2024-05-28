@@ -60,7 +60,13 @@ jobs:
 
       - name: 🧪 Test Code Units
         working-directory: ${{ inputs.working-directory }}
-        run: yarn test:coverage
+        run: |
+          if [ ${{ github.repository_owner_id }} = ${{ env.OCADO_TECH_ORG_ID }} ]
+          then
+            yarn test:coverage
+          else
+            yarn test:verbose
+          fi
 
       - name: 📈 Upload Coverage Reports to Codecov
         if: github.repository_owner_id == env.OCADO_TECH_ORG_ID
