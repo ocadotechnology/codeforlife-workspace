@@ -50,7 +50,7 @@ def get_signed_contributors() -> Contributors:
     # NOTE: +2 because we don't want the header and its proceeding blank line.
     lines = lines[lines.index(CONTRIBUTORS_HEADER) + 2 :]
 
-    return {parseaddr(line)[1] for line in lines}
+    return {parseaddr(line)[1].lower() for line in lines}
 
 
 def assert_contributors(
@@ -66,7 +66,7 @@ def assert_contributors(
     """
 
     contributors: Contributors = {
-        author["email"]
+        author["email"].lower()
         for commit in pull_request["commits"]
         for author in commit["authors"]
     }
