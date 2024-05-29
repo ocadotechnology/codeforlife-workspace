@@ -1,0 +1,63 @@
+name: Frontend
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: "The Node.js version to set up."
+        type: number
+        required: false
+        default: 18
+    secrets:
+      CODECOV_TOKEN:
+        description: "The token used to gain access to Codecov."
+        required: false
+      GCP_CREDENTIALS:
+        description: "The JSON credentials used to access GCP."
+        required: false
+
+jobs:
+  validate-pr-refs:
+    uses: ocadotechnology/codeforlife-workspace/.github/workflows/validate-pull-request-refs.yaml@main
+
+  test:
+    uses: ocadotechnology/codeforlife-workspace/.github/workflows/test-javascript-code.yaml@main
+    secrets: inherit
+    with:
+      node-version: ${{ inputs.node-version }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [validate-pr-refs, test]
+    # Only deploy if the repo's owner is Ocado Tech. and a change is made to an environment's branch.
+    if: github.repository_owner_id == 2088731 && (github.ref_name == 'production' || github.ref_name == 'development' || github.ref_name == 'staging')
+    environment: ${{ github.ref_name }}
+    steps:
+      - name: 🌐 Set up JavaScript ${{ inputs.node-version }} Environment
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/javascript/setup-environment@main
+        with:
+          node-version: ${{ inputs.node-version }}
+          install-args: --production=false
+
+      - name: 🏗️ Build App
+        run: yarn build
+
+      # https://mikefarah.gitbook.io/yq/
+      - name: 🖊️ Configure App Deployment
+        uses: mikefarah/yq@master
+        with:
+          cmd: |
+            # Set name with convention "{ENV_NAME}-{REPO_NAME}"
+            name=${{ github.repository }}
+            name=${name#"ocadotechnology/codeforlife-"}
+            name="${{ github.ref_name }}-${name}"
+
+            yq -i '
+              .runtime = "nodejs${{ inputs.node-version }}" |
+              .service = "'$name'"
+            ' app.yaml
+
+      - name: 🚀 Deploy App on GCloud
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/gcloud/deploy-app@main
+        with:
+          gcp-credentials: ${{ secrets.GCP_CREDENTIALS }}

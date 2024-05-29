@@ -1,0 +1,42 @@
+name: "Code for Life - JavaScript - Setup Environment"
+description: "Set up a JavaScript environment."
+inputs:
+  checkout:
+    description: "A flag to designate if the code should be checked out."
+    required: true
+    default: "true"
+  node-version:
+    description: "The Node.js version to set up."
+    required: true
+    default: "18"
+  working-directory:
+    description: "The current working directory."
+    required: true
+    default: "."
+  install-args:
+    description: "Arguments to pass to pipenv install."
+    required: false
+runs:
+  using: composite
+  steps:
+    - name: 🛫 Checkout
+      if: ${{ inputs.checkout == 'true' }}
+      uses: actions/checkout@v4
+
+    - name: 🌐 Set up Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: ⬆️ Upgrade npm
+      shell: bash
+      run: npm install --global npm
+
+    - name: 🛠 Install Yarn
+      shell: bash
+      run: npm install --global yarn
+
+    - name: 🛠 Install Dependencies
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: yarn install ${{ inputs.install-args }}

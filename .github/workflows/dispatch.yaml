@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'dispatch.yaml'
+      - "dispatch.yaml"
   workflow_dispatch:
 
 jobs:
@@ -13,15 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 🛫 Checkout
-        uses: actions/checkout@v3
-
-      - name: 🗝 Authenticate with GCloud
-        uses: google-github-actions/auth@v1
-        with:
-          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
-
-      - name: 🤖 Set up GCloud SDK
-        uses: google-github-actions/setup-gcloud@v1
+        uses: actions/checkout@v4
 
       - name: 🚀 Deploy Routing Rules on GCloud
-        run: gcloud app deploy dispatch.yaml
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/gcloud/deploy-app@main
+        with:
+          gcp-credentials: ${{ secrets.GCP_CREDENTIALS }}
+          deploy-args: dispatch.yaml

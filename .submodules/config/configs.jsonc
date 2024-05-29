@@ -74,14 +74,11 @@
       }
     }
   },
-  "javascript": {
+  "javascript.devcontainer": {
     "inherits": [
       "base"
     ],
     "description": "A devcontainer with a javascript environment.",
-    "submodules": [
-      "codeforlife-package-javascript"
-    ],
     "devcontainer": {
       "features": {
         "ghcr.io/devcontainers/features/node:1": {
@@ -91,17 +88,26 @@
       "customizations": {
         "vscode": {
           "extensions": [
-            "dbaeumer.vscode-eslint"
-            // "dsznajder.es7-react-js-snippets",
-            // "ecmel.vscode-html-css",
-            // "jock.svg"
+            "dbaeumer.vscode-eslint",
+            "esbenp.prettier-vscode"
           ]
         }
       }
-    },
+    }
+  },
+  "javascript.config": {
+    "inherits": [
+      "base"
+    ],
+    "description": "A configured javascript environment.",
     "vscode": {
       "settings": {
-        "typescript.preferences.quoteStyle": "single"
+        "javascript.format.semicolons": "remove",
+        "typescript.format.semicolons": "remove",
+        "javascript.preferences.quoteStyle": "double",
+        "typescript.preferences.quoteStyle": "double",
+        "!prettier.configPath": ".prettierrc.json",
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
       },
       "codeSnippets": {
         "javascript.module.doccomment": {
@@ -121,17 +127,21 @@
       }
     }
   },
-  "python": {
+  "javascript": {
+    "inherits": [
+      "javascript.devcontainer",
+      "javascript.config"
+    ],
+    "description": "A devcontainer with a configured javascript environment.",
+    "submodules": [
+      "codeforlife-package-javascript"
+    ]
+  },
+  "python.devcontainer": {
     "inherits": [
       "base"
     ],
     "description": "A devcontainer with a python environment.",
-    "submodules": [
-      "codeforlife-deploy-appengine",
-      "codeforlife-package-python",
-      "codeforlife-portal",
-      "rapid-router"
-    ],
     "devcontainer": {
       "features": {
         "ghcr.io/devcontainers/features/python:1": {
@@ -157,7 +167,13 @@
           ]
         }
       }
-    },
+    }
+  },
+  "python.config": {
+    "inherits": [
+      "base"
+    ],
+    "description": "A configured python environment.",
     "vscode": {
       "settings": {
         "python.defaultInterpreterPath": ".venv/bin/python",
@@ -282,105 +298,31 @@
       }
     }
   },
-  "service": {
+  "python": {
     "inherits": [
-      "javascript",
-      "python"
+      "python.devcontainer",
+      "python.config"
     ],
-    "description": "A devcontainer for a micro-service.",
+    "description": "A devcontainer with a configured python environment.",
     "submodules": [
-      "codeforlife-service-template",
-      "codeforlife-portal-react",
-      "codeforlife-sso"
+      "codeforlife-deploy-appengine",
+      "codeforlife-package-python",
+      "codeforlife-portal",
+      "rapid-router"
+    ]
+  },
+  "service.devcontainer": {
+    "inherits": [
+      "python.devcontainer",
+      "javascript.devcontainer"
     ],
+    "description": "The devcontainer for a micro-service.",
     "devcontainer": {
-      "postCreateCommand": "./setup",
+      "postCreateCommand": "chmod u+x ./setup && ./setup",
       "mounts": [
         "source=./codeforlife-package-javascript,target=/workspace/codeforlife-package-javascript,type=bind,consistency=cached",
         "source=./codeforlife-package-python,target=/workspace/codeforlife-package-python,type=bind,consistency=cached"
       ]
-    },
-    "vscode": {
-      "settings": {
-        "python.defaultInterpreterPath": "backend/.venv/bin/python",
-        "python.analysis.extraPaths": [
-          "../codeforlife-package-python"
-        ],
-        "!isort.path": [
-          "backend/.venv/bin/python",
-          "-m",
-          "isort"
-        ],
-        "!isort.args": [
-          "--settings-file=backend/pyproject.toml"
-        ],
-        "black-formatter.cwd": "${workspaceFolder}/backend",
-        "mypy-type-checker.cwd": "${workspaceFolder}/backend",
-        "pylint.cwd": "${workspaceFolder}/backend",
-        "python.testing.cwd": "${workspaceFolder}/backend"
-      },
-      "tasks": {
-        "version": "2.0.0",
-        "tasks": [
-          {
-            "label": "start-react-dev-server",
-            "isBackground": true,
-            "type": "npm",
-            "script": "start",
-            "options": {
-              "env": {
-                "BROWSER": "none"
-              }
-            },
-            "path": "frontend",
-            "problemMatcher": []
-          },
-          {
-            "label": "pipenv-install-dev",
-            "type": "shell",
-            "options": {
-              "cwd": "${workspaceFolder}/backend"
-            },
-            "command": "pipenv install --dev"
-          },
-          {
-            "label": "migrate-db",
-            "type": "shell",
-            "options": {
-              "cwd": "${workspaceFolder}/backend"
-            },
-            "dependsOn": [
-              "pipenv-install-dev"
-            ],
-            "command": "pipenv run python ./manage.py migrate"
-          }
-        ]
-      },
-      "launch": {
-        "version": "0.2.0",
-        "configurations": [
-          {
-            "name": "React Dev Server",
-            "type": "chrome",
-            "request": "launch",
-            "url": "http://localhost:3000",
-            "preLaunchTask": "start-react-dev-server"
-          },
-          {
-            "name": "Django Server",
-            "type": "debugpy",
-            "request": "launch",
-            "django": true,
-            "justMyCode": false,
-            "program": "${workspaceFolder}/backend/manage.py",
-            "?args": [
-              "runserver",
-              "localhost:8000"
-            ],
-            "preLaunchTask": "migrate-db"
-          }
-        ]
-      }
     },
     "workspace": {
       "folders": [
@@ -395,9 +337,103 @@
       ]
     }
   },
+  "service.backend": {
+    "inherits": [
+      "service.devcontainer",
+      "python.config"
+    ],
+    "description": "A devcontainer for a backend micro-service.",
+    "submodules": [
+      "codeforlife-portal-react"
+    ],
+    "vscode": {
+      "settings": {
+        "python.analysis.extraPaths": [
+          "../codeforlife-package-python"
+        ]
+      },
+      "tasks": {
+        "version": "2.0.0",
+        "tasks": [
+          {
+            "label": "pipenv-install-dev",
+            "type": "shell",
+            "command": "pipenv install --dev"
+          },
+          {
+            "label": "migrate-db",
+            "type": "shell",
+            "dependsOn": [
+              "pipenv-install-dev"
+            ],
+            "command": "pipenv run python ./manage.py migrate"
+          }
+        ]
+      },
+      "launch": {
+        "version": "0.2.0",
+        "configurations": [
+          {
+            "name": "Django Server",
+            "type": "debugpy",
+            "request": "launch",
+            "django": true,
+            "justMyCode": false,
+            "program": "${workspaceFolder}/manage.py",
+            "?args": [
+              "runserver",
+              "localhost:8000"
+            ],
+            "preLaunchTask": "migrate-db"
+          }
+        ]
+      }
+    }
+  },
+  "service.frontend": {
+    "inherits": [
+      "service.devcontainer",
+      "javascript.config"
+    ],
+    "description": "A devcontainer for a frontend micro-service.",
+    "submodules": [
+      "codeforlife-portal-frontend"
+    ],
+    "vscode": {
+      "tasks": {
+        "version": "2.0.0",
+        "tasks": [
+          {
+            "label": "start-react-dev-server",
+            "isBackground": true,
+            "type": "npm",
+            "script": "start",
+            "options": {
+              "env": {
+                "BROWSER": "none"
+              }
+            },
+            "problemMatcher": []
+          }
+        ]
+      },
+      "launch": {
+        "version": "0.2.0",
+        "configurations": [
+          {
+            "name": "React Dev Server",
+            "type": "chrome",
+            "request": "launch",
+            "url": "http://localhost:5173",
+            "preLaunchTask": "start-react-dev-server"
+          }
+        ]
+      }
+    }
+  },
   "service+sso": {
     "inherits": [
-      "service"
+      "service.devcontainer"
     ],
     "description": "A service that also runs the SSO service in the background.",
     // TODO: set submodules after testing how this would work.
@@ -416,9 +452,9 @@
             "type": "shell",
             "isBackground": true,
             "options": {
-              "cwd": "${workspaceFolder}/../codeforlife-sso/backend",
+              "cwd": "${workspaceFolder}/../codeforlife-sso",
               "env": {
-                "DB_NAME": "${fileWorkspaceFolder}/backend/db.sqlite3",
+                "DB_NAME": "${fileWorkspaceFolder}/db.sqlite3",
                 "SERVICE_NAME": "sso",
                 "SERVICE_PORT": "8001"
               }
@@ -439,7 +475,7 @@
             "request": "launch",
             "django": true,
             "justMyCode": false,
-            "program": "${fileWorkspaceFolder}/backend/manage.py",
+            "program": "${fileWorkspaceFolder}/manage.py",
             "args": [
               "runserver",
               "localhost:8000"
