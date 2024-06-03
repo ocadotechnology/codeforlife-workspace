@@ -18,6 +18,7 @@ CONTRIBUTING_FILE_NAME = "CONTRIBUTING.md"
 CONTRIBUTORS_HEADER = "### 👨\u200d💻 Contributors 👩\u200d💻"
 BOTS = {
     "49699333+dependabot[bot]@users.noreply.github.com",
+    "codeforlife-bot@ocado.com",
 }
 
 
