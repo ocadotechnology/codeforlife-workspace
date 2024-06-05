@@ -48,24 +48,29 @@ jobs:
 
       - name: 🔎 Check Code Format
         working-directory: ${{ inputs.working-directory }}
-        run: yarn format:check
+        run: yarn run prettier --check --write=false .
 
       - name: 🔎 Check Static Type Hints
         working-directory: ${{ inputs.working-directory }}
-        run: yarn type-check
+        run: yarn run tsc --noEmit
 
       - name: 🔎 Check Static Code
         working-directory: ${{ inputs.working-directory }}
-        run: yarn lint
+        run: yarn run eslint --max-warnings=0 .
 
       - name: 🧪 Test Code Units
         working-directory: ${{ inputs.working-directory }}
         run: |
           if [ ${{ github.repository_owner_id }} = ${{ env.OCADO_TECH_ORG_ID }} ]
           then
-            yarn test:coverage
+            yarn run vitest run --coverage
           else
-            yarn test:verbose
+            yarn run vitest run \
+              --reporter=verbose \
+              --coverage.thresholds.lines=90 \
+              --coverage.thresholds.functions=90 \
+              --coverage.thresholds.branches=90 \
+              --coverage.thresholds.statements=90
           fi
 
       - name: 📈 Upload Coverage Reports to Codecov
