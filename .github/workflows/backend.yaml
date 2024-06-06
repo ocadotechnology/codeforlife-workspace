@@ -25,6 +25,7 @@ jobs:
     secrets: inherit
     with:
       python-version: ${{ inputs.python-version }}
+      source-path: src
 
   deploy:
     runs-on: ubuntu-latest
