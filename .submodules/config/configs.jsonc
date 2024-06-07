@@ -344,7 +344,7 @@
     ],
     "description": "A devcontainer for a backend micro-service.",
     "submodules": [
-      "codeforlife-portal-react"
+      "codeforlife-portal-backend"
     ],
     "vscode": {
       "settings": {
