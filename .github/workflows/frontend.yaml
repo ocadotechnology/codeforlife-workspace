@@ -42,19 +42,18 @@ jobs:
       - name: 🏗️ Build App
         run: yarn build
 
+      - name: 🪪 Get Service Name
+        id: get-service-name
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/gcloud/get-service-name@convert_to_backend_repo # TODO: use @main
+
       # https://mikefarah.gitbook.io/yq/
       - name: 🖊️ Configure App Deployment
         uses: mikefarah/yq@master
         with:
           cmd: |
-            # Set name with convention "{ENV_NAME}-{REPO_NAME}"
-            name=${{ github.repository }}
-            name=${name#"ocadotechnology/codeforlife-"}
-            name="${{ github.ref_name }}-${name}"
-
             yq -i '
               .runtime = "nodejs${{ inputs.node-version }}" |
-              .service = "'$name'"
+              .service = "${{ steps.get-service-name.outputs.service-name }}"
             ' app.yaml
 
       - name: 🚀 Deploy App on GCloud
