@@ -19,12 +19,12 @@
 [submodule "codeforlife-service-template"]
 	path = codeforlife-service-template
 	url = https://github.com/ocadotechnology/codeforlife-service-template.git
-[submodule "codeforlife-portal-react"]
-	path = codeforlife-portal-react
-	url = https://github.com/ocadotechnology/codeforlife-portal-react.git
 [submodule "codeforlife-sso"]
 	path = codeforlife-sso
 	url = https://github.com/ocadotechnology/codeforlife-sso.git
 [submodule "codeforlife-portal-frontend"]
 	path = codeforlife-portal-frontend
 	url = https://github.com/ocadotechnology/codeforlife-portal-frontend.git
+[submodule "codeforlife-portal-backend"]
+	path = codeforlife-portal-backend
+	url = https://github.com/ocadotechnology/codeforlife-portal-backend.git

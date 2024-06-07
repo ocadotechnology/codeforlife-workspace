@@ -1,0 +1,21 @@
+name: "Code for Life - GCloud - Get Service Name"
+description: "Get a service's name based on the name of the current repository."
+outputs:
+  service-name:
+    description: "The name of the current service."
+    value: ${{ steps.get-service-name.outputs.service-name }}
+runs:
+  using: composite
+  steps:
+    # Set name with convention "{ENV_NAME}-{REPO_NAME}"
+    #   where ENV_NAME is the name of the branch / environment.
+    #   where REPO_NAME is the name of the repo without the prefix "ocadotechnology/codeforlife-". 
+    - name: 🪪 Get Service Name
+      id: get-service-name
+      shell: bash
+      run: |
+        name=${{ github.repository }}
+        name=${name#"ocadotechnology/codeforlife-"}
+        name="${{ github.ref_name }}-${name}"
+
+        echo "service-name=$(echo $name)" >> $GITHUB_OUTPUT

@@ -34,7 +34,7 @@
     "ghcr.io/devcontainers/features/github-cli:1": {}
   },
   "name": "workspace",
-  "postCreateCommand": ".submodules/recurse-fork/run",
+  "postCreateCommand": "sudo chmod u+x .submodules/recurse-fork/run && .submodules/recurse-fork/run",
   "remoteUser": "root",
   "service": "base-service",
   "shutdownAction": "none",

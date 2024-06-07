@@ -318,7 +318,7 @@
     ],
     "description": "The devcontainer for a micro-service.",
     "devcontainer": {
-      "postCreateCommand": "chmod u+x ./setup && ./setup",
+      "postCreateCommand": "sudo chmod u+x ./setup && ./setup",
       "mounts": [
         "source=./codeforlife-package-javascript,target=/workspace/codeforlife-package-javascript,type=bind,consistency=cached",
         "source=./codeforlife-package-python,target=/workspace/codeforlife-package-python,type=bind,consistency=cached"
@@ -344,12 +344,19 @@
     ],
     "description": "A devcontainer for a backend micro-service.",
     "submodules": [
-      "codeforlife-portal-react"
+      "codeforlife-portal-backend"
     ],
     "vscode": {
       "settings": {
         "python.analysis.extraPaths": [
           "../codeforlife-package-python"
+        ],
+        "!python.testing.pytestArgs": [
+          "-n=auto",
+          "--cov=src",
+          "--cov-report=html",
+          "-c=pyproject.toml",
+          "src"
         ]
       },
       "tasks": {

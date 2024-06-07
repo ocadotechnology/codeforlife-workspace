@@ -25,6 +25,7 @@ jobs:
     secrets: inherit
     with:
       python-version: ${{ inputs.python-version }}
+      source-path: src
 
   deploy:
     runs-on: ubuntu-latest
@@ -37,7 +38,6 @@ jobs:
         uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
         with:
           python-version: ${{ inputs.python-version }}
-          install-args: --dev
 
       - name: 🏗️ Generate requirements.txt
         run: pipenv requirements > requirements.txt
@@ -45,25 +45,16 @@ jobs:
       - name: 🏗️ Collect Static Files
         run: pipenv run python ./manage.py collectstatic --noinput --clear
 
+      - name: 🪪 Get Service Name
+        id: get-service-name
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/gcloud/get-service-name@main
+
       # https://mikefarah.gitbook.io/yq/
       # TODO: clean up app.yaml environment variables
       - name: 🖊️ Configure App Deployment
         uses: mikefarah/yq@master
         with:
           cmd: |
-            # Set name with convention "{ENV_NAME}-{REPO_NAME}"
-            name=${{ github.repository }}
-            name=${name#"ocadotechnology/codeforlife-"}
-            name="${{ github.ref_name }}-${name}"
-
-            # Check if service is the client-facing service.
-            is_root=$(
-              if [ ${{ github.ref_name }} == "production" ]
-              then echo "1"
-              else echo "0"
-              fi
-            )
-
             # Set runtime with convention "python{PY_VERSION}".
             # The version must have the dot removed: "python3.8" -> "python38".
             runtime=python${{ inputs.python-version }}
@@ -71,10 +62,9 @@ jobs:
 
             yq -i '
               .runtime = "'$runtime'" |
-              .service = "'$name'" |
+              .service = "${{ steps.get-service-name.outputs.service-name }}" |
+              .env_variables.SERVICE_NAME = "${{ steps.get-service-name.outputs.service-name }}" |
               .env_variables.SECRET_KEY = "${{ secrets.SECRET_KEY }}" |
-              .env_variables.SERVICE_NAME = "$name" |
-              .env_variables.SERVICE_IS_ROOT = "$is_root" |
               .env_variables.MODULE_NAME = "${{ github.ref_name }}"
             ' app.yaml
 
