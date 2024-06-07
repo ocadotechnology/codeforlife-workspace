@@ -350,6 +350,13 @@
       "settings": {
         "python.analysis.extraPaths": [
           "../codeforlife-package-python"
+        ],
+        "!python.testing.pytestArgs": [
+          "-n=auto",
+          "--cov=src",
+          "--cov-report=html",
+          "-c=pyproject.toml",
+          "src"
         ]
       },
       "tasks": {
