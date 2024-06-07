@@ -39,7 +39,6 @@ jobs:
         uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
         with:
           python-version: ${{ inputs.python-version }}
-          install-args: --dev
 
       - name: 🏗️ Generate requirements.txt
         run: pipenv requirements > requirements.txt
