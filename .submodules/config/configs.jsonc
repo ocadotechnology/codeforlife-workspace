@@ -318,7 +318,7 @@
     ],
     "description": "The devcontainer for a micro-service.",
     "devcontainer": {
-      "postCreateCommand": "chmod u+x ./setup && ./setup",
+      "postCreateCommand": "sudo chmod u+x ./setup && ./setup",
       "mounts": [
         "source=./codeforlife-package-javascript,target=/workspace/codeforlife-package-javascript,type=bind,consistency=cached",
         "source=./codeforlife-package-python,target=/workspace/codeforlife-package-python,type=bind,consistency=cached"
