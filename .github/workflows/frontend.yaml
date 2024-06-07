@@ -44,7 +44,7 @@ jobs:
 
       - name: 🪪 Get Service Name
         id: get-service-name
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/gcloud/get-service-name@convert_to_backend_repo # TODO: use @main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/gcloud/get-service-name@main
 
       # https://mikefarah.gitbook.io/yq/
       - name: 🖊️ Configure App Deployment
