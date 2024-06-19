@@ -58,6 +58,8 @@ jobs:
       - name: 🪪 Get Service Name
         id: get-service-name
         uses: ocadotechnology/codeforlife-workspace/.github/actions/gcloud/get-service-name@main
+        with:
+          suffix: -backend
 
       # https://mikefarah.gitbook.io/yq/
       # TODO: clean up app.yaml environment variables
@@ -72,7 +74,7 @@ jobs:
 
             yq -i '
               .runtime = "'$runtime'" |
-              .service = "${{ steps.get-service-name.outputs.service-name }}" |
+              .service = "${{ steps.get-service-name.outputs.fully-qualified-service-name }}" |
               .env_variables.SERVICE_NAME = "${{ steps.get-service-name.outputs.service-name }}" |
               .env_variables.SECRET_KEY = "${{ secrets.SECRET_KEY }}" |
               .env_variables.MODULE_NAME = "${{ github.ref_name }}"

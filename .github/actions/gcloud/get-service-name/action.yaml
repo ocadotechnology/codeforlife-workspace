@@ -1,21 +1,33 @@
 name: "Code for Life - GCloud - Get Service Name"
 description: "Get a service's name based on the name of the current repository."
+inputs:
+  suffix:
+    description: "Text at the end of the service name that should be removed."
+    required: true
+    default: ""
 outputs:
+  fully-qualified-service-name:
+    description: "The name of the current service, including its environment and "
+    value: ${{ steps.get-service-name.outputs.fully-qualified-service-name }}
   service-name:
     description: "The name of the current service."
     value: ${{ steps.get-service-name.outputs.service-name }}
 runs:
   using: composite
   steps:
-    # Set name with convention "{ENV_NAME}-{REPO_NAME}"
-    #   where ENV_NAME is the name of the branch / environment.
-    #   where REPO_NAME is the name of the repo without the prefix "ocadotechnology/codeforlife-". 
+    # Get the service name and fully qualified service name.
+    # For example, if a push is made to "ocadotechnology/codeforlife-portal-backend" on the "development" branch.
+    #  - service-name="portal", where the suffix removed is "-backend"
+    #  - fully-qualified-service-name="development-portal-backend"
     - name: 🪪 Get Service Name
       id: get-service-name
       shell: bash
       run: |
-        name=${{ github.repository }}
-        name=${name#"ocadotechnology/codeforlife-"}
-        name="${{ github.ref_name }}-${name}"
-
-        echo "service-name=$(echo $name)" >> $GITHUB_OUTPUT
+        base_name=${{ github.repository }}
+        base_name=${base_name#"ocadotechnology/codeforlife-"}
+        
+        service_name=${base_name%${{ inputs.suffix }}}
+        echo "service-name=$(echo $service_name)" >> $GITHUB_OUTPUT 
+        
+        fully_qualified_service_name="${{ github.ref_name }}-${base_name}"
+        echo "fully-qualified-service-name=$(echo $fully_qualified_service_name)" >> $GITHUB_OUTPUT

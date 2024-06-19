@@ -45,6 +45,8 @@ jobs:
       - name: 🪪 Get Service Name
         id: get-service-name
         uses: ocadotechnology/codeforlife-workspace/.github/actions/gcloud/get-service-name@main
+        with:
+          suffix: -frontend
 
       # https://mikefarah.gitbook.io/yq/
       - name: 🖊️ Configure App Deployment
@@ -53,7 +55,7 @@ jobs:
           cmd: |
             yq -i '
               .runtime = "nodejs${{ inputs.node-version }}" |
-              .service = "${{ steps.get-service-name.outputs.service-name }}"
+              .service = "${{ steps.get-service-name.outputs.fully-qualified-service-name }}"
             ' app.yaml
 
       - name: 🚀 Deploy App on GCloud
