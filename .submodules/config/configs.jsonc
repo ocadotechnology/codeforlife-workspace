@@ -318,7 +318,7 @@
     ],
     "description": "The devcontainer for a micro-service.",
     "devcontainer": {
-      "postCreateCommand": "sudo chmod u+x ./setup && ./setup",
+      "postCreateCommand": "sudo chmod u+x scripts/setup && scripts/setup",
       "mounts": [
         "source=./codeforlife-package-javascript,target=/workspace/codeforlife-package-javascript,type=bind,consistency=cached",
         "source=./codeforlife-package-python,target=/workspace/codeforlife-package-python,type=bind,consistency=cached"
@@ -335,6 +335,19 @@
           "name": "package-javascript"
         }
       ]
+    },
+    "vscode": {
+      "tasks": {
+        "version": "2.0.0",
+        "tasks": [
+          {
+            "label": "hard-install",
+            "type": "shell",
+            "command": "sudo chmod u+x scripts/hard-install && scripts/hard-install",
+            "problemMatcher": []
+          }
+        ]
+      }
     }
   },
   "service.backend": {
@@ -360,20 +373,12 @@
         ]
       },
       "tasks": {
-        "version": "2.0.0",
         "tasks": [
           {
-            "label": "pipenv-install-dev",
+            "label": "setup",
             "type": "shell",
-            "command": "pipenv install --dev"
-          },
-          {
-            "label": "migrate-db",
-            "type": "shell",
-            "dependsOn": [
-              "pipenv-install-dev"
-            ],
-            "command": "pipenv run python ./manage.py migrate"
+            "command": "sudo chmod u+x scripts/setup && scripts/setup",
+            "problemMatcher": []
           }
         ]
       },
@@ -391,7 +396,7 @@
               "runserver",
               "localhost:8000"
             ],
-            "preLaunchTask": "migrate-db"
+            "preLaunchTask": "setup"
           }
         ]
       }
@@ -408,13 +413,12 @@
     ],
     "vscode": {
       "tasks": {
-        "version": "2.0.0",
         "tasks": [
           {
-            "label": "start-react-dev-server",
+            "label": "start-vite-server",
             "isBackground": true,
-            "type": "npm",
-            "script": "start",
+            "command": "sudo chmod u+x scripts/run && scripts/run",
+            "type": "shell",
             "options": {
               "env": {
                 "BROWSER": "none"
@@ -428,11 +432,11 @@
         "version": "0.2.0",
         "configurations": [
           {
-            "name": "React Dev Server",
+            "name": "Vite Server",
             "type": "chrome",
             "request": "launch",
             "url": "http://localhost:5173",
-            "preLaunchTask": "start-react-dev-server"
+            "preLaunchTask": "start-vite-server"
           }
         ]
       }
