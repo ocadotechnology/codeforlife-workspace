@@ -18,5 +18,4 @@ jobs:
       - name: 🚀 Deploy Routing Rules on GCloud
         uses: ocadotechnology/codeforlife-workspace/.github/actions/gcloud/deploy-app@main
         with:
-          gcp-credentials: ${{ secrets.GCP_CREDENTIALS }}
           deploy-args: dispatch.yaml

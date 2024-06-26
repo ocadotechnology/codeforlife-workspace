@@ -12,9 +12,6 @@ on:
       CODECOV_TOKEN:
         description: "The token used to gain access to Codecov."
         required: false
-      GCP_CREDENTIALS:
-        description: "The JSON credentials used to access GCP."
-        required: false
 
 jobs:
   validate-pr-refs:
@@ -70,5 +67,3 @@ jobs:
 
       - name: 🚀 Deploy App on GCloud
         uses: ocadotechnology/codeforlife-workspace/.github/actions/gcloud/deploy-app@main
-        with:
-          gcp-credentials: ${{ secrets.GCP_CREDENTIALS }}
