@@ -24,6 +24,8 @@ jobs:
       node-version: ${{ inputs.node-version }}
 
   deploy:
+    permissions:
+      id-token: 'write' # TODO: separate build and deploy jobs and create reusable deploy workflow
     runs-on: ubuntu-latest
     needs: [validate-pr-refs, test]
     # Deploy if:

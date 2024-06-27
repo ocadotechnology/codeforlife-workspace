@@ -10,6 +10,8 @@ on:
 
 jobs:
   deploy:
+    permissions:
+      id-token: 'write' # TODO: separate build and deploy jobs and create reusable deploy workflow
     runs-on: ubuntu-latest
     steps:
       - name: 🛫 Checkout
