@@ -10,6 +10,8 @@ on:
 
 jobs:
   deploy:
+    permissions:
+      id-token: 'write' # TODO: separate build and deploy jobs and create reusable deploy workflow
     runs-on: ubuntu-latest
     steps:
       - name: 🛫 Checkout
@@ -18,5 +20,4 @@ jobs:
       - name: 🚀 Deploy Cron Jobs on GCloud
         uses: ocadotechnology/codeforlife-workspace/.github/actions/gcloud/deploy-app@main
         with:
-          gcp-credentials: ${{ secrets.GCP_CREDENTIALS }}
           deploy-args: cron.yaml

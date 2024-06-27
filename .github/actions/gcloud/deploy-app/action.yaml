@@ -1,9 +1,6 @@
 name: "Code for Life - GCloud - Deploy App"
 description: "Deploy an app to Google Cloud."
 inputs:
-  gcp-credentials:
-    description: "The JSON credentials used to access GCP."
-    required: true
   deploy-args:
     description: "Arguments to pass to `gcloud app deploy`."
     required: false
@@ -13,7 +10,9 @@ runs:
     - name: 🗝 Authenticate with GCloud
       uses: google-github-actions/auth@v2
       with:
-        credentials_json: ${{ inputs.gcp-credentials }}
+        project_id: 'decent-digit-629'
+        workload_identity_provider: 'projects/354656325390/locations/global/workloadIdentityPools/cfl-pool/providers/cfl-provider'
+        service_account: 'github-actions-34@decent-digit-629.iam.gserviceaccount.com'
 
     - name: 🤖 Set up GCloud SDK
       uses: google-github-actions/setup-gcloud@v2
