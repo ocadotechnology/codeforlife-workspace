@@ -367,10 +367,10 @@
         ],
         "!python.testing.pytestArgs": [
           "-n=auto",
-          "--cov=src",
+          "--cov=api",
           "--cov-report=html",
           "-c=pyproject.toml",
-          "src"
+          "api"
         ]
       },
       "tasks": {
