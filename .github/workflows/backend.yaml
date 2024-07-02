@@ -39,10 +39,12 @@ jobs:
     #  - the previous jobs did not fail (see [needs]).
     #  - the workflow was not cancelled.
     #  - the repo's owner is Ocado Tech.
+    #  - the repo is not the backend template.
     #  - a change is made to an environment's branch.
     if: |
       always() && !failure() && !cancelled() &&
-      github.repository_owner_id == 2088731 && (
+      github.repository_owner_id == 2088731 &&
+      github.repository_id != 610204172 && (
         github.ref_name == 'production' ||
         github.ref_name == 'development' ||
         github.ref_name == 'staging'
