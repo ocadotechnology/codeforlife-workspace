@@ -357,6 +357,7 @@
     ],
     "description": "A devcontainer for a backend micro-service.",
     "submodules": [
+      "codeforlife-service-template",
       "codeforlife-portal-backend"
     ],
     "vscode": {
@@ -396,6 +397,9 @@
               "runserver",
               "localhost:8000"
             ],
+            "env": {
+              "?SERVICE_NAME": "replace-me"
+            },
             "preLaunchTask": "setup"
           }
         ]
