@@ -8,6 +8,12 @@ on:
         type: number
         required: false
         default: 3.8
+      # TODO: remove this after restructure and standardize source path.
+      source-path:
+        description: "The path to the source files."
+        type: string
+        required: false
+        default: "src"
     secrets:
       CODECOV_TOKEN:
         description: "The token used to gain access to Codecov."
@@ -22,11 +28,11 @@ jobs:
     secrets: inherit
     with:
       python-version: ${{ inputs.python-version }}
-      source-path: src
+      source-path: ${{ inputs.source-path }}
 
   deploy:
     permissions:
-      id-token: 'write' # TODO: separate build and deploy jobs and create reusable deploy workflow
+      id-token: "write" # TODO: separate build and deploy jobs and create reusable deploy workflow
     runs-on: ubuntu-latest
     needs: [validate-pr-refs, test]
     # Deploy if:
