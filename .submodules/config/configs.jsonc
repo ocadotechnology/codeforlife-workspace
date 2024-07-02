@@ -357,7 +357,7 @@
     ],
     "description": "A devcontainer for a backend micro-service.",
     "submodules": [
-      "codeforlife-service-template",
+      "codeforlife-template-backend",
       "codeforlife-portal-backend"
     ],
     "vscode": {
