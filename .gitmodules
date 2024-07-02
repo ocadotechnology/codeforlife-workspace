@@ -25,3 +25,6 @@
 [submodule "codeforlife-portal-backend"]
 	path = codeforlife-portal-backend
 	url = https://github.com/ocadotechnology/codeforlife-portal-backend.git
+[submodule "codeforlife-template-backend"]
+	path = codeforlife-template-backend
+	url = https://github.com/ocadotechnology/codeforlife-template-backend.git
