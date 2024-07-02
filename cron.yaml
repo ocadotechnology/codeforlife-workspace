@@ -4,19 +4,12 @@ cron:
   # Legacy system
   # ----------------------------------------------------------------------------
 
-  # /mail/weekly/
-
-  - url: /mail/weekly/
-    schedule: every friday 09:00
-    timezone: Europe/London
-    target: default
-
   # /cron/user/unverified/send-first-reminder/
 
-#  - url: /cron/user/unverified/send-first-reminder/
-#    schedule: every day 10:00
-#    timezone: Europe/London
-#    target: default
+  - url: /cron/user/unverified/send-first-reminder/
+    schedule: every day 10:00
+    timezone: Europe/London
+    target: default
 
   - url: /cron/user/unverified/send-first-reminder/
     schedule: every day 10:00
@@ -30,10 +23,10 @@ cron:
 
   # /cron/user/unverified/send-second-reminder/
 
-#  - url: /cron/user/unverified/send-second-reminder/
-#    schedule: every day 10:00
-#    timezone: Europe/London
-#    target: default
+  - url: /cron/user/unverified/send-second-reminder/
+    schedule: every day 10:00
+    timezone: Europe/London
+    target: default
 
   - url: /cron/user/unverified/send-second-reminder/
     schedule: every day 10:00
