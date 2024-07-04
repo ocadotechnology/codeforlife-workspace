@@ -357,6 +357,7 @@
     ],
     "description": "A devcontainer for a backend micro-service.",
     "submodules": [
+      "codeforlife-template-backend",
       "codeforlife-portal-backend"
     ],
     "vscode": {
@@ -366,10 +367,10 @@
         ],
         "!python.testing.pytestArgs": [
           "-n=auto",
-          "--cov=src",
+          "--cov=api",
           "--cov-report=html",
           "-c=pyproject.toml",
-          "src"
+          "api"
         ]
       },
       "tasks": {
@@ -396,6 +397,9 @@
               "runserver",
               "localhost:8000"
             ],
+            "env": {
+              "?SERVICE_NAME": "replace-me"
+            },
             "preLaunchTask": "setup"
           }
         ]
