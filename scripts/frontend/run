@@ -1,0 +1,6 @@
+#!/bin/bash
+set -e
+
+wget -O - https://raw.githubusercontent.com/ocadotechnology/codeforlife-workspace/main/scripts/frontend/setup | bash
+
+yarn dev

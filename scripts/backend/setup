@@ -1,0 +1,7 @@
+#!/bin/bash
+set -e
+
+pipenv install --dev
+pipenv run python manage.py migrate --noinput
+pipenv run python manage.py load_fixtures api
+pipenv run python manage.py collectstatic --noinput --clear
