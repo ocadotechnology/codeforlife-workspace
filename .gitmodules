@@ -16,9 +16,6 @@
 [submodule "codeforlife-package-javascript"]
 	path = codeforlife-package-javascript
 	url = https://github.com/ocadotechnology/codeforlife-package-javascript.git
-[submodule "codeforlife-service-template"]
-	path = codeforlife-service-template
-	url = https://github.com/ocadotechnology/codeforlife-service-template.git
 [submodule "codeforlife-sso"]
 	path = codeforlife-sso
 	url = https://github.com/ocadotechnology/codeforlife-sso.git
@@ -28,3 +25,9 @@
 [submodule "codeforlife-portal-backend"]
 	path = codeforlife-portal-backend
 	url = https://github.com/ocadotechnology/codeforlife-portal-backend.git
+[submodule "codeforlife-template-backend"]
+	path = codeforlife-template-backend
+	url = https://github.com/ocadotechnology/codeforlife-template-backend.git
+[submodule "codeforlife-contributor-backend"]
+	path = codeforlife-contributor-backend
+	url = https://github.com/ocadotechnology/codeforlife-contributor-backend.git

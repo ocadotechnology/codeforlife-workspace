@@ -1,0 +1,6 @@
+#!/bin/bash
+set -e
+
+wget -O - https://raw.githubusercontent.com/ocadotechnology/codeforlife-workspace/main/scripts/backend/setup | bash
+
+pipenv run python manage.py runserver localhost:8000
