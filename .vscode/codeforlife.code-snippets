@@ -31,5 +31,37 @@
       "# pylint"
     ],
     "scope": "python"
+  },
+  "python.pylint.disable": {
+    "body": [
+      "# pylint: disable=${1:__code_name__}"
+    ],
+    "prefix": [
+      "# pylint"
+    ],
+    "scope": "python"
+  },
+  "python.pylint.enable": {
+    "body": [
+      "# pylint: enable=${1:__code_name__}"
+    ],
+    "prefix": [
+      "# pylint"
+    ],
+    "scope": "python"
+  },
+  "javascript.module.doccomment": {
+    "body": [
+      "/**",
+      " * \u00a9 Ocado Group",
+      " * Created on $CURRENT_DATE/$CURRENT_MONTH/$CURRENT_YEAR at $CURRENT_HOUR:$CURRENT_MINUTE:$CURRENT_SECOND($CURRENT_TIMEZONE_OFFSET).",
+      " *",
+      " * ${1:__description__}",
+      " */"
+    ],
+    "prefix": [
+      "/"
+    ],
+    "scope": "javascript,typescript,javascriptreact,typescriptreact"
   }
 }
