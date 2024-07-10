@@ -1,13 +1,24 @@
 {
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
   "customizations": {
     "vscode": {
       "extensions": [
+        // general
         "visualstudioexptteam.vscodeintellicode",
         "github.vscode-pull-request-github",
         "redhat.vscode-yaml",
         "davidanson.vscode-markdownlint",
         "bierner.markdown-mermaid",
         "streetsidesoftware.code-spell-checker",
+        "tamasfe.even-better-toml",
+        "github.vscode-github-actions",
+        "codecov.codecov",
+        "ritwickdey.liveserver",
+        "eamodio.gitlens",
+        // javascript
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        // python
         "ms-python.python",
         "ms-python.debugpy",
         "ms-python.pylint",
@@ -15,28 +26,29 @@
         "ms-python.vscode-pylance",
         "ms-python.mypy-type-checker",
         "ms-python.black-formatter",
-        "njpwerner.autodocstring",
-        "tamasfe.even-better-toml",
+        "qwtel.sqlite-viewer",
+        "njpwerner.autodocstring"
       ]
     }
   },
-  "dockerComposeFile": [
-    "./docker-compose.yml"
-  ],
   "features": {
-    "ghcr.io/devcontainers-contrib/features/pipenv:2": {
-      "version": "2023.11.15"
+    "ghcr.io/devcontainers/features/github-cli:1": {
+      "version": "2.52.0"
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "18"
     },
     "ghcr.io/devcontainers/features/python:1": {
       "installTools": false,
-      "version": "3.12"
+      "version": "3.8"
     },
-    "ghcr.io/devcontainers/features/github-cli:1": {}
+    "ghcr.io/devcontainers-contrib/features/pipenv:2": {
+      "version": "2023.11.15"
+    }
   },
   "name": "workspace",
-  "postCreateCommand": "sudo chmod u+x .submodules/recurse-fork/run && .submodules/recurse-fork/run",
+  // "postCreateCommand": "sudo chmod u+x .submodules/recurse-fork/run && .submodules/recurse-fork/run",
   "remoteUser": "root",
-  "service": "base-service",
   "shutdownAction": "none",
   "workspaceFolder": "/workspace"
 }
