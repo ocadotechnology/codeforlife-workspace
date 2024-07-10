@@ -73,7 +73,7 @@
     ],
     "vscode": {
       "settings": {
-        "autoDocstring.customTemplatePath": ".vscode/extensions/autoDocstring/docstring.mustache",
+        "autoDocstring.customTemplatePath": "../python-docstring.mustache",
         "python.defaultInterpreterPath": ".venv/bin/python",
         "python.testing.unittestEnabled": false,
         "python.testing.pytestEnabled": true,
