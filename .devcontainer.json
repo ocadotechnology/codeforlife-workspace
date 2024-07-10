@@ -47,7 +47,7 @@
     }
   },
   "name": "workspace",
-  // "postCreateCommand": "sudo chmod u+x .submodules/recurse-fork/run && .submodules/recurse-fork/run",
+  "postCreateCommand": "sudo chmod u+x .submodules/setup/run && .submodules/setup/run",
   "remoteUser": "root",
   "shutdownAction": "none",
   "workspaceFolder": "/workspace"
