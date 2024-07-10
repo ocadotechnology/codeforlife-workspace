@@ -28,8 +28,5 @@
     "**/__pycache__": true
   },
   "python.testing.pytestEnabled": true,
-  "python.testing.unittestEnabled": false,
-  "workbench.colorCustomizations": {
-    "editorRuler.foreground": "#008000"
-  }
+  "python.testing.unittestEnabled": false
 }
