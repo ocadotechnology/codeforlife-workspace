@@ -57,22 +57,6 @@
         "typescript.preferences.quoteStyle": "double",
         "!prettier.configPath": ".prettierrc.json",
         "editor.defaultFormatter": "esbenp.prettier-vscode"
-      },
-      "codeSnippets": {
-        "javascript.module.doccomment": {
-          "prefix": [
-            "/"
-          ],
-          "scope": "javascript,typescript,javascriptreact,typescriptreact",
-          "body": [
-            "/**",
-            " * © Ocado Group",
-            " * Created on $CURRENT_DATE/$CURRENT_MONTH/$CURRENT_YEAR at $CURRENT_HOUR:$CURRENT_MINUTE:$CURRENT_SECOND($CURRENT_TIMEZONE_OFFSET).",
-            " *",
-            " * ${1:__description__}",
-            " */"
-          ]
-        }
       }
     }
   },
@@ -168,41 +152,6 @@
             }
           }
         ]
-      },
-      "codeSnippets": {
-        "python.module.docstring": {
-          "prefix": [
-            "\"\"\"",
-            "'''"
-          ],
-          "scope": "python",
-          "body": [
-            "\"\"\"",
-            "© Ocado Group",
-            "Created on $CURRENT_DATE/$CURRENT_MONTH/$CURRENT_YEAR at $CURRENT_HOUR:$CURRENT_MINUTE:$CURRENT_SECOND($CURRENT_TIMEZONE_OFFSET).",
-            "",
-            "${1:__description__}",
-            "\"\"\""
-          ]
-        },
-        "python.pylint.disable-next": {
-          "prefix": [
-            "# pylint"
-          ],
-          "scope": "python",
-          "body": [
-            "# pylint: disable-next=${1:__code_name__}"
-          ]
-        },
-        "python.mypy.ignore": {
-          "prefix": [
-            "# type"
-          ],
-          "scope": "python",
-          "body": [
-            "# type: ignore[${1:__code_name__}]"
-          ]
-        }
       }
     }
   },
