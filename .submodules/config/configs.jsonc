@@ -34,10 +34,7 @@
           "ocado",
           "kurono",
           "pipenv"
-        ],
-        "workbench.colorCustomizations": {
-          "editorRuler.foreground": "#008000"
-        }
+        ]
       }
     }
   },
