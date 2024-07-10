@@ -14,4 +14,4 @@ pylint = "==3.0.2"
 types-colorama = "==0.4.15.20240311"
 
 [requires]
-python_version = "3.12"
+python_version = "3.8"

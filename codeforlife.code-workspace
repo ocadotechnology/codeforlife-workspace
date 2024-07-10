@@ -1,0 +1,58 @@
+{
+  "folders": [
+    {
+      "name": "workspace",
+      "path": "."
+    },
+    {
+      "name": "aimmo",
+      "path": "aimmo"
+    },
+    {
+      "name": "contributor-backend",
+      "path": "codeforlife-contributor-backend"
+    },
+    {
+      "name": "deploy-appengine",
+      "path": "codeforlife-deploy-appengine"
+    },
+    {
+      "name": "package-javascript",
+      "path": "codeforlife-package-javascript"
+    },
+    {
+      "name": "package-python",
+      "path": "codeforlife-package-python"
+    },
+    {
+      "name": "portal",
+      "path": "codeforlife-portal"
+    },
+    {
+      "name": "portal-backend",
+      "path": "codeforlife-portal-backend"
+    },
+    {
+      "name": "portal-frontend",
+      "path": "codeforlife-portal-frontend"
+    },
+    {
+      "name": "sso",
+      "path": "codeforlife-sso"
+    },
+    {
+      "name": "template-backend",
+      "path": "codeforlife-template-backend"
+    },
+    {
+      "name": "rapid-router",
+      "path": "rapid-router"
+    }
+  ],
+  "settings": {
+    "autoDocstring.customTemplatePath": "python-docstring.mustache",
+    "workbench.colorCustomizations": {
+      "editorRuler.foreground": "#008000"
+    }
+  }
+}

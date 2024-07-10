@@ -1,9 +1,0 @@
-# https://github.com/devcontainers
-version: '1'
-services:
-  base-service:
-    image: mcr.microsoft.com/devcontainers/base:ubuntu-22.04
-    volumes:
-      # Mount the root folder that contains .git
-      - .:/workspace:cached
-    command: sleep infinity
