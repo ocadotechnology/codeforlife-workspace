@@ -10,36 +10,11 @@
 //  - "/* multi-line comment, no preceding text */" 🚫
 //  - "{"age": 27} /* multi-line comment, some preceding text */" 🚫
 //
-// These configs are processed by .submodules/__main__.py. To understand more
-// about the shape of this data, please read .submodules/configs.py.
+// These configs are processed by .submodules/config/__main__.py. To understand
+// more about the shape of this data, please read .submodules/config/configs.py.
 {
   "base": {
     "description": "Base configuration to be inherited by all other configurations.",
-    "devcontainer": {
-      "dockerComposeFile": [
-        "../docker-compose.yml"
-      ],
-      "service": "base-service",
-      "shutdownAction": "none",
-      "remoteUser": "root",
-      "customizations": {
-        "vscode": {
-          "extensions": [
-            "visualstudioexptteam.vscodeintellicode",
-            "github.vscode-pull-request-github",
-            "redhat.vscode-yaml",
-            "davidanson.vscode-markdownlint",
-            "bierner.markdown-mermaid",
-            "streetsidesoftware.code-spell-checker",
-            "tamasfe.even-better-toml",
-            "github.vscode-github-actions",
-            "codecov.codecov",
-            "ritwickdey.liveserver",
-            "eamodio.gitlens"
-          ]
-        }
-      }
-    },
     "vscode": {
       "settings": {
         "editor.tabSize": 2,
@@ -59,48 +34,21 @@
           "ocado",
           "kurono",
           "pipenv"
-        ]
-      }
-    },
-    "workspace": {
-      "folders": [
-        {
-          "path": "."
-        }
-      ],
-      "settings": {
+        ],
         "workbench.colorCustomizations": {
           "editorRuler.foreground": "#008000"
         }
       }
     }
   },
-  "javascript.devcontainer": {
-    "inherits": [
-      "base"
-    ],
-    "description": "A devcontainer with a javascript environment.",
-    "devcontainer": {
-      "features": {
-        "ghcr.io/devcontainers/features/node:1": {
-          "version": "18"
-        }
-      },
-      "customizations": {
-        "vscode": {
-          "extensions": [
-            "dbaeumer.vscode-eslint",
-            "esbenp.prettier-vscode"
-          ]
-        }
-      }
-    }
-  },
-  "javascript.config": {
+  "javascript": {
     "inherits": [
       "base"
     ],
     "description": "A configured javascript environment.",
+    "submodules": [
+      "codeforlife-package-javascript"
+    ],
     "vscode": {
       "settings": {
         "javascript.format.semicolons": "remove",
@@ -128,55 +76,20 @@
       }
     }
   },
-  "javascript": {
-    "inherits": [
-      "javascript.devcontainer",
-      "javascript.config"
-    ],
-    "description": "A devcontainer with a configured javascript environment.",
-    "submodules": [
-      "codeforlife-package-javascript"
-    ]
-  },
-  "python.devcontainer": {
-    "inherits": [
-      "base"
-    ],
-    "description": "A devcontainer with a python environment.",
-    "devcontainer": {
-      "features": {
-        "ghcr.io/devcontainers/features/python:1": {
-          "version": "3.8",
-          "installTools": false
-        },
-        "ghcr.io/devcontainers-contrib/features/pipenv:2": {
-          "version": "2023.11.15"
-        }
-      },
-      "customizations": {
-        "vscode": {
-          "extensions": [
-            "ms-python.python",
-            "ms-python.debugpy",
-            "ms-python.pylint",
-            "ms-python.isort",
-            "ms-python.vscode-pylance",
-            "ms-python.mypy-type-checker",
-            "ms-python.black-formatter",
-            "qwtel.sqlite-viewer",
-            "njpwerner.autodocstring"
-          ]
-        }
-      }
-    }
-  },
-  "python.config": {
+  "python": {
     "inherits": [
       "base"
     ],
     "description": "A configured python environment.",
+    "submodules": [
+      "codeforlife-deploy-appengine",
+      "codeforlife-package-python",
+      "codeforlife-portal",
+      "rapid-router"
+    ],
     "vscode": {
       "settings": {
+        "autoDocstring.customTemplatePath": ".vscode/extensions/autoDocstring/docstring.mustache",
         "python.defaultInterpreterPath": ".venv/bin/python",
         "python.testing.unittestEnabled": false,
         "python.testing.pytestEnabled": true,
@@ -291,60 +204,34 @@
           ]
         }
       }
-    },
-    "workspace": {
-      "folders": [],
-      "settings": {
-        "autoDocstring.customTemplatePath": ".vscode/extensions/autoDocstring/docstring.mustache"
-      }
     }
   },
-  "python": {
+  "service": {
     "inherits": [
-      "python.devcontainer",
-      "python.config"
+      "base"
     ],
-    "description": "A devcontainer with a configured python environment.",
-    "submodules": [
-      "codeforlife-deploy-appengine",
-      "codeforlife-package-python",
-      "codeforlife-portal",
-      "rapid-router"
-    ]
-  },
-  "service.devcontainer": {
-    "inherits": [
-      "python.devcontainer",
-      "javascript.devcontainer"
-    ],
-    "description": "The devcontainer for a micro-service.",
-    "devcontainer": {
-      "postCreateCommand": "sudo chmod u+x scripts/setup && scripts/setup",
-      "mounts": [
-        "source=./codeforlife-package-javascript,target=/workspace/codeforlife-package-javascript,type=bind,consistency=cached",
-        "source=./codeforlife-package-python,target=/workspace/codeforlife-package-python,type=bind,consistency=cached"
-      ]
-    },
-    "workspace": {
-      "folders": [
-        {
-          "path": "../codeforlife-package-python",
-          "name": "package-python"
-        },
-        {
-          "path": "../codeforlife-package-javascript",
-          "name": "package-javascript"
-        }
-      ]
-    },
+    "description": "A micro-service.",
     "vscode": {
       "tasks": {
         "version": "2.0.0",
         "tasks": [
           {
+            "label": "setup",
+            "type": "shell",
+            "command": "sudo chmod u+x scripts/setup && scripts/setup",
+            "problemMatcher": []
+          },
+          {
             "label": "hard-install",
             "type": "shell",
             "command": "sudo chmod u+x scripts/hard-install && scripts/hard-install",
+            "problemMatcher": []
+          },
+          {
+            "label": "run",
+            "isBackground": true,
+            "command": "sudo chmod u+x scripts/run && scripts/run",
+            "type": "shell",
             "problemMatcher": []
           }
         ]
@@ -353,10 +240,10 @@
   },
   "service.backend": {
     "inherits": [
-      "service.devcontainer",
-      "python.config"
+      "service",
+      "python"
     ],
-    "description": "A devcontainer for a backend micro-service.",
+    "description": "A micro-service's backend.",
     "submodules": [
       "codeforlife-template-backend",
       "codeforlife-portal-backend"
@@ -372,16 +259,6 @@
           "--cov-report=html",
           "-c=pyproject.toml",
           "api"
-        ]
-      },
-      "tasks": {
-        "tasks": [
-          {
-            "label": "setup",
-            "type": "shell",
-            "command": "sudo chmod u+x scripts/setup && scripts/setup",
-            "problemMatcher": []
-          }
         ]
       },
       "launch": {
@@ -409,10 +286,10 @@
   },
   "service.frontend": {
     "inherits": [
-      "service.devcontainer",
-      "javascript.config"
+      "service",
+      "javascript"
     ],
-    "description": "A devcontainer for a frontend micro-service.",
+    "description": "A micro-service's frontend.",
     "submodules": [
       "codeforlife-portal-frontend"
     ],
@@ -420,16 +297,12 @@
       "tasks": {
         "tasks": [
           {
-            "label": "start-vite-server",
-            "isBackground": true,
-            "command": "sudo chmod u+x scripts/run && scripts/run",
-            "type": "shell",
+            "label": "run",
             "options": {
               "env": {
                 "BROWSER": "none"
               }
-            },
-            "problemMatcher": []
+            }
           }
         ]
       },
@@ -441,73 +314,10 @@
             "type": "chrome",
             "request": "launch",
             "url": "http://localhost:5173",
-            "preLaunchTask": "start-vite-server"
+            "preLaunchTask": "run"
           }
         ]
       }
-    }
-  },
-  "service+sso": {
-    "inherits": [
-      "service.devcontainer"
-    ],
-    "description": "A service that also runs the SSO service in the background.",
-    // TODO: set submodules after testing how this would work.
-    "submodules": [],
-    "devcontainer": {
-      "mounts": [
-        "source=./codeforlife-sso,target=/workspace/codeforlife-sso,type=bind,consistency=cached"
-      ]
-    },
-    "vscode": {
-      "tasks": {
-        "version": "2.0.0",
-        "tasks": [
-          {
-            "label": "run-sso-server",
-            "type": "shell",
-            "isBackground": true,
-            "options": {
-              "cwd": "${workspaceFolder}/../codeforlife-sso",
-              "env": {
-                "DB_NAME": "${fileWorkspaceFolder}/db.sqlite3",
-                "SERVICE_NAME": "sso",
-                "SERVICE_PORT": "8001"
-              }
-            },
-            "dependsOn": [
-              "migrate-db"
-            ],
-            "command": "pipenv run python ./manage.py runserver localhost:8001"
-          }
-        ]
-      },
-      "launch": {
-        "version": "0.2.0",
-        "configurations": [
-          {
-            "name": "Django Server",
-            "type": "python",
-            "request": "launch",
-            "django": true,
-            "justMyCode": false,
-            "program": "${fileWorkspaceFolder}/manage.py",
-            "args": [
-              "runserver",
-              "localhost:8000"
-            ],
-            "preLaunchTask": "run-sso-server"
-          }
-        ]
-      }
-    },
-    "workspace": {
-      "folders": [
-        {
-          "path": "../codeforlife-sso",
-          "name": "sso"
-        }
-      ]
     }
   }
 }
