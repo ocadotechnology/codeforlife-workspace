@@ -48,5 +48,7 @@
   },
   "name": "workspace",
   "postCreateCommand": "sudo chmod u+x .submodules/setup/run && .submodules/setup/run",
-  "remoteUser": "root"
+  "remoteUser": "root",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/codeforlife-workspace,type=bind",
+  "workspaceFolder": "/codeforlife-workspace"
 }
