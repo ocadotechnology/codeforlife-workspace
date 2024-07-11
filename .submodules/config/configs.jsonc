@@ -192,7 +192,8 @@
     "submodules": [
       "codeforlife-template-backend",
       "codeforlife-portal-backend",
-      "codeforlife-contributor-backend"
+      "codeforlife-contributor-backend",
+      "codeforlife-sso"
     ],
     "vscode": {
       "settings": {
