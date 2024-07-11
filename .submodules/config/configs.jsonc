@@ -191,7 +191,8 @@
     "description": "A micro-service's backend.",
     "submodules": [
       "codeforlife-template-backend",
-      "codeforlife-portal-backend"
+      "codeforlife-portal-backend",
+      "codeforlife-contributor-backend"
     ],
     "vscode": {
       "settings": {
