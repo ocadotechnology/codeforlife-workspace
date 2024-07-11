@@ -48,7 +48,5 @@
   },
   "name": "workspace",
   "postCreateCommand": "sudo chmod u+x .submodules/setup/run && .submodules/setup/run",
-  "remoteUser": "root",
-  "shutdownAction": "none",
-  "workspaceFolder": "/workspace"
+  "remoteUser": "root"
 }
