@@ -54,6 +54,29 @@
         "typescript.preferences.quoteStyle": "double",
         "!prettier.configPath": ".prettierrc.json",
         "editor.defaultFormatter": "esbenp.prettier-vscode"
+      },
+      "launch": {
+        "version": "0.2.0",
+        "configurations": [
+          // https://vitest.dev/guide/debugging#vs-code
+          {
+            "name": "Vitest: Current File",
+            "type": "node",
+            "request": "launch",
+            "autoAttachChildProcesses": true,
+            "skipFiles": [
+              "<node_internals>/**",
+              "**/node_modules/**"
+            ],
+            "program": "${workspaceFolder}/node_modules/vitest/vitest.mjs",
+            "args": [
+              "run",
+              "${relativeFile}"
+            ],
+            "smartStep": true,
+            "console": "integratedTerminal"
+          }
+        ]
       }
     }
   },
