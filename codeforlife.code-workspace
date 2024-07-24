@@ -38,6 +38,7 @@
     }
   ],
   "settings": {
+    "files.eol": "auto",
     "autoDocstring.customTemplatePath": "python-docstring.mustache",
     "workbench.colorCustomizations": {
       "editorRuler.foreground": "#008000"
