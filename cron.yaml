@@ -55,6 +55,57 @@ cron:
     timezone: Europe/London
     target: staging
 
+  # /cron/user/inactive/send-first-reminder/
+
+  - url: /cron/user/inactive/send-first-reminder/
+    schedule: every day 10:00
+    timezone: Europe/London
+    target: default
+
+  - url: /cron/user/inactive/send-first-reminder/
+    schedule: every day 10:00
+    timezone: Europe/London
+    target: dev
+
+  - url: /cron/user/inactive/send-first-reminder/
+    schedule: every day 10:00
+    timezone: Europe/London
+    target: staging
+
+  # /cron/user/inactive/send-second-reminder/
+
+  - url: /cron/user/inactive/send-second-reminder/
+    schedule: every day 10:00
+    timezone: Europe/London
+    target: default
+
+  - url: /cron/user/inactive/send-second-reminder/
+    schedule: every day 10:00
+    timezone: Europe/London
+    target: dev
+
+  - url: /cron/user/inactive/send-second-reminder/
+    schedule: every day 10:00
+    timezone: Europe/London
+    target: staging
+
+  # /cron/user/inactive/send-third-reminder/
+
+  - url: /cron/user/inactive/send-third-reminder/
+    schedule: every day 10:00
+    timezone: Europe/London
+    target: default
+
+  - url: /cron/user/inactive/send-third-reminder/
+    schedule: every day 10:00
+    timezone: Europe/London
+    target: dev
+
+  - url: /cron/user/inactive/send-third-reminder/
+    schedule: every day 10:00
+    timezone: Europe/London
+    target: staging
+
   # ----------------------------------------------------------------------------
   # New system
   # ----------------------------------------------------------------------------
@@ -123,6 +174,57 @@ cron:
     target: staging-portal
 
   - url: /api/cron/user/unverified/delete/
+    schedule: every day 10:00
+    timezone: Europe/London
+    target: production-portal
+
+  # /api/cron/user/inactive/send-first-reminder/
+
+  - url: /api/cron/user/inactive/send-first-reminder/
+    schedule: every day 10:00
+    timezone: Europe/London
+    target: development-portal
+
+  - url: /api/cron/user/inactive/send-first-reminder/
+    schedule: every day 10:00
+    timezone: Europe/London
+    target: staging-portal
+
+  - url: /api/cron/user/inactive/send-first-reminder/
+    schedule: every day 10:00
+    timezone: Europe/London
+    target: production-portal
+
+  # /api/cron/user/inactive/send-second-reminder/
+
+  - url: /api/cron/user/inactive/send-second-reminder/
+    schedule: every day 10:00
+    timezone: Europe/London
+    target: development-portal
+
+  - url: /api/cron/user/inactive/send-second-reminder/
+    schedule: every day 10:00
+    timezone: Europe/London
+    target: staging-portal
+
+  - url: /api/cron/user/inactive/send-second-reminder/
+    schedule: every day 10:00
+    timezone: Europe/London
+    target: production-portal
+
+  # /api/cron/user/inactive/send-final-reminder/
+
+  - url: /api/cron/user/inactive/send-final-reminder/
+    schedule: every day 10:00
+    timezone: Europe/London
+    target: development-portal
+
+  - url: /api/cron/user/inactive/send-final-reminder/
+    schedule: every day 10:00
+    timezone: Europe/London
+    target: staging-portal
+
+  - url: /api/cron/user/inactive/send-final-reminder/
     schedule: every day 10:00
     timezone: Europe/London
     target: production-portal
