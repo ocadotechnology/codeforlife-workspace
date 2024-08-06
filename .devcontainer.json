@@ -15,6 +15,7 @@
         "codecov.codecov",
         "ritwickdey.liveserver",
         "eamodio.gitlens",
+        "rangav.vscode-thunder-client",
         // javascript
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
