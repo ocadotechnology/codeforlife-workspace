@@ -16,6 +16,7 @@
         "ritwickdey.liveserver",
         "eamodio.gitlens",
         "rangav.vscode-thunder-client",
+        "jock.svg",
         // javascript
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
