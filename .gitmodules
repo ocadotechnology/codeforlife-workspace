@@ -1,9 +1,6 @@
 [submodule "codeforlife-portal"]
 	path = codeforlife-portal
 	url = https://github.com/ocadotechnology/codeforlife-portal.git
-[submodule "aimmo"]
-	path = aimmo
-	url = https://github.com/ocadotechnology/aimmo.git
 [submodule "rapid-router"]
 	path = rapid-router
 	url = https://github.com/ocadotechnology/rapid-router.git

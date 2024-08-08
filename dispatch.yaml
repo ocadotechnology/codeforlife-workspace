@@ -36,14 +36,3 @@ dispatch:
 
   # - url: "rapid-router.codeforlife.education/*"
   #   service: production-rapid-router
-
-  # Kurono
-
-  # - url: "development-kurono.codeforlife.education/*"
-  #   service: development-kurono
-
-  # - url: "staging-kurono.codeforlife.education/*"
-  #   service: staging-kurono
-
-  # - url: "kurono.codeforlife.education/*"
-  #   service: production-kurono
