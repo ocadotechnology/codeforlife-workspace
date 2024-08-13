@@ -28,3 +28,6 @@
 [submodule "codeforlife-contributor-backend"]
 	path = codeforlife-contributor-backend
 	url = https://github.com/ocadotechnology/codeforlife-contributor-backend.git
+[submodule "codeforlife-template-frontend"]
+	path = codeforlife-template-frontend
+	url = https://github.com/ocadotechnology/codeforlife-template-frontend.git
