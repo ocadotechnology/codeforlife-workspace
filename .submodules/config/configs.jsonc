@@ -52,7 +52,11 @@
         "javascript.preferences.quoteStyle": "double",
         "typescript.preferences.quoteStyle": "double",
         "!prettier.configPath": ".prettierrc.json",
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.codeActionsOnSave": {
+          "source.organizeImports": "never",
+          "source.fixAll.eslint": "always"
+        }
       },
       "launch": {
         "version": "0.2.0",
@@ -260,6 +264,7 @@
     ],
     "description": "A micro-service's frontend.",
     "submodules": [
+      "codeforlife-template-frontend",
       "codeforlife-portal-frontend"
     ],
     "vscode": {
