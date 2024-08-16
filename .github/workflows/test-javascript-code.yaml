@@ -52,7 +52,7 @@ jobs:
 
       - name: 🔎 Check Static Type Hints
         working-directory: ${{ inputs.working-directory }}
-        run: yarn run tsc --noEmit
+        run: yarn run tsc --build tsconfig.json
 
       - name: 🔎 Check Static Code
         working-directory: ${{ inputs.working-directory }}
