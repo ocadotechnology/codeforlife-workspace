@@ -56,6 +56,9 @@
         "editor.codeActionsOnSave": {
           "source.organizeImports": "never",
           "source.fixAll.eslint": "always"
+        },
+        "files.exclude": {
+          "**/*.tsbuildinfo": true
         }
       },
       "launch": {
