@@ -268,7 +268,8 @@
     "description": "A micro-service's frontend.",
     "submodules": [
       "codeforlife-template-frontend",
-      "codeforlife-portal-frontend"
+      "codeforlife-portal-frontend",
+      "codeforlife-contributor-frontend"
     ],
     "vscode": {
       "tasks": {
@@ -293,7 +294,7 @@
             "url": "http://localhost:5173",
             "preLaunchTask": "run",
             "env": {
-              "?SERVICE_NAME": "replace-me"
+              "?VITE_SERVICE_NAME": "replace-me"
             }
           }
         ]
