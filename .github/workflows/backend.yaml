@@ -75,7 +75,7 @@ jobs:
         with:
           cmd: |
             # Set runtime with convention "python{PY_VERSION}".
-            # The version must have the dot removed: "python3.8" -> "python38".
+            # The version must have the dot removed: "python3.12" -> "python312".
             runtime=python${{ inputs.python-version }}
             runtime=${runtime//.}
 
