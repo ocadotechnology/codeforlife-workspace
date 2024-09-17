@@ -7,7 +7,7 @@ on:
   workflow_call:
 
 env:
-  PYTHON_VERSION: 3.11
+  PYTHON_VERSION: 3.12
   WORKING_DIR: codeforlife-workspace/.github/scripts/python/validate-existing-contributors
 
 jobs:

@@ -17,7 +17,7 @@ on:
         value: ${{ jobs.validate-new-contributor.outputs.email-address }}
 
 env:
-  PYTHON_VERSION: 3.11
+  PYTHON_VERSION: 3.12
   WORKING_DIR: .github/scripts/python/validate-new-contributor
 
 jobs:

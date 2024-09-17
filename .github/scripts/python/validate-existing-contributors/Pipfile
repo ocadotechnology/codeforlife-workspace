@@ -13,4 +13,4 @@ pylint = "==3.0.2"
 types-requests = "==2.31.0.10"
 
 [requires]
-python_version = "3.11"
+python_version = "3.12"
