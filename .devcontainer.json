@@ -42,8 +42,8 @@
       "version": "18"
     },
     "ghcr.io/devcontainers/features/python:1": {
-      "toolsToInstall": "pipenv==2023.11.15",
-      "version": "3.8"
+      "toolsToInstall": "pipenv==2024.0.2",
+      "version": "3.12"
     }
   },
   "name": "workspace",

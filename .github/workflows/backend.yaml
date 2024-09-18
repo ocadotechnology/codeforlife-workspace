@@ -7,7 +7,7 @@ on:
         description: "The Python version to set up."
         type: number
         required: false
-        default: 3.8
+        default: 3.12
       # TODO: remove this after restructure and standardize source path.
       source-path:
         description: "The path to the source files."
@@ -75,7 +75,7 @@ jobs:
         with:
           cmd: |
             # Set runtime with convention "python{PY_VERSION}".
-            # The version must have the dot removed: "python3.8" -> "python38".
+            # The version must have the dot removed: "python3.12" -> "python312".
             runtime=python${{ inputs.python-version }}
             runtime=${runtime//.}
 

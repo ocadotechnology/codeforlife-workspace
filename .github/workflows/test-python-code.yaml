@@ -7,7 +7,7 @@ on:
         description: "The python version to set up."
         type: number
         required: false
-        default: 3.8
+        default: 3.12
       working-directory:
         description: "The current working directory."
         type: string

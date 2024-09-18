@@ -41,7 +41,7 @@ runs:
   steps:
     - uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
       with:
-        python-version: 3.11
+        python-version: 3.12
         working-directory: ${{ github.action_path }}
 
     - name: 📧 Send Email

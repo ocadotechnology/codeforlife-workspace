@@ -8,7 +8,7 @@ inputs:
   python-version:
     description: "The python version to set up."
     required: true
-    default: "3.8"
+    default: "3.12"
   working-directory:
     description: "The current working directory."
     required: true
