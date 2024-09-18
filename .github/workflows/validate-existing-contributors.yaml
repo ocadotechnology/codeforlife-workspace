@@ -27,7 +27,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ocadotechnology/codeforlife-workspace
-          ref: python312
+          ref: main
           path: codeforlife-workspace
 
       - name: 🐍 Set up Python ${{ env.PYTHON_VERSION }} Environment
