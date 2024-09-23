@@ -27,9 +27,9 @@
     {
       "path": "codeforlife-portal-frontend"
     },
-    {
-      "path": "codeforlife-sso"
-    },
+    // {
+    //   "path": "codeforlife-sso"
+    // },
     {
       "path": "codeforlife-template-backend"
     },

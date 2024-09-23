@@ -4,7 +4,6 @@
     "vscode": {
       "extensions": [
         // general
-        "ms-azuretools.vscode-docker",
         "visualstudioexptteam.vscodeintellicode",
         "github.vscode-pull-request-github",
         "redhat.vscode-yaml",
