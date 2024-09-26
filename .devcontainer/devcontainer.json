@@ -1,23 +1,23 @@
 {
-  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
   "customizations": {
     "vscode": {
       "extensions": [
         // general
         "visualstudioexptteam.vscodeintellicode",
-        "github.vscode-pull-request-github",
         "redhat.vscode-yaml",
         "davidanson.vscode-markdownlint",
         "bierner.markdown-mermaid",
         "streetsidesoftware.code-spell-checker",
         "tamasfe.even-better-toml",
-        "github.vscode-github-actions",
         "codecov.codecov",
         "ritwickdey.liveserver",
-        "eamodio.gitlens",
         "rangav.vscode-thunder-client",
         "jock.svg",
         "tyriar.luna-paint",
+        // git
+        "github.vscode-pull-request-github",
+        "github.vscode-github-actions",
+        "eamodio.gitlens",
         // javascript
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
@@ -29,11 +29,17 @@
         "ms-python.vscode-pylance",
         "ms-python.mypy-type-checker",
         "ms-python.black-formatter",
-        "qwtel.sqlite-viewer",
-        "njpwerner.autodocstring"
+        "njpwerner.autodocstring",
+        // database
+        "mtxr.sqltools",
+        "mtxr.sqltools-driver-sqlite",
+        "mtxr.sqltools-driver-pg"
       ]
     }
   },
+  "dockerComposeFile": [
+    "./docker-compose.yml"
+  ],
   "features": {
     "ghcr.io/devcontainers/features/github-cli:1": {
       "version": "2.52.0"
@@ -46,9 +52,13 @@
       "version": "3.12"
     }
   },
+  "forwardPorts": [
+    8000, // Django
+    5432 // PostgreSQL
+  ],
   "name": "workspace",
   "postCreateCommand": "sudo chmod u+x .submodules/setup/run && .submodules/setup/run",
   "remoteUser": "root",
-  "workspaceMount": "source=${localWorkspaceFolder},target=/codeforlife-workspace,type=bind",
+  "service": "app",
   "workspaceFolder": "/codeforlife-workspace"
 }

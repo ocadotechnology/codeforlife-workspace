@@ -45,6 +45,43 @@
     "autoDocstring.customTemplatePath": "python-docstring.mustache",
     "workbench.colorCustomizations": {
       "editorRuler.foreground": "#008000"
-    }
+    },
+    "sqltools.connections": [
+      {
+        "previewLimit": 50,
+        "server": "localhost",
+        "port": 5432,
+        "driver": "PostgreSQL",
+        "name": "contributor",
+        "database": "contributor",
+        "username": "root",
+        "password": "password"
+      },
+      {
+        "previewLimit": 50,
+        "server": "localhost",
+        "port": 5432,
+        "driver": "PostgreSQL",
+        "name": "portal",
+        "database": "portal",
+        "username": "root",
+        "password": "password"
+      },
+      {
+        "previewLimit": 50,
+        "server": "localhost",
+        "port": 5432,
+        "driver": "PostgreSQL",
+        "name": "template",
+        "database": "template",
+        "username": "root",
+        "password": "password"
+      }
+    ]
+  },
+  "extensions": {
+    "unwantedRecommendations": [
+      "ms-azuretools.vscode-docker"
+    ]
   }
 }
