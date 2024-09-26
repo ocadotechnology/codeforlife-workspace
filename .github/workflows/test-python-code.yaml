@@ -54,6 +54,8 @@ jobs:
       postgres:
         image: postgres:16 # TODO: dynamically set version
         env:
+          POSTGRES_DB: db
+          POSTGRES_USER: root
           POSTGRES_PASSWORD: password
         options: >- # Set health checks to wait until postgres has started
           --health-cmd pg_isready
