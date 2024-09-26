@@ -50,6 +50,16 @@ jobs:
       PYPROJECT_TOML: ${{ inputs.pyproject-toml-directory }}/pyproject.toml
       COVERAGE_REPORT: coverage.xml # NOTE: COVERAGE_FILE is reserved - do not use.
       OCADO_TECH_ORG_ID: 2088731
+    services:
+      postgres:
+        image: postgres:16 # TODO: dynamically set version
+        env:
+          POSTGRES_PASSWORD: password
+        options: >- # Set health checks to wait until postgres has started
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: 🛫 Checkout
         uses: actions/checkout@v4
