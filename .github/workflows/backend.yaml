@@ -14,6 +14,11 @@ on:
         type: string
         required: false
         default: "api"
+      postgres-db:
+        description: "The postgres database to test against."
+        type: string
+        required: false
+        default: "db"
     secrets:
       CODECOV_TOKEN:
         description: "The token used to gain access to Codecov."
@@ -24,11 +29,12 @@ jobs:
     uses: ocadotechnology/codeforlife-workspace/.github/workflows/validate-pull-request-refs.yaml@main
 
   test:
-    uses: ocadotechnology/codeforlife-workspace/.github/workflows/test-python-code.yaml@main
+    uses: ocadotechnology/codeforlife-workspace/.github/workflows/test-python-code.yaml@workspace-145 # TODO: set to @main
     secrets: inherit
     with:
       python-version: ${{ inputs.python-version }}
       source-path: ${{ inputs.source-path }}
+      postgres-db: ${{ inputs.postgres-db }}
 
   deploy:
     permissions:
