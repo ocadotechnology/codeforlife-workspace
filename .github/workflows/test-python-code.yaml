@@ -38,6 +38,26 @@ on:
         type: string
         required: false
         default: "./codecov.yml"
+      postgres-version:
+        description: "The postgres version to set up."
+        type: number
+        required: false
+        default: 17
+      postgres-db:
+        description: "The postgres database to test against."
+        type: string
+        required: false
+        default: "db"
+      postgres-user:
+        description: "The postgres user to test with."
+        type: string
+        required: false
+        default: "root"
+      postgres-password:
+        description: "The postgres user's password."
+        type: string
+        required: false
+        default: "password"
     secrets:
       CODECOV_TOKEN:
         description: "The token used to gain access to Codecov."
@@ -50,6 +70,25 @@ jobs:
       PYPROJECT_TOML: ${{ inputs.pyproject-toml-directory }}/pyproject.toml
       COVERAGE_REPORT: coverage.xml # NOTE: COVERAGE_FILE is reserved - do not use.
       OCADO_TECH_ORG_ID: 2088731
+      DB_NAME: ${{ inputs.postgres-db }}
+      DB_HOST: localhost
+      DB_USER: ${{ inputs.postgres-user }}
+      DB_PASSWORD: ${{ inputs.postgres-password }}
+    services:
+      postgres: # https://docs.github.com/en/actions/use-cases-and-examples/using-containerized-services/creating-postgresql-service-containers
+        image: postgres:${{ inputs.postgres-version }}
+        env:
+          POSTGRES_DB: ${{ env.DB_NAME }}
+          POSTGRES_HOST: ${{ env.DB_HOST }}
+          POSTGRES_USER: ${{ env.DB_USER }}
+          POSTGRES_PASSWORD: ${{ env.DB_PASSWORD }}
+        options: >- # Set health checks to wait until postgres has started
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     steps:
       - name: 🛫 Checkout
         uses: actions/checkout@v4

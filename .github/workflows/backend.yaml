@@ -14,6 +14,11 @@ on:
         type: string
         required: false
         default: "api"
+      postgres-db:
+        description: "The postgres database to test against."
+        type: string
+        required: false
+        default: "db"
     secrets:
       CODECOV_TOKEN:
         description: "The token used to gain access to Codecov."
@@ -29,6 +34,7 @@ jobs:
     with:
       python-version: ${{ inputs.python-version }}
       source-path: ${{ inputs.source-path }}
+      postgres-db: ${{ inputs.postgres-db }}
 
   deploy:
     permissions:
