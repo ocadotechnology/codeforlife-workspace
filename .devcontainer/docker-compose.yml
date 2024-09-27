@@ -18,7 +18,7 @@ services:
     network_mode: service:db
 
   db:
-    image: postgres:16
+    image: postgres:17
     restart: unless-stopped
     volumes:
       - ../scripts/database:/docker-entrypoint-initdb.d
