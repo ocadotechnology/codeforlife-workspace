@@ -10,13 +10,13 @@ import os
 import re
 import subprocess
 import typing as t
-from argparse import ArgumentParser, Namespace
 from dataclasses import dataclass
 from pathlib import Path
 from shutil import rmtree
 from subprocess import CalledProcessError
 from time import sleep
 
+import inquirer  # type: ignore[import-untyped]
 from colorama import Back, Fore, Style
 from colorama import init as colorama_init
 
@@ -29,6 +29,62 @@ class Submodule:
 
     path: str
     url: str
+
+
+def print_intro():
+    """Prints the Code For Life logo with ascii art."""
+    M, C, Y = Fore.MAGENTA, Fore.CYAN, Fore.YELLOW
+
+    print(
+        Style.BRIGHT
+        + f"""
+   {M}_____          {Y}_        ______           _      {M}_  {C}__     
+  {M}/ ____|        {Y}| |      |  ____|         | |    {M}(_){C}/ _|    
+ {M}| |     {C}___   {Y}__| | {M}___  {Y}| |__ {M}___  {C}_ __  {Y}| |     {M}_| {C}|_ {Y}___ 
+ {M}| |    {C}/ _ \\ {Y}/ _` |{M}/ _ \\ {Y}|  __{M}/ _ \\{C}| '__| {Y}| |    {M}| |  {C}_{Y}/ _ \\
+ {M}| |___{C}| (_) | {Y}(_| |  {M}__/ {Y}| | {M}| (_) {C}| |    {Y}| |____{M}| | {C}|{Y}|  __/
+  {M}\\_____{C}\\___/ {Y}\\__,_|{M}\\___| {Y}|_|  {M}\\___/{C}|_|    {Y}|______{M}|_|{C}_| {Y}\\___|
+"""
+        + Style.RESET_ALL
+        + "\nTo learn more, check out "
+        + generate_console_link(
+            "https://docs.codeforlife.education/", "our documentation"
+        )
+        + ".\n"
+    )
+
+
+def print_exit(error: bool):
+    """Prints the exiting statement to the console.
+
+    Args:
+        error: Whether there was an error during the script-run.
+    """
+    print()
+    print(
+        Style.BRIGHT
+        + Fore.RED
+        + "💥💣💥 Finished with errors. 💥💣💥"
+        + Style.RESET_ALL
+        + "\n\n"
+        + "This may not be an issue and may be occurring because you've run"
+        + " this setup script before. Please read the above logs to discover if"
+        + " further action is required."
+        + "\n\n"
+        + "If you require help, please reach out to "
+        + generate_console_link(
+            "mailto:codeforlife@ocado.com",
+            "codeforlife@ocado.com",
+        )
+        + "."
+        if error
+        else Style.BRIGHT
+        + Fore.GREEN
+        + "✨🍰✨ Finished without errors. ✨🍰✨"
+        + Style.RESET_ALL
+        + "\n\n"
+        + "Happy coding!"
+    )
 
 
 def generate_console_link(
@@ -48,34 +104,6 @@ def generate_console_link(
     """
     # OSC 8 ; params ; URI ST <name> OSC 8 ;; ST
     return f"\033]8;{parameters};{url}\033\\{label or url}\033]8;;\033\\"
-
-
-def get_namespace() -> Namespace:
-    """Get the command line values passed to this script.
-
-    Returns:
-        An object containing all the command line values.
-    """
-    arg_parser = ArgumentParser()
-    arg_parser.add_argument(
-        "--skip-login",
-        action="store_true",
-        dest="skip_login",
-        default=False,
-        help="Skip login if already logged in.",
-    )
-    arg_parser.add_argument(
-        "--overwrite-clone",
-        action="store_true",
-        dest="overwrite_clone",
-        default=False,
-        help=(
-            "Deletes each clone's current directory if they have one and clones"
-            " each repo."
-        ),
-    )
-
-    return arg_parser.parse_args()
 
 
 def read_submodules() -> t.Dict[str, Submodule]:
@@ -115,10 +143,40 @@ def login_to_github():
 
     https://cli.github.com/manual/gh_auth_login
     """
-    subprocess.run(
-        ["gh", "auth", "login", "--web"],
+    print(Style.BRIGHT + "Checking if you are logged into GitHub..." + Style.RESET_ALL)
+
+    status = subprocess.run(
+        ["gh", "auth", "status"],
         check=True,
-    )
+        stdout=subprocess.PIPE,
+    ).stdout.decode("utf-8")
+
+    logged_in = not status.startswith("You are not logged into any GitHub hosts")
+
+    if logged_in:
+        answers = inquirer.prompt(
+            [
+                inquirer.Confirm(
+                    "stay_logged_in",
+                    message="Continue with logged in account?",
+                )
+            ]
+        )
+
+        if answers:
+            logged_in = t.cast(bool, answers["stay_logged_in"])
+
+        if not logged_in:
+            subprocess.run(
+                ["gh", "auth", "logout"],
+                check=True,
+            )
+
+    if not logged_in:
+        subprocess.run(
+            ["gh", "auth", "login", "--web"],
+            check=True,
+        )
 
 
 def fork_repo(url: str):
@@ -155,7 +213,7 @@ def fork_repo(url: str):
     return True
 
 
-def clone_repo(name: str, path: str, overwrite: bool):
+def clone_repo(name: str, path: str):
     # pylint: disable=line-too-long
     """Clone a repo from GitHub.
 
@@ -164,7 +222,6 @@ def clone_repo(name: str, path: str, overwrite: bool):
     Args:
         name: The name of the repo to clone.
         path: The paths to clone the repo to.
-        overwrite: A flag designating whether to delete the repo's current directory if it exists and clone the repo in the directory.
 
     Returns:
         A flag designating whether the repo was successfully cloned.
@@ -177,10 +234,22 @@ def clone_repo(name: str, path: str, overwrite: bool):
     if os.path.isdir(repo_dir) and os.listdir(repo_dir):
         print(Style.BRIGHT + repo_dir + Style.RESET_ALL + " already exists.")
 
-        if overwrite:
-            rmtree(repo_dir)
-        else:
+        answers = inquirer.prompt(
+            [
+                inquirer.Confirm(
+                    "overwrite",
+                    message=(
+                        "Delete the repo's current directory and clone the repo in"
+                        " the directory?"
+                    ),
+                )
+            ]
+        )
+
+        if not answers or not t.cast(bool, answers["overwrite"]):
             return True
+
+        rmtree(repo_dir)
 
     retry_delay, max_retries = 1, 5
     for retry_index in range(max_retries):
@@ -246,12 +315,11 @@ def main() -> None:
     """Entry point."""
     colorama_init()
 
-    namespace = get_namespace()
+    print_intro()
 
     submodules = read_submodules()
 
-    if not namespace.skip_login:
-        login_to_github()
+    login_to_github()
 
     error = False
 
@@ -267,42 +335,14 @@ def main() -> None:
 
         cloned_repo = False
         if forked_repo:
-            cloned_repo = clone_repo(
-                name,
-                submodule.path,
-                namespace.overwrite_clone,
-            )
+            cloned_repo = clone_repo(name, submodule.path)
 
             view_repo(name)
 
         if not error and (not forked_repo or not cloned_repo):
             error = True
 
-    print()
-    print(
-        Style.BRIGHT
-        + Fore.RED
-        + "💥💣💥 Finished with errors. 💥💣💥"
-        + Style.RESET_ALL
-        + "\n\n"
-        + "This may not be an issue and may be occurring because you've run"
-        + " this setup script before. Please read the above logs to discover if"
-        + " further action is required."
-        + "\n\n"
-        + "If you require help, please reach out to "
-        + generate_console_link(
-            "mailto:codeforlife@ocado.com",
-            "codeforlife@ocado.com",
-        )
-        + "."
-        if error
-        else Style.BRIGHT
-        + Fore.GREEN
-        + "✨🍰✨ Finished without errors. ✨🍰✨"
-        + Style.RESET_ALL
-        + "\n\n"
-        + "Happy coding!"
-    )
+    print_exit(error)
 
 
 if __name__ == "__main__":
