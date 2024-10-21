@@ -63,11 +63,12 @@ def print_exit(error: bool):
     """
     print()
     print(
-        Style.BRIGHT
+        "💥💣💥 "
+        + Style.BRIGHT
         + Fore.RED
-        + "💥💣💥 Finished with errors. 💥💣💥"
+        + "Finished with errors."
         + Style.RESET_ALL
-        + "\n\n"
+        + " 💥💣💥\n\n"
         + "This may not be an issue and may be occurring because you've run"
         + " this setup script before. Please read the above logs to discover if"
         + " further action is required."
@@ -79,11 +80,12 @@ def print_exit(error: bool):
         )
         + "."
         if error
-        else Style.BRIGHT
+        else "✨🍰✨ "
+        + Style.BRIGHT
         + Fore.GREEN
-        + "✨🍰✨ Finished without errors. ✨🍰✨"
+        + "Finished without errors."
         + Style.RESET_ALL
-        + "\n\n"
+        + " ✨🍰✨\n\n"
         + "Happy coding!"
     )
 
