@@ -33,6 +33,7 @@ class Submodule:
 
 def print_intro():
     """Prints the Code For Life logo with ascii art."""
+    # short hand
     M, C, Y = Fore.MAGENTA, Fore.CYAN, Fore.YELLOW
 
     print(
