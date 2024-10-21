@@ -13,6 +13,7 @@ import typing as t
 from argparse import ArgumentParser, Namespace
 from dataclasses import dataclass
 from pathlib import Path
+from shutil import rmtree
 from subprocess import CalledProcessError
 from time import sleep
 
@@ -61,6 +62,17 @@ def get_namespace() -> Namespace:
         action="store_true",
         dest="skip_login",
         default=False,
+        help="Skip login if already logged in.",
+    )
+    arg_parser.add_argument(
+        "--overwrite-clone",
+        action="store_true",
+        dest="overwrite_clone",
+        default=False,
+        help=(
+            "Deletes each clone's current directory if they have one and clones"
+            " each repo."
+        ),
     )
 
     return arg_parser.parse_args()
@@ -99,18 +111,12 @@ def read_submodules() -> t.Dict[str, Submodule]:
 
 
 def login_to_github():
-    """Log into GitHub with the CLI and setup Git to use the CLI as a credential
-    helper.
+    """Log into GitHub with the CLI.
 
     https://cli.github.com/manual/gh_auth_login
-    https://cli.github.com/manual/gh_auth_setup-git
     """
     subprocess.run(
         ["gh", "auth", "login", "--web"],
-        check=True,
-    )
-    subprocess.run(
-        ["gh", "auth", "setup-git"],
         check=True,
     )
 
@@ -149,17 +155,21 @@ def fork_repo(url: str):
     return True
 
 
-def clone_repo(name: str, path: str):
+def clone_repo(name: str, path: str, overwrite: bool):
+    # pylint: disable=line-too-long
     """Clone a repo from GitHub.
 
     https://cli.github.com/manual/gh_repo_clone
 
     Args:
         name: The name of the repo to clone.
+        path: The paths to clone the repo to.
+        overwrite: A flag designating whether to delete the repo's current directory if it exists and clone the repo in the directory.
 
     Returns:
         A flag designating whether the repo was successfully cloned.
     """
+    # pylint: enable=line-too-long
     print(Style.BRIGHT + "Cloning repo..." + Style.RESET_ALL)
 
     repo_dir = str(BASE_DIR / path)
@@ -167,7 +177,10 @@ def clone_repo(name: str, path: str):
     if os.path.isdir(repo_dir) and os.listdir(repo_dir):
         print(Style.BRIGHT + repo_dir + Style.RESET_ALL + " already exists.")
 
-        return True
+        if overwrite:
+            rmtree(repo_dir)
+        else:
+            return True
 
     retry_delay, max_retries = 1, 5
     for retry_index in range(max_retries):
@@ -179,6 +192,9 @@ def clone_repo(name: str, path: str):
 
             return True
         except CalledProcessError:
+            if os.path.isdir(repo_dir):
+                rmtree(repo_dir)
+
             print(
                 Style.BRIGHT
                 + Fore.YELLOW
@@ -186,6 +202,7 @@ def clone_repo(name: str, path: str):
                 + f" Attempt {retry_index + 1}/{max_retries}."
                 + Style.RESET_ALL
             )
+
             sleep(retry_delay)
             retry_delay *= 2
 
@@ -250,7 +267,11 @@ def main() -> None:
 
         cloned_repo = False
         if forked_repo:
-            cloned_repo = clone_repo(name, submodule.path)
+            cloned_repo = clone_repo(
+                name,
+                submodule.path,
+                namespace.overwrite_clone,
+            )
 
             view_repo(name)
 
