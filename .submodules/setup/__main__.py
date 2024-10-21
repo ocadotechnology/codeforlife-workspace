@@ -47,9 +47,15 @@ def print_intro():
   {M}\\_____{C}\\___/ {Y}\\__,_|{M}\\___| {Y}|_|  {M}\\___/{C}|_|    {Y}|______{M}|_|{C}_| {Y}\\___|
 """
         + Style.RESET_ALL
-        + "\nTo learn more, check out "
+        + "\nTo learn more, "
         + generate_console_link(
-            "https://docs.codeforlife.education/", "our documentation"
+            "https://docs.codeforlife.education/",
+            "read our documentation",
+        )
+        + " and "
+        + generate_console_link(
+            "https://www.codeforlife.education/",
+            "visit our site",
         )
         + ".\n"
     )
