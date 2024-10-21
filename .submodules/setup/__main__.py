@@ -303,7 +303,7 @@ def view_repo(name: str):
             stdout=subprocess.PIPE,
         ).stdout.decode("utf-8")
     except CalledProcessError:
-        print(Fore.YELLOW + "Failed to view repo." + Style.RESET_ALL)
+        print(Style.BRIGHT + Fore.YELLOW + "Failed to view repo." + Style.RESET_ALL)
 
         return
 
