@@ -6,6 +6,7 @@ Setup the CFL workspace for contributors by recursively forking submodules.
 """
 
 import json
+import os
 import re
 import subprocess
 import typing as t
@@ -13,8 +14,9 @@ from argparse import ArgumentParser, Namespace
 from dataclasses import dataclass
 from pathlib import Path
 from subprocess import CalledProcessError
+from time import sleep
 
-from colorama import Fore, Style
+from colorama import Back, Fore, Style
 from colorama import init as colorama_init
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -26,6 +28,25 @@ class Submodule:
 
     path: str
     url: str
+
+
+def generate_console_link(
+    url: str,
+    label: t.Optional[str] = None,
+    parameters: str = "",
+):
+    """Generates a link to be printed in the console.
+
+    Args:
+        url: The link to follow.
+        label: The label of the link. If not given, the url will be the label.
+        parameters: Any url parameters you may have.
+
+    Returns:
+        A link that can be clicked in the console.
+    """
+    # OSC 8 ; params ; URI ST <name> OSC 8 ;; ST
+    return f"\033]8;{parameters};{url}\033\\{label or url}\033]8;;\033\\"
 
 
 def get_namespace() -> Namespace:
@@ -94,7 +115,7 @@ def login_to_github():
     )
 
 
-def fork_repo(name: str, url: str):
+def fork_repo(url: str):
     """Fork a repo on GitHub.
 
     https://cli.github.com/manual/gh_repo_fork
@@ -102,8 +123,11 @@ def fork_repo(name: str, url: str):
     Args:
         owner: The owner of the repo to fork.
         name: The name of the repo to fork.
+
+    Returns:
+        A flag designating whether the repo was successfully forked.
     """
-    print(Style.BRIGHT + f'Forking repo "{name}".' + Style.RESET_ALL)
+    print(Style.BRIGHT + "Forking repo..." + Style.RESET_ALL)
 
     try:
         subprocess.run(
@@ -118,7 +142,11 @@ def fork_repo(name: str, url: str):
             check=True,
         )
     except CalledProcessError:
-        pass
+        print(Style.BRIGHT + Fore.RED + "Failed to fork repo." + Style.RESET_ALL)
+
+        return False
+
+    return True
 
 
 def clone_repo(name: str, path: str):
@@ -128,16 +156,42 @@ def clone_repo(name: str, path: str):
 
     Args:
         name: The name of the repo to clone.
-    """
-    print(Style.BRIGHT + f'Cloning repo "{name}".' + Style.RESET_ALL)
 
-    try:
-        subprocess.run(
-            ["gh", "repo", "clone", name, str(BASE_DIR / path)],
-            check=True,
-        )
-    except CalledProcessError:
-        pass
+    Returns:
+        A flag designating whether the repo was successfully cloned.
+    """
+    print(Style.BRIGHT + "Cloning repo..." + Style.RESET_ALL)
+
+    repo_dir = str(BASE_DIR / path)
+
+    if os.path.isdir(repo_dir) and os.listdir(repo_dir):
+        print(Style.BRIGHT + repo_dir + Style.RESET_ALL + " already exists.")
+
+        return True
+
+    retry_delay, max_retries = 1, 5
+    for retry_index in range(max_retries):
+        try:
+            subprocess.run(
+                ["gh", "repo", "clone", name, repo_dir],
+                check=True,
+            )
+
+            return True
+        except CalledProcessError:
+            print(
+                Style.BRIGHT
+                + Fore.YELLOW
+                + f"Retrying clone in {retry_delay} seconds."
+                + f" Attempt {retry_index + 1}/{max_retries}."
+                + Style.RESET_ALL
+            )
+            sleep(retry_delay)
+            retry_delay *= 2
+
+    print(Style.BRIGHT + Fore.RED + "Failed to clone repo." + Style.RESET_ALL)
+
+    return False
 
 
 def view_repo(name: str):
@@ -148,19 +202,24 @@ def view_repo(name: str):
     Args:
         name: The name of the repo to view.
     """
-    print(Style.BRIGHT + f'Viewing repo "{name}".' + Style.RESET_ALL)
+    print(Style.BRIGHT + "Viewing repo..." + Style.RESET_ALL)
 
-    repo_str = subprocess.run(
-        [
-            "gh",
-            "repo",
-            "view",
-            name,
-            "--json=" + ",".join(["name", "url", "createdAt", "isFork"]),
-        ],
-        check=True,
-        stdout=subprocess.PIPE,
-    ).stdout.decode("utf-8")
+    try:
+        repo_str = subprocess.run(
+            [
+                "gh",
+                "repo",
+                "view",
+                name,
+                "--json=" + ",".join(["name", "url", "createdAt", "isFork"]),
+            ],
+            check=True,
+            stdout=subprocess.PIPE,
+        ).stdout.decode("utf-8")
+    except CalledProcessError:
+        print(Fore.YELLOW + "Failed to view repo." + Style.RESET_ALL)
+
+        return
 
     repo = json.loads(repo_str)
     print(json.dumps(repo, indent=2))
@@ -177,14 +236,52 @@ def main() -> None:
     if not namespace.skip_login:
         login_to_github()
 
-    for name, submodule in submodules.items():
-        fork_repo(name, submodule.url)
+    error = False
 
-        clone_repo(name, submodule.path)
+    for i, (name, submodule) in enumerate(submodules.items(), start=1):
+        print(
+            Style.DIM
+            + Back.GREEN
+            + f"Submodule ({i}/{len(submodules)}): {name}"
+            + Style.RESET_ALL
+        )
 
-        view_repo(name)
+        forked_repo = fork_repo(submodule.url)
 
-    print(Style.BRIGHT + Fore.GREEN + "Setup completed." + Style.RESET_ALL)
+        cloned_repo = False
+        if forked_repo:
+            cloned_repo = clone_repo(name, submodule.path)
+
+            view_repo(name)
+
+        if not error and (not forked_repo or not cloned_repo):
+            error = True
+
+    print()
+    print(
+        Style.BRIGHT
+        + Fore.RED
+        + "💥💣💥 Finished with errors. 💥💣💥"
+        + Style.RESET_ALL
+        + "\n\n"
+        + "This may not be an issue and may be occurring because you've run"
+        + " this setup script before. Please read the above logs to discover if"
+        + " further action is required."
+        + "\n\n"
+        + "If you require help, please reach out to "
+        + generate_console_link(
+            "mailto:codeforlife@ocado.com",
+            "codeforlife@ocado.com",
+        )
+        + "."
+        if error
+        else Style.BRIGHT
+        + Fore.GREEN
+        + "✨🍰✨ Finished without errors. ✨🍰✨"
+        + Style.RESET_ALL
+        + "\n\n"
+        + "Happy coding!"
+    )
 
 
 if __name__ == "__main__":
