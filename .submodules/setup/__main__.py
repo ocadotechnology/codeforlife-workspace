@@ -57,8 +57,47 @@ def print_intro():
             "https://www.codeforlife.education/",
             "visit our site",
         )
-        + ".\n"
+        + ".\n\n"
+        + "👇👀👇 "
+        + Style.BRIGHT
+        + Back.YELLOW
+        + "PLEASE READ INSTRUCTIONS"
+        + Style.RESET_ALL
+        + " 👇👀👇\n\n"
+        + "This script will help you setup your CFL dev container by:\n"
+        + " - forking each repo within our "
+        + generate_console_link(
+            "https://github.com/ocadotechnology/codeforlife-workspace",
+            "workspace",
+        )
+        + " into your personal GitHub account\n"
+        + " - cloning each fork from your personal GitHub account into this"
+        + " container\n\n"
+        + "In a moment you will be asked to log into your personal GitHub"
+        + " account so that we may setup your CFL dev container as described"
+        + " above. Use your keyboard to select/input your option when prompted."
+        + "\n\n"
+        + Style.DIM
+        + "If you have any concerns about logging into your personal GitHub"
+        + " account, rest assured we don't perform any malicious actions with"
+        " it. You're welcome to read the source code of this script here: "
+        + "/codeforlife-workspace/.submodules/setup/__main__.py.\n\n"
+        + Style.RESET_ALL
+        + "👆👀👆 "
+        + Style.BRIGHT
+        + Back.YELLOW
+        + "PLEASE READ INSTRUCTIONS"
+        + Style.RESET_ALL
+        + " 👆👀👆\n"
     )
+    input(
+        "Press "
+        + Style.BRIGHT
+        + "Enter"
+        + Style.RESET_ALL
+        + " after you have read the instructions..."
+    )
+    print()
 
 
 def print_exit(error: bool):
@@ -183,7 +222,7 @@ def login_to_github():
 
     if not logged_in:
         subprocess.run(
-            ["gh", "auth", "login", "--web"],
+            ["gh", "auth", "login", "--web", "--git-protocol=https"],
             check=True,
         )
 
