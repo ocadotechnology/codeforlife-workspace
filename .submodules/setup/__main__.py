@@ -103,13 +103,13 @@ def print_intro():
     answers = inquirer.prompt(
         [
             inquirer.Confirm(
-                "exit",
-                message="Have you already set up your container and would like exit?",
+                "proceed",
+                message="Would you like to proceed with setting up your dev container?",
             )
         ]
     )
 
-    if answers and t.cast(bool, answers["exit"]):
+    if answers and not t.cast(bool, answers["proceed"]):
         sys.exit()
 
 
