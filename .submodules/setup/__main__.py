@@ -202,17 +202,21 @@ def read_submodules() -> t.Dict[str, Submodule]:
 def login_to_github():
     """Log into GitHub with the CLI.
 
+    https://cli.github.com/manual/gh_auth_status
+    https://cli.github.com/manual/gh_auth_logout
     https://cli.github.com/manual/gh_auth_login
     """
     print(Style.BRIGHT + "Checking if you are logged into GitHub..." + Style.RESET_ALL)
 
-    status = subprocess.run(
-        ["gh", "auth", "status"],
-        check=True,
-        stdout=subprocess.PIPE,
-    ).stdout.decode("utf-8")
+    logged_in = True
 
-    logged_in = not status.startswith("You are not logged into any GitHub hosts")
+    try:
+        subprocess.run(
+            ["gh", "auth", "status"],
+            check=True,
+        )
+    except CalledProcessError:
+        logged_in = False
 
     if logged_in:
         answers = inquirer.prompt(
