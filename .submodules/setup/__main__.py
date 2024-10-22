@@ -9,6 +9,7 @@ import json
 import os
 import re
 import subprocess
+import sys
 import typing as t
 from dataclasses import dataclass
 from pathlib import Path
@@ -98,6 +99,18 @@ def print_intro():
         + " after you have read the instructions..."
     )
     print("\n")
+
+    answers = inquirer.prompt(
+        [
+            inquirer.Confirm(
+                "exit",
+                message="Have you already set up your container and would like exit?",
+            )
+        ]
+    )
+
+    if answers and t.cast(bool, answers["exit"]):
+        sys.exit()
 
 
 def print_exit(error: bool):
@@ -299,8 +312,10 @@ def clone_repo(name: str, path: str):
 
         rmtree(repo_dir)
 
-    retry_delay, max_retries = 1, 5
-    for retry_index in range(max_retries):
+    max_attempts = 5
+    retry_delay = 1
+    retry_attempts = max_attempts - 1
+    for attempt_index in range(max_attempts):
         try:
             subprocess.run(
                 ["gh", "repo", "clone", name, repo_dir],
@@ -312,16 +327,17 @@ def clone_repo(name: str, path: str):
             if os.path.isdir(repo_dir):
                 rmtree(repo_dir)
 
-            print(
-                Style.BRIGHT
-                + Fore.YELLOW
-                + f"Retrying clone in {retry_delay} seconds."
-                + f" Attempt {retry_index + 1}/{max_retries}."
-                + Style.RESET_ALL
-            )
+            if attempt_index != retry_attempts:
+                print(
+                    Style.BRIGHT
+                    + Fore.YELLOW
+                    + f"Retrying clone in {retry_delay} seconds."
+                    + f" Attempt {attempt_index + 1}/{retry_attempts}."
+                    + Style.RESET_ALL
+                )
 
-            sleep(retry_delay)
-            retry_delay *= 2
+                sleep(retry_delay)
+                retry_delay *= 2
 
     print(Style.BRIGHT + Fore.RED + "Failed to clone repo." + Style.RESET_ALL)
 
