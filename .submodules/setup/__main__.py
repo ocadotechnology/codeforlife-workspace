@@ -64,7 +64,7 @@ def print_intro():
         + "PLEASE READ INSTRUCTIONS"
         + Style.RESET_ALL
         + " 👇👀👇\n\n"
-        + "This script will help you setup your CFL dev container by:\n"
+        + "This script will help you set up your CFL dev container by:\n"
         + " - forking each repo within our "
         + generate_console_link(
             "https://github.com/ocadotechnology/codeforlife-workspace",
@@ -74,7 +74,7 @@ def print_intro():
         + " - cloning each fork from your personal GitHub account into this"
         + " container\n\n"
         + "In a moment you will be asked to log into your personal GitHub"
-        + " account so that we may setup your CFL dev container as described"
+        + " account so that we may set up your CFL dev container as described"
         + " above. Use your keyboard to select/input your option when prompted."
         + "\n\n"
         + Style.DIM
