@@ -97,7 +97,7 @@ def print_intro():
         + Style.RESET_ALL
         + " after you have read the instructions..."
     )
-    print()
+    print("\n")
 
 
 def print_exit(error: bool):
