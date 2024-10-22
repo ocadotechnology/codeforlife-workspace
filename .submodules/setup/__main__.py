@@ -98,7 +98,7 @@ def print_intro():
         + Style.RESET_ALL
         + " after you have read the instructions..."
     )
-    print("\n")
+    print()
 
     answers = inquirer.prompt(
         [
