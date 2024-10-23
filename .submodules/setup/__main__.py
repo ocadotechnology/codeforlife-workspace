@@ -58,8 +58,23 @@ def print_intro():
             "https://www.codeforlife.education/",
             "visit our site",
         )
-        + ".\n\n"
-        + "👇👀👇 "
+        + ".\n"
+    )
+
+    answers = inquirer.prompt(
+        [
+            inquirer.Confirm(
+                "proceed",
+                message="Would you like to proceed with setting up your dev container?",
+            )
+        ]
+    )
+
+    if answers and not t.cast(bool, answers["proceed"]):
+        sys.exit()
+
+    print(
+        "👇👀👇 "
         + Style.BRIGHT
         + Back.YELLOW
         + "PLEASE READ INSTRUCTIONS"
@@ -99,18 +114,6 @@ def print_intro():
         + " after you have read the instructions..."
     )
     print()
-
-    answers = inquirer.prompt(
-        [
-            inquirer.Confirm(
-                "proceed",
-                message="Would you like to proceed with setting up your dev container?",
-            )
-        ]
-    )
-
-    if answers and not t.cast(bool, answers["proceed"]):
-        sys.exit()
 
 
 def print_exit(error: bool):
