@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 colorama = "==0.4.6"
+inquirer = "==3.4.0"
 
 [dev-packages]
 black = "==24.8.0"
