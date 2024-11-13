@@ -36,9 +36,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.artifact-name }}
+          path: .build
 
       - name: List directories
         run: ls -a
+
+      - name: 📁 Zip Build Files
+        run: zip --quiet --recurse-paths build.zip .build
 
       # - name: 🌐 Set up Node ${{ env.NODE_VERSION }}
       #   uses: actions/setup-node@v4
