@@ -53,8 +53,6 @@ jobs:
       github.repository_owner_id == 2088731 &&
       github.repository_id != 610204172 &&
       github.ref_name == github.event.repository.default_branch
-    # TODO: handle build and release for multiple environments.
-    # environment: ${{ github.ref_name }}
     steps:
       - name: 🐍 Set up Python ${{ inputs.python-version }} Environment
         uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
