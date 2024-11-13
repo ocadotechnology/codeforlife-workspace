@@ -8,6 +8,11 @@ on:
         type: string
         required: false
         default: "build"
+      artifact-path:
+        description: "The path of the artifact."
+        type: string
+        required: false
+        default: ".build"
     secrets:
       CFL_BOT_GH_TOKEN:
         description: "The CFL-bot's GitHub token. Used to release."
@@ -36,32 +41,29 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.artifact-name }}
-          path: .build
+          path: ${{ inputs.artifact-path }}
 
-      - name: List directories
-        run: ls -a
+      - name: 🌐 Set up Node ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 🛠 Install Dependencies
+        run: |
+          npm install --global npm
+          npm install --global \
+            semantic-release@^20.1.1 \
+            @semantic-release/git@^10.0.1 \
+            @semantic-release/changelog@^6.0.2
 
       - name: 📁 Zip Build Files
         run: zip --quiet --recurse-paths build.zip .build
 
-      # - name: 🌐 Set up Node ${{ env.NODE_VERSION }}
-      #   uses: actions/setup-node@v4
-      #   with:
-      #     node-version: ${{ env.NODE_VERSION }}
-
-      # - name: 🛠 Install Dependencies
-      #   run: |
-      #     npm install --global npm
-      #     npm install --global \
-      #       semantic-release@^20.1.1 \
-      #       @semantic-release/git@^10.0.1 \
-      #       @semantic-release/changelog@^6.0.2
-
-      # - name: 🚀 Publish Semantic Release
-      #   env:
-      #     GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
-      #     GIT_AUTHOR_NAME: cfl-bot
-      #     GIT_AUTHOR_EMAIL: codeforlife-bot@ocado.com
-      #     GIT_COMMITTER_NAME: cfl-bot
-      #     GIT_COMMITTER_EMAIL: codeforlife-bot@ocado.com
-      #   run: npx semantic-release
+      - name: 🚀 Publish Semantic Release
+        env:
+          GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
+          GIT_AUTHOR_NAME: cfl-bot
+          GIT_AUTHOR_EMAIL: codeforlife-bot@ocado.com
+          GIT_COMMITTER_NAME: cfl-bot
+          GIT_COMMITTER_EMAIL: codeforlife-bot@ocado.com
+        run: npx semantic-release
