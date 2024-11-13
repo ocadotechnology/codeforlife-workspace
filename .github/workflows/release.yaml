@@ -15,6 +15,7 @@ on:
 
 jobs:
   release:
+    concurrency: release
     runs-on: ubuntu-latest
     # Release if:
     #  - the repo's owner is Ocado Tech.
