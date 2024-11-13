@@ -16,8 +16,6 @@ on:
 jobs:
   release:
     concurrency: release
-    permissions:
-      id-token: write
     runs-on: ubuntu-latest
     # Release if:
     #  - the repo's owner is Ocado Tech.
