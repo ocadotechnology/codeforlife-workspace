@@ -45,8 +45,8 @@ jobs:
     #  - a change is made to the default branch.
     if: |
       github.repository_owner_id == 2088731 &&
-      github.repository_id != 610204172
-    # github.ref_name == github.event.repository.default_branch
+      github.repository_id != 610204172 &&
+      github.ref_name == github.event.repository.default_branch
     steps:
       - name: 🐍 Set up Python ${{ inputs.python-version }} Environment
         uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
@@ -69,5 +69,5 @@ jobs:
 
   release:
     needs: [build]
-    uses: ocadotechnology/codeforlife-workspace/.github/workflows/release.yaml@contributor-backend-31 # TODO: set to @main
+    uses: ocadotechnology/codeforlife-workspace/.github/workflows/release.yaml@main
     secrets: inherit

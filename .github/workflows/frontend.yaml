@@ -56,5 +56,5 @@ jobs:
 
   release:
     needs: [build]
-    uses: ocadotechnology/codeforlife-workspace/.github/workflows/release.yaml@contributor-backend-31 # TODO: set to @main
+    uses: ocadotechnology/codeforlife-workspace/.github/workflows/release.yaml@main
     secrets: inherit
