@@ -37,24 +37,27 @@ jobs:
         with:
           name: ${{ inputs.artifact-name }}
 
-      - name: 🌐 Set up Node ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
+      - name: List directories
+        run: ls -a
 
-      - name: 🛠 Install Dependencies
-        run: |
-          npm install --global npm
-          npm install --global \
-            semantic-release@^20.1.1 \
-            @semantic-release/git@^10.0.1 \
-            @semantic-release/changelog@^6.0.2
+      # - name: 🌐 Set up Node ${{ env.NODE_VERSION }}
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: ${{ env.NODE_VERSION }}
 
-      - name: 🚀 Publish Semantic Release
-        env:
-          GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
-          GIT_AUTHOR_NAME: cfl-bot
-          GIT_AUTHOR_EMAIL: codeforlife-bot@ocado.com
-          GIT_COMMITTER_NAME: cfl-bot
-          GIT_COMMITTER_EMAIL: codeforlife-bot@ocado.com
-        run: npx semantic-release
+      # - name: 🛠 Install Dependencies
+      #   run: |
+      #     npm install --global npm
+      #     npm install --global \
+      #       semantic-release@^20.1.1 \
+      #       @semantic-release/git@^10.0.1 \
+      #       @semantic-release/changelog@^6.0.2
+
+      # - name: 🚀 Publish Semantic Release
+      #   env:
+      #     GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
+      #     GIT_AUTHOR_NAME: cfl-bot
+      #     GIT_AUTHOR_EMAIL: codeforlife-bot@ocado.com
+      #     GIT_COMMITTER_NAME: cfl-bot
+      #     GIT_COMMITTER_EMAIL: codeforlife-bot@ocado.com
+      #   run: npx semantic-release
