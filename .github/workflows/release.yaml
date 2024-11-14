@@ -13,6 +13,11 @@ on:
         type: string
         required: false
         default: ".build"
+      build-zip-path:
+        description: "The path of the build ZIP."
+        type: string
+        required: false
+        default: "../build.zip"
     secrets:
       CFL_BOT_GH_TOKEN:
         description: "The CFL-bot's GitHub token. Used to release."
@@ -57,7 +62,8 @@ jobs:
             @semantic-release/changelog@^6.0.2
 
       - name: 📁 Zip Build Files
-        run: zip --quiet --recurse-paths build.zip .build
+        working-directory: ${{ inputs.artifact-path }}
+        run: zip --quiet --recurse-paths ${{ inputs.build-zip-path }} .
 
       - name: 🚀 Publish Semantic Release
         env:
