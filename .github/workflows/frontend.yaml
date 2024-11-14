@@ -37,22 +37,39 @@ jobs:
     # TODO: handle build and release for multiple environments.
     # environment: ${{ github.ref_name }}
     steps:
+      - name: 🛫 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🔎 Check Service Deployment Descriptor
+        run: |
+          if [ ! -f .deploy/service.json ]; then
+            echo "Missing service deployment descriptor."
+            exit 1
+          fi
+
       - name: 🌐 Set up JavaScript ${{ inputs.node-version }} Environment
         uses: ocadotechnology/codeforlife-workspace/.github/actions/javascript/setup-environment@main
         with:
           node-version: ${{ inputs.node-version }}
           install-args: --production=true
+          checkout: false
 
       - name: 🏗️ Build App
         run: yarn build
 
-      - name: 📤 Upload Artifact
+      - name: 📤 Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: build
           path: |
             node_modules/
             dist/
+
+      - name: 📤 Upload Deploy Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy
+          path: .deploy/
 
   release:
     needs: [build]

@@ -48,10 +48,21 @@ jobs:
       github.repository_id != 610204172 &&
       github.ref_name == github.event.repository.default_branch
     steps:
+      - name: 🛫 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🔎 Check Service Deployment Descriptor
+        run: |
+          if [ ! -f .deploy/service.json ]; then
+            echo "Missing service deployment descriptor."
+            exit 1
+          fi
+
       - name: 🐍 Set up Python ${{ inputs.python-version }} Environment
         uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
         with:
           python-version: ${{ inputs.python-version }}
+          checkout: false
 
       - name: 🏗️ Generate requirements.txt
         run: pipenv requirements > requirements.txt
@@ -59,13 +70,19 @@ jobs:
       - name: 🏗️ Collect Static Files
         run: pipenv run python ./manage.py collectstatic --noinput --clear
 
-      - name: 📤 Upload Artifact
+      - name: 📤 Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: build
           path: |
             requirements.txt
             static/
+
+      - name: 📤 Upload Deploy Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy
+          path: .deploy/
 
   release:
     needs: [build]
