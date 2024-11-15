@@ -82,7 +82,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: deploy
-          path: .deploy/
+          path: ./.deploy/
 
   release:
     needs: [build]
