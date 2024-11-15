@@ -47,6 +47,14 @@ jobs:
             exit 1
           fi
 
+      - name: 📤 Upload Deploy Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy
+          path: .deploy/
+          if-no-files-found: error
+          include-hidden-files: true
+
       - name: 🌐 Set up JavaScript ${{ inputs.node-version }} Environment
         uses: ocadotechnology/codeforlife-workspace/.github/actions/javascript/setup-environment@main
         with:
@@ -64,12 +72,7 @@ jobs:
           path: |
             node_modules/
             dist/
-
-      - name: 📤 Upload Deploy Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: deploy
-          path: .deploy/
+          if-no-files-found: error
 
   release:
     needs: [build]
