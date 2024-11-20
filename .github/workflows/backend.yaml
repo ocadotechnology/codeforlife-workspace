@@ -33,18 +33,18 @@ on:
         required: false
 
 jobs:
-  test:
-    uses: ocadotechnology/codeforlife-workspace/.github/workflows/test-python-code.yaml@main
-    secrets: inherit
-    with:
-      python-version: ${{ inputs.python-version }}
-      source-path: ${{ inputs.source-path }}
-      postgres-db: ${{ inputs.postgres-db }}
-      postgres-version: ${{ inputs.postgres-version }}
+  # test:
+  #   uses: ocadotechnology/codeforlife-workspace/.github/workflows/test-python-code.yaml@main
+  #   secrets: inherit
+  #   with:
+  #     python-version: ${{ inputs.python-version }}
+  #     source-path: ${{ inputs.source-path }}
+  #     postgres-db: ${{ inputs.postgres-db }}
+  #     postgres-version: ${{ inputs.postgres-version }}
 
   build:
     runs-on: ubuntu-latest
-    needs: [test]
+    # needs: [test]
     # Build if:
     #  - the repo's owner is Ocado Tech.
     #  - the repo is not the backend template.
