@@ -41,6 +41,9 @@ jobs:
         working-directory: ${{ env.DEPLOY_ARTIFACT_PATH }}
         run: zip --quiet --recurse-paths ../deploy.zip .
 
+      - name: LS
+        run: ls -a
+
       - name: 🚀 Publish Semantic Release
         uses: ocadotechnology/codeforlife-workspace/.github/actions/github/release@main
         with:
