@@ -74,6 +74,7 @@ runs:
           done
         done <<< "${{ inputs.variables }}"
 
+        echo $VARIABLES
         echo $(jq $VARIABLES .deploy/service.json) > .deploy/service.json
         cat .deploy/service.json
 
