@@ -35,11 +35,11 @@ jobs:
 
       - name: 📁 Zip Build Files
         working-directory: ${{ env.BUILD_ARTIFACT_PATH }}
-        run: zip --quiet --recurse-paths ../build.zip .
+        run: zip --recurse-paths ../build.zip .
 
       - name: 📁 Zip Deploy Files
         working-directory: ${{ env.DEPLOY_ARTIFACT_PATH }}
-        run: zip --quiet --recurse-paths ../deploy.zip .
+        run: zip --recurse-paths ../deploy.zip .
 
       - name: LS
         run: ls -a
