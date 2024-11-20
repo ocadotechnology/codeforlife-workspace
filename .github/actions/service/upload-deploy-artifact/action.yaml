@@ -67,7 +67,7 @@ runs:
               VARIABLES="$VARIABLES | $VARIABLE"
             fi
           done
-        done <<< ${{ inputs.variables }}
+        done <<< "${{ inputs.variables }}"
 
         echo $(jq $VARIABLES .deploy/service.json) > .deploy/service.json
 
