@@ -72,7 +72,7 @@ runs:
           done
         done <<< "${{ inputs.variables }}"
 
-        echo $(jq $VARIABLES .deploy/service.json) > .deploy/service.json
+        echo $(jq '$VARIABLES' .deploy/service.json) > .deploy/service.json
         cat .deploy/service.json
 
     - name: 📤 Upload Deploy Artifact
