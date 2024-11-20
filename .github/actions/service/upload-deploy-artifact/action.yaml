@@ -63,16 +63,18 @@ runs:
         VARIABLES=""
         while IFS=',' read -ra ADDR; do
           for i in "${ADDR[@]}"; do
-            VARIABLE="(.profiles[] | select(.variables)).variables.$i"
-            if [[ $VARIABLES == "" ]]; then
-              VARIABLES=$VARIABLE
-            else
-              VARIABLES="$VARIABLES | $VARIABLE"
+            if [[ $i != "" ]]; then
+              VARIABLE="(.profiles[] | select(.variables)).variables.$i"
+              if [[ $VARIABLES == "" ]]; then
+                VARIABLES=$VARIABLE
+              else
+                VARIABLES="$VARIABLES | $VARIABLE"
+              fi
             fi
           done
         done <<< "${{ inputs.variables }}"
 
-        echo $(jq '$VARIABLES' .deploy/service.json) > .deploy/service.json
+        echo $(jq $VARIABLES .deploy/service.json) > .deploy/service.json
         cat .deploy/service.json
 
     - name: 📤 Upload Deploy Artifact
