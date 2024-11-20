@@ -1,0 +1,38 @@
+name: "Code for Life - GitHub - Release"
+description: "Release a deployment to GitHub."
+inputs:
+  cfl-bot-gh-token:
+    description: "The GitHub token of the CFL bot."
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: 🛫 Checkout
+      uses: actions/checkout@v4
+      with:
+        token: ${{ inputs.cfl-bot-gh-token }}
+        fetch-depth: 0
+
+    - name: 🌐 Set up Node 22
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22
+
+    - name: 🛠 Install Dependencies
+      shell: bash
+      run: |
+        npm install --global npm
+        npm install --global \
+          semantic-release@^20.1.1 \
+          @semantic-release/git@^10.0.1 \
+          @semantic-release/changelog@^6.0.2
+
+    - name: 🚀 Publish Semantic Release
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.cfl-bot-gh-token }}
+        GIT_AUTHOR_NAME: cfl-bot
+        GIT_AUTHOR_EMAIL: codeforlife-bot@ocado.com
+        GIT_COMMITTER_NAME: cfl-bot
+        GIT_COMMITTER_EMAIL: codeforlife-bot@ocado.com
+      run: npx semantic-release
