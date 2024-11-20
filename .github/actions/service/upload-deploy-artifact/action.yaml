@@ -64,6 +64,7 @@ runs:
         while IFS=',' read -ra ADDR; do
           for i in "${ADDR[@]}"; do
             if [[ $i != "" ]]; then
+              echo $i
               VARIABLE="(.profiles[] | select(.variables)).variables.$i"
               if [[ $VARIABLES == "" ]]; then
                 VARIABLES=$VARIABLE
