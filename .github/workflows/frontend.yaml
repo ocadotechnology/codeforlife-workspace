@@ -40,20 +40,11 @@ jobs:
       - name: 🛫 Checkout
         uses: actions/checkout@v4
 
-      - name: 🔎 Check Service Deployment Descriptor
-        run: |
-          if [ ! -f .deploy/service.json ]; then
-            echo "Missing service deployment descriptor."
-            exit 1
-          fi
-
       - name: 📤 Upload Deploy Artifact
-        uses: actions/upload-artifact@v4
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/service/upload-deploy-artifact@main
         with:
-          name: deploy
-          path: .deploy/
-          if-no-files-found: error
-          include-hidden-files: true
+          runtime-type: nodejs
+          runtime-version: ${{ inputs.node-version }}
 
       - name: 🌐 Set up JavaScript ${{ inputs.node-version }} Environment
         uses: ocadotechnology/codeforlife-workspace/.github/actions/javascript/setup-environment@main
@@ -66,15 +57,13 @@ jobs:
         run: yarn build
 
       - name: 📤 Upload Build Artifact
-        uses: actions/upload-artifact@v4
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/service/upload-build-artifact@main
         with:
-          name: build
           path: |
             node_modules/
             dist/
-          if-no-files-found: error
 
   release:
     needs: [build]
-    uses: ocadotechnology/codeforlife-workspace/.github/workflows/release.yaml@main
+    uses: ocadotechnology/codeforlife-workspace/.github/workflows/release-service.yaml@main
     secrets: inherit

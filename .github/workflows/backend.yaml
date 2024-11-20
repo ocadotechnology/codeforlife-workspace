@@ -19,6 +19,11 @@ on:
         type: string
         required: false
         default: "db"
+      postgres-version:
+        description: "The postgres version to set up."
+        type: number
+        required: false
+        default: 16 # TODO: set to 17
     secrets: # All secrets should not be required to support contributors.
       CODECOV_TOKEN:
         description: "The token used to gain access to Codecov."
@@ -35,6 +40,7 @@ jobs:
       python-version: ${{ inputs.python-version }}
       source-path: ${{ inputs.source-path }}
       postgres-db: ${{ inputs.postgres-db }}
+      postgres-version: ${{ inputs.postgres-version }}
 
   build:
     runs-on: ubuntu-latest
@@ -51,20 +57,31 @@ jobs:
       - name: 🛫 Checkout
         uses: actions/checkout@v4
 
-      - name: 🔎 Check Service Deployment Descriptor
+      - name: 📝 Overwrite RDS Parameters
         run: |
-          if [ ! -f .deploy/service.json ]; then
-            echo "Missing service deployment descriptor."
-            exit 1
+          if [ -f .deploy/rds.json ]; then
+            echo $(
+              jq '
+                .databaseName = "${APP_ID}" |
+                .schemaName = "app" |
+                .engine = "POSTGRES_'${{ inputs.postgres-version }}'"
+              ' .deploy/rds.json
+            ) > .deploy/rds.json
           fi
 
       - name: 📤 Upload Deploy Artifact
-        uses: actions/upload-artifact@v4
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/service/upload-deploy-artifact@main
         with:
-          name: deploy
-          path: .deploy/
-          if-no-files-found: error
-          include-hidden-files: true
+          runtime-type: python
+          runtime-version: ${{ inputs.python-version }}
+          variables: |
+            APP_ID = "${APP_ID}"
+            APP_VERSION = "${APP_VERSION}"
+            DJANGO_SETTINGS_MODULE = "settings"
+            DEBUG = "0"
+            SERVICE_PROTOCOL = "https"
+            SERVICE_PORT = "443"
+            MAIL_ENABLED = "1"
 
       - name: 🐍 Set up Python ${{ inputs.python-version }} Environment
         uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
@@ -79,15 +96,13 @@ jobs:
         run: pipenv run python ./manage.py collectstatic --noinput --clear
 
       - name: 📤 Upload Build Artifact
-        uses: actions/upload-artifact@v4
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/service/upload-build-artifact@main
         with:
-          name: build
           path: |
             requirements.txt
             static/
-          if-no-files-found: error
 
   release:
     needs: [build]
-    uses: ocadotechnology/codeforlife-workspace/.github/workflows/release.yaml@main
+    uses: ocadotechnology/codeforlife-workspace/.github/workflows/release-service.yaml@main
     secrets: inherit

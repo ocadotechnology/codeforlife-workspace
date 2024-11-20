@@ -1,0 +1,80 @@
+name: "Code for Life - Service - Upload Deploy Artifact"
+description: "Upload a service's deployment artifact before release."
+inputs:
+  runtime-type:
+    description: "The type of runtime for the service."
+    required: true
+  runtime-version:
+    description: "The version of the runtime for the service."
+    required: true
+  variables:
+    description: "A list of environment variables separated by commas or newlines in the format: `KEY = \"value\"`."
+    required: false
+runs:
+  using: composite
+  steps:
+    - name: 🔎 Check Service Deployment Descriptor Exists
+      shell: bash
+      run: |
+        if [ ! -f .deploy/service.json ]; then
+          echo "Missing service deployment descriptor."
+          exit 1
+        fi
+
+    - name: 📝 Overwrite General Parameters
+      shell: bash
+      run: |
+        echo $(
+          jq '
+            .targetPlatform = "ECS" |
+            .applicationData.artifactUrl = "${NEXUS_URL}" |
+            .applicationData.version = "${APP_VERSION}" |
+            .runtime.type = "'${{ inputs.runtime-type }}'"
+          ' .deploy/service.json
+        ) > .deploy/service.json
+
+    - name: 📝 Overwrite Python Parameters
+      if: ${{ inputs.runtime-type == 'python' }}
+      shell: bash
+      run: |
+        echo $(
+          jq '
+            .runtime.pythonVersion = "'${{ inputs.runtime-version }}'"
+          ' .deploy/service.json
+        ) > .deploy/service.json
+
+    - name: 📝 Overwrite NodeJS Parameters
+      if: ${{ inputs.runtime-type == 'nodejs' }}
+      shell: bash
+      run: |
+        echo $(
+          jq '
+            .runtime.nodejsVersion = "'${{ inputs.runtime-version }}'"
+          ' .deploy/service.json
+        ) > .deploy/service.json
+
+    - name: 📝 Overwrite Variables
+      if: ${{ inputs.variables }}
+      shell: bash
+      run: |
+        VARIABLES=""
+        while IFS=',' read -ra ADDR; do
+          for i in "${ADDR[@]}"; do
+            VARIABLE="(.profiles[] | select(.variables)).variables.$i"
+            if [[ $VARIABLES == "" ]]; then
+              VARIABLES=$VARIABLE
+            else
+              VARIABLES="$VARIABLES | $VARIABLE"
+            fi
+          done
+        done <<< ${{ inputs.variables }}
+
+        echo $(jq $VARIABLES .deploy/service.json) > .deploy/service.json
+
+    - name: 📤 Upload Deploy Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: deploy
+        path: .deploy/
+        if-no-files-found: error
+        include-hidden-files: true

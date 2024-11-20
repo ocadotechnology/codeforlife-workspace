@@ -1,0 +1,47 @@
+name: Release
+
+on:
+  workflow_call:
+    secrets:
+      CFL_BOT_GH_TOKEN:
+        description: "The CFL-bot's GitHub token. Used to release."
+        required: true
+
+jobs:
+  release:
+    concurrency: release
+    runs-on: ubuntu-latest
+    # Release if:
+    #  - the repo's owner is Ocado Tech.
+    #  - a change is made to the default branch.
+    if: |
+      github.repository_owner_id == 2088731 &&
+      github.ref_name == github.event.repository.default_branch
+    env:
+      BUILD_ARTIFACT_PATH: ".build"
+      DEPLOY_ARTIFACT_PATH: ".deploy"
+    steps:
+      - name: 📥 Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build
+          path: ${{ env.BUILD_ARTIFACT_PATH }}
+
+      - name: 📥 Download Deploy Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: deploy
+          path: ${{ env.DEPLOY_ARTIFACT_PATH }}
+
+      - name: 📁 Zip Build Files
+        working-directory: ${{ env.BUILD_ARTIFACT_PATH }}
+        run: zip --quiet --recurse-paths ../build.zip .
+
+      - name: 📁 Zip Deploy Files
+        working-directory: ${{ env.DEPLOY_ARTIFACT_PATH }}
+        run: zip --quiet --recurse-paths ../deploy.zip .
+
+      - name: 🚀 Publish Semantic Release
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/github/release@main
+        with:
+          cfl-bot-gh-token: ${{ secrets.CFL_BOT_GH_TOKEN }}

@@ -1,0 +1,15 @@
+name: "Code for Life - Service - Upload Build Artifact"
+description: "Upload a service's build artifact before release."
+inputs:
+  path:
+    description: "The path of the artifact."
+    required: true
+runs:
+  using: composite
+  steps:    
+    - name: 📤 Upload Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: build
+        path: ${{ inputs.path }}
+        if-no-files-found: error
