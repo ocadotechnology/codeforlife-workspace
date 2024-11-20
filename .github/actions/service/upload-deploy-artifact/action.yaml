@@ -32,7 +32,6 @@ runs:
             .runtime.type = "'${{ inputs.runtime-type }}'"
           ' .deploy/service.json
         ) > .deploy/service.json
-        cat .deploy/service.json
 
     - name: 📝 Overwrite Python Parameters
       if: ${{ inputs.runtime-type == 'python' }}
@@ -43,7 +42,6 @@ runs:
             .runtime.pythonVersion = "'${{ inputs.runtime-version }}'"
           ' .deploy/service.json
         ) > .deploy/service.json
-        cat .deploy/service.json
 
     - name: 📝 Overwrite NodeJS Parameters
       if: ${{ inputs.runtime-type == 'nodejs' }}
@@ -54,7 +52,6 @@ runs:
             .runtime.nodejsVersion = "'${{ inputs.runtime-version }}'"
           ' .deploy/service.json
         ) > .deploy/service.json
-        cat .deploy/service.json
 
     - name: 📝 Overwrite Variables
       if: ${{ inputs.variables }}
@@ -75,9 +72,7 @@ runs:
           done
         done <<< '${{ inputs.variables }}'
 
-        echo $VARIABLES
         echo $(jq "$VARIABLES" .deploy/service.json) > .deploy/service.json
-        cat .deploy/service.json
 
     - name: 📤 Upload Deploy Artifact
       uses: actions/upload-artifact@v4
