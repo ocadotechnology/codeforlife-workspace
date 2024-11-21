@@ -35,12 +35,13 @@ jobs:
 
       - name: 📁 Zip Build Files
         working-directory: ${{ env.BUILD_ARTIFACT_PATH }}
-        run: zip --recurse-paths ../build.zip .
+        run: zip --quiet --recurse-paths ../build.zip .
 
       - name: 📁 Zip Deploy Files
         working-directory: ${{ env.DEPLOY_ARTIFACT_PATH }}
-        run: zip --recurse-paths ../deploy.zip .
+        run: zip --quiet --recurse-paths ../deploy.zip .
 
+      # TODO: delete step
       - name: LS
         run: ls -a
 
@@ -48,3 +49,4 @@ jobs:
         uses: ocadotechnology/codeforlife-workspace/.github/actions/github/release@main
         with:
           cfl-bot-gh-token: ${{ secrets.CFL_BOT_GH_TOKEN }}
+          clean: false
