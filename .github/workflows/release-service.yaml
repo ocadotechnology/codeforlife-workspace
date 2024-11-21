@@ -55,4 +55,3 @@ jobs:
         with:
           cfl-bot-gh-token: ${{ secrets.CFL_BOT_GH_TOKEN }}
           checkout: false
-          args: --extends ./.releaserc.json
