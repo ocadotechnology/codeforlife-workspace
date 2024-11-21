@@ -41,9 +41,8 @@ jobs:
         working-directory: ${{ env.DEPLOY_ARTIFACT_PATH }}
         run: zip --quiet --recurse-paths ../deploy.zip .
 
-      # TODO: delete step
-      - name: LS
-        run: ls -a
+      - name: 📥 Download Release Candidate Configuration
+        run: wget https://raw.githubusercontent.com/ocadotechnology/codeforlife-workspace/refs/heads/main/.releaserc.json
 
       - name: 🚀 Publish Semantic Release
         uses: ocadotechnology/codeforlife-workspace/.github/actions/github/release@main
