@@ -4,8 +4,8 @@ inputs:
   cfl-bot-gh-token:
     description: "The GitHub token of the CFL bot."
     required: true
-  clean:
-    description: "Whether to execute `git clean -ffdx && git reset --hard HEAD` before fetching."
+  checkout:
+    description: "A flag to designate if the code should be checked out."
     required: true
     default: "true"
   args:
@@ -15,10 +15,10 @@ runs:
   using: composite
   steps:
     - name: 🛫 Checkout
+      if: ${{ inputs.checkout == 'true' }}
       uses: actions/checkout@v4
       with:
         token: ${{ inputs.cfl-bot-gh-token }}
-        clean: false
         fetch-depth: 0
 
     - name: 🌐 Set up Node 22
