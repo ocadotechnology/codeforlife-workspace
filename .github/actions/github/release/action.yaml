@@ -35,6 +35,11 @@ runs:
           @semantic-release/git@^10.0.1 \
           @semantic-release/changelog@^6.0.2
 
+    # TODO: delete this step
+    - name: LS
+      shell: bash
+      run: ls -a
+
     - name: 🚀 Publish Semantic Release
       shell: bash
       env:
