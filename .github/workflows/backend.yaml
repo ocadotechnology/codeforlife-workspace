@@ -90,7 +90,9 @@ jobs:
           checkout: false
 
       - name: 🏗️ Generate requirements.txt
-        run: pipenv requirements > requirements.txt
+        run: |
+          pipenv requirements > requirements.txt
+          sed -i '1d' requirements.txt # Remove 1st line (contains package index)
 
       - name: 🏗️ Collect Static Files
         run: pipenv run python ./manage.py collectstatic --noinput --clear
