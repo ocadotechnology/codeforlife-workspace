@@ -15,7 +15,8 @@
       "@semantic-release/github",
       {
         "assets": [
-          { "path": "build.zip", "label": "Build files" },
+          { "path": "requirements.txt", "label": "Requirements" },
+          { "path": "static.zip", "label": "Static files" },
           { "path": "deploy.zip", "label": "Deploy files" }
         ]
       }

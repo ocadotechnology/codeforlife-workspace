@@ -104,7 +104,60 @@ jobs:
             requirements.txt
             static/
 
+  # release:
+  #   needs: [build]
+  #   uses: ocadotechnology/codeforlife-workspace/.github/workflows/release-service.yaml@main
+  #   secrets: inherit
   release:
+    concurrency: release
+    runs-on: ubuntu-latest
     needs: [build]
-    uses: ocadotechnology/codeforlife-workspace/.github/workflows/release-service.yaml@main
-    secrets: inherit
+    env:
+      DEPLOY_ARTIFACT_PATH: ".deploy"
+    steps:
+      # - name: 🛫 Set up Release
+      #   uses: ocadotechnology/codeforlife-workspace/.github/actions/service/setup-release@main
+      #   with:
+      #     cfl-bot-gh-token: ${{ secrets.CFL_BOT_GH_TOKEN }}
+
+      - name: 🛫 Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.CFL_BOT_GH_TOKEN }}
+          fetch-depth: 0
+
+      - name: 📥 Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build
+
+      - name: 📥 Download Deploy Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: deploy
+          path: ${{ env.DEPLOY_ARTIFACT_PATH }}
+
+      - name: 📁 Zip Deploy Files
+        working-directory: ${{ env.DEPLOY_ARTIFACT_PATH }}
+        run: zip --quiet --recurse-paths ../deploy.zip .
+
+      # Action end
+
+      - name: 📁 Zip Static Files
+        working-directory: static
+        run: zip --quiet --recurse-paths ../static.zip .
+
+      # - name: 🚀 Publish Semantic Release
+      #   uses: ocadotechnology/codeforlife-workspace/.github/actions/service/release@main
+      #   with:
+      #     cfl-bot-gh-token: ${{ secrets.CFL_BOT_GH_TOKEN }}
+      #     releaserc-path: backend
+
+      - name: 📥 Download Release Candidate Configuration
+        run: wget https://raw.githubusercontent.com/ocadotechnology/codeforlife-workspace/refs/heads/main/backend.releaserc.json -O .releaserc.json
+
+      - name: 🚀 Publish Semantic Release
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/github/release@main
+        with:
+          cfl-bot-gh-token: ${{ secrets.CFL_BOT_GH_TOKEN }}
+          checkout: false
