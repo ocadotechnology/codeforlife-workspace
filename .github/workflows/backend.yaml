@@ -69,6 +69,16 @@ jobs:
             ) > .deploy/rds.json
           fi
 
+      - name: 📝 Overwrite Static Parameters
+        run: |
+          if [ -f .deploy/static.json ]; then
+            echo $(
+              jq '
+                .artifactUrl = "${NEXUS_STATIC_URL}"
+              ' .deploy/static.json
+            ) > .deploy/static.json
+          fi
+
       - name: 📤 Upload Deploy Artifact
         uses: ocadotechnology/codeforlife-workspace/.github/actions/service/upload-deploy-artifact@main
         with:
