@@ -75,7 +75,8 @@ jobs:
             echo $(
               jq '
                 .artifactUrl = "${NEXUS_STATIC_URL}" |
-                .assetsPrefix = "static/"
+                .assetsPrefix = "static/" |
+                .bucket = "static"
               ' .deploy/static.json
             ) > .deploy/static.json
           fi
