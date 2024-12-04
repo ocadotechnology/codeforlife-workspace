@@ -14,7 +14,7 @@
         "rangav.vscode-thunder-client",
         "jock.svg",
         "tyriar.luna-paint",
-        "mikestead.dotenv",
+        "dotenv.dotenv-vscode",
         // git
         "github.vscode-pull-request-github",
         "github.vscode-github-actions",
