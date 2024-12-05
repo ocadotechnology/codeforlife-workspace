@@ -16,6 +16,7 @@
       {
         "assets": [
           { "path": "requirements.txt", "label": "Requirements" },
+          { "path": ".env.zip", "label": "Dotenv files" },
           { "path": "static.zip", "label": "Static files" },
           { "path": "deploy.zip", "label": "Deploy files" }
         ]
