@@ -27,7 +27,7 @@ runs:
         echo $(
           jq '
             .targetPlatform = "ECS" |
-            .applicationData.artifactUrl = "${NEXUS_URL}" |
+            .applicationData.artifactUrl = "${APP_NEXUS_URL}" |
             .applicationData.version = "${APP_VERSION}" |
             .runtime.type = "'${{ inputs.runtime-type }}'"
           ' .deploy/service.json
