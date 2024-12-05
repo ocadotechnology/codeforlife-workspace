@@ -162,6 +162,9 @@ jobs:
         working-directory: static
         run: zip --quiet --recurse-paths ../static.zip .
 
+      - name: 📁 Zip Dotenv Files
+        run: zip --quiet --recurse-paths .env.zip .env
+
       # - name: 🚀 Publish Semantic Release
       #   uses: ocadotechnology/codeforlife-workspace/.github/actions/service/release@main
       #   with:
