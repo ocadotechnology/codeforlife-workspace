@@ -44,6 +44,8 @@ jobs:
           runtime-type: nodejs
           runtime-version: ${{ inputs.node-version }}
           variables: |
+            APP_ID = "${APP_ID}"
+            APP_VERSION = "${APP_VERSION}"
             NODE_ENV = "production"
             MODE = "${MODE}"
 
