@@ -29,7 +29,9 @@ runs:
             .targetPlatform = "ECS" |
             .applicationData.artifactUrl = "${APP_NEXUS_URL}" |
             .applicationData.version = "${APP_VERSION}" |
-            .runtime.type = "'${{ inputs.runtime-type }}'"
+            .runtime.type = "'${{ inputs.runtime-type }}'" |
+            (.profiles[] | select(.name == "loadBalancer")).healthCheckPath = "/health-check/" |
+            (.profiles[] | select(.name == "healthcheck")).interval = 30
           ' .deploy/service.json
         ) > .deploy/service.json
 
@@ -62,7 +64,7 @@ runs:
           for i in "${ADDR[@]}"; do
             if [[ $i != "" ]]; then
               echo $i
-              VARIABLE="(.profiles[] | select(.variables)).variables.$i"
+              VARIABLE="(.profiles[] | select(.name == "environmentVariables")).variables.$i"
               if [[ $VARIABLES == "" ]]; then
                 VARIABLES=$VARIABLE
               else

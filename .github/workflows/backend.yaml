@@ -23,7 +23,7 @@ on:
         description: "The postgres version to set up."
         type: number
         required: false
-        default: 16 # TODO: set to 17
+        default: 17
     secrets: # All secrets should not be required to support contributors.
       CODECOV_TOKEN:
         description: "The token used to gain access to Codecov."
