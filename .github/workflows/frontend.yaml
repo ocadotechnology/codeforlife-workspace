@@ -58,9 +58,6 @@ jobs:
         with:
           cfl-bot-gh-token: ${{ secrets.CFL_BOT_GH_TOKEN }}
 
-      - name: 📁 Zip Distribution Files
-        run: zip --quiet --recurse-paths dist.zip dist
-
       - name: 🚀 Publish Semantic Release
         uses: ocadotechnology/codeforlife-workspace/.github/actions/service/release@main
         with:
