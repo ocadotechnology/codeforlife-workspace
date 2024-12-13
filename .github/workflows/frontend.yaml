@@ -47,7 +47,6 @@ jobs:
             APP_ID = "${APP_ID}"
             APP_VERSION = "${APP_VERSION}"
             NODE_ENV = "production"
-            MODE = "${FE_MODE}"
 
   release:
     concurrency: release
