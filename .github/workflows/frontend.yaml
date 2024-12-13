@@ -43,6 +43,9 @@ jobs:
         with:
           runtime-type: nodejs
           runtime-version: ${{ inputs.node-version }}
+          variables: |
+            NODE_ENV = "production"
+            MODE = "${MODE}"
 
       - name: 🌐 Set up JavaScript ${{ inputs.node-version }} Environment
         uses: ocadotechnology/codeforlife-workspace/.github/actions/javascript/setup-environment@main
@@ -52,16 +55,28 @@ jobs:
           checkout: false
 
       - name: 🏗️ Build App
-        run: yarn build
+        run: yarn run vite build --outDir dist/client && yarn run vite build --ssr src/entry-server.tsx --outDir dist/server
 
       - name: 📤 Upload Build Artifact
         uses: ocadotechnology/codeforlife-workspace/.github/actions/service/upload-build-artifact@main
         with:
-          path: |
-            node_modules/
-            dist/
+          path: dist/
 
   release:
+    concurrency: release
+    runs-on: ubuntu-latest
     needs: [build]
-    uses: ocadotechnology/codeforlife-workspace/.github/workflows/release-service.yaml@main
-    secrets: inherit
+    steps:
+      - name: 🛫 Set up Release
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/service/setup-release@main
+        with:
+          cfl-bot-gh-token: ${{ secrets.CFL_BOT_GH_TOKEN }}
+
+      - name: 📁 Zip Distribution Files
+        run: zip --quiet --recurse-paths dist.zip dist
+
+      - name: 🚀 Publish Semantic Release
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/service/release@main
+        with:
+          cfl-bot-gh-token: ${{ secrets.CFL_BOT_GH_TOKEN }}
+          rc-path: frontend.releaserc.json

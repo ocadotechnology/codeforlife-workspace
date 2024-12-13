@@ -1,0 +1,21 @@
+name: "Code for Life - Service - Release"
+description: "Release a service deployment to GitHub."
+inputs:
+  cfl-bot-gh-token:
+    description: "The GitHub token of the CFL bot."
+    required: true
+  rc-path:
+    description: "The path of the .releaserc.json to use."
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: 📥 Download Release Candidate Configuration
+      shell: bash
+      run: wget https://raw.githubusercontent.com/ocadotechnology/codeforlife-workspace/refs/heads/main/${{ inputs.rc-path }} -O .releaserc.json
+
+    - name: 🚀 Publish Semantic Release
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/github/release@main
+      with:
+        cfl-bot-gh-token: ${{ inputs.cfl-bot-gh-token }}
+        checkout: false
