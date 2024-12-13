@@ -47,22 +47,7 @@ jobs:
             APP_ID = "${APP_ID}"
             APP_VERSION = "${APP_VERSION}"
             NODE_ENV = "production"
-            MODE = "${MODE}"
-
-      - name: 🌐 Set up JavaScript ${{ inputs.node-version }} Environment
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/javascript/setup-environment@main
-        with:
-          node-version: ${{ inputs.node-version }}
-          install-args: --production=true
-          checkout: false
-
-      - name: 🏗️ Build App
-        run: yarn run vite build --outDir dist/client && yarn run vite build --ssr src/entry-server.tsx --outDir dist/server
-
-      - name: 📤 Upload Build Artifact
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/service/upload-build-artifact@main
-        with:
-          path: dist/
+            MODE = "${FE_MODE}"
 
   release:
     concurrency: release
