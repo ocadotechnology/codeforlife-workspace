@@ -94,10 +94,10 @@ jobs:
             SERVICE_PROTOCOL = "https"
             SERVICE_PORT = "443"
             MAIL_ENABLED = "1"
-            STATIC_URL = "${STATIC_URL}"
-            AWS_STORAGE_BUCKET_NAME = "${AWS_STORAGE_BUCKET_NAME}"
-            ENV = "${ENV}"
-            WORKERS = "${WORKERS}"
+            STATIC_URL = "${BE_STATIC_URL}"
+            AWS_STORAGE_BUCKET_NAME = "${BE_AWS_STORAGE_BUCKET_NAME}"
+            ENV = "${BE_ENV}"
+            WORKERS = "${BE_WORKERS}"
 
       - name: 🐍 Set up Python ${{ inputs.python-version }} Environment
         uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
