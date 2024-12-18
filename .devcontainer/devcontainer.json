@@ -9,7 +9,7 @@
         "bierner.markdown-mermaid",
         "streetsidesoftware.code-spell-checker",
         "tamasfe.even-better-toml",
-        "codecov.codecov",
+        // "codecov.codecov", TODO: investigate how to stop spamming popups
         "ritwickdey.liveserver",
         "rangav.vscode-thunder-client",
         "jock.svg",
