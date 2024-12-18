@@ -34,4 +34,4 @@ runs:
 
     - name: 📁 Zip Dotenv Files
       shell: bash
-      run: zip --quiet --recurse-paths dotenv.zip .env
+      run: zip --quiet --recurse-paths env.zip env

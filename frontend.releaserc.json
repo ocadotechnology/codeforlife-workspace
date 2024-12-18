@@ -16,7 +16,7 @@
       {
         "assets": [
           { "path": "package.json", "label": "Packages" },
-          { "path": "dotenv.zip", "label": "Dotenv files" },
+          { "path": "env.zip", "label": "Dotenv files" },
           { "path": "deploy.zip", "label": "Deploy files" }
         ]
       }
