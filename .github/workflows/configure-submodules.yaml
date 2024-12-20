@@ -5,12 +5,12 @@ on:
     branches:
       - main
     paths:
-      - '.submodules/**'
+      - ".submodules/**"
   workflow_dispatch:
 
 jobs:
   configure:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     env:
       PYTHON_VERSION: 3.12
       WORKING_DIR: .submodules
@@ -18,7 +18,7 @@ jobs:
       - name: 🛫 Checkout
         uses: actions/checkout@v4
         with:
-          submodules: 'recursive'
+          submodules: "recursive"
 
       - name: 🐍 Set up Python ${{ env.PYTHON_VERSION }} Environment
         uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
@@ -32,4 +32,4 @@ jobs:
         working-directory: ${{ env.WORKING_DIR }}
         run: pipenv run python .
         env:
-          GIT_PUSH_CHANGES: '0' # TODO: set to 1 and allow bot to force push
+          GIT_PUSH_CHANGES: "0" # TODO: set to 1 and allow bot to force push

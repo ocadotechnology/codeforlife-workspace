@@ -3,7 +3,7 @@ name: Validate Existing Contributors
 on:
   pull_request:
     paths-ignore:
-      - 'CONTRIBUTING.md'
+      - "CONTRIBUTING.md"
   workflow_call:
 
 env:
@@ -12,7 +12,7 @@ env:
 
 jobs:
   validate-existing-contributors:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: 🛫 Checkout Pull Request
         uses: actions/checkout@v4
@@ -33,7 +33,7 @@ jobs:
       - name: 🐍 Set up Python ${{ env.PYTHON_VERSION }} Environment
         uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
         with:
-          checkout: 'false'
+          checkout: "false"
           python-version: ${{ env.PYTHON_VERSION }}
           working-directory: ${{ env.WORKING_DIR }}
 

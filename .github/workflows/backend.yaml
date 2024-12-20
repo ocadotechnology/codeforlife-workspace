@@ -43,7 +43,7 @@ jobs:
       postgres-version: ${{ inputs.postgres-version }}
 
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: [test]
     # Build if:
     #  - the repo's owner is Ocado Tech.
@@ -123,7 +123,7 @@ jobs:
 
   release:
     concurrency: release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: [build]
     env:
       DEPLOY_ARTIFACT_PATH: ".deploy"

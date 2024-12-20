@@ -11,8 +11,8 @@ on:
 jobs:
   deploy:
     permissions:
-      id-token: 'write' # TODO: separate build and deploy jobs and create reusable deploy workflow
-    runs-on: ubuntu-latest
+      id-token: "write" # TODO: separate build and deploy jobs and create reusable deploy workflow
+    runs-on: ubuntu-22.04
     steps:
       - name: 🛫 Checkout
         uses: actions/checkout@v4

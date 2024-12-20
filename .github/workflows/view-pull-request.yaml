@@ -25,7 +25,7 @@ env:
 
 jobs:
   view-pr:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       url: ${{ steps.view-pr.outputs.URL }}
     steps:

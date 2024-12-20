@@ -35,7 +35,7 @@ on:
 
 jobs:
   test-js-code:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     env:
       OCADO_TECH_ORG_ID: 2088731
     steps:

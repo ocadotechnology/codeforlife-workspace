@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'CONTRIBUTING.md'
+      - "CONTRIBUTING.md"
   workflow_call:
     inputs:
       pull-request-number:
@@ -22,7 +22,7 @@ env:
 
 jobs:
   validate-new-contributor:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       email-address: ${{ steps.validate-new-contributor.outputs.EMAIL_ADDRESS }}
     steps:
@@ -42,7 +42,7 @@ jobs:
 
       - uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
         with:
-          checkout: 'false'
+          checkout: "false"
           python-version: ${{ env.PYTHON_VERSION }}
           working-directory: ${{ env.WORKING_DIR }}
 

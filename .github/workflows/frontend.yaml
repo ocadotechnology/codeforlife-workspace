@@ -24,7 +24,7 @@ jobs:
       node-version: ${{ inputs.node-version }}
 
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: [test]
     # Build if:
     #  - the repo's owner is Ocado Tech.
@@ -50,7 +50,7 @@ jobs:
 
   release:
     concurrency: release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: [build]
     steps:
       - name: 🛫 Set up Release

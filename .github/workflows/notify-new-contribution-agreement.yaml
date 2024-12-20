@@ -9,7 +9,7 @@ on:
 
 jobs:
   run-script:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     env:
       PYTHON_VERSION: 3.12
       WORKING_DIR: .github/scripts/python/notify-new-contribution-agreement
@@ -22,7 +22,7 @@ jobs:
       - name: 🐍 Set up Python ${{ env.PYTHON_VERSION }} Environment
         uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
         with:
-          checkout: 'false'
+          checkout: "false"
           python-version: ${{ env.PYTHON_VERSION }}
           working-directory: ${{ env.WORKING_DIR }}
 
