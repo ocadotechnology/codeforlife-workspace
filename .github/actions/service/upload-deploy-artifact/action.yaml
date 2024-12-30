@@ -26,6 +26,7 @@ runs:
       run: |
         echo $(
           jq '
+            .secondaryServerGroupName = "${SSG_NAME}" |
             .targetPlatform = "ECS" |
             .applicationData.artifactUrl = "${APP_NEXUS_URL}" |
             .applicationData.version = "${APP_VERSION}" |
