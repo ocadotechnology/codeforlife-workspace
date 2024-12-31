@@ -57,18 +57,6 @@ jobs:
       - name: 🛫 Checkout
         uses: actions/checkout@v4
 
-      - name: 📝 Overwrite Static Parameters
-        run: |
-          if [ -f .deploy/static.json ]; then
-            echo $(
-              jq '
-                .artifactUrl = "${STATIC_NEXUS_URL}" |
-                .assetsPrefix = "static/" |
-                .bucket = "static"
-              ' .deploy/static.json
-            ) > .deploy/static.json
-          fi
-
       - name: 📤 Upload Deploy Artifact
         uses: ocadotechnology/codeforlife-workspace/.github/actions/service/upload-deploy-artifact@main
         with:
