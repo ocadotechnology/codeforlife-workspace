@@ -23,7 +23,8 @@ jobs:
     with:
       node-version: ${{ inputs.node-version }}
 
-  build:
+  release:
+    concurrency: release
     runs-on: ubuntu-22.04
     needs: [test]
     # Build if:
@@ -34,24 +35,6 @@ jobs:
       github.repository_owner_id == 2088731 &&
       github.repository_id != 841979065 &&
       github.ref_name == github.event.repository.default_branch
-    steps:
-      - name: 🛫 Checkout
-        uses: actions/checkout@v4
-
-      - name: 📤 Upload Deploy Artifact
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/service/upload-deploy-artifact@main
-        with:
-          runtime-type: nodejs
-          runtime-version: ${{ inputs.node-version }}
-          variables: |
-            APP_ID = "${APP_ID}"
-            APP_VERSION = "${APP_VERSION}"
-            NODE_ENV = "production"
-
-  release:
-    concurrency: release
-    runs-on: ubuntu-22.04
-    needs: [build]
     steps:
       - name: 🛫 Set up Release
         uses: ocadotechnology/codeforlife-workspace/.github/actions/service/setup-release@main

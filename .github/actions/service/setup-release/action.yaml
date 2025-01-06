@@ -21,16 +21,13 @@ runs:
         token: ${{ inputs.cfl-bot-gh-token }}
         fetch-depth: 0
 
-    - name: 📥 Download Deploy Artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: deploy
-        path: ${{ inputs.deploy-artifact-path }}
-
     - name: 📁 Zip Deploy Files
-      working-directory: ${{ inputs.deploy-artifact-path }}
       shell: bash
-      run: zip --quiet --recurse-paths ${{ inputs.deploy-zip-path }} .
+      run: |
+        if [ -d ${{ inputs.deploy-artifact-path }} ]; then
+          cd ${{ inputs.deploy-artifact-path }}
+          zip --quiet --recurse-paths ${{ inputs.deploy-zip-path }} .
+        fi
 
     - name: 📁 Zip Dotenv Files
       shell: bash
