@@ -39,4 +39,5 @@ runs:
     - name: 🛠 Install Dependencies
       shell: bash
       working-directory: ${{ inputs.working-directory }}
-      run: yarn install ${{ inputs.install-args }}
+      # TODO: do not ignore engines and upgrade to JS >=22
+      run: yarn install ${{ inputs.install-args }} --ignore-engines
