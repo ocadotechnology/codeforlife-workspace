@@ -63,5 +63,23 @@
       "/"
     ],
     "scope": "javascript,typescript,javascriptreact,typescriptreact"
+  },
+  "javascript.eslint.disable-next-line": {
+    "body": [
+      "// eslint-disable-next-line ${1:__code_name__}"
+    ],
+    "prefix": [
+      "//"
+    ],
+    "scope": "javascript,typescript,javascriptreact,typescriptreact"
+  },
+  "javascript.eslint.disable-line": {
+    "body": [
+      "// eslint-disable-line ${1:__code_name__}"
+    ],
+    "prefix": [
+      "//"
+    ],
+    "scope": "javascript,typescript,javascriptreact,typescriptreact"
   }
 }
