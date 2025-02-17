@@ -62,6 +62,9 @@ on:
       CODECOV_TOKEN:
         description: "The token used to gain access to Codecov."
         required: false # Needs to be false to support contributors
+      SNYK_TOKEN:
+        description: "The Snyk token used to connect to the Snyk project."
+        required: false
 
 jobs:
   test-py-code:
@@ -176,3 +179,13 @@ jobs:
           codecov_yml_path: ${{ inputs.codecov-yml-path }}
           working-directory: ${{ inputs.working-directory }}
           file: ${{ env.COVERAGE_REPORT }}
+
+      - name: Generate backend requirements
+        run: pip freeze > requirements.txt
+
+      - name: Run Snyk to check for vulnerabilities in Python
+        uses: snyk/actions/python@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: monitor --file=requirements.txt --package-manager=pip --project-name=${{ github.repository }}

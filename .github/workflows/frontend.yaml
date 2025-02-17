@@ -15,6 +15,9 @@ on:
       CFL_BOT_GH_TOKEN:
         description: "The CFL-bot's GitHub token. Used to release."
         required: false
+      SNYK_TOKEN:
+        description: "The Snyk token used to connect to the Snyk project."
+        required: false
 
 jobs:
   test:

@@ -32,6 +32,9 @@ on:
       CODECOV_TOKEN:
         description: "The token used to gain access to Codecov."
         required: false # Needs to be false to support contributors
+      SNYK_TOKEN:
+        description: "The Snyk token used to connect to the Snyk project."
+        required: false
 
 jobs:
   test-js-code:
@@ -83,3 +86,10 @@ jobs:
           codecov_yml_path: ${{ inputs.codecov-yml-path }}
           working-directory: ${{ inputs.working-directory }}
           file: ${{ inputs.codecov-file }}
+
+      - name: Run Snyk to check vulnerabilities in Node
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: monitor --file=pacakge.json --package-manager=yarn --project-name=${{ github.repository }}
