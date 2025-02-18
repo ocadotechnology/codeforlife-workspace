@@ -72,6 +72,7 @@ jobs:
     env:
       PYPROJECT_TOML: ${{ inputs.pyproject-toml-directory }}/pyproject.toml
       COVERAGE_REPORT: coverage.xml # NOTE: COVERAGE_FILE is reserved - do not use.
+      LANG: C.UTF-8
       OCADO_TECH_ORG_ID: 2088731
       DB_NAME: ${{ inputs.postgres-db }}
       DB_HOST: localhost
