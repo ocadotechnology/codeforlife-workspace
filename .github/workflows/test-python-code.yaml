@@ -181,9 +181,11 @@ jobs:
           file: ${{ env.COVERAGE_REPORT }}
 
       - name: 📝 Generate backend requirements
+        working-directory: ${{ inputs.working-directory }}
         run: pip freeze > requirements.txt
 
       - name: 🔎 Run Snyk to check for vulnerabilities in Python
+        working-directory: ${{ inputs.working-directory }}
         uses: snyk/actions/python@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
