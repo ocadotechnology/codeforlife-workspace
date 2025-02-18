@@ -120,7 +120,7 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          args: --file=Pipfile --package-manager=pip --project-name=${{ github.repository }} --fail-fast --severity-threshold=medium --command=${{ steps.path.outputs.path }}
+          args: --file=Pipfile --package-manager=pip --project-name=${{ github.repository }} --fail-fast --severity-threshold=medium
 
       - name: 🐍 Set up Python ${{ inputs.python-version }} Environment
         uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@snyk
