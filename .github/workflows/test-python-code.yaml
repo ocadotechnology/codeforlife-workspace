@@ -103,17 +103,25 @@ jobs:
           python-version: ${{ inputs.python-version }}
           install-args: --system
 
-      - name: Generate requirements file
+      - name: 📝 Generate requirements file
         run: pip freeze > requirements.txt
 
-      - name: Run Snyk to check for vulnerabilities
+      - name: 🔎 Run Snyk to check for vulnerabilities and upload report to Snyk.io
         uses: snyk/actions/python@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          args: --file=Pipfile --package-manager=pip --severity-threshold=medium --skip-unresolved
+          args: --file=requirements.txt --package-manager=pip --skip-unresolved
+          command: monitor
 
-      - name: Also install dev dependencies
+      - name: 🔎 Run Snyk to check for vulnerabilities and report them here
+        uses: snyk/actions/python@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --file=requirements.txt --package-manager=pip --severity-threshold=medium --skip-unresolved
+
+      - name: 🧪 Also install dev dependencies
         run: pipenv install --dev --system
 
       - name: 🔎 Check Import Sort
@@ -185,27 +193,3 @@ jobs:
           slug: ${{ inputs.codecov-slug }}
           codecov_yml_path: ${{ inputs.codecov-yml-path }}
           file: ${{ env.COVERAGE_REPORT }}
-
-#      - name: Checkout
-#        uses: actions/checkout@v4
-#        with:
-#          fetch-depth: 0
-#      - name: Setup python-version
-#        uses: actions/setup-python@v5
-#        with:
-#          python-version: "3.12"
-#          architecture: "x64"
-#      - name: Install Python dependencies
-#        run: |
-#          pip install pipenv
-#          pipenv install --dev --system
-#      - name: Generate requirements
-#        run: pip freeze > requirements.txt
-#      - name: Run Snyk to check for vulnerabilities in Python
-#        uses: snyk/actions/python@master
-#        env:
-#          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-#        with:
-#          command: monitor --file=requirements.txt --package-manager=pip
-
-
