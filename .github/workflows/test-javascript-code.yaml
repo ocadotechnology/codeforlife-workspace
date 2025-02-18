@@ -87,7 +87,7 @@ jobs:
           working-directory: ${{ inputs.working-directory }}
           file: ${{ inputs.codecov-file }}
 
-      - name: Run Snyk to check vulnerabilities in Node
+      - name: 🔎 Run Snyk to check vulnerabilities in Node
         uses: snyk/actions/node@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
