@@ -99,88 +99,90 @@ jobs:
       - name: 🛫 Checkout
         uses: actions/checkout@v4
 
+      - name: 🔎 Run Snyk to check for vulnerabilities in Python
+        uses: snyk/actions/python@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: test --file=Pipfile --package-manager=pipenv --project-name=${{ github.repository }}
+
       - name: 🐍 Set up Python ${{ inputs.python-version }} Environment
         uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
         with:
           python-version: ${{ inputs.python-version }}
           install-args: --dev
 
-#      - name: 🔎 Check Import Sort
-#        run: pipenv run isort --settings-file=${{ env.PYPROJECT_TOML }} --check ${{ inputs.source-path }}
-#
-#      - name: 🔎 Check Code Format
-#        run: if ! pipenv run black --config=${{ env.PYPROJECT_TOML }} --check ${{ inputs.source-path }}; then exit 1; fi
-#
-#      - name: 🔎 Check Static Type Hints
-#        run: pipenv run mypy --config-file=${{ env.PYPROJECT_TOML }} ${{ inputs.source-path }}
-#
-#      - name: 🔎 Check Static Code
-#        run: |
-#          echo 'Linting non-test files'
-#
-#          if ! pipenv run pylint --rcfile=${{ env.PYPROJECT_TOML }} $(
-#            git ls-files \
-#            '${{ inputs.source-path }}/*.py' \
-#            '${{ inputs.source-path }}/**/*.py' \
-#            ':!${{ inputs.source-path }}/test_*.py' \
-#            ':!${{ inputs.source-path }}/**/test_*.py' \
-#            ':!${{ inputs.source-path }}/*_test.py' \
-#            ':!${{ inputs.source-path }}/**/*_test.py'
-#          )
-#            then exit 1
-#          fi
-#
-#          echo 'Linting test files'
-#
-#          if ! pipenv run pylint --rcfile=${{ env.PYPROJECT_TOML }} --disable=duplicate-code $(
-#            git ls-files \
-#            '${{ inputs.source-path }}/test_*.py' \
-#            '${{ inputs.source-path }}/**/test_*.py' \
-#            '${{ inputs.source-path }}/*_test.py' \
-#            '${{ inputs.source-path }}/**/*_test.py'
-#          )
-#            then exit 1
-#          fi
-#
-#      - name: 🔎 Check Django Migrations
-#        if: inputs.check-django-migrations
-#        run: pipenv run python manage.py makemigrations --check --dry-run
-#
-#      - name: 🧪 Test Code Units
-#        run: |
-#          if [ ${{ github.repository_owner_id }} = ${{ env.OCADO_TECH_ORG_ID }} ]
-#          then
-#            pipenv run pytest \
-#              -n=auto \
-#              --cov=${{ inputs.source-path }} \
-#              --cov-report=xml:${{ env.COVERAGE_REPORT }} \
-#              -c=${{ env.PYPROJECT_TOML }} \
-#              ${{ inputs.source-path }}
-#          else
-#            pipenv run pytest \
-#              -n=auto \
-#              --cov=${{ inputs.source-path }} \
-#              --cov-fail-under=90 \
-#              -c=${{ env.PYPROJECT_TOML }} \
-#              ${{ inputs.source-path }}
-#          fi
-#
-#      - name: 📈 Upload Coverage Reports to Codecov
-#        if: github.repository_owner_id == env.OCADO_TECH_ORG_ID
-#        uses: codecov/codecov-action@v4
-#        with:
-#          fail_ci_if_error: true
-#          token: ${{ secrets.CODECOV_TOKEN }}
-#          slug: ${{ inputs.codecov-slug }}
-#          codecov_yml_path: ${{ inputs.codecov-yml-path }}
-#          file: ${{ env.COVERAGE_REPORT }}
+      - name: 🔎 Check Import Sort
+        run: pipenv run isort --settings-file=${{ env.PYPROJECT_TOML }} --check ${{ inputs.source-path }}
+
+      - name: 🔎 Check Code Format
+        run: if ! pipenv run black --config=${{ env.PYPROJECT_TOML }} --check ${{ inputs.source-path }}; then exit 1; fi
+
+      - name: 🔎 Check Static Type Hints
+        run: pipenv run mypy --config-file=${{ env.PYPROJECT_TOML }} ${{ inputs.source-path }}
+
+      - name: 🔎 Check Static Code
+        run: |
+          echo 'Linting non-test files'
+
+          if ! pipenv run pylint --rcfile=${{ env.PYPROJECT_TOML }} $(
+            git ls-files \
+            '${{ inputs.source-path }}/*.py' \
+            '${{ inputs.source-path }}/**/*.py' \
+            ':!${{ inputs.source-path }}/test_*.py' \
+            ':!${{ inputs.source-path }}/**/test_*.py' \
+            ':!${{ inputs.source-path }}/*_test.py' \
+            ':!${{ inputs.source-path }}/**/*_test.py'
+          )
+            then exit 1
+          fi
+
+          echo 'Linting test files'
+
+          if ! pipenv run pylint --rcfile=${{ env.PYPROJECT_TOML }} --disable=duplicate-code $(
+            git ls-files \
+            '${{ inputs.source-path }}/test_*.py' \
+            '${{ inputs.source-path }}/**/test_*.py' \
+            '${{ inputs.source-path }}/*_test.py' \
+            '${{ inputs.source-path }}/**/*_test.py'
+          )
+            then exit 1
+          fi
+
+      - name: 🔎 Check Django Migrations
+        if: inputs.check-django-migrations
+        run: pipenv run python manage.py makemigrations --check --dry-run
+
+      - name: 🧪 Test Code Units
+        run: |
+          if [ ${{ github.repository_owner_id }} = ${{ env.OCADO_TECH_ORG_ID }} ]
+          then
+            pipenv run pytest \
+              -n=auto \
+              --cov=${{ inputs.source-path }} \
+              --cov-report=xml:${{ env.COVERAGE_REPORT }} \
+              -c=${{ env.PYPROJECT_TOML }} \
+              ${{ inputs.source-path }}
+          else
+            pipenv run pytest \
+              -n=auto \
+              --cov=${{ inputs.source-path }} \
+              --cov-fail-under=90 \
+              -c=${{ env.PYPROJECT_TOML }} \
+              ${{ inputs.source-path }}
+          fi
+
+      - name: 📈 Upload Coverage Reports to Codecov
+        if: github.repository_owner_id == env.OCADO_TECH_ORG_ID
+        uses: codecov/codecov-action@v4
+        with:
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: ${{ inputs.codecov-slug }}
+          codecov_yml_path: ${{ inputs.codecov-yml-path }}
+          file: ${{ env.COVERAGE_REPORT }}
 
       - name: 📝 Generate backend requirements
         run: pip freeze > requirements.txt
 
-      - name: 🔎 Run Snyk to check for vulnerabilities in Python
-        uses: snyk/actions/python@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          command: monitor --file=requirements.txt --package-manager=pip --project-name=${{ github.repository }}
+
