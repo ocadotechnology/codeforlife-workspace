@@ -103,12 +103,15 @@ jobs:
           python-version: ${{ inputs.python-version }}
           install-args: --system
 
+      - name: Generate requirements file
+        run: pip freeze > requirements.txt
+
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/python@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          args: --file=Pipfile --package-manager=pip --severity-threshold=medium
+          args: --file=requirements.txt --package-manager=pip --severity-threshold=medium
 
       - name: Also install dev dependencies
         run: pipenv install --dev --system
