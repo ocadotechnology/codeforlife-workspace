@@ -175,9 +175,12 @@ jobs:
           codecov_yml_path: ${{ inputs.codecov-yml-path }}
           file: ${{ env.COVERAGE_REPORT }}
 
+      - name: Check dir
+        run: ls -a
+
       - name: 🔎 Run Snyk to check for vulnerabilities in Python
         uses: snyk/actions/python@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          command: monitor --file=Pipfile --package-manager=pipenv --project-name=${{ github.repository }}
+          command: monitor --file=Pipfile --package-manager=pip --project-name=${{ github.repository }}
