@@ -84,12 +84,17 @@ jobs:
           codecov_yml_path: ${{ inputs.codecov-yml-path }}
           file: ${{ inputs.codecov-file }}
 
-      - name: Check dir
-        run: ls
-
-      - name: 🔎 Run Snyk to check vulnerabilities in Node
+      - name: 🔎 Run Snyk to check vulnerabilities in Node and upload report to Snyk.io
         uses: snyk/actions/node@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          command: monitor --file=package.json --package-manager=yarn --project-name=${{ github.repository }}
+          args: --file=package.json --package-manager=yarn
+          command: monitor
+
+      - name: 🔎 Run Snyk to check vulnerabilities in Node and report them here
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --file=package.json --package-manager=yarn --severity-threshold=medium
