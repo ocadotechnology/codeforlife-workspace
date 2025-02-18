@@ -88,9 +88,9 @@ jobs:
           file: ${{ inputs.codecov-file }}
 
       - name: 🔎 Run Snyk to check vulnerabilities in Node
-        working-directory: ${{ inputs.working-directory }}
         uses: snyk/actions/node@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
+          working-directory: ${{ inputs.working-directory }}
           command: monitor --file=pacakge.json --package-manager=yarn --project-name=${{ github.repository }}

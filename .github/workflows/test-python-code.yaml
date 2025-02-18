@@ -185,9 +185,9 @@ jobs:
         run: pip freeze > requirements.txt
 
       - name: 🔎 Run Snyk to check for vulnerabilities in Python
-        working-directory: ${{ inputs.working-directory }}
         uses: snyk/actions/python@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
+          working-directory: ${{ inputs.working-directory }}
           command: monitor --file=requirements.txt --package-manager=pip --project-name=${{ github.repository }}
