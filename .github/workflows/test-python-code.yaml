@@ -108,6 +108,7 @@ jobs:
         uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@snyk
         with:
           python-version: ${{ inputs.python-version }}
+          install-args: --system
 
       - name: Echo path
         id: path
