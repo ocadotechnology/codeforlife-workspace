@@ -21,7 +21,7 @@ on:
 
 jobs:
   test:
-    uses: ocadotechnology/codeforlife-workspace/.github/workflows/test-javascript-code.yaml@main
+    uses: ocadotechnology/codeforlife-workspace/.github/workflows/test-javascript-code.yaml@snyk
     secrets: inherit
     with:
       node-version: ${{ inputs.node-version }}
