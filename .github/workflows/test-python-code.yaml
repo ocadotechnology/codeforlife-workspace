@@ -99,6 +99,11 @@ jobs:
       - name: 🛫 Checkout
         uses: actions/checkout@v4
 
+      - name: 🐍 Set up Python ${{ inputs.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+
       - name: 🔎 Run Snyk to check for vulnerabilities in Python
         uses: snyk/actions/python@master
         env:
@@ -107,8 +112,9 @@ jobs:
           command: test --file=Pipfile --package-manager=pip --project-name=${{ github.repository }} --fail-fast
 
       - name: 🐍 Set up Python ${{ inputs.python-version }} Environment
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@snyk
         with:
+          checkout-python: "false"
           python-version: ${{ inputs.python-version }}
           install-args: --dev
 
