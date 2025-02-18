@@ -92,4 +92,4 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          command: monitor --file=pacakge.json --package-manager=yarn --project-name=${{ github.repository }}
+          command: monitor --file=package.json --package-manager=yarn --project-name=${{ github.repository }}
