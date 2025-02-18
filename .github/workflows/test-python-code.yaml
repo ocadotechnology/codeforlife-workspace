@@ -109,12 +109,17 @@ jobs:
         with:
           python-version: ${{ inputs.python-version }}
 
+      - name: Echo path
+        id: path
+        run: |
+          echo "path=$(echo "$(pipenv --venv)/bin/python")" >> $GITHUB_OUTPUT
+
       - name: 🔎 Run Snyk to check for vulnerabilities in Python
         uses: snyk/actions/python@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          command: test --file=Pipfile --package-manager=pip --project-name=${{ github.repository }} --fail-fast --command=$(echo "$(pipenv --venv)/bin/python")
+          command: test --file=Pipfile --package-manager=pip --project-name=${{ github.repository }} --fail-fast --command=${{ steps.path.outputs.path }}
 
       - name: 🐍 Set up Python ${{ inputs.python-version }} Environment
         uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@snyk
