@@ -5,6 +5,10 @@ inputs:
     description: "A flag to designate if the code should be checked out."
     required: true
     default: "true"
+  checkout-python:
+    description: "A flag to designate if Python should be checked out."
+    required: true
+    default: "true"
   python-version:
     description: "The python version to set up."
     required: true
@@ -24,6 +28,7 @@ runs:
       uses: actions/checkout@v4
 
     - name: 🐍 Set up Python ${{ inputs.python-version }}
+      if: ${{ inputs.checkout-python == 'true' }}
       uses: actions/setup-python@v5
       with:
         python-version: ${{ inputs.python-version }}
