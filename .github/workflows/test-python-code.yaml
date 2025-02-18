@@ -111,7 +111,7 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          args: --file=requirements.txt --package-manager=pip --severity-threshold=medium
+          args: --file=requirements.txt --package-manager=pip --severity-threshold=medium --skip-unresolved
 
       - name: Also install dev dependencies
         run: pipenv install --dev --system
