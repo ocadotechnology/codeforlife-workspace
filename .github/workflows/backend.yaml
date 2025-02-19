@@ -37,7 +37,7 @@ on:
 
 jobs:
   test:
-    uses: ocadotechnology/codeforlife-workspace/.github/workflows/test-python-code.yaml@snyk
+    uses: ocadotechnology/codeforlife-workspace/.github/workflows/test-python-code.yaml@main
     secrets: inherit
     with:
       python-version: ${{ inputs.python-version }}
@@ -92,6 +92,14 @@ jobs:
         uses: ocadotechnology/codeforlife-workspace/.github/actions/service/setup-release@main
         with:
           cfl-bot-gh-token: ${{ secrets.CFL_BOT_GH_TOKEN }}
+
+      - name: 🔎 Run Snyk scan
+        uses: snyk/actions/python@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --file=requirements.txt --package-manager=pip --skip-unresolved
+          command: monitor
 
       - name: 📥 Download Build Artifact
         uses: actions/download-artifact@v4

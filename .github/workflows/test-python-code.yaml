@@ -106,14 +106,6 @@ jobs:
       - name: 📝 Generate requirements file
         run: pip freeze > requirements.txt
 
-      - name: 🔎 Run Snyk to check for vulnerabilities and upload report to Snyk.io
-        uses: snyk/actions/python@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --file=requirements.txt --package-manager=pip --skip-unresolved
-          command: monitor
-
       - name: 🔎 Run Snyk to check for vulnerabilities and report them here
         uses: snyk/actions/python@master
         env:

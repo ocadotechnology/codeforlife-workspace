@@ -21,7 +21,7 @@ on:
 
 jobs:
   test:
-    uses: ocadotechnology/codeforlife-workspace/.github/workflows/test-javascript-code.yaml@snyk
+    uses: ocadotechnology/codeforlife-workspace/.github/workflows/test-javascript-code.yaml@main
     secrets: inherit
     with:
       node-version: ${{ inputs.node-version }}
@@ -43,6 +43,14 @@ jobs:
         uses: ocadotechnology/codeforlife-workspace/.github/actions/service/setup-release@main
         with:
           cfl-bot-gh-token: ${{ secrets.CFL_BOT_GH_TOKEN }}
+
+      - name: 🔎 Run Snyk scan
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --file=package.json --package-manager=yarn
+          command: monitor
 
       - name: 🚀 Publish Semantic Release
         uses: ocadotechnology/codeforlife-workspace/.github/actions/service/release@main
