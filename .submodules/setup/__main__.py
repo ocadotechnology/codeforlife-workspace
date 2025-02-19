@@ -32,6 +32,14 @@ class Submodule:
     url: str
 
 
+def install_required_packages():
+    """Installs packages required in our dev container."""
+    subprocess.run(
+        ["npm", "install", "snyk", "-g"],
+        check=True,
+    )
+
+
 def print_intro():
     """Prints the Code For Life logo with ascii art."""
     # short hand
@@ -385,6 +393,8 @@ def view_repo(name: str):
 def main() -> None:
     """Entry point."""
     colorama_init()
+
+    install_required_packages()
 
     print_intro()
 
