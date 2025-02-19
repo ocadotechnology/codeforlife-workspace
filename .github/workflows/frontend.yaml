@@ -15,6 +15,9 @@ on:
       CFL_BOT_GH_TOKEN:
         description: "The CFL-bot's GitHub token. Used to release."
         required: false
+      SNYK_TOKEN:
+        description: "The Snyk token used to connect to the Snyk project."
+        required: false
 
 jobs:
   test:
@@ -40,6 +43,14 @@ jobs:
         uses: ocadotechnology/codeforlife-workspace/.github/actions/service/setup-release@main
         with:
           cfl-bot-gh-token: ${{ secrets.CFL_BOT_GH_TOKEN }}
+
+      - name: 🔎 Run Snyk scan
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --file=package.json --package-manager=yarn
+          command: monitor
 
       - name: 🚀 Publish Semantic Release
         uses: ocadotechnology/codeforlife-workspace/.github/actions/service/release@main
