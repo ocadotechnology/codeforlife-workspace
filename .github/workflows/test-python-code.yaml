@@ -69,6 +69,9 @@ on:
 jobs:
   test-py-code:
     runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
     env:
       PYPROJECT_TOML: ${{ inputs.pyproject-toml-directory }}/pyproject.toml
       COVERAGE_REPORT: coverage.xml # NOTE: COVERAGE_FILE is reserved - do not use.
@@ -98,7 +101,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 🐍 Set up Python ${{ inputs.python-version }} Environment
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@snyk
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
         with:
           python-version: ${{ inputs.python-version }}
           install-args: --system
