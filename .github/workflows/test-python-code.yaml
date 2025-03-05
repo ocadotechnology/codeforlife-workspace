@@ -58,12 +58,19 @@ on:
         type: string
         required: false
         default: "password"
-    secrets:
+      snyk-test-args:
+        description: "The args to pass to `snyk test`, excluding `--severity-threshold`."
+        type: string
+        required: false
+      snyk-code-test-args:
+        description: "The args to pass to `snyk test`, excluding `--severity-threshold`."
+        type: string
+        required: false
+    secrets: # All secrets should not be required to support contributors.
       CODECOV_TOKEN:
         description: "The token used to gain access to Codecov."
-        required: false # Needs to be false to support contributors
       SNYK_TOKEN:
-        description: "The Snyk token used to connect to the Snyk project."
+        description: "The token used to authenticate with Snyk API."
         required: false
 
 jobs:
@@ -75,7 +82,6 @@ jobs:
     env:
       PYPROJECT_TOML: ${{ inputs.pyproject-toml-directory }}/pyproject.toml
       COVERAGE_REPORT: coverage.xml # NOTE: COVERAGE_FILE is reserved - do not use.
-      LANG: C.UTF-8
       OCADO_TECH_ORG_ID: 2088731
       DB_NAME: ${{ inputs.postgres-db }}
       DB_HOST: localhost
@@ -97,26 +103,35 @@ jobs:
         ports:
           - 5432:5432
     steps:
-      - name: 🛫 Checkout
-        uses: actions/checkout@v4
-
       - name: 🐍 Set up Python ${{ inputs.python-version }} Environment
         uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
         with:
           python-version: ${{ inputs.python-version }}
-          install-args: --system
+          install-args: ${{ github.repository_owner_id == env.OCADO_TECH_ORG_ID && '--system' || '--dev --system' }}
 
-      - name: 📝 Generate requirements file
-        run: pip freeze > requirements.txt
+      # - name: 📝 Generate requirements file
+      #   run: pip freeze > requirements.txt
 
-      - name: 🔎 Run Snyk to check for vulnerabilities and report them here
+      - name: 🔎 Check Open-Source Vulnerabilities and License Issues
+        if: github.repository_owner_id == env.OCADO_TECH_ORG_ID
         uses: snyk/actions/python@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          args: --file=requirements.txt --package-manager=pip --severity-threshold=medium --skip-unresolved
+          command: test # https://docs.snyk.io/snyk-cli/commands/test
+          args: --severity-threshold=medium ${{ inputs.snyk-test-args }} # --file=requirements.txt --package-manager=pip --skip-unresolved
 
-      - name: 🧪 Also install dev dependencies
+      - name: 🔎 Check Known Security Issues
+        if: github.repository_owner_id == env.OCADO_TECH_ORG_ID
+        uses: snyk/actions/python@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: code test # https://docs.snyk.io/snyk-cli/commands/code-test
+          args: --severity-threshold=medium ${{ inputs.snyk-code-test-args }}
+
+      - name: 🐍 Install Dev Dependencies
+        if: github.repository_owner_id == env.OCADO_TECH_ORG_ID
         run: pipenv install --dev --system
 
       - name: 🔎 Check Import Sort
