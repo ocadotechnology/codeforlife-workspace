@@ -80,6 +80,7 @@ jobs:
       run:
         working-directory: ${{ inputs.working-directory }}
     env:
+      LANG: C.UTF-8
       PYPROJECT_TOML: ${{ inputs.pyproject-toml-directory }}/pyproject.toml
       COVERAGE_REPORT: coverage.xml # NOTE: COVERAGE_FILE is reserved - do not use.
       OCADO_TECH_ORG_ID: 2088731
