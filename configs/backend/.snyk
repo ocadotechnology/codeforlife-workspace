@@ -7,4 +7,9 @@ ignore:
         reason: None Given
         expires: 2025-04-04T18:27:43.466Z
         created: 2025-03-05T18:27:43.468Z
+  'snyk:lic:pip:certifi:MPL-2.0':
+    - '*':
+        reason: None Given
+        expires: 2025-04-04T18:39:50.108Z
+        created: 2025-03-05T18:39:50.113Z
 patch: {}
