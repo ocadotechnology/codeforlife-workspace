@@ -106,7 +106,9 @@ jobs:
         run: |
           echo "${{ github.workspace }}"
           .venv/bin/python --version
-          .venv/bin/python -c "import sys; print('\n'.join(sys.path))"
+          .venv/bin/python -c "import sys; print('\n'.join(sys.path))
+          ${{ github.workspace }}/.venv/bin/python --version
+          ${{ github.workspace }}/.venv/bin/python -c "import sys; print('\n'.join(sys.path))"
 
       - name: 📝 Generate requirements.txt
         if: github.repository_owner_id == env.OCADO_TECH_ORG_ID
@@ -132,7 +134,7 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           command: monitor # https://docs.snyk.io/snyk-cli/commands/monitor
-          args: --package-manager=pip --file=requirements.txt --project-name=${{ steps.get-repo-name.outputs.repo-name }} --project-environment=backend --command=.venv/bin/python
+          args: --package-manager=pip --file=requirements.txt --project-name=${{ steps.get-repo-name.outputs.repo-name }} --project-environment=backend --command=${{ github.workspace }}/.venv/bin/python
 
       - name: 🔎 Check Open-Source Vulnerabilities and License Issues
         if: github.repository_owner_id == env.OCADO_TECH_ORG_ID
@@ -141,7 +143,7 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           command: test # https://docs.snyk.io/snyk-cli/commands/test
-          args: --severity-threshold=medium --package-manager=pip --file=requirements.txt --project-name=${{ steps.get-repo-name.outputs.repo-name }} --command=.venv/bin/python
+          args: --severity-threshold=medium --package-manager=pip --file=requirements.txt --project-name=${{ steps.get-repo-name.outputs.repo-name }} --command=${{ github.workspace }}/.venv/bin/python
 
       - name: 🔎 Check Known Security Issues
         if: github.repository_owner_id == env.OCADO_TECH_ORG_ID
