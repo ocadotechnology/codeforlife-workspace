@@ -106,7 +106,7 @@ jobs:
         run: |
           echo "${{ github.workspace }}"
           .venv/bin/python --version
-          .venv/bin/python -c "import sys; print('\n'.join(sys.path))
+          .venv/bin/python -c "import sys; print('\n'.join(sys.path))"
           ${{ github.workspace }}/.venv/bin/python --version
           ${{ github.workspace }}/.venv/bin/python -c "import sys; print('\n'.join(sys.path))"
 
