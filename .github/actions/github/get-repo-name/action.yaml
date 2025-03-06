@@ -16,11 +16,11 @@ runs:
       shell: bash
       run: |
         name=${{ github.event.repository.name }}
-        if [ ${{ inputs.remove-prefix }} != "" ]; then
-          name=${name#${{ inputs.remove-prefix }}}
+        if [ "${{ inputs.remove-prefix }}" != "" ]; then
+          name=${name#"${{ inputs.remove-prefix }}"}
         fi
-        if [ ${{ inputs.remove-suffix }} != "" ]; then
-          name=${name%${{ inputs.remove-suffix }}}
+        if [ "${{ inputs.remove-suffix }}" != "" ]; then
+          name=${name%"${{ inputs.remove-suffix }}"}
         fi
 
         echo "name=$name" >> $GITHUB_OUTPUT
