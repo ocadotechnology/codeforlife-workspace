@@ -23,4 +23,5 @@ runs:
           name=${name%"${{ inputs.remove-suffix }}"}
         fi
 
+        echo "Outputting: $name"
         echo "name=$name" >> $GITHUB_OUTPUT
