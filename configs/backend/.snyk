@@ -1,7 +1,7 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
 version: v1.25.1
-language-settings: 
-  python: "3.12"
+language-settings:
+  python: '3.12'
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
   'snyk:lic:pip:psycopg2-binary:LGPL-3.0':
@@ -14,4 +14,9 @@ ignore:
         reason: None Given
         expires: 2025-04-04T18:39:50.108Z
         created: 2025-03-05T18:39:50.113Z
+  'snyk:lic:pip:chardet:LGPL-2.1':
+    - '*':
+        reason: None Given
+        expires: 2025-04-05T11:26:14.279Z
+        created: 2025-03-06T11:26:14.283Z
 patch: {}
