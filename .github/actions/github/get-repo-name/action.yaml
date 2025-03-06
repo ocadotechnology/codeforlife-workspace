@@ -1,0 +1,26 @@
+name: "Code for Life - GitHub - Get Repo Name"
+description: "Get the current GitHub repo's name."
+inputs:
+  remove-prefix:
+    description: "The prefix to remove from the repo's name."
+    required: true
+    default: "codeforlife-"
+  remove-suffix:
+    description: "The suffix to remove from the repo's name."
+    required: true
+    default: ""
+runs:
+  using: composite
+  steps:
+    - name: 🗂️ Get Repo's Name
+      shell: bash
+      run: |
+        name=${{ github.event.repository.name }}
+        if [ ${{ inputs.remove-prefix }} != "" ]; then
+          name=${name#${{ inputs.remove-prefix }}}
+        fi
+        if [ ${{ inputs.remove-suffix }} != "" ]; then
+          name=${name%${{ inputs.remove-suffix }}}
+        fi
+
+        echo "name=$name" >> $GITHUB_OUTPUT
