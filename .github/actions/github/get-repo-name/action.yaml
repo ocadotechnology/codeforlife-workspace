@@ -9,19 +9,24 @@ inputs:
     description: "The suffix to remove from the repo's name."
     required: true
     default: ""
+outputs:
+  repo-name:
+    description: "The name of the current GitHub repo."
+    value: ${{ steps.get-repo-name.outputs.value }}
 runs:
   using: composite
   steps:
     - name: 🗂️ Get Repo's Name
+      id: get-repo-name
       shell: bash
       run: |
-        name=${{ github.event.repository.name }}
+        value=${{ github.event.repository.name }}
         if [ "${{ inputs.remove-prefix }}" != "" ]; then
-          name=${name#"${{ inputs.remove-prefix }}"}
+          value=${value#"${{ inputs.remove-prefix }}"}
         fi
         if [ "${{ inputs.remove-suffix }}" != "" ]; then
-          name=${name%"${{ inputs.remove-suffix }}"}
+          value=${value%"${{ inputs.remove-suffix }}"}
         fi
 
-        echo "Outputting: $name"
-        echo "name=$name" >> "$GITHUB_OUTPUT"
+        echo "Outputting: $value"
+        echo "value=$value" >> "$GITHUB_OUTPUT"
