@@ -1,6 +1,9 @@
 name: "Code for Life - GitHub - Get Latest Release Tag"
 description: "Get the latest release tag from a GitHub repo."
 inputs:
+  gh-token:
+    description: "The token used to authenticate with GitHub's API."
+    required: true
   repo:
     description: "The GitHub repo to get the latest release tag from."
     required: false
@@ -16,7 +19,7 @@ runs:
       id: get-latest-release-tag
       shell: bash
       env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ inputs.gh-token }}
       run: |
         value=$(
           gh release list \
