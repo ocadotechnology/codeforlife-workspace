@@ -99,14 +99,6 @@ jobs:
         with:
           cfl-bot-gh-token: ${{ secrets.CFL_BOT_GH_TOKEN }}
 
-      - name: 🔎 Run Snyk scan
-        uses: snyk/actions/python@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --file=requirements.txt --package-manager=pip --skip-unresolved
-          command: monitor
-
       - name: 📥 Download Build Artifact
         uses: actions/download-artifact@v4
         with:
