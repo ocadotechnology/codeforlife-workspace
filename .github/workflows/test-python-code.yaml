@@ -66,6 +66,7 @@ on:
     secrets: # All secrets should not be required to support contributors.
       CODECOV_TOKEN:
         description: "The token used to gain access to Codecov."
+        required: false
       SNYK_TOKEN:
         description: "The token used to authenticate with Snyk API."
         required: false

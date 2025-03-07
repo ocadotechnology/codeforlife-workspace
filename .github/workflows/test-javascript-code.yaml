@@ -33,10 +33,10 @@ on:
         type: string
         required: false
         default: "frontend/.snyk"
-    secrets:
+    secrets: # All secrets should not be required to support contributors.
       CODECOV_TOKEN:
         description: "The token used to gain access to Codecov."
-        required: false # Needs to be false to support contributors
+        required: false
       SNYK_TOKEN:
         description: "The Snyk token used to connect to the Snyk project."
         required: false
