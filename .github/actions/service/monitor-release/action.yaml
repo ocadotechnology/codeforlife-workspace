@@ -1,4 +1,4 @@
-name: "Code for Life - Service - Release"
+name: "Code for Life - Service - Monitor Release"
 description: "Release a service deployment to GitHub."
 inputs:
   snyk-token:
