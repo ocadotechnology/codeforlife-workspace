@@ -100,7 +100,7 @@ jobs:
         uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
         with:
           python-version: ${{ inputs.python-version }}
-          install-args: --dev --system
+          install-args: --dev
       
       - name: Echo CWD
         run: |
