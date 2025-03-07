@@ -1,4 +1,4 @@
-name: "Code for Life - Snyk - Test Licenses and Vulnerabilities and Code"
+name: "Code for Life - Snyk - Run Tests"
 description: "Test License Issues, Open-Source Vulnerabilities and Known Security Issues using Snyk."
 inputs:
   snyk-token:
