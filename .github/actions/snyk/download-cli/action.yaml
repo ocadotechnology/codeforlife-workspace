@@ -1,0 +1,16 @@
+name: "Code for Life - Snyk - Download CLI"
+description: "Download and install the Snyk CLI."
+runs:
+  using: composite
+  steps:
+    - name: 📥 Download Snyk CLI
+      shell: bash
+      run: curl --compressed https://downloads.snyk.io/cli/stable/snyk-linux -o snyk
+
+    - name: ⚙️ Make Snyk Executable
+      shell: bash
+      run: chmod +x ./snyk
+
+    - name: 📁 Move Snyk Executable
+      shell: bash
+      run: mv ./snyk /usr/local/bin/

@@ -121,10 +121,7 @@ jobs:
 
       - name: 📥 Download Snyk CLI
         if: github.repository_owner_id == env.OCADO_TECH_ORG_ID
-        run: |
-          curl --compressed https://downloads.snyk.io/cli/stable/snyk-linux -o snyk
-          chmod +x ./snyk
-          mv ./snyk /usr/local/bin/
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/snyk/download-cli@snyk # TODO: set to @main
 
       - name: 📥 Download Snyk Config File
         if: github.repository_owner_id == env.OCADO_TECH_ORG_ID
