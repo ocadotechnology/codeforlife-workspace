@@ -8,6 +8,11 @@ on:
         type: number
         required: false
         default: 18
+      snyk-config-path:
+        description: "The path of the Snyk config file in the workspace."
+        type: string
+        required: false
+        default: "frontend/.snyk"
     secrets: # All secrets should not be required to support contributors.
       CODECOV_TOKEN:
         description: "The token used to gain access to Codecov."
@@ -16,7 +21,7 @@ on:
         description: "The CFL-bot's GitHub token. Used to release."
         required: false
       SNYK_TOKEN:
-        description: "The Snyk token used to connect to the Snyk project."
+        description: "The token used to authenticate with Snyk API."
         required: false
 
 jobs:
@@ -25,6 +30,7 @@ jobs:
     secrets: inherit
     with:
       node-version: ${{ inputs.node-version }}
+      snyk-config-path: ${{ inputs.snyk-config-path }}
 
   release:
     concurrency: release
@@ -44,16 +50,26 @@ jobs:
         with:
           cfl-bot-gh-token: ${{ secrets.CFL_BOT_GH_TOKEN }}
 
-      - name: 🔎 Run Snyk scan
-        uses: snyk/actions/node@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --file=package.json --package-manager=yarn
-          command: monitor
-
       - name: 🚀 Publish Semantic Release
         uses: ocadotechnology/codeforlife-workspace/.github/actions/service/release@main
         with:
           cfl-bot-gh-token: ${{ secrets.CFL_BOT_GH_TOKEN }}
-          rc-path: frontend.releaserc.json
+          rc-path: frontend/.releaserc.json
+
+  monitor:
+    concurrency: release
+    runs-on: ubuntu-22.04
+    needs: [release]
+    steps:
+      - name: 🌐 Set up JavaScript ${{ inputs.node-version }} Environment
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/javascript/setup-environment@main
+        with:
+          node-version: ${{ inputs.node-version }}
+
+      - name: 🔎 Monitor Open-Source Vulnerabilities and License Issues
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/service/monitor-release@main
+        with:
+          snyk-token: ${{ secrets.SNYK_TOKEN }}
+          snyk-config-path: ${{ inputs.snyk-config-path }}
+          snyk-project-environment: frontend
+          snyk-add-monitor-args: --package-manager=yarn

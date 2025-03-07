@@ -28,6 +28,11 @@ on:
         type: string
         required: false
         default: "coverage/cobertura-coverage.xml"
+      snyk-config-path:
+        description: "The path of the Snyk config file in the workspace."
+        type: string
+        required: false
+        default: "frontend/.snyk"
     secrets:
       CODECOV_TOKEN:
         description: "The token used to gain access to Codecov."
@@ -43,6 +48,7 @@ jobs:
       run:
         working-directory: ${{ inputs.working-directory }}
     env:
+      LANG: C.UTF-8
       OCADO_TECH_ORG_ID: 2088731
     steps:
       - name: 🌐 Set up JavaScript ${{ inputs.node-version }} Environment
@@ -84,9 +90,10 @@ jobs:
           codecov_yml_path: ${{ inputs.codecov-yml-path }}
           file: ${{ inputs.codecov-file }}
 
-      - name: 🔎 Run Snyk to check vulnerabilities in Node and report them here
-        uses: snyk/actions/node@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      - name: 🐶 Run Snyk Tests
+        if: github.repository_owner_id == env.OCADO_TECH_ORG_ID
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/snyk/test-licenses-and-vulnerabilities-and-code@main
         with:
-          args: --file=package.json --package-manager=yarn --severity-threshold=medium
+          snyk-token: ${{ secrets.SNYK_TOKEN }}
+          config-path: ${{ inputs.snyk-config-path }}
+          add-test-args: --package-manager=yarn

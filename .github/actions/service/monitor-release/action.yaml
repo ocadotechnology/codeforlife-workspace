@@ -1,0 +1,42 @@
+name: "Code for Life - Service - Release"
+description: "Release a service deployment to GitHub."
+inputs:
+  snyk-token:
+    description: "The token used to authenticate with Snyk API."
+    required: true
+  snyk-config-path:
+    description: "The path of the Snyk config file in the workspace."
+    required: true
+  snyk-project-environment:
+    description: "The Snyk environment(s) to set for this project."
+    required: true
+  snyk-add-monitor-args:
+    description: "Additional args to pass to the `snyk monitor` command."
+    required: false
+    default: ""
+runs:
+  using: composite
+  steps:
+    - name: 📥 Download Snyk CLI and Config File
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/snyk/download-cli-and-config-file@main
+      with:
+        config-path: ${{ inputs.snyk-config-path }}
+
+    - name: 🗂️ Get Repo's Name
+      id: get-repo-name
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/github/get-repo-name@main
+    
+    - name: 🗂️ Get Repo's Latest Release Tag
+      id: get-latest-release-tag
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/github/get-latest-release-tag@main
+
+    - name: 🔎 Monitor Open-Source Vulnerabilities and License Issues
+      shell: bash
+      env:
+        SNYK_TOKEN: ${{ inputs.snyk-token }}
+      run: | # https://docs.snyk.io/snyk-cli/commands/monitor
+        snyk monitor \
+          --project-name=${{ steps.get-repo-name.outputs.repo-name }} \
+          --project-environment=${{ inputs.snyk-project-environment }} \
+          --project-tags=version=${{ steps.get-latest-release-tag.outputs.latest-release-tag }} \
+          ${{ inputs.snyk-add-monitor-args }}
