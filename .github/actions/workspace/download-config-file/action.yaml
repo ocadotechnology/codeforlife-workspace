@@ -1,0 +1,19 @@
+name: "Code for Life - Workspace - Download Config File"
+description: "Download a config file from the workspace."
+inputs:
+  branch:
+    description: "The branch on the workspace repo."
+    required: true
+    default: "main"
+  path:
+    description: "The path of the config file."
+    required: true
+  save-to:
+    description: "Where to save the config file."
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: 📥 Download Config File
+      shell: bash
+      run: wget https://raw.githubusercontent.com/ocadotechnology/codeforlife-workspace/refs/heads/${{ inputs.branch }}/configs/${{ inputs.path }} -O ${{ inputs.save-to }}

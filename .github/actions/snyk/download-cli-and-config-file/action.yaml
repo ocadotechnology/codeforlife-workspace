@@ -1,0 +1,30 @@
+name: "Code for Life - Snyk - Download CLI and Config File"
+description: "Download and install the Snyk CLI and config file."
+inputs:
+  config-path:
+    description: "The path of the Snyk config file in the workspace."
+    required: true
+  config-save-to:
+    description: "Where to save the Snyk config file."
+    required: false
+    default: .snyk
+runs:
+  using: composite
+  steps:
+    - name: 📥 Download Snyk CLI
+      shell: bash
+      run: curl --compressed https://downloads.snyk.io/cli/stable/snyk-linux -o snyk
+
+    - name: ⚙️ Make Snyk Executable
+      shell: bash
+      run: chmod +x ./snyk
+
+    - name: 📁 Move Snyk Executable
+      shell: bash
+      run: mv ./snyk /usr/local/bin/
+    
+    - name: 📥 Download Snyk Config File
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-config-file@main
+      with:
+        path: ${{ inputs.config-path }}
+        save-to: ${{ inputs.config-save-to }}

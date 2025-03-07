@@ -11,8 +11,10 @@ runs:
   using: composite
   steps:
     - name: 📥 Download Release Candidate Configuration
-      shell: bash
-      run: wget https://raw.githubusercontent.com/ocadotechnology/codeforlife-workspace/refs/heads/main/${{ inputs.rc-path }} -O .releaserc.json
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-config-file@main
+      with:
+        path: ${{ inputs.rc-path }}
+        save-to: .releaserc.json
 
     - name: 🚀 Publish Semantic Release
       uses: ocadotechnology/codeforlife-workspace/.github/actions/github/release@main

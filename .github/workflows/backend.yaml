@@ -24,12 +24,20 @@ on:
         type: number
         required: false
         default: 17
+      snyk-config-path:
+        description: "The path of the Snyk config file in the workspace."
+        type: string
+        required: false
+        default: "backend/.snyk"
     secrets: # All secrets should not be required to support contributors.
       CODECOV_TOKEN:
         description: "The token used to gain access to Codecov."
         required: false
       CFL_BOT_GH_TOKEN:
         description: "The CFL-bot's GitHub token. Used to release."
+        required: false
+      SNYK_TOKEN:
+        description: "The token used to authenticate with Snyk API."
         required: false
 
 jobs:
@@ -41,6 +49,7 @@ jobs:
       source-path: ${{ inputs.source-path }}
       postgres-db: ${{ inputs.postgres-db }}
       postgres-version: ${{ inputs.postgres-version }}
+      snyk-config-path: ${{ inputs.snyk-config-path }}
 
   build:
     runs-on: ubuntu-22.04
@@ -103,4 +112,22 @@ jobs:
         uses: ocadotechnology/codeforlife-workspace/.github/actions/service/release@main
         with:
           cfl-bot-gh-token: ${{ secrets.CFL_BOT_GH_TOKEN }}
-          rc-path: backend.releaserc.json
+          rc-path: backend/.releaserc.json
+
+  monitor:
+    concurrency: release
+    runs-on: ubuntu-22.04
+    needs: [release]
+    steps:
+      - name: 🐍 Set up Python ${{ inputs.python-version }} Environment
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
+        with:
+          python-version: ${{ inputs.python-version }}
+
+      - name: 🔎 Monitor Open-Source Vulnerabilities and License Issues
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/service/monitor-release@main
+        with:
+          snyk-token: ${{ secrets.SNYK_TOKEN }}
+          snyk-config-path: ${{ inputs.snyk-config-path }}
+          snyk-project-environment: backend
+          snyk-add-monitor-args: --command=.venv/bin/python

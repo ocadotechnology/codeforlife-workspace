@@ -1,0 +1,51 @@
+name: "Code for Life - Snyk - Run Tests"
+description: "Test License Issues, Open-Source Vulnerabilities and Known Security Issues using Snyk."
+inputs:
+  snyk-token:
+    description: "The token used to authenticate with Snyk API."
+    required: true
+  severity-threshold:
+    description: "The threshold for any license issues, open-source vulnerabilities and known security issues."
+    required: false
+    default: medium
+  config-path:
+    description: "The path of the Snyk config file in the workspace."
+    required: true
+  add-test-args:
+    description: "Additional args to pass to the `snyk test` command."
+    required: false
+    default: ""
+  add-code-test-args:
+    description: "Additional args to pass to the `snyk code test` command."
+    required: false
+    default: ""
+runs:
+  using: composite
+  steps:
+    - name: 📥 Download Snyk CLI and Config File
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/snyk/download-cli-and-config-file@main
+      with:
+        config-path: ${{ inputs.config-path }}
+
+    - name: 🗂️ Get Repo's Name
+      id: get-repo-name
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/github/get-repo-name@main
+
+    - name: 🔎 Check Open-Source Vulnerabilities and License Issues
+      shell: bash
+      env:
+        SNYK_TOKEN: ${{ inputs.snyk-token }}
+      run: | # https://docs.snyk.io/snyk-cli/commands/test
+        snyk test \
+          --project-name=${{ steps.get-repo-name.outputs.repo-name }} \
+          --severity-threshold=${{ inputs.severity-threshold }} \
+          ${{ inputs.add-test-args }}
+
+    - name: 🔎 Check Known Security Issues
+      shell: bash
+      env:
+        SNYK_TOKEN: ${{ inputs.snyk-token }}
+      run: | # https://docs.snyk.io/snyk-cli/commands/code-test
+        snyk code test \
+          --severity-threshold=${{ inputs.severity-threshold }} \
+          ${{ inputs.add-code-test-args }}
