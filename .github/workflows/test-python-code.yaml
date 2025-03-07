@@ -119,6 +119,13 @@ jobs:
       #   if: github.repository_owner_id == env.OCADO_TECH_ORG_ID
       #   run: pipenv requirements > requirements.txt
 
+      - name: 📥 Download Snyk CLI
+        if: github.repository_owner_id == env.OCADO_TECH_ORG_ID
+        run: |
+          curl --compressed https://downloads.snyk.io/cli/stable/snyk-linux -o snyk
+          chmod +x ./snyk
+          mv ./snyk /usr/local/bin/
+
       - name: 📥 Download Snyk Config File
         if: github.repository_owner_id == env.OCADO_TECH_ORG_ID
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-config-file@snyk # TODO: set to @main
@@ -134,30 +141,32 @@ jobs:
 
       - name: 🔎 Monitor Open-Source Vulnerabilities and License Issues
         if: github.repository_owner_id == env.OCADO_TECH_ORG_ID
-        uses: snyk/actions/python@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          command: monitor # https://docs.snyk.io/snyk-cli/commands/monitor
-          args: --project-name=${{ steps.get-repo-name.outputs.repo-name }} --project-environment=backend #--command=.venv/bin/python #--package-manager=pip --file=requirements.txt
+        run: |
+          # https://docs.snyk.io/snyk-cli/commands/monitor
+          snyk monitor \
+            --project-name=${{ steps.get-repo-name.outputs.repo-name }} \
+            --project-environment=backend \
+            --command=.venv/bin/python
 
       - name: 🔎 Check Open-Source Vulnerabilities and License Issues
         if: github.repository_owner_id == env.OCADO_TECH_ORG_ID
-        uses: snyk/actions/python@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          command: test # https://docs.snyk.io/snyk-cli/commands/test
-          args: --severity-threshold=medium --project-name=${{ steps.get-repo-name.outputs.repo-name }} #--command=.venv/bin/python #--package-manager=pip --file=requirements.txt
+        run: |
+          # https://docs.snyk.io/snyk-cli/commands/test
+          snyk test \
+            --project-name=${{ steps.get-repo-name.outputs.repo-name }} \
+            --command=.venv/bin/python \
+            --severity-threshold=medium
 
       - name: 🔎 Check Known Security Issues
         if: github.repository_owner_id == env.OCADO_TECH_ORG_ID
-        uses: snyk/actions/python@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          command: code test # https://docs.snyk.io/snyk-cli/commands/code-test
-          args: --severity-threshold=medium
+        # https://docs.snyk.io/snyk-cli/commands/code-test  
+        run: snyk code test --severity-threshold=medium
 
       - name: 🔎 Check Import Sort
         run: pipenv run isort --settings-file=${{ env.PYPROJECT_TOML }} --check ${{ inputs.source-path }}
