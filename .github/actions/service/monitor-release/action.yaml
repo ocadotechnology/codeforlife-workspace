@@ -1,5 +1,5 @@
 name: "Code for Life - Service - Monitor Release"
-description: "Release a service deployment to GitHub."
+description: "Monitor a service deployment release."
 inputs:
   snyk-token:
     description: "The token used to authenticate with Snyk API."
