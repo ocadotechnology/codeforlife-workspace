@@ -1,5 +1,5 @@
-name: "Code for Life - Service - Monitor Release"
-description: "Monitor a service deployment release."
+name: "Code for Life - Snyk - Monitor Release"
+description: "Monitor a release using Snyk."
 inputs:
   gh-token:
     description: "The token used to authenticate with GitHub's API."

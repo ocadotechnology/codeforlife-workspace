@@ -31,7 +31,7 @@ jobs:
           python-version: ${{ inputs.python-version }}
 
       - name: 🔎 Monitor Open-Source Vulnerabilities and License Issues
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/service/monitor-release@main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/snyk/monitor-release@main
         with:
           gh-token: ${{ secrets.CFL_BOT_GH_TOKEN }}
           snyk-token: ${{ secrets.SNYK_TOKEN }}
