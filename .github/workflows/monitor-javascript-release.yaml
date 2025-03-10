@@ -1,0 +1,40 @@
+name: Monitor JavaScript Release
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: "The Node.js version to set up."
+        type: number
+        required: true
+      snyk-config-path:
+        description: "The path of the Snyk config file in the workspace."
+        type: string
+        required: false
+        default: "frontend/.snyk"
+    secrets:
+      CFL_BOT_GH_TOKEN:
+        description: "The CFL-bot's GitHub token. Used to release."
+        required: true
+      SNYK_TOKEN:
+        description: "The token used to authenticate with Snyk API."
+        required: true
+
+jobs:
+  monitor:
+    concurrency: release
+    runs-on: ubuntu-22.04
+    steps:
+      - name: 🌐 Set up JavaScript ${{ inputs.node-version }} Environment
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/javascript/setup-environment@main
+        with:
+          node-version: ${{ inputs.node-version }}
+
+      - name: 🔎 Monitor Open-Source Vulnerabilities and License Issues
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/service/monitor-release@main
+        with:
+          gh-token: ${{ secrets.CFL_BOT_GH_TOKEN }}
+          snyk-token: ${{ secrets.SNYK_TOKEN }}
+          snyk-config-path: ${{ inputs.snyk-config-path }}
+          snyk-project-environment: frontend
+          snyk-add-monitor-args: --package-manager=yarn

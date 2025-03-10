@@ -115,20 +115,9 @@ jobs:
           rc-path: backend/.releaserc.json
 
   monitor:
-    concurrency: release
-    runs-on: ubuntu-22.04
+    uses: ocadotechnology/codeforlife-workspace/.github/workflows/monitor-python-release.yaml@main
+    secrets: inherit
     needs: [release]
-    steps:
-      - name: 🐍 Set up Python ${{ inputs.python-version }} Environment
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
-        with:
-          python-version: ${{ inputs.python-version }}
-
-      - name: 🔎 Monitor Open-Source Vulnerabilities and License Issues
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/service/monitor-release@main
-        with:
-          gh-token: ${{ secrets.CFL_BOT_GH_TOKEN }}
-          snyk-token: ${{ secrets.SNYK_TOKEN }}
-          snyk-config-path: ${{ inputs.snyk-config-path }}
-          snyk-project-environment: backend
-          snyk-add-monitor-args: --command=.venv/bin/python
+    with:
+      python-version: ${{ inputs.python-version }}
+      snyk-config-path: ${{ inputs.snyk-config-path }}

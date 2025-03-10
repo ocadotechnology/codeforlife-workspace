@@ -57,20 +57,9 @@ jobs:
           rc-path: frontend/.releaserc.json
 
   monitor:
-    concurrency: release
-    runs-on: ubuntu-22.04
+    uses: ocadotechnology/codeforlife-workspace/.github/workflows/monitor-javascript-release.yaml@main
+    secrets: inherit
     needs: [release]
-    steps:
-      - name: 🌐 Set up JavaScript ${{ inputs.node-version }} Environment
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/javascript/setup-environment@main
-        with:
-          node-version: ${{ inputs.node-version }}
-
-      - name: 🔎 Monitor Open-Source Vulnerabilities and License Issues
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/service/monitor-release@main
-        with:
-          gh-token: ${{ secrets.CFL_BOT_GH_TOKEN }}
-          snyk-token: ${{ secrets.SNYK_TOKEN }}
-          snyk-config-path: ${{ inputs.snyk-config-path }}
-          snyk-project-environment: frontend
-          snyk-add-monitor-args: --package-manager=yarn
+    with:
+      node-version: ${{ inputs.node-version }}
+      snyk-config-path: ${{ inputs.snyk-config-path }}
