@@ -12,6 +12,11 @@ on:
         type: string
         required: false
         default: "frontend/.snyk"
+      remove-repo-name-prefix:
+        description: "The prefix to remove from the repo's name."
+        type: string
+        required: false
+        default: "codeforlife-"
     secrets:
       CFL_BOT_GH_TOKEN:
         description: "The CFL-bot's GitHub token. Used to release."
@@ -38,3 +43,4 @@ jobs:
           snyk-config-path: ${{ inputs.snyk-config-path }}
           snyk-project-environment: frontend
           snyk-add-monitor-args: --package-manager=yarn
+          remove-repo-name-prefix: ${{ inputs.remove-repo-name-prefix }}
