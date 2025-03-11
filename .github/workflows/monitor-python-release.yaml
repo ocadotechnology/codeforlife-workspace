@@ -42,5 +42,7 @@ jobs:
           snyk-token: ${{ secrets.SNYK_TOKEN }}
           snyk-config-path: ${{ inputs.snyk-config-path }}
           snyk-project-environment: backend
-          snyk-add-monitor-args: --command=.venv/bin/python
+          snyk-add-monitor-args: |
+            --package-manager=pip \
+            --command=.venv/bin/python
           remove-repo-name-prefix: ${{ inputs.remove-repo-name-prefix }}
