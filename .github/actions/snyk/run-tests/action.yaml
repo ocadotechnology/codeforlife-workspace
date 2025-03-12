@@ -47,11 +47,13 @@ runs:
           --severity-threshold=${{ inputs.severity-threshold }} \
           ${{ inputs.add-test-args }}
 
-    - name: 🔎 Check Known Security Issues
-      shell: bash
-      env:
-        SNYK_TOKEN: ${{ inputs.snyk-token }}
-      run: | # https://docs.snyk.io/snyk-cli/commands/code-test
-        snyk code test \
-          --severity-threshold=${{ inputs.severity-threshold }} \
-          ${{ inputs.add-code-test-args }}
+    # Ocado doesn't have an agreement with Snyk for SAST. If this ever changes,
+    # uncomment the following.
+    # - name: 🔎 Check Known Security Issues
+    #   shell: bash
+    #   env:
+    #     SNYK_TOKEN: ${{ inputs.snyk-token }}
+    #   run: | # https://docs.snyk.io/snyk-cli/commands/code-test
+    #     snyk code test \
+    #       --severity-threshold=${{ inputs.severity-threshold }} \
+    #       ${{ inputs.add-code-test-args }}
