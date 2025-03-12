@@ -15,10 +15,10 @@ inputs:
     description: "Additional args to pass to the `snyk test` command."
     required: false
     default: ""
-  add-code-test-args:
-    description: "Additional args to pass to the `snyk code test` command."
-    required: false
-    default: ""
+  # add-code-test-args:
+  #   description: "Additional args to pass to the `snyk code test` command."
+  #   required: false
+  #   default: ""
   remove-repo-name-prefix:
     description: "The prefix to remove from the repo's name."
     required: false
