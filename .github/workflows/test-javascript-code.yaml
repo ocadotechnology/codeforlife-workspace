@@ -18,6 +18,11 @@ on:
         type: string
         required: false
         default: ${{ github.repository }}
+      codecov-yml-download-branch:
+        description: "The branch of the workspace repo to download the codecov.yml from."
+        type: string
+        required: false
+        default: "main"
       codecov-yml-path:
         description: "The path of the Codecov YAML file."
         type: string
@@ -82,12 +87,12 @@ jobs:
 
       - name: 📈 Upload Coverage Reports to Codecov
         if: github.repository_owner_id == env.OCADO_TECH_ORG_ID
-        uses: codecov/codecov-action@v4
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/codecov/upload-report@main
         with:
-          fail_ci_if_error: true
+          config-path: ${{ inputs.codecov-yml-path }}
+          config-download-branch: ${{ inputs.codecov-yml-download-branch }}
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: ${{ inputs.codecov-slug }}
-          codecov_yml_path: ${{ inputs.codecov-yml-path }}
           file: ${{ inputs.codecov-file }}
 
       - name: 🐶 Run Snyk Tests
