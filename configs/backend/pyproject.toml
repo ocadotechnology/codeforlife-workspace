@@ -32,4 +32,10 @@ line_length = 80
 skip_glob = ["**/migrations/*.py"]
 
 [tool.coverage.run]
-omit = ["*/test_*.py", "*/*_test.py", "manage.py"]
+omit = [
+  "*/test_*.py",
+  "*/*_test.py",
+  "manage.py",
+  "setup.py",
+  "*/management/commands/*.py",
+]
