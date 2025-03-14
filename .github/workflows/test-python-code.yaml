@@ -117,7 +117,7 @@ jobs:
         if: hashFiles(inputs.pyproject-toml-path) != ''
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-config-file@main
         with:
-          branch: ${{ inputs.pyproject-toml-download-branch }}
+          branch: pyproject-toml-config # TODO: ${{ inputs.pyproject-toml-download-branch }}
           path: backend/pyproject.toml
           save-to: ${{ inputs.pyproject-toml-path }}
 
