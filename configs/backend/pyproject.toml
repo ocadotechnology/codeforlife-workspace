@@ -1,41 +1,56 @@
-[tool.black]
+[tool.black] # https://black.readthedocs.io/en/stable/usage_and_configuration/the_basics.html
 line-length = 80
 extend-exclude = ".*/migrations/.*py"
 
-[tool.pytest.ini_options]
-env = ["DJANGO_SETTINGS_MODULE=settings"]
+[tool.pytest.ini_options] # https://docs.pytest.org/en/stable/reference/reference.html#ini-options-ref
+env = [ # https://github.com/pytest-dev/pytest-env
+  "DJANGO_SETTINGS_MODULE=settings",
+]
 
 [tool.mypy]
-plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
+plugins = [
+  "mypy_django_plugin.main", # https://github.com/typeddjango/django-stubs
+  "mypy_drf_plugin.main",    # https://github.com/typeddjango/djangorestframework-stubs
+]
 check_untyped_defs = true
 disable_error_code = ["dict-item"]
 mypy_path = "../codeforlife-package-python"
 
-[tool.django-stubs]
+[tool.django-stubs] # https://github.com/typeddjango/django-stubs
 django_settings_module = "settings"
 
-[tool.pylint.main]
+[tool.pylint.main] # https://pylint.readthedocs.io/en/latest/user_guide/configuration/all-options.html#main-checker
 init-hook = "import os; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')"
 disable = ["fixme"]
 
-[tool.pylint.format]
+[tool.pylint.format] # https://pylint.pycqa.org/en/stable/user_guide/configuration/all-options.html#format-checker
 max-line-length = 80
 
 [tool.pylint.MASTER]
 ignore-paths = [".*/migrations/.*.py"]
-load-plugins = "pylint_django"
-django-settings-module = "settings"
+load-plugins = "pylint_django" # https://github.com/pylint-dev/pylint-django
+django-settings-module = "settings" # https://github.com/pylint-dev/pylint-django
 
-[tool.isort]
+[tool.isort] # https://pycqa.github.io/isort/docs/configuration/options.html
 profile = "black"
 line_length = 80
 skip_glob = ["**/migrations/*.py"]
 
 [tool.coverage.run]
-omit = [
+omit = [ # https://coverage.readthedocs.io/en/latest/config.html#run-omit
   "*/test_*.py",
   "*/*_test.py",
   "manage.py",
   "setup.py",
   "*/management/commands/*.py",
+]
+
+[tool.coverage.report]
+exclude_also = [ # https://coverage.readthedocs.io/en/latest/excluding.html#multi-line-exclusion-regexes
+  # 1. Exclude an except clause of a specific form:
+  'except ValueError:\n\s*assume\(False\)',
+  # 2. Comments to turn coverage on and off:
+  'no cover: start(?s:.)*?no cover: stop',
+  # 3. A pragma comment that excludes an entire file:
+  '\A(?s:.*# pragma: exclude file.*)\Z',
 ]
