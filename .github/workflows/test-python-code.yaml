@@ -23,11 +23,16 @@ on:
         type: boolean
         required: false
         default: true
-      pyproject-toml-directory:
-        description: "The directory where pyproject.toml is located."
+      pyproject-toml-download-branch:
+        description: "The branch of the workspace repo to download the pyproject.toml from."
         type: string
         required: false
-        default: "."
+        default: "main"
+      pyproject-toml-path:
+        description: "The path of the pyproject.toml."
+        type: string
+        required: false
+        default: "./pyproject.toml"
       codecov-slug:
         description: "The slug provided to Codecov for the coverage report."
         type: string
@@ -79,7 +84,6 @@ jobs:
         working-directory: ${{ inputs.working-directory }}
     env:
       LANG: C.UTF-8
-      PYPROJECT_TOML: ${{ inputs.pyproject-toml-directory }}/pyproject.toml
       COVERAGE_REPORT: coverage.xml # NOTE: COVERAGE_FILE is reserved - do not use.
       OCADO_TECH_ORG_ID: 2088731
       DB_NAME: ${{ inputs.postgres-db }}
@@ -108,20 +112,29 @@ jobs:
           python-version: ${{ inputs.python-version }}
           install-args: --dev
 
+      - name: 📥 Download Project Config File
+        # Download default file if one is not already present in the repo.
+        if: hashFiles(inputs.pyproject-toml-path) == ''
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-config-file@main
+        with:
+          branch: ${{ inputs.pyproject-toml-download-branch }}
+          path: backend/pyproject.toml
+          save-to: ${{ inputs.pyproject-toml-path }}
+
       - name: 🔎 Check Import Sort
-        run: pipenv run isort --settings-file=${{ env.PYPROJECT_TOML }} --check ${{ inputs.source-path }}
+        run: pipenv run isort --settings-file=${{ inputs.pyproject-toml-path }} --check ${{ inputs.source-path }}
 
       - name: 🔎 Check Code Format
-        run: if ! pipenv run black --config=${{ env.PYPROJECT_TOML }} --check ${{ inputs.source-path }}; then exit 1; fi
+        run: if ! pipenv run black --config=${{ inputs.pyproject-toml-path }} --check ${{ inputs.source-path }}; then exit 1; fi
 
       - name: 🔎 Check Static Type Hints
-        run: pipenv run mypy --config-file=${{ env.PYPROJECT_TOML }} ${{ inputs.source-path }}
+        run: pipenv run mypy --config-file=${{ inputs.pyproject-toml-path }} ${{ inputs.source-path }}
 
       - name: 🔎 Check Static Code
         run: |
           echo 'Linting non-test files'
 
-          if ! pipenv run pylint --rcfile=${{ env.PYPROJECT_TOML }} $(
+          if ! pipenv run pylint --rcfile=${{ inputs.pyproject-toml-path }} $(
             git ls-files \
             '${{ inputs.source-path }}/*.py' \
             '${{ inputs.source-path }}/**/*.py' \
@@ -135,7 +148,7 @@ jobs:
 
           echo 'Linting test files'
 
-          if ! pipenv run pylint --rcfile=${{ env.PYPROJECT_TOML }} --disable=duplicate-code $(
+          if ! pipenv run pylint --rcfile=${{ inputs.pyproject-toml-path }} --disable=duplicate-code $(
             git ls-files \
             '${{ inputs.source-path }}/test_*.py' \
             '${{ inputs.source-path }}/**/test_*.py' \
@@ -157,14 +170,14 @@ jobs:
               -n=auto \
               --cov=${{ inputs.source-path }} \
               --cov-report=xml:${{ env.COVERAGE_REPORT }} \
-              -c=${{ env.PYPROJECT_TOML }} \
+              -c=${{ inputs.pyproject-toml-path }} \
               ${{ inputs.source-path }}
           else
             pipenv run pytest \
               -n=auto \
               --cov=${{ inputs.source-path }} \
               --cov-fail-under=90 \
-              -c=${{ env.PYPROJECT_TOML }} \
+              -c=${{ inputs.pyproject-toml-path }} \
               ${{ inputs.source-path }}
           fi
 
