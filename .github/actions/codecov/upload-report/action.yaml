@@ -1,0 +1,41 @@
+name: "Code for Life - Codecov - Upload Report"
+description: "Upload a coverage report to Codecov."
+inputs:
+  config-download-branch:
+    description: "The branch of the workspace repo to download the codecov.yml from."
+    required: false
+    default: "main"
+  config-path:
+    description: "The path of the Codecov YAML file."
+    required: false
+    default: "./codecov.yml"
+  token:
+    description: "The token used to gain access to Codecov."
+    required: true
+  slug:
+    description: "The slug provided to Codecov for the coverage report."
+    required: false
+    default: ${{ github.repository }}
+  file:
+    description: "The path to the coverage file to upload."
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: 📥 Download Codecov Config File
+      # Download default file if one is not already present in the repo.
+      if: hashFiles(inputs.config-path) == ''
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-config-file@main
+      with:
+        branch: ${{ inputs.config-download-branch }}
+        path: codecov.yml
+        save-to: ${{ inputs.config-path }}
+
+    - name: 📈 Upload Coverage Reports to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        fail_ci_if_error: true
+        token: ${{ inputs.token }}
+        slug: ${{ inputs.slug }}
+        codecov_yml_path: ${{ inputs.config-path }}
+        file: ${{ inputs.file }}

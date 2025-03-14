@@ -1,0 +1,11 @@
+coverage: # https://docs.codecov.com/docs/codecov-yaml
+  precision: 2
+  round: down
+  range: 90...90
+  status: # https://docs.codecov.com/docs/commit-status
+    project:
+      default:
+        target: 90%
+        threshold: 0%
+
+comment: false
