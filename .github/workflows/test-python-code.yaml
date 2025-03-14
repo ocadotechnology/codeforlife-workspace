@@ -114,7 +114,7 @@ jobs:
 
       - name: 📥 Download Project Config File
         # Download default file if one is not already present in the repo.
-        if: hashFiles(inputs.pyproject-toml-path) != ''
+        if: hashFiles(inputs.pyproject-toml-path) == ''
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-config-file@main
         with:
           branch: pyproject-toml-config # TODO: ${{ inputs.pyproject-toml-download-branch }}
