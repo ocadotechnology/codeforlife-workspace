@@ -1,0 +1,35 @@
+[tool.black]
+line-length = 80
+extend-exclude = ".*/migrations/.*py"
+
+[tool.pytest.ini_options]
+env = ["DJANGO_SETTINGS_MODULE=settings"]
+
+[tool.mypy]
+plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
+check_untyped_defs = true
+disable_error_code = ["dict-item"]
+mypy_path = "../codeforlife-package-python"
+
+[tool.django-stubs]
+django_settings_module = "settings"
+
+[tool.pylint.main]
+init-hook = "import os; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')"
+disable = ["fixme"]
+
+[tool.pylint.format]
+max-line-length = 80
+
+[tool.pylint.MASTER]
+ignore-paths = [".*/migrations/.*.py"]
+load-plugins = "pylint_django"
+django-settings-module = "settings"
+
+[tool.isort]
+profile = "black"
+line_length = 80
+skip_glob = ["**/migrations/*.py"]
+
+[tool.coverage.run]
+omit = ["*/test_*.py", "*/*_test.py", "manage.py"]
