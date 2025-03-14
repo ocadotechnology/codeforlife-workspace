@@ -42,7 +42,7 @@ on:
 
 jobs:
   test:
-    uses: ocadotechnology/codeforlife-workspace/.github/workflows/test-python-code.yaml@main
+    uses: ocadotechnology/codeforlife-workspace/.github/workflows/test-python-code.yaml@pyproject-toml-config # TODO: set to @main
     secrets: inherit
     with:
       python-version: ${{ inputs.python-version }}
