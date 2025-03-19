@@ -17,3 +17,7 @@ runs:
     - name: 📥 Download Script File
       shell: bash
       run: wget https://raw.githubusercontent.com/ocadotechnology/codeforlife-workspace/refs/heads/${{ inputs.branch }}/scripts/${{ inputs.path }} -O ${{ inputs.save-to }}
+
+    - name: ⚙️ Make Script Executable
+      shell: bash
+      run: chmod +x ${{ inputs.save-to }}
