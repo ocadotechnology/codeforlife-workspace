@@ -36,7 +36,7 @@ on:
 
 jobs:
   test:
-    uses: ocadotechnology/codeforlife-workspace/.github/workflows/test-javascript-code.yaml@main
+    uses: ocadotechnology/codeforlife-workspace/.github/workflows/test-javascript-code.yaml@portal-frontend-48 # TODO: set to @main
     secrets: inherit
     with:
       node-version: ${{ inputs.node-version }}
