@@ -63,9 +63,8 @@ jobs:
           install-args: --production=false
 
       - name: 📥 Download CLI Script File
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-script-file@portal-frontend-48 # TODO: set to @main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-script-file@main
         with:
-          branch: portal-frontend-48 # TODO: delete line
           path: frontend/cli
           save-to: ./cli
 
