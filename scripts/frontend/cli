@@ -1,0 +1,120 @@
+#!/bin/bash
+# A CLI called in the package.json for each frontend service.
+#  - The 1st arg is the name of the function.
+#  - All the remaining args are the parameters of the function.
+
+set -e
+
+# Default values for arguments.
+vite_config_default=./node_modules/codeforlife/src/vite.config.ts
+
+function dev:server() {
+  # Launch dev server with server-side rendering.
+  node server
+}
+
+function dev:client() {
+  # Launch dev server with client-side rendering.
+  yarn run vite \
+    --config ${1:-$vite_config_default}
+}
+
+function build:client() {
+  # Build production-ready, client-side entry-point.
+  yarn run vite build \
+    --outDir dist/client \
+    --config ${1:-$vite_config_default}
+}
+
+function build:server() {
+  # Build production-ready, server-side entry-point.
+  yarn run vite build \
+    --ssr src/entry-server.tsx \
+    --outDir dist/server \
+    --config ${1:-$vite_config_default}
+}
+
+function build() {
+  # Build production-ready, client-side and server-side entry-point.
+  build:client $@
+  build:server $@
+}
+
+function start() {
+  # Run production-ready node server.
+  # NOTE: Make sure to run build() first!
+  NODE_ENV=production node server
+}
+
+function test() {
+  # Run tests.
+  yarn run vitest run \
+    --config ${1:-$vite_config_default}
+}
+
+function test:coverage() {
+  # Run tests with coverage.
+  yarn run vitest run \
+    --coverage \
+    --config ${1:-$vite_config_default}
+}
+
+function test:verbose() {
+  # Run tests in verbose mode with min coverage thresholds.
+  yarn run vitest run \
+    --reporter=verbose \
+    --coverage.thresholds.lines=90 \
+    --coverage.thresholds.functions=90 \
+    --coverage.thresholds.branches=90 \
+    --coverage.thresholds.statements=90 \
+    --config ${1:-$vite_config_default}
+}
+
+function test:ui() {
+  # Launch text explorer UI.
+  yarn run vitest \
+    --ui \
+    --config ${1:-$vite_config_default}
+}
+
+function format() {
+  # Auto-fix known formatting issues.
+  yarn run prettier \
+    --write \
+    .
+}
+
+function format:check() {
+  # Check formatting issues.
+  yarn run prettier \
+    --check \
+    --write=false \
+    .
+}
+
+function lint() {
+  # Find linting issues.
+  yarn run eslint \
+    --max-warnings=0 \
+    .
+}
+
+function lint:fix() {
+  # Auto-fix known linting issues.
+  yarn run eslint \
+    --fix \
+    .
+}
+
+function type-check() {
+  # Check static types.
+  yarn run tsc \
+    --build tsconfig.json
+}
+
+# Export path to node modules for the current
+export NODE_PATH=$(pwd)/node_modules
+
+func=$1  # Get function name.
+shift    # Remove 1st argument.
+$func $@ # Call function with remaining arguments.

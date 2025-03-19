@@ -16,6 +16,8 @@
         "jock.svg",
         "tyriar.luna-paint",
         "dotenv.dotenv-vscode",
+        // bash/shell
+        "foxundermoon.shell-format",
         // git
         "github.vscode-pull-request-github",
         "github.vscode-github-actions",

@@ -62,27 +62,29 @@ jobs:
           node-version: ${{ inputs.node-version }}
           install-args: --production=false
 
+      - name: 📥 Download CLI Script File
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-script-file@package-javascript-48 # TODO: set to @main
+        with:
+          branch: package-javascript-48 # TODO: delete line
+          path: frontend/cli
+          save-to: ./cli
+
       - name: 🔎 Check Code Format
-        run: yarn run prettier --check --write=false .
+        run: ./cli format:check
 
       - name: 🔎 Check Static Type Hints
-        run: yarn run tsc --build tsconfig.json
+        run: ./cli type-check
 
       - name: 🔎 Check Static Code
-        run: yarn run eslint --max-warnings=0 .
+        run: ./cli lint
 
       - name: 🧪 Test Code Units
         run: |
           if [ ${{ github.repository_owner_id }} = ${{ env.OCADO_TECH_ORG_ID }} ]
           then
-            yarn run vitest run --coverage
+            ./cli test:coverage
           else
-            yarn run vitest run \
-              --reporter=verbose \
-              --coverage.thresholds.lines=90 \
-              --coverage.thresholds.functions=90 \
-              --coverage.thresholds.branches=90 \
-              --coverage.thresholds.statements=90
+            ./cli test:verbose
           fi
 
       - name: 📈 Upload Coverage Reports to Codecov

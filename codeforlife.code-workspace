@@ -46,6 +46,9 @@
     "workbench.colorCustomizations": {
       "editorRuler.foreground": "#008000"
     },
+    "[shellscript]": {
+      "editor.defaultFormatter": "foxundermoon.shell-format"
+    },
     "sqltools.connections": [
       {
         "previewLimit": 50,
