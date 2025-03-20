@@ -1,0 +1,23 @@
+name: "Code for Life - Workspace - Download Script File"
+description: "Download a script file from the workspace."
+inputs:
+  branch:
+    description: "The branch on the workspace repo."
+    required: true
+    default: "main"
+  path:
+    description: "The path of the script file."
+    required: true
+  save-to:
+    description: "Where to save the script file."
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: 📥 Download Script File
+      shell: bash
+      run: wget https://raw.githubusercontent.com/ocadotechnology/codeforlife-workspace/refs/heads/${{ inputs.branch }}/scripts/${{ inputs.path }} -O ${{ inputs.save-to }}
+
+    - name: ⚙️ Make Script Executable
+      shell: bash
+      run: chmod +x ${{ inputs.save-to }}
