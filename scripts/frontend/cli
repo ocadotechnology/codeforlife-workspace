@@ -5,8 +5,11 @@
 
 set -e
 
-# Default values for arguments.
-vite_config_default=./node_modules/codeforlife/src/vite.config.ts
+# Script variables.
+vite_config=${VITE_CONFIG:-"./node_modules/codeforlife/src/vite.config.ts"}
+
+# Environment variables.
+export NODE_PATH=${NODE_PATH:-"$(pwd)/node_modules"}
 
 function dev:server() {
   # Launch dev server with server-side rendering.
@@ -16,14 +19,14 @@ function dev:server() {
 function dev:client() {
   # Launch dev server with client-side rendering.
   yarn run vite \
-    --config ${1:-$vite_config_default}
+    --config $vite_config
 }
 
 function build:client() {
   # Build production-ready, client-side entry-point.
   yarn run vite build \
     --outDir dist/client \
-    --config ${1:-$vite_config_default}
+    --config $vite_config
 }
 
 function build:server() {
@@ -31,7 +34,7 @@ function build:server() {
   yarn run vite build \
     --ssr src/entry-server.tsx \
     --outDir dist/server \
-    --config ${1:-$vite_config_default}
+    --config $vite_config
 }
 
 function build() {
@@ -49,14 +52,14 @@ function start() {
 function test() {
   # Run tests.
   yarn run vitest run \
-    --config ${1:-$vite_config_default}
+    --config $vite_config
 }
 
 function test:coverage() {
   # Run tests with coverage.
   yarn run vitest run \
     --coverage \
-    --config ${1:-$vite_config_default}
+    --config $vite_config
 }
 
 function test:verbose() {
@@ -67,14 +70,14 @@ function test:verbose() {
     --coverage.thresholds.functions=90 \
     --coverage.thresholds.branches=90 \
     --coverage.thresholds.statements=90 \
-    --config ${1:-$vite_config_default}
+    --config $vite_config
 }
 
 function test:ui() {
   # Launch text explorer UI.
   yarn run vitest \
     --ui \
-    --config ${1:-$vite_config_default}
+    --config $vite_config
 }
 
 function format() {
@@ -111,9 +114,6 @@ function type-check() {
   yarn run tsc \
     --build tsconfig.json
 }
-
-# Export path to node modules for the current
-export NODE_PATH=$(pwd)/node_modules
 
 func=$1  # Get function name.
 shift    # Remove 1st argument.

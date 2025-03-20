@@ -38,6 +38,11 @@ on:
         type: string
         required: false
         default: "frontend/.snyk"
+      vite-config-path:
+        description: "The path of the Vite config file."
+        type: string
+        required: false
+        default: "./vite.config.ts"
     secrets: # All secrets should not be required to support contributors.
       CODECOV_TOKEN:
         description: "The token used to gain access to Codecov."
@@ -55,6 +60,7 @@ jobs:
     env:
       LANG: C.UTF-8
       OCADO_TECH_ORG_ID: 2088731
+      VITE_CONFIG: ${{ inputs.vite-config-path }}
     steps:
       - name: 🌐 Set up JavaScript ${{ inputs.node-version }} Environment
         uses: ocadotechnology/codeforlife-workspace/.github/actions/javascript/setup-environment@main
@@ -80,10 +86,8 @@ jobs:
       - name: 🧪 Test Code Units
         run: |
           if [ ${{ github.repository_owner_id }} = ${{ env.OCADO_TECH_ORG_ID }} ]
-          then
-            ./cli test:coverage
-          else
-            ./cli test:verbose
+          then ./cli test:coverage
+          else ./cli test:verbose
           fi
 
       - name: 📈 Upload Coverage Reports to Codecov
