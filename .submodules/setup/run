@@ -3,6 +3,6 @@ set -e
 
 cd "${BASH_SOURCE%/*}"
 
-pipenv install --dev
+source ../../scripts/backend/hard-install
 
 pipenv run python . "$@"
