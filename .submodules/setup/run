@@ -1,8 +1,18 @@
 #!/bin/bash
+
+# Exit on error.
 set -e
 
+# Change working directory to directory of this script.
 cd "${BASH_SOURCE%/*}"
 
-source ../../scripts/backend/hard-install
+# Delete existing virtual environment.
+shopt -s extglob
+rm -rf .venv/!(".gitkeep")
+shopt -u extglob
 
+# Create new virtual environment
+pipenv install --dev
+
+# Run setup script.
 pipenv run python . "$@"
