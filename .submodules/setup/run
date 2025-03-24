@@ -11,7 +11,7 @@ shopt -s extglob
 rm -rf .venv/!(".gitkeep")
 shopt -u extglob
 
-# Create new virtual environment
+# Create new virtual environment.
 pipenv install --dev
 
 # Run setup script.
