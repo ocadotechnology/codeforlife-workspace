@@ -74,7 +74,7 @@ def print_intro():
         sys.exit()
 
     # TODO: Create process as numbered list where user can decide how far in the
-    # process they would like to go; 0 should run all steps. For example:
+    # process they would like to go. For example:
     # "-1": Exit. Do nothing.
     # "0": Run all steps below.
     # "1": Log into GitHub.
