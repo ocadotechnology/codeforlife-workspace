@@ -27,12 +27,19 @@
     {
       "path": "codeforlife-portal-frontend"
     },
-    {
-      "path": "codeforlife-sso-backend"
-    },
-    {
-      "path": "codeforlife-sso-frontend"
-    },
+    // TODO: uncomment these as we begin restructuring them.
+    // {
+    //   "path": "codeforlife-rapid-router-backend"
+    // },
+    // {
+    //   "path": "codeforlife-rapid-router-frontend"
+    // },
+    // {
+    //   "path": "codeforlife-sso-backend"
+    // },
+    // {
+    //   "path": "codeforlife-sso-frontend"
+    // },
     {
       "path": "codeforlife-template-backend"
     },
