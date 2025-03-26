@@ -11,7 +11,7 @@ set -e
 # ------------------------------------------------------------------------------
 
 # The path of the pyproject.toml.
-pyproject_toml=${PYPROJECT_TOML:-"../configs/backend/pyproject.toml"}
+pyproject_toml=${PYPROJECT_TOML:-"/codeforlife-workspace/configs/backend/pyproject.toml"}
 
 # The path of the source code.
 source=${SOURCE:-"."}
