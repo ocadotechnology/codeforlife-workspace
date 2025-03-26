@@ -78,16 +78,16 @@ jobs:
         run: ./cli format:check
 
       - name: 🔎 Check Static Type Hints
-        run: ./cli type-check
+        run: ./cli types:check
 
       - name: 🔎 Check Static Code
-        run: ./cli lint
+        run: ./cli code:check
 
       - name: 🧪 Test Code Units
         run: |
           if [ ${{ github.repository_owner_id }} = ${{ env.OCADO_TECH_ORG_ID }} ]
-          then ./cli test:coverage
-          else ./cli test:verbose
+          then ./cli test:coverage:report
+          else ./cli test:coverage:check
           fi
 
       - name: 📈 Upload Coverage Reports to Codecov
