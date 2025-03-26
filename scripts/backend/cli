@@ -1,0 +1,135 @@
+#!/bin/bash
+
+# A CLI for each backend service.
+#  - The 1st arg is the name of the function.
+#  - All the remaining args are the arguments of the function.
+
+set -e
+
+# ------------------------------------------------------------------------------
+# Variables
+# ------------------------------------------------------------------------------
+
+# The path of the pyproject.toml.
+pyproject_toml=${PYPROJECT_TOML:-"../configs/backend/pyproject.toml"}
+
+# The path of the source code.
+source=${SOURCE:-"."}
+
+# The path of the coverage report to generate.
+# NOTE: COVERAGE_FILE is reserved - do not use.
+coverage_report=${COVERAGE_REPORT:-"coverage.xml"}
+
+# ------------------------------------------------------------------------------
+# Functions
+# ------------------------------------------------------------------------------
+
+function imports:check() {
+  # Check imports order.
+  # https://pycqa.github.io/isort/docs/configuration/options.html
+  pipenv run isort \
+    --settings-file=$pyproject_toml \
+    --check \
+    $source
+}
+
+function format:check() {
+  # Check formatting issues.
+  # https://black.readthedocs.io/en/stable/usage_and_configuration/the_basics.html
+  if ! pipenv run black \
+    --config=$pyproject_toml \
+    --check \
+    $source \
+    ; then exit 1; fi
+}
+
+function types:check() {
+  # Check static types.
+  # https://mypy.readthedocs.io/en/stable/command_line.html
+  pipenv run mypy \
+    --config-file=$pyproject_toml \
+    $source
+}
+
+function code:check:non-tests {
+  # Find linting issues in non-test files.
+  # https://pylint.pycqa.org/en/stable/user_guide/configuration/all-options.html
+  if ! pipenv run pylint \
+    --rcfile=$pyproject_toml \
+    $(
+      git ls-files \
+        $source'/*.py' \
+        $source'/**/*.py' \
+        ':!'$source'/test_*.py' \
+        ':!'$source'/**/test_*.py' \
+        ':!'$source'/*_test.py' \
+        ':!'$source'/**/*_test.py'
+    ); then exit 1; fi
+}
+
+function code:check:tests() {
+  # Find linting issues in test files.
+  # https://pylint.pycqa.org/en/stable/user_guide/configuration/all-options.html
+  if ! pipenv run pylint \
+    --rcfile=$pyproject_toml \
+    --disable=duplicate-code \
+    $(
+      git ls-files \
+        $source'/test_*.py' \
+        $source'/**/test_*.py' \
+        $source'/*_test.py' \
+        $source'/**/*_test.py'
+    ); then exit 1; fi
+}
+
+function code:check() {
+  # Find linting issues.
+  echo 'Linting non-test files'
+  code:check:non-tests $@
+  echo 'Linting test files'
+  code:check:tests $@
+}
+
+function migrations:check() {
+  # Check no pending Django migrations.
+  # https://docs.djangoproject.com/en/4.2/ref/django-admin/#django-admin-makemigrations
+  pipenv run python \
+    manage.py \
+    makemigrations \
+    --check \
+    --dry-run
+}
+
+function test:coverage:report() {
+  # Run tests and generate coverage report.
+  # https://docs.pytest.org/en/8.3.x/reference/reference.html
+  # https://pytest-xdist.readthedocs.io/en/stable/distribution.html
+  # https://pytest-cov.readthedocs.io/en/latest/config.html
+  pipenv run pytest \
+    -n=auto \
+    --cov=$source \
+    --cov-report=xml:$coverage_report \
+    -c=$pyproject_toml \
+    $source
+}
+
+function test:coverage:check() {
+  # Run tests and check coverage thresholds.
+  # https://docs.pytest.org/en/8.3.x/reference/reference.html
+  # https://pytest-xdist.readthedocs.io/en/stable/distribution.html
+  # https://pytest-cov.readthedocs.io/en/latest/config.html
+  pipenv run pytest \
+    -n=auto \
+    --cov=$source \
+    --cov-fail-under=90 \
+    -c=$pyproject_toml \
+    $source
+}
+
+# ------------------------------------------------------------------------------
+# Script
+# ------------------------------------------------------------------------------
+
+func=$1  # Get function name.
+shift    # Remove 1st argument.
+$func $@ # Call function with remaining arguments.

@@ -1,15 +1,27 @@
 #!/bin/bash
-# A CLI called in the package.json for each frontend service.
+
+# A CLI called for each frontend service.
 #  - The 1st arg is the name of the function.
-#  - All the remaining args are the parameters of the function.
+#  - All the remaining args are the arguments of the function.
 
 set -e
 
-# Script variables.
+# ------------------------------------------------------------------------------
+# Variables
+# ------------------------------------------------------------------------------
+
+# The path of the vite.config.ts.
 vite_config=${VITE_CONFIG:-"./node_modules/codeforlife/src/vite.config.ts"}
 
-# Environment variables.
+# The path of the source code.
+source=${SOURCE:-"."}
+
+# The path of the target node_modules.
 export NODE_PATH=${NODE_PATH:-"$(pwd)/node_modules"}
+
+# ------------------------------------------------------------------------------
+# Functions
+# ------------------------------------------------------------------------------
 
 function dev:server() {
   # Launch dev server with server-side rendering.
@@ -18,12 +30,14 @@ function dev:server() {
 
 function dev:client() {
   # Launch dev server with client-side rendering.
+  # https://vite.dev/guide/cli
   yarn run vite \
     --config $vite_config
 }
 
 function build:client() {
   # Build production-ready, client-side entry-point.
+  # https://vite.dev/guide/cli
   yarn run vite build \
     --outDir dist/client \
     --config $vite_config
@@ -31,6 +45,7 @@ function build:client() {
 
 function build:server() {
   # Build production-ready, server-side entry-point.
+  # https://vite.dev/guide/cli
   yarn run vite build \
     --ssr src/entry-server.tsx \
     --outDir dist/server \
@@ -51,19 +66,22 @@ function start() {
 
 function test() {
   # Run tests.
+  # https://vitest.dev/guide/cli
   yarn run vitest run \
     --config $vite_config
 }
 
-function test:coverage() {
-  # Run tests with coverage.
+function test:coverage:report() {
+  # Run tests and generate coverage report.
+  # https://vitest.dev/guide/cli
   yarn run vitest run \
     --coverage \
     --config $vite_config
 }
 
-function test:verbose() {
-  # Run tests in verbose mode with min coverage thresholds.
+function test:coverage:check() {
+  # Run tests and check coverage thresholds.
+  # https://vitest.dev/guide/cli
   yarn run vitest run \
     --reporter=verbose \
     --coverage.thresholds.lines=90 \
@@ -75,6 +93,7 @@ function test:verbose() {
 
 function test:ui() {
   # Launch text explorer UI.
+  # https://vitest.dev/guide/cli
   yarn run vitest \
     --ui \
     --config $vite_config
@@ -82,38 +101,47 @@ function test:ui() {
 
 function format() {
   # Auto-fix known formatting issues.
+  # https://prettier.io/docs/cli
   yarn run prettier \
     --write \
-    .
+    $source
 }
 
 function format:check() {
   # Check formatting issues.
+  # https://prettier.io/docs/cli
   yarn run prettier \
     --check \
     --write=false \
-    .
+    $source
 }
 
-function lint() {
+function code:check() {
   # Find linting issues.
+  # https://eslint.org/docs/latest/use/command-line-interface
   yarn run eslint \
     --max-warnings=0 \
-    .
+    $source
 }
 
-function lint:fix() {
+function code:fix() {
   # Auto-fix known linting issues.
+  # https://eslint.org/docs/latest/use/command-line-interface
   yarn run eslint \
     --fix \
-    .
+    $source
 }
 
-function type-check() {
+function types:check() {
   # Check static types.
+  # https://www.typescriptlang.org/docs/handbook/compiler-options.html
   yarn run tsc \
     --build tsconfig.json
 }
+
+# ------------------------------------------------------------------------------
+# Script
+# ------------------------------------------------------------------------------
 
 func=$1  # Get function name.
 shift    # Remove 1st argument.

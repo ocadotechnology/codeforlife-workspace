@@ -18,11 +18,6 @@ on:
         type: string
         required: false
         default: "."
-      check-django-migrations:
-        description: "Check if there are pending Django migrations."
-        type: boolean
-        required: false
-        default: true
       pyproject-toml-download-branch:
         description: "The branch of the workspace repo to download the pyproject.toml from."
         type: string
@@ -90,6 +85,8 @@ jobs:
     env:
       LANG: C.UTF-8
       COVERAGE_REPORT: coverage.xml # NOTE: COVERAGE_FILE is reserved - do not use.
+      SOURCE: ${{ inputs.source-path }}
+      PYPROJECT_TOML: ${{ inputs.pyproject-toml-path }}
       OCADO_TECH_ORG_ID: 2088731
       DB_NAME: ${{ inputs.postgres-db }}
       DB_HOST: localhost
@@ -126,64 +123,32 @@ jobs:
           path: backend/pyproject.toml
           save-to: ${{ inputs.pyproject-toml-path }}
 
+      - name: 📥 Download CLI Script File
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-script-file@main
+        with:
+          path: backend/cli
+          save-to: ./cli
+
       - name: 🔎 Check Import Sort
-        run: pipenv run isort --settings-file=${{ inputs.pyproject-toml-path }} --check ${{ inputs.source-path }}
+        run: ./cli imports:check
 
       - name: 🔎 Check Code Format
-        run: if ! pipenv run black --config=${{ inputs.pyproject-toml-path }} --check ${{ inputs.source-path }}; then exit 1; fi
+        run: ./cli format:check
 
       - name: 🔎 Check Static Type Hints
-        run: pipenv run mypy --config-file=${{ inputs.pyproject-toml-path }} ${{ inputs.source-path }}
+        run: ./cli types:check
 
       - name: 🔎 Check Static Code
-        run: |
-          echo 'Linting non-test files'
-
-          if ! pipenv run pylint --rcfile=${{ inputs.pyproject-toml-path }} $(
-            git ls-files \
-            '${{ inputs.source-path }}/*.py' \
-            '${{ inputs.source-path }}/**/*.py' \
-            ':!${{ inputs.source-path }}/test_*.py' \
-            ':!${{ inputs.source-path }}/**/test_*.py' \
-            ':!${{ inputs.source-path }}/*_test.py' \
-            ':!${{ inputs.source-path }}/**/*_test.py'
-          )
-            then exit 1
-          fi
-
-          echo 'Linting test files'
-
-          if ! pipenv run pylint --rcfile=${{ inputs.pyproject-toml-path }} --disable=duplicate-code $(
-            git ls-files \
-            '${{ inputs.source-path }}/test_*.py' \
-            '${{ inputs.source-path }}/**/test_*.py' \
-            '${{ inputs.source-path }}/*_test.py' \
-            '${{ inputs.source-path }}/**/*_test.py'
-          )
-            then exit 1
-          fi
+        run: ./cli code:check
 
       - name: 🔎 Check Django Migrations
-        if: inputs.check-django-migrations
-        run: pipenv run python manage.py makemigrations --check --dry-run
+        run: ./cli migrations:check
 
       - name: 🧪 Test Code Units
         run: |
           if [ ${{ github.repository_owner_id }} = ${{ env.OCADO_TECH_ORG_ID }} ]
-          then
-            pipenv run pytest \
-              -n=auto \
-              --cov=${{ inputs.source-path }} \
-              --cov-report=xml:${{ env.COVERAGE_REPORT }} \
-              -c=${{ inputs.pyproject-toml-path }} \
-              ${{ inputs.source-path }}
-          else
-            pipenv run pytest \
-              -n=auto \
-              --cov=${{ inputs.source-path }} \
-              --cov-fail-under=90 \
-              -c=${{ inputs.pyproject-toml-path }} \
-              ${{ inputs.source-path }}
+          then ./cli test:coverage:report
+          else ./cli test:coverage:check
           fi
 
       - name: 📈 Upload Coverage Reports to Codecov
