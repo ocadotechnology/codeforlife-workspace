@@ -58,12 +58,12 @@ function code:check:non-tests {
     --rcfile=$pyproject_toml \
     $(
       git ls-files \
-        ${source}/*.py \
-        ${source}/**/*.py \
-        :!${source}/test_*.py \
-        :!${source}/**/test_*.py \
-        :!${source}/*_test.py \
-        :!${source}/**/*_test.py
+        $source'/*.py' \
+        $source'/**/*.py' \
+        ':!'$source'/test_*.py' \
+        ':!'$source'/**/test_*.py' \
+        ':!'$source'/*_test.py' \
+        ':!'$source'/**/*_test.py'
     ); then exit 1; fi
 }
 
@@ -75,10 +75,10 @@ function code:check:tests() {
     --disable=duplicate-code \
     $(
       git ls-files \
-        ${source}/test_*.py \
-        ${source}/**/test_*.py \
-        ${source}/*_test.py \
-        ${source}/**/*_test.py
+        $source'/test_*.py' \
+        $source'/**/test_*.py' \
+        $source'/*_test.py' \
+        $source'/**/*_test.py'
     ); then exit 1; fi
 }
 
