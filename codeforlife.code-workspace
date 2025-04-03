@@ -9,9 +9,9 @@
     {
       "path": "codeforlife-contributor-frontend"
     },
-    {
-      "path": "codeforlife-deploy-appengine"
-    },
+    // {
+    //   "path": "codeforlife-deploy-appengine"
+    // },
     {
       "path": "codeforlife-package-javascript"
     },
