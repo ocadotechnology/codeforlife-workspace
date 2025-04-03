@@ -1,3 +1,4 @@
+# https://hub.docker.com/r/microsoft/devcontainers-base
 FROM mcr.microsoft.com/devcontainers/base:ubuntu-22.04
 
 # Install PostgreSQL (psql) client.
