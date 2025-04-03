@@ -12,7 +12,7 @@ rm -rf .venv/!(".gitkeep")
 shopt -u extglob
 
 # Create new virtual environment.
-pipenv install --dev
+pipenv install
 
 # Run setup script.
 pipenv run python . "$@"

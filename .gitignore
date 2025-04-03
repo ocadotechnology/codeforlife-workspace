@@ -170,3 +170,4 @@ cython_debug/
 
 # Database
 /.postgres-data
+/.redis-data

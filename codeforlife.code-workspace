@@ -62,7 +62,7 @@
     "sqltools.connections": [
       {
         "previewLimit": 50,
-        "server": "localhost",
+        "server": "db",
         "port": 5432,
         "driver": "PostgreSQL",
         "name": "contributor",
@@ -72,7 +72,7 @@
       },
       {
         "previewLimit": 50,
-        "server": "localhost",
+        "server": "db",
         "port": 5432,
         "driver": "PostgreSQL",
         "name": "portal",
@@ -82,7 +82,7 @@
       },
       {
         "previewLimit": 50,
-        "server": "localhost",
+        "server": "db",
         "port": 5432,
         "driver": "PostgreSQL",
         "name": "template",
