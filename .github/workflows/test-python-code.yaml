@@ -94,9 +94,10 @@ jobs:
       PYPROJECT_TOML: ${{ inputs.pyproject-toml-path }}
       OCADO_TECH_ORG_ID: 2088731
       DB_NAME: ${{ inputs.postgres-db }}
-      DB_HOST: localhost
+      DB_HOST: db
       DB_USER: ${{ inputs.postgres-user }}
       DB_PASSWORD: ${{ inputs.postgres-password }}
+      REDIS_HOST: cache
     services:
       postgres: # https://docs.github.com/en/actions/use-cases-and-examples/using-containerized-services/creating-postgresql-service-containers
         image: postgres:${{ inputs.postgres-version }}
@@ -114,6 +115,8 @@ jobs:
           - 5432:5432
       redis: # https://docs.github.com/en/actions/use-cases-and-examples/using-containerized-services/creating-redis-service-containers
         image: redis:${{ inputs.redis-version }}
+        env:
+          REDIS_HOST: ${{ env.REDIS_HOST }}
         options: >- # Set health checks to wait until redis has started
           --health-cmd "redis-cli ping"
           --health-interval 10s
