@@ -94,10 +94,10 @@ jobs:
       PYPROJECT_TOML: ${{ inputs.pyproject-toml-path }}
       OCADO_TECH_ORG_ID: 2088731
       DB_NAME: ${{ inputs.postgres-db }}
-      DB_HOST: db
+      DB_HOST: postgres
       DB_USER: ${{ inputs.postgres-user }}
       DB_PASSWORD: ${{ inputs.postgres-password }}
-      REDIS_HOST: cache
+      REDIS_HOST: redis
     services:
       postgres: # https://docs.github.com/en/actions/use-cases-and-examples/using-containerized-services/creating-postgresql-service-containers
         image: postgres:${{ inputs.postgres-version }}
