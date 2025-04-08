@@ -68,6 +68,11 @@ on:
         type: string
         required: false
         default: "backend/.snyk"
+      redis-version:
+        description: "The redis version to set up."
+        type: number
+        required: false
+        default: 7.4
     secrets: # All secrets should not be required to support contributors.
       CODECOV_TOKEN:
         description: "The token used to gain access to Codecov."
@@ -92,6 +97,7 @@ jobs:
       DB_HOST: localhost
       DB_USER: ${{ inputs.postgres-user }}
       DB_PASSWORD: ${{ inputs.postgres-password }}
+      REDIS_HOST: localhost
     services:
       postgres: # https://docs.github.com/en/actions/use-cases-and-examples/using-containerized-services/creating-postgresql-service-containers
         image: postgres:${{ inputs.postgres-version }}
@@ -107,6 +113,17 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
+      redis: # https://docs.github.com/en/actions/use-cases-and-examples/using-containerized-services/creating-redis-service-containers
+        image: redis:${{ inputs.redis-version }}
+        env:
+          REDIS_HOST: ${{ env.REDIS_HOST }}
+        options: >- # Set health checks to wait until redis has started
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
     steps:
       - name: 🐍 Set up Python ${{ inputs.python-version }} Environment
         uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
