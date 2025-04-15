@@ -5,31 +5,33 @@ Created on 13/05/2024 at 16:20:50(+01:00).
 Setup the CFL workspace for contributors by recursively forking submodules.
 """
 
-import json
-import os
-import re
-import subprocess
 import sys
 import typing as t
-from dataclasses import dataclass
-from pathlib import Path
-from shutil import rmtree
-from subprocess import CalledProcessError
-from time import sleep
 
 import inquirer  # type: ignore[import-untyped]
 from colorama import Back, Fore, Style
 from colorama import init as colorama_init
+from utils import aws, db, git, github, pprint, vscode
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+STEP = 1
+RT = t.TypeVar("RT")
 
 
-@dataclass(frozen=True)
-class Submodule:
-    """A Git submodule definition found in the file: .gitmodules."""
+def step(label: str, func: t.Callable[..., RT], *args, **kwargs) -> RT:
+    """Print a label for a step and execute it.
 
-    path: str
-    url: str
+    Args:
+        label: The label to print for the step before executing it.
+        func: The callback for the step.
+
+    Returns:
+        Whatever the step returns.
+    """
+    # pylint: disable-next=global-statement
+    global STEP
+    pprint.notice(f"👣 Step {STEP}: {label}.\n")
+    STEP += 1
+    return func(*args, **kwargs)
 
 
 def print_intro():
@@ -49,28 +51,32 @@ def print_intro():
 """
         + Style.RESET_ALL
         + "\nTo learn more, "
-        + generate_console_link(
+        + pprint.link(
             "https://docs.codeforlife.education/",
             "read our documentation",
         )
         + " and "
-        + generate_console_link(
+        + pprint.link(
             "https://www.codeforlife.education/",
             "visit our site",
         )
         + ".\n"
     )
+    pprint.notice("Executing required steps.\n")
 
+
+def print_optional_steps_instructions():
+    """Prints the instructions for the optional steps."""
     answers = inquirer.prompt(
         [
             inquirer.Confirm(
-                "proceed",
-                message="Would you like to proceed with setting up your dev container?",
+                "run",
+                message="Would you like to run the optional steps? (recommended)",
             )
         ]
     )
 
-    if answers and not t.cast(bool, answers["proceed"]):
+    if answers and not t.cast(bool, answers["run"]):
         sys.exit()
 
     # TODO: Create process as numbered list where user can decide how far in the
@@ -79,16 +85,11 @@ def print_intro():
     # "0": Run all steps below.
     # "1": Log into GitHub.
     # "2": Fork and clone each repo in the workspace.
+    pprint.warn("👇👀👇 PLEASE READ INSTRUCTIONS 👇👀👇")
     print(
-        "👇👀👇 "
-        + Style.BRIGHT
-        + Back.YELLOW
-        + "PLEASE READ INSTRUCTIONS"
-        + Style.RESET_ALL
-        + " 👇👀👇\n\n"
-        + "This script will help you set up your CFL dev container by:\n"
+        "\nThis script will help you set up your CFL dev container by:\n"
         + " - forking each repo within our "
-        + generate_console_link(
+        + pprint.link(
             "https://github.com/ocadotechnology/codeforlife-workspace",
             "workspace",
         )
@@ -98,22 +99,17 @@ def print_intro():
         + "In a moment you will be asked to log into your personal GitHub"
         + " account so that we may set up your CFL dev container as described"
         + " above. Use your keyboard to select/input your option when prompted."
-        + "\n\n"
-        + Style.DIM
-        + "If you have any concerns about logging into your personal GitHub"
+        + "\n"
+    )
+    pprint.note(
+        "If you have any concerns about logging into your personal GitHub"
         + " account, rest assured we don't perform any malicious actions with"
         " it. You're welcome to read the source code of this script here: "
-        + "/codeforlife-workspace/.submodules/setup/__main__.py.\n\n"
-        + Style.RESET_ALL
-        + "👆👀👆 "
-        + Style.BRIGHT
-        + Back.YELLOW
-        + "PLEASE READ INSTRUCTIONS"
-        + Style.RESET_ALL
-        + " 👆👀👆\n"
+        + "/codeforlife-workspace/.submodules/setup/__main__.py.\n"
     )
+    pprint.warn("👆👀👆 PLEASE READ INSTRUCTIONS 👆👀👆")
     input(
-        "Press "
+        "\nPress "
         + Style.BRIGHT
         + "Enter"
         + Style.RESET_ALL
@@ -129,263 +125,25 @@ def print_exit(error: bool):
         error: Whether there was an error during the script-run.
     """
     print()
-    print(
-        "💥💣💥 "
-        + Style.BRIGHT
-        + Fore.RED
-        + "Finished with errors."
-        + Style.RESET_ALL
-        + " 💥💣💥\n\n"
-        + "This may not be an issue and may be occurring because you've run"
-        + " this setup script before. Please read the above logs to discover if"
-        + " further action is required."
-        + "\n\n"
-        + "If you require help, please reach out to "
-        + generate_console_link(
-            "mailto:codeforlife@ocado.com",
-            "codeforlife@ocado.com",
+    if error:
+        pprint.error("💥💣💥 Finished with errors. 💥💣💥")
+        print(
+            "\nThis may not be an issue and may be occurring because you've run"
+            + " this setup script before. Please read the above logs to"
+            + " discover if further action is required."
         )
-        + "."
-        if error
-        else "✨🍰✨ "
-        + Style.BRIGHT
-        + Fore.GREEN
-        + "Finished without errors."
-        + Style.RESET_ALL
-        + " ✨🍰✨\n\n"
-        + "Happy coding!"
-    )
-
-
-def generate_console_link(
-    url: str,
-    label: t.Optional[str] = None,
-    parameters: str = "",
-):
-    """Generates a link to be printed in the console.
-
-    Args:
-        url: The link to follow.
-        label: The label of the link. If not given, the url will be the label.
-        parameters: Any url parameters you may have.
-
-    Returns:
-        A link that can be clicked in the console.
-    """
-    # OSC 8 ; params ; URI ST <name> OSC 8 ;; ST
-    return f"\033]8;{parameters};{url}\033\\{label or url}\033]8;;\033\\"
-
-
-def read_submodules() -> t.Dict[str, Submodule]:
-    """Read the submodules from .gitmodules (located at the workspace's root).
-
-    Returns:
-        A dict where the key is the name of the submodule and value is an object
-        of the submodule's attributes.
-    """
-    with open(BASE_DIR / ".gitmodules", "r", encoding="utf-8") as gitmodules:
-        gitmodules_str = gitmodules.read()
-
-    # [1:] to skip initial blank string.
-    gitmodules_lines: t.List[str] = re.split(
-        r'^\[submodule "(.*)"\]$',
-        gitmodules_str,
-        flags=re.MULTILINE,
-    )[1:]
-
-    # Group the strings as key-value pairs, where the key is the submodule's
-    # name and the value is the raw string.
-    submodule_strs = dict(zip(gitmodules_lines[::2], gitmodules_lines[1::2]))
-
-    return {
-        name: Submodule(
-            **dict(
-                line.strip().split(" = ", maxsplit=1)
-                for line in submodule_str.splitlines()[1:]
+        print(
+            "\nIf you require help, please reach out to "
+            + pprint.link(
+                "mailto:codeforlife@ocado.com",
+                "codeforlife@ocado.com",
             )
+            + "."
         )
-        for name, submodule_str in submodule_strs.items()
-    }
-
-
-def login_to_github():
-    """Log into GitHub with the CLI.
-
-    https://cli.github.com/manual/gh_auth_status
-    https://cli.github.com/manual/gh_auth_logout
-    https://cli.github.com/manual/gh_auth_login
-    """
-    print(Style.BRIGHT + "Checking if you are logged into GitHub..." + Style.RESET_ALL)
-
-    logged_in = True
-
-    try:
-        subprocess.run(
-            ["gh", "auth", "status"],
-            check=True,
-        )
-    except CalledProcessError:
-        logged_in = False
-
-    if logged_in:
-        answers = inquirer.prompt(
-            [
-                inquirer.Confirm(
-                    "stay_logged_in",
-                    message="Continue with logged in account?",
-                )
-            ]
-        )
-
-        if answers:
-            logged_in = t.cast(bool, answers["stay_logged_in"])
-
-        if not logged_in:
-            subprocess.run(
-                ["gh", "auth", "logout"],
-                check=True,
-            )
-
-    if not logged_in:
-        subprocess.run(
-            ["gh", "auth", "login", "--web", "--git-protocol=https"],
-            check=True,
-        )
-
-
-def fork_repo(url: str):
-    """Fork a repo on GitHub.
-
-    https://cli.github.com/manual/gh_repo_fork
-
-    Args:
-        owner: The owner of the repo to fork.
-        name: The name of the repo to fork.
-
-    Returns:
-        A flag designating whether the repo was successfully forked.
-    """
-    print(Style.BRIGHT + "Forking repo..." + Style.RESET_ALL)
-
-    try:
-        subprocess.run(
-            [
-                "gh",
-                "repo",
-                "fork",
-                url,
-                "--default-branch-only",
-                "--clone=false",
-            ],
-            check=True,
-        )
-    except CalledProcessError:
-        print(Style.BRIGHT + Fore.RED + "Failed to fork repo." + Style.RESET_ALL)
-
-        return False
-
-    return True
-
-
-def clone_repo(name: str, path: str):
-    # pylint: disable=line-too-long
-    """Clone a repo from GitHub.
-
-    https://cli.github.com/manual/gh_repo_clone
-
-    Args:
-        name: The name of the repo to clone.
-        path: The paths to clone the repo to.
-
-    Returns:
-        A flag designating whether the repo was successfully cloned.
-    """
-    # pylint: enable=line-too-long
-    print(Style.BRIGHT + "Cloning repo..." + Style.RESET_ALL)
-
-    repo_dir = str(BASE_DIR / path)
-
-    if os.path.isdir(repo_dir) and os.listdir(repo_dir):
-        print(Style.BRIGHT + repo_dir + Style.RESET_ALL + " already exists.")
-
-        answers = inquirer.prompt(
-            [
-                inquirer.Confirm(
-                    "overwrite",
-                    message=(
-                        "Delete the repo's current directory and clone the repo in"
-                        " the directory?"
-                    ),
-                )
-            ]
-        )
-
-        if not answers or not t.cast(bool, answers["overwrite"]):
-            return True
-
-        rmtree(repo_dir)
-
-    max_attempts = 5
-    retry_delay = 1
-    retry_attempts = max_attempts - 1
-    for attempt_index in range(max_attempts):
-        try:
-            subprocess.run(
-                ["gh", "repo", "clone", name, repo_dir],
-                check=True,
-            )
-
-            return True
-        except CalledProcessError:
-            if os.path.isdir(repo_dir):
-                rmtree(repo_dir)
-
-            if attempt_index != retry_attempts:
-                print(
-                    Style.BRIGHT
-                    + Fore.YELLOW
-                    + f"Retrying clone in {retry_delay} seconds."
-                    + f" Attempt {attempt_index + 1}/{retry_attempts}."
-                    + Style.RESET_ALL
-                )
-
-                sleep(retry_delay)
-                retry_delay *= 2
-
-    print(Style.BRIGHT + Fore.RED + "Failed to clone repo." + Style.RESET_ALL)
-
-    return False
-
-
-def view_repo(name: str):
-    """Print a repo on GitHub as a JSON object.
-
-    https://cli.github.com/manual/gh_repo_view
-
-    Args:
-        name: The name of the repo to view.
-    """
-    print(Style.BRIGHT + "Viewing repo..." + Style.RESET_ALL)
-
-    try:
-        repo_str = subprocess.run(
-            [
-                "gh",
-                "repo",
-                "view",
-                name,
-                "--json=" + ",".join(["name", "url", "createdAt", "isFork"]),
-            ],
-            check=True,
-            stdout=subprocess.PIPE,
-        ).stdout.decode("utf-8")
-    except CalledProcessError:
-        print(Style.BRIGHT + Fore.YELLOW + "Failed to view repo." + Style.RESET_ALL)
-
-        return
-
-    repo = json.loads(repo_str)
-    print(json.dumps(repo, indent=2))
+    else:
+        pprint.success("✨🍰✨ Finished without errors. ✨🍰✨")
+        print("\nHappy coding!")
+    print()
 
 
 def main() -> None:
@@ -394,32 +152,37 @@ def main() -> None:
 
     print_intro()
 
-    submodules = read_submodules()
+    submodules = step("Reading Git Submodules", git.read_submodules)
 
-    login_to_github()
+    code_workspace = step("Loading Code Workspace", vscode.load_code_workspace)
 
-    error = False
+    # TODO: step(for each submodule, auto-install dependencies)
 
-    for i, (name, submodule) in enumerate(submodules.items(), start=1):
-        print(
-            Style.DIM
-            + Back.GREEN
-            + f"Submodule ({i}/{len(submodules)}): {name}"
-            + Style.RESET_ALL
-        )
+    # TODO: load connections from each BE service's settings.
+    db_error = step(
+        "Creating PostgreSQL users and databases",
+        db.create_postgres_users_and_databases,
+        code_workspace,
+    )
 
-        forked_repo = fork_repo(submodule.url)
+    # TODO: load queues from each BE service's settings.
+    queue_error = step(
+        "Creating SQS queues",
+        aws.create_sqs_queues,
+        names={"portal", "contributor", "template"},
+    )
 
-        cloned_repo = False
-        if forked_repo:
-            cloned_repo = clone_repo(name, submodule.path)
+    print_optional_steps_instructions()
 
-            view_repo(name)
+    step("Login to GitHub", github.login)
 
-        if not error and (not forked_repo or not cloned_repo):
-            error = True
+    repo_error = step(
+        "Fork and clone each repo from GitHub",
+        github.fork_and_clone_repos,
+        submodules,
+    )
 
-    print_exit(error)
+    print_exit(error=any([db_error, queue_error, repo_error]))
 
 
 if __name__ == "__main__":
