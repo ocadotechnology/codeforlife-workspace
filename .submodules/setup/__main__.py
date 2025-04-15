@@ -9,7 +9,7 @@ import sys
 import typing as t
 
 import inquirer  # type: ignore[import-untyped]
-from colorama import Back, Fore, Style
+from colorama import Fore, Style
 from colorama import init as colorama_init
 from utils import aws, db, git, github, pprint, vscode
 
