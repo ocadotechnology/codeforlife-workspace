@@ -3,11 +3,205 @@
 Created on 14/04/2025 at 17:06:01(+01:00).
 """
 
+import json
 import subprocess
 import typing as t
 from subprocess import CalledProcessError
 
 from . import pprint
+
+
+class IAMRole(t.TypedDict):
+    """An IAM role."""
+
+    Arn: str
+
+
+class IAMRoleStatementPrincipal(t.TypedDict):
+    """An IAM role statement principal."""
+
+    Service: str
+
+
+class IAMRoleStatement(t.TypedDict):
+    """An IAM role statement."""
+
+    Effect: str
+    Action: str
+    Principal: IAMRoleStatementPrincipal
+
+
+class IAMPolicy(t.TypedDict):
+    """An IAM policy."""
+
+    Arn: str
+
+
+class IAMPolicyStatement(t.TypedDict):
+    """An IAM policy statement."""
+
+    Effect: str
+    Action: str
+    Resource: str
+
+
+class IAMRolePolicy(t.TypedDict):
+    """An attachment between an IAM role and policy."""
+
+    Arn: str
+
+
+class SQSQueueAttributes(t.TypedDict):
+    """An SQS queue's attributes."""
+
+    QueueArn: str
+
+
+def get_iam_role(name: str):
+    """Get an IAM role.
+
+    Args:
+        name: The name of the IAM role.
+
+    Returns:
+        A JSON object or None if not found.
+    """
+    try:
+        stdout = subprocess.run(
+            ["aws", "iam", "get-role", f"--role-name={name}"],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+        ).stdout.decode("utf-8")
+
+        return t.cast(IAMRole, json.loads(stdout)["Role"])
+    except CalledProcessError:
+        return None
+
+
+def create_iam_role(name: str, statement: t.List[IAMRoleStatement]):
+    """Create an IAM role.
+
+    Args:
+        name: The name of the IAM role.
+        statement: The definition of the IAM role.
+
+    Returns:
+        A JSON object or None if not found.
+    """
+    pprint.notice("Creating IAM role...")
+
+    assume_role_policy_document = json.dumps(
+        {"Version": "2012-10-17", "Statement": statement}
+    )
+
+    try:
+        stdout = subprocess.run(
+            [
+                "aws",
+                "iam",
+                "create-role",
+                f"--role-name={name}",
+                f"--assume-role-policy-document={assume_role_policy_document}",
+            ],
+            check=True,
+            stdout=subprocess.PIPE,
+        ).stdout.decode("utf-8")
+
+        return t.cast(IAMRole, json.loads(stdout)["Role"])
+    except CalledProcessError:
+        pprint.error("Failed to create IAM role.")
+        return None
+
+
+def get_iam_policy(name: str):
+    """Get an IAM policy.
+
+    Args:
+        name: The name of the IAM policy.
+
+    Returns:
+        A JSON object or None if not found.
+    """
+    try:
+        stdout = subprocess.run(
+            [
+                "aws",
+                "iam",
+                "get-policy",
+                f"--policy-arn=arn:aws:iam::000000000000:policy/{name}",
+            ],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+        ).stdout.decode("utf-8")
+
+        return t.cast(IAMPolicy, json.loads(stdout)["Policy"])
+    except CalledProcessError:
+        return None
+
+
+def create_iam_policy(name: str, statement: t.List[IAMPolicyStatement]):
+    """Create an IAM policy.
+
+    Args:
+        name: The name of the IAM policy.
+        statement: The definition of the IAM policy.
+
+    Returns:
+        A JSON object or None if not found.
+    """
+    pprint.notice("Creating IAM policy...")
+
+    policy_document = json.dumps({"Version": "2012-10-17", "Statement": statement})
+
+    try:
+        stdout = subprocess.run(
+            [
+                "aws",
+                "iam",
+                "create-policy",
+                f"--policy-name={name}",
+                f"--policy-document={policy_document}",
+            ],
+            check=True,
+            stdout=subprocess.PIPE,
+        ).stdout.decode("utf-8")
+
+        return t.cast(IAMPolicy, json.loads(stdout)["Policy"])
+    except CalledProcessError:
+        pprint.error("Failed to create IAM policy.")
+        return None
+
+
+def attach_iam_role_policy(role_name: str, policy_arn: str):
+    """Attach a IAM policy to a role.
+
+    Args:
+        role_name: The name of the IAM role.
+        policy_arn: The ARN of the IAM policy.
+
+    Returns:
+        A flag designating whether the policy was attached to the role.
+    """
+    pprint.notice("Attaching IAM policy to role...")
+
+    try:
+        subprocess.run(
+            [
+                "aws",
+                "iam",
+                "attach-role-policy",
+                f"--role-name={role_name}",
+                f"--policy-arn={policy_arn}",
+            ],
+            check=True,
+        )
+
+        return True
+    except CalledProcessError:
+        pprint.error("Failed to attach IAM policy to role.")
+        return False
 
 
 def create_sqs_queue(name: str):
@@ -17,39 +211,114 @@ def create_sqs_queue(name: str):
         name: The name of the queue.
 
     Returns:
-        A flag designating whether the queue was created.
+        The SQS queue's URL.
     """
     pprint.notice("Creating SQS queue...")
 
     try:
-        subprocess.run(
+        stdout = subprocess.run(
             ["aws", "sqs", "create-queue", f"--queue-name={name}"],
             check=True,
-        )
+            stdout=subprocess.PIPE,
+        ).stdout.decode("utf-8")
 
-        return True
+        return t.cast(str, json.loads(stdout)["QueueUrl"])
     except CalledProcessError:
         pprint.error("Failed to create SQS queue.")
-        return False
+        return None
 
 
-def create_sqs_queues(names: t.Set[str]):
-    """Create multiple SQS queues.
+def get_sqs_queue_attributes(url: str):
+    """Get an SQS queue's attributes.
 
     Args:
-        names: The names of the SQS queues.
+        url: The URL of the SQS queue.
+
+    Returns:
+        A JSON object or None if not found.
+    """
+    try:
+        stdout = subprocess.run(
+            [
+                "aws",
+                "sqs",
+                "get-queue-attributes",
+                f"--queue-url={url}",
+                "--attribute-names=All",
+            ],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+        ).stdout.decode("utf-8")
+
+        return t.cast(SQSQueueAttributes, json.loads(stdout)["Attributes"])
+    except CalledProcessError:
+        return None
+
+
+def create_resources(sqs_queue_names: t.Set[str]):
+    """Create AWS resources.
+
+    Args:
+        sqs_queue_names: The names of the SQS queues to create.
 
     Returns:
         A flag designating whether any error occurred during the process.
     """
+    # Get or create IAM role.
+    iam_role_name = "scheduler-sqs-sender-role"
+    if not get_iam_role(iam_role_name) and not create_iam_role(
+        name=iam_role_name,
+        statement=[
+            {
+                "Effect": "Allow",
+                "Action": "sts:AssumeRole",
+                "Principal": {"Service": "scheduler.amazonaws.com"},
+            }
+        ],
+    ):
+        return True
+
     error = False
 
-    for i, name in enumerate(names, start=1):
-        pprint.header(f"Queue ({i}/{len(names)}): {name}")
+    for i, sqs_queue_name in enumerate(sqs_queue_names, start=1):
+        pprint.header(f"Queue ({i}/{len(sqs_queue_names)}): {sqs_queue_name}")
 
-        created_sqs_queue = create_sqs_queue(name)
+        # Get or create SQS queue.
+        sqs_queue_url = create_sqs_queue(sqs_queue_name)
+        sqs_queue_attrs = None
+        if sqs_queue_url:
+            sqs_queue_attrs = get_sqs_queue_attributes(sqs_queue_url)
 
-        if not error and not created_sqs_queue:
+        # Get or create IAM policy.
+        iam_policy_name = f"scheduler-sqs-policy-{sqs_queue_name}"
+        iam_policy = get_iam_policy(iam_policy_name)
+        if not iam_policy and sqs_queue_attrs:
+            iam_policy = create_iam_policy(
+                name=iam_policy_name,
+                statement=[
+                    {
+                        "Effect": "Allow",
+                        "Action": "sqs:SendMessage",
+                        "Resource": sqs_queue_attrs["QueueArn"],
+                    }
+                ],
+            )
+
+        # Get or create IAM role policy.
+        attached_iam_role_policy = False
+        if iam_policy:
+            attached_iam_role_policy = attach_iam_role_policy(
+                role_name=iam_role_name,
+                policy_arn=iam_policy["Arn"],
+            )
+
+        if not error and (
+            not sqs_queue_url
+            or not sqs_queue_attrs
+            or not iam_policy
+            or not attached_iam_role_policy
+        ):
             error = True
 
         print()

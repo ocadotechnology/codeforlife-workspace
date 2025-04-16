@@ -167,9 +167,9 @@ def main() -> None:
 
     # TODO: load queues from each BE service's settings.
     queue_error = step(
-        "Creating SQS queues",
-        aws.create_sqs_queues,
-        names={"portal", "contributor", "template"},
+        "Creating AWS resources",
+        aws.create_resources,
+        sqs_queue_names={"portal", "contributor", "template"},
     )
 
     print_optional_steps_instructions()
