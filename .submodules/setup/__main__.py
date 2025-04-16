@@ -11,7 +11,7 @@ import typing as t
 import inquirer  # type: ignore[import-untyped]
 from colorama import Fore, Style
 from colorama import init as colorama_init
-from utils import aws, db, git, github, pprint, vscode
+from utils import aws, git, github, postgresql, pprint, vscode
 
 STEP = 1
 RT = t.TypeVar("RT")
@@ -160,8 +160,8 @@ def main() -> None:
 
     # TODO: load connections from each BE service's settings.
     db_error = step(
-        "Creating PostgreSQL users and databases",
-        db.create_postgres_users_and_databases,
+        "Creating PostgreSQL resources",
+        postgresql.create_resources,
         code_workspace,
     )
 

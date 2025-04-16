@@ -36,7 +36,7 @@ class Connection:
     # pylint: enable=invalid-name
 
 
-def postgres_user_exists(username: str):
+def user_exists(username: str):
     """Check if a PostgreSQL user exists.
 
     Args:
@@ -73,7 +73,7 @@ def postgres_user_exists(username: str):
     return False
 
 
-def create_postgres_user(username: str):
+def create_user(username: str):
     """Create a PostgreSQL user.
 
     Args:
@@ -102,7 +102,7 @@ def create_postgres_user(username: str):
         return False
 
 
-def postgres_database_exists(dbname: str):
+def database_exists(dbname: str):
     """Check if a PostgreSQL database exists.
 
     Args:
@@ -139,7 +139,7 @@ def postgres_database_exists(dbname: str):
     return False
 
 
-def create_postgres_database(username: str, dbname: str):
+def create_database(username: str, dbname: str):
     """Create a PostgreSQL database and grant a user all privileges to it.
 
     Args:
@@ -176,8 +176,8 @@ def create_postgres_database(username: str, dbname: str):
         return False
 
 
-def create_postgres_users_and_databases(code_workspace: CodeWorkspace):
-    """Create multiple PostgreSQL users and databases.
+def create_resources(code_workspace: CodeWorkspace):
+    """Create PostgreSQL resources.
 
     Args:
         code_workspace: The code workspace to read the SQL connections from.
@@ -204,14 +204,14 @@ def create_postgres_users_and_databases(code_workspace: CodeWorkspace):
         pprint.header(f"Database ({i}/{len(connections)}): {connection.name}")
 
         created_user = True
-        if not postgres_user_exists(username=connection.username):
-            created_user = create_postgres_user(username=connection.username)
+        if not user_exists(username=connection.username):
+            created_user = create_user(username=connection.username)
 
         created_db = True
-        if created_user and not postgres_database_exists(
+        if created_user and not database_exists(
             dbname=connection.database,
         ):
-            created_db = create_postgres_database(
+            created_db = create_database(
                 username=connection.username,
                 dbname=connection.database,
             )
