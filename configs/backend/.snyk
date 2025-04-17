@@ -7,17 +7,17 @@ ignore:
   'snyk:lic:pip:psycopg2-binary:LGPL-3.0':
     - '*':
         reason: None Given
-        expires: 2025-04-04T18:27:43.466Z
+        expires: 2026-04-04T18:27:43.466Z
         created: 2025-03-05T18:27:43.468Z
   'snyk:lic:pip:certifi:MPL-2.0':
     - '*':
         reason: None Given
-        expires: 2025-04-04T18:39:50.108Z
+        expires: 2026-04-04T18:39:50.108Z
         created: 2025-03-05T18:39:50.113Z
   'snyk:lic:pip:chardet:LGPL-2.1':
     - '*':
         reason: None Given
-        expires: 2025-04-05T11:26:14.279Z
+        expires: 2026-04-05T11:26:14.279Z
         created: 2025-03-06T11:26:14.283Z
 patch: {}
 exclude:
