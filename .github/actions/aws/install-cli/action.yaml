@@ -14,7 +14,7 @@ runs:
 
     - name: 📂 Unzip AWS CLI
       shell: bash
-      run: unzip awscli.zip
+      run: unzip -q awscli.zip
 
     - name: 📥 Install AWS CLI
       shell: bash
