@@ -57,7 +57,7 @@ services:
     # https://docs.localstack.cloud/references/configuration/
     environment:
       DEBUG: 0
-      SERVICES: s3,sqs,iam,scheduler
+      SERVICES: s3,sqs
       DEFAULT_REGION: us-east-1
     volumes:
       - ../.localstack-data:/var/lib/localstack
