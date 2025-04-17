@@ -59,6 +59,7 @@
     "[shellscript]": {
       "editor.defaultFormatter": "foxundermoon.shell-format"
     },
+    // TODO: create workflow to update sql connections for each BE service.
     "sqltools.connections": [
       {
         "previewLimit": 50,

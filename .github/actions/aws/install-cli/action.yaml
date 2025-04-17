@@ -1,0 +1,21 @@
+name: "Code for Life - AWS - Install CLI"
+description: "Install the AWS CLI."
+inputs:
+  version:
+    description: "The version of the AWS CLI to install."
+    required: false
+    default: 2.26.1
+runs:
+  using: composite
+  steps:
+    - name: 📥 Download AWS CLI
+      shell: bash
+      run: curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${{ inputs.version }}.zip" -o "awscli.zip"
+
+    - name: 📂 Unzip AWS CLI
+      shell: bash
+      run: unzip -q awscli.zip
+
+    - name: 📥 Install AWS CLI
+      shell: bash
+      run: sudo ./aws/install --update
