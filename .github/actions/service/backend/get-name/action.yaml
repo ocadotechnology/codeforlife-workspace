@@ -1,0 +1,22 @@
+name: "Code for Life - Service - Backend - Get Name"
+description: "Get the name of a backend service."
+outputs:
+  service-name:
+    description: "The name of a backend service."
+    value: ${{ steps.get-service-name.outputs.value }}
+runs:
+  using: composite
+  steps:
+    - name: 🗂️ Get Service Name
+      id: get-service-name
+      shell: bash
+      run: |
+        value=$(
+          pipenv run \
+            python \
+            manage.py \
+            -c "from django.conf import settings; print(settings.SERVICE_NAME)"
+        )
+
+        echo "Outputting: $value"
+        echo "value=$value" >> "$GITHUB_OUTPUT"
