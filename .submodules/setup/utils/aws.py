@@ -265,20 +265,6 @@ def create_resources(sqs_queue_names: t.Set[str]):
     Returns:
         A flag designating whether any error occurred during the process.
     """
-    # Get or create IAM role.
-    iam_role_name = "scheduler-sqs-sender-role"
-    if not get_iam_role(iam_role_name) and not create_iam_role(
-        name=iam_role_name,
-        statement=[
-            {
-                "Effect": "Allow",
-                "Action": "sts:AssumeRole",
-                "Principal": {"Service": "scheduler.amazonaws.com"},
-            }
-        ],
-    ):
-        return True
-
     error = False
 
     for i, sqs_queue_name in enumerate(sqs_queue_names, start=1):
@@ -286,39 +272,8 @@ def create_resources(sqs_queue_names: t.Set[str]):
 
         # Get or create SQS queue.
         sqs_queue_url = create_sqs_queue(sqs_queue_name)
-        sqs_queue_attrs = None
-        if sqs_queue_url:
-            sqs_queue_attrs = get_sqs_queue_attributes(sqs_queue_url)
 
-        # Get or create IAM policy.
-        iam_policy_name = f"scheduler-sqs-policy-{sqs_queue_name}"
-        iam_policy = get_iam_policy(iam_policy_name)
-        if not iam_policy and sqs_queue_attrs:
-            iam_policy = create_iam_policy(
-                name=iam_policy_name,
-                statement=[
-                    {
-                        "Effect": "Allow",
-                        "Action": "sqs:SendMessage",
-                        "Resource": sqs_queue_attrs["QueueArn"],
-                    }
-                ],
-            )
-
-        # Get or create IAM role policy.
-        attached_iam_role_policy = False
-        if iam_policy:
-            attached_iam_role_policy = attach_iam_role_policy(
-                role_name=iam_role_name,
-                policy_arn=iam_policy["Arn"],
-            )
-
-        if not error and (
-            not sqs_queue_url
-            or not sqs_queue_attrs
-            or not iam_policy
-            or not attached_iam_role_policy
-        ):
+        if not error and not sqs_queue_url:
             error = True
 
         print()
