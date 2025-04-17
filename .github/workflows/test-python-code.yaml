@@ -73,6 +73,16 @@ on:
         type: number
         required: false
         default: 7.4
+      localstack-version:
+        description: "The LocalStack version to set up."
+        type: string
+        required: false
+        default: "4.3.0"
+      aws-sqs-queue-name:
+        description: "The name of the AWS SQS queue to create."
+        type: string
+        required: false
+        default: ""
     secrets: # All secrets should not be required to support contributors.
       CODECOV_TOKEN:
         description: "The token used to gain access to Codecov."
@@ -98,6 +108,10 @@ jobs:
       DB_USER: ${{ inputs.postgres-user }}
       DB_PASSWORD: ${{ inputs.postgres-password }}
       REDIS_HOST: localhost
+      AWS_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      AWS_ENDPOINT_URL: http://localhost:4566
     services:
       postgres: # https://docs.github.com/en/actions/use-cases-and-examples/using-containerized-services/creating-postgresql-service-containers
         image: postgres:${{ inputs.postgres-version }}
@@ -125,6 +139,25 @@ jobs:
         ports:
           - 6379:6379
     steps:
+      - name: 📥 Install AWS CLI
+        if: inputs.aws-sqs-queue-name != ''
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/aws/install-cli@workspace-218 # TODO: set to @main
+
+      - name: 🚀 Set up LocalStack
+        if: inputs.aws-sqs-queue-name != ''
+        uses: LocalStack/setup-localstack@v0.2.4
+        with:
+          image-tag: ${{ inputs.localstack-version }}
+          install-awslocal: "false"
+          configuration: |
+            DEBUG=0
+            SERVICES=s3,sqs
+            DEFAULT_REGION=${{ env.AWS_REGION }}
+
+      - name: 🏗️ Create AWS resources
+        if: inputs.aws-sqs-queue-name != ''
+        run: aws sqs create-queue --queue-name=${{ inputs.aws-sqs-queue-name }}
+
       - name: 🐍 Set up Python ${{ inputs.python-version }} Environment
         uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
         with:

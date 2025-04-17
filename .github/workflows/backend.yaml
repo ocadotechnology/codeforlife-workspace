@@ -62,7 +62,7 @@ on:
 
 jobs:
   test:
-    uses: ocadotechnology/codeforlife-workspace/.github/workflows/test-python-code.yaml@main
+    uses: ocadotechnology/codeforlife-workspace/.github/workflows/test-python-code.yaml@workspace-218 # TODO: set to @main
     secrets: inherit
     with:
       python-version: ${{ inputs.python-version }}
