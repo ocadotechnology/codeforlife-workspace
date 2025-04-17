@@ -15,6 +15,7 @@ runs:
           pipenv run \
             python \
             manage.py \
+            shell \
             -c "from django.conf import settings; print(settings.SERVICE_NAME)"
         )
 
