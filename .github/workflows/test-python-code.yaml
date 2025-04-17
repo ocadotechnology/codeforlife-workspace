@@ -133,7 +133,7 @@ jobs:
           install-args: --dev
 
       - name: 🏗️ Create AWS Resources
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/aws/create-resources@workspace-218 # TODO: set to @main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/aws/create-resources@main
         with:
           region: ${{ env.AWS_REGION }}
 

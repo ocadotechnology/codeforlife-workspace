@@ -33,7 +33,7 @@ runs:
   using: composite
   steps:
   - name: 📥 Install AWS CLI
-    uses: ocadotechnology/codeforlife-workspace/.github/actions/aws/install-cli@workspace-218 # TODO: set to @main
+    uses: ocadotechnology/codeforlife-workspace/.github/actions/aws/install-cli@main
     with:
       version: ${{ inputs.cli-version }}
 
@@ -49,7 +49,7 @@ runs:
 
   - name: 🗂️ Get Service Name
     id: get-service-name
-    uses: ocadotechnology/codeforlife-workspace/.github/actions/service/backend/get-name@workspace-218 # TODO: set to @main
+    uses: ocadotechnology/codeforlife-workspace/.github/actions/service/backend/get-name@main
 
   - name: 🏗️ Create AWS Resources
     shell: bash
