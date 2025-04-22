@@ -98,6 +98,7 @@ jobs:
       DB_USER: ${{ inputs.postgres-user }}
       DB_PASSWORD: ${{ inputs.postgres-password }}
       REDIS_HOST: localhost
+      AWS_REGION: us-east-1
     services:
       postgres: # https://docs.github.com/en/actions/use-cases-and-examples/using-containerized-services/creating-postgresql-service-containers
         image: postgres:${{ inputs.postgres-version }}
@@ -130,6 +131,11 @@ jobs:
         with:
           python-version: ${{ inputs.python-version }}
           install-args: --dev
+
+      - name: 🏗️ Create AWS Resources
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/aws/create-resources@main
+        with:
+          region: ${{ env.AWS_REGION }}
 
       - name: 📥 Download Project Config File
         # Download default file if one is not already present in the repo.

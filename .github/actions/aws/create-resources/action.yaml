@@ -1,0 +1,62 @@
+name: "Code for Life - AWS - Create Resources"
+description: "Create the AWS resources used in our environment."
+inputs:
+  region:
+    description: "The region of the resources."
+    required: false
+    default: us-east-1
+  access-key-id:
+    description: "The ID of the AWS credentials."
+    required: false
+    default: test
+  secret-access-key:
+    description: "The secret of the AWS credentials."
+    required: false
+    default: test
+  cli-version:
+    description: "The version of the AWS CLI to install."
+    required: false
+    default: 2.26.1
+  localstack-debug:
+    description: "Whether LocalStack is in debug mode."
+    required: false
+    default: "0"
+  localstack-version:
+    description: "The LocalStack version to set up."
+    required: false
+    default: "4.3.0"
+  localstack-services:
+    description: "The LocalStack services to set up."
+    required: false
+    default: "s3,sqs"
+runs:
+  using: composite
+  steps:
+  - name: 📥 Install AWS CLI
+    uses: ocadotechnology/codeforlife-workspace/.github/actions/aws/install-cli@main
+    with:
+      version: ${{ inputs.cli-version }}
+
+  - name: 🚀 Set up LocalStack
+    uses: LocalStack/setup-localstack@v0.2.4
+    with:
+      image-tag: ${{ inputs.localstack-version }}
+      install-awslocal: "false"
+      configuration: |
+        DEBUG=${{ inputs.localstack-debug }}
+        SERVICES=${{ inputs.localstack-services }}
+        DEFAULT_REGION=${{ inputs.region }}
+
+  - name: 🗂️ Get Service Name
+    id: get-service-name
+    uses: ocadotechnology/codeforlife-workspace/.github/actions/service/backend/get-name@main
+
+  - name: 🏗️ Create AWS Resources
+    shell: bash
+    env:
+      AWS_REGION: ${{ inputs.region }}
+      AWS_ACCESS_KEY_ID: ${{ inputs.access-key-id }}
+      AWS_SECRET_ACCESS_KEY: ${{ inputs.secret-access-key }}
+      AWS_ENDPOINT_URL: http://localhost:4566
+    run: |
+      aws sqs create-queue --queue-name=${{ steps.get-service-name.outputs.service-name }}
