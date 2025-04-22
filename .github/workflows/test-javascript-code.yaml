@@ -7,7 +7,7 @@ on:
         description: "The Node.js version to set up."
         type: number
         required: false
-        default: 18
+        default: 22
       working-directory:
         description: "The current working directory."
         type: string
