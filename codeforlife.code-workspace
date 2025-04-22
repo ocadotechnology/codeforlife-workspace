@@ -34,6 +34,9 @@
     // {
     //   "path": "codeforlife-rapid-router-frontend"
     // },
+    {
+      "path": "codeforlife-scheduler"
+    },
     // {
     //   "path": "codeforlife-sso-backend"
     // },
