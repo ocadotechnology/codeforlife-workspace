@@ -43,3 +43,6 @@
 [submodule "codeforlife-rapid-router-frontend"]
 	path = codeforlife-rapid-router-frontend
 	url = https://github.com/ocadotechnology/codeforlife-rapid-router-frontend.git
+[submodule "codeforlife-scheduler"]
+	path = codeforlife-scheduler
+	url = https://github.com/ocadotechnology/codeforlife-scheduler.git
