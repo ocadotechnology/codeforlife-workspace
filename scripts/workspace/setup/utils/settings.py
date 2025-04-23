@@ -7,4 +7,4 @@ General settings relied upon by all modules in this script.
 
 from pathlib import Path
 
-WORKSPACE_DIR = Path(__file__).resolve().parent.parent.parent.parent
+WORKSPACE_DIR = Path(__file__).resolve().parent.parent.parent.parent.parent
