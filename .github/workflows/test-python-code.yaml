@@ -149,7 +149,7 @@ jobs:
       - name: 📥 Download CLI Script File
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-script-file@main
         with:
-          path: backend/cli
+          path: backend
           save-to: ./cli
 
       - name: 🔎 Check Import Sort

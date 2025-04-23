@@ -16,6 +16,9 @@ pyproject_toml=${PYPROJECT_TOML:-"/codeforlife-workspace/configs/backend/pyproje
 # The path of the source code.
 source=${SOURCE:-"."}
 
+# Service variables.
+service_port=${SERVICE_PORT:-"8000"}
+
 # The path of the coverage report to generate.
 # NOTE: COVERAGE_FILE is reserved - do not use.
 coverage_report=${COVERAGE_REPORT:-"coverage.xml"}
@@ -124,6 +127,35 @@ function test:coverage:check() {
     --cov-fail-under=90 \
     -c=$pyproject_toml \
     $source
+}
+
+function setup() {
+  # Setup your local environment.
+  fixtures=${FIXTURES:-"api"}
+
+  pipenv install --dev
+  pipenv run python manage.py migrate --noinput
+  pipenv run python manage.py load_fixtures $fixtures
+  pipenv run python manage.py collectstatic --noinput --clear
+}
+
+function run() {
+  # Run a local Django server.
+  setup $@
+  pipenv run python manage.py runserver localhost:$service_port
+}
+
+function hard-install() {
+  # Delete the existing .venv and Pipfile.lock and install all dependencies.
+  if [ ! -e ".venv" ]; then
+    echo ".venv not found"
+    exit 1
+  fi
+  rm -rf .venv
+  mkdir .venv
+  touch .venv/.gitkeep
+  rm -f Pipfile.lock
+  pipenv install --dev
 }
 
 # ------------------------------------------------------------------------------

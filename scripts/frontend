@@ -139,6 +139,37 @@ function types:check() {
     --build tsconfig.json
 }
 
+function setup() {
+  # Setup your local environment.
+  # TODO: do not ignore engines and upgrade to JS >=22
+  yarn install --production=false --ignore-engines
+}
+
+function run:server() {
+  # Run a local server-side Vite server.
+  setup $@
+  dev:server $@
+}
+
+function run:client() {
+  # Run a local client-side Vite server.
+  setup $@
+  dev:client $@
+}
+
+function hard-install() {
+  # Delete the existing node_modules and yarn.lock and install all dependencies.
+  if [ ! -e "node_modules" ]; then
+    echo "node_modules not found"
+    exit 1
+  fi
+  rm -f yarn.lock
+  rm -rf node_modules
+  yarn cache clean codeforlife
+  # TODO: do not ignore engines and upgrade to JS >=22
+  yarn install --production=false --ignore-engines
+}
+
 # ------------------------------------------------------------------------------
 # Script
 # ------------------------------------------------------------------------------

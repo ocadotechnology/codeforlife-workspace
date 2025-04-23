@@ -1,5 +1,0 @@
-#!/bin/bash
-set -e
-
-# TODO: do not ignore engines and upgrade to JS >=22
-yarn install --production=false --ignore-engines

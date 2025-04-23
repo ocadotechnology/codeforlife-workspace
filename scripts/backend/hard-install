@@ -1,8 +1,0 @@
-#!/bin/bash
-set -e
-
-rm -f Pipfile.lock
-shopt -s extglob
-rm -rf .venv/!(".gitkeep")
-shopt -u extglob
-pipenv install --dev

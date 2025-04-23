@@ -1,8 +1,0 @@
-#!/bin/bash
-set -e
-
-wget -O - https://raw.githubusercontent.com/ocadotechnology/codeforlife-workspace/main/scripts/backend/setup | bash
-
-if [ -z $SERVICE_PORT ]; then SERVICE_PORT='8000'; fi
-
-(export SERVICE_PORT && pipenv run python manage.py runserver localhost:$SERVICE_PORT)
