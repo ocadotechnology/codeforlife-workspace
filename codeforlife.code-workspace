@@ -96,6 +96,64 @@
       }
     ]
   },
+  "tasks": {
+    "version": "2.0.0",
+    "inputs": [
+      {
+        "id": "backend-folder",
+        "type": "pickString",
+        "description": "Select the backend folder.",
+        "options": [
+          "codeforlife-scheduler",
+          "codeforlife-package-python",
+          "codeforlife-portal-backend",
+          "codeforlife-contributor-backend",
+          "codeforlife-template-backend"
+        ]
+      },
+      {
+        "id": "frontend-folder",
+        "type": "pickString",
+        "description": "Select the frontend folder.",
+        "options": [
+          "codeforlife-package-javascript",
+          "codeforlife-portal-frontend",
+          "codeforlife-contributor-frontend",
+          "codeforlife-template-frontend"
+        ]
+      },
+      {
+        "id": "func",
+        "type": "promptString",
+        "description": "The name of the function to call."
+      },
+      {
+        "id": "args",
+        "type": "promptString",
+        "description": "The arguments to pass to the function. (Press 'Enter' if none)"
+      },
+    ],
+    "tasks": [
+      {
+        "label": "scripts:backend",
+        "command": "sudo chmod +x ../scripts/backend && ../scripts/backend ${input:func} ${input:args}",
+        "type": "shell",
+        "problemMatcher": [],
+        "options": {
+          "cwd": "${workspaceFolder}/${input:backend-folder}"
+        },
+      },
+      {
+        "label": "scripts:frontend",
+        "command": "sudo chmod +x ../scripts/frontend && ../scripts/frontend ${input:func} ${input:args}",
+        "type": "shell",
+        "problemMatcher": [],
+        "options": {
+          "cwd": "${workspaceFolder}/${input:frontend-folder}"
+        },
+      }
+    ]
+  },
   "extensions": {
     "unwantedRecommendations": [
       "ms-azuretools.vscode-docker"
