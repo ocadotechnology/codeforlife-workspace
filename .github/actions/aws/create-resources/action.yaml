@@ -108,7 +108,6 @@ runs:
       echo "sqs-queue-names=$sqs_queue_names" >> $GITHUB_OUTPUT
 
   - name: 🏗️ Create SQS Queues
-    shell: bash
     if: contains(steps.get-aws-services.outputs.services, 'sqs')
     uses: ocadotechnology/codeforlife-workspace/.github/actions/github/process-string-array@workspace-220 # TODO: set to @main
     with:
