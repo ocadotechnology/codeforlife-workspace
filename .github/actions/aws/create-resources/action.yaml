@@ -23,6 +23,11 @@ inputs:
     description: "A CSV of AWS SQS queues to create. If using Django, this will default to the service's name."
     required: true
     default: ""
+  # S3
+  s3-buckets:
+    description: "A CSV of AWS S3 buckets to create. If using Django, this will default to the service's name."
+    required: true
+    default: ""
   # LocalStack
   localstack-debug:
     description: "Whether LocalStack is in debug mode."
@@ -52,6 +57,12 @@ runs:
       if [ "${{ inputs.sqs-queues }}" != "" ] || \
          [ "${{ inputs.django }}" = "true" ]; then
         services+=("sqs")
+      fi
+
+      # Check if creating S3 buckets.
+      if [ "${{ inputs.s3-buckets }}" != "" ] || \
+         [ "${{ inputs.django }}" = "true" ]; then
+        services+=("s3")
       fi
 
       # Convert array to single-line CSV string.
@@ -113,3 +124,23 @@ runs:
     with:
       strings: ${{ steps.get-sqs-queue-names.outputs.sqs-queue-names }}
       process_string: aws sqs create-queue --queue-name="$1"
+
+  - name: 🗂️ Get S3 Bucket Names
+    if: contains(steps.get-aws-services.outputs.services, 's3')
+    id: get-s3-bucket-names
+    shell: bash
+    run: |
+      s3_bucket_names=$(
+        if [ "${{ inputs.s3-buckets }}" != "" ]
+        then echo "${{ inputs.s3-buckets }}"
+        else echo "${{ steps.get-service-name.outputs.service-name }}"
+        fi
+      )
+      echo "s3-bucket-names=$s3_bucket_names" >> $GITHUB_OUTPUT
+
+  - name: 🏗️ Create S3 Buckets
+    if: contains(steps.get-aws-services.outputs.services, 's3')
+    uses: ocadotechnology/codeforlife-workspace/.github/actions/github/process-string-array@workspace-220 # TODO: set to @main
+    with:
+      strings: ${{ steps.get-s3-bucket-names.outputs.s3-bucket-names }}
+      process_string: aws s3api create-bucket --bucket="$1"
