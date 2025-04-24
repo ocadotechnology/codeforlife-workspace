@@ -94,49 +94,23 @@ runs:
       echo "AWS_SECRET_ACCESS_KEY=${{ inputs.secret-access-key }}" >> $GITHUB_ENV
       echo "AWS_ENDPOINT_URL=http://localhost:4566" >> $GITHUB_ENV
 
-  - name: 🏗️ Create SQS Queues
-    shell: bash
+  - name: 🗂️ Get SQS Queue Names
     if: contains(steps.get-aws-services.outputs.services, 'sqs')
+    id: get-sqs-queue-names
+    shell: bash
     run: |
-      # Function to process the CSV string, with a callback
-      process_string_array() {
-        local csv_string="$1"
-        local delimiter="$2"
-        local callback="$3"
-
-        # Function to trim whitespace
-        local trim() {
-          echo "$1" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'
-        }
-
-        # Use a here-string to feed the string to the while loop
-        echo "$csv_string" | while IFS="$delimiter" read -r line; do
-          # Split the line into individual values
-          IFS="$delimiter" read -ra values <<< "$line"
-
-          # Iterate through the values and call the callback for each
-          for value in "${values[@]}"; do
-            local trimmed_value=$(trim "$value")
-            "$callback" "$trimmed_value"
-          done
-        done
-      }
-
-      create_queue() {
-        local queue="$1"
-        echo "Queue: $queue"
-        aws sqs create-queue --queue-name="$queue"
-      }
-
-      # Set the delimiter (comma or newline)
-      delimiter=$','
-
-      sqs_queues=$(
+      sqs_queue_names=$(
         if [ "${{ inputs.sqs-queues }}" != "" ]
         then echo "${{ inputs.sqs-queues }}"
         else echo "${{ steps.get-service-name.outputs.service-name }}"
         fi
       )
+      echo "sqs-queue-names=$sqs_queue_names" >> $GITHUB_OUTPUT
 
-      # Call the function with the CSV string, delimiter, and callback
-      process_string_array "$sqs_queues" "$delimiter" "create_queue"
+  - name: 🏗️ Create SQS Queues
+    shell: bash
+    if: contains(steps.get-aws-services.outputs.services, 'sqs')
+    uses: ocadotechnology/codeforlife-workspace/.github/actions/github/process-string-array@workspace-220 # TODO: set to @main
+    with:
+      strings: ${{ steps.get-sqs-queue-names.outputs.sqs-queue-names }}
+      process_string: aws sqs create-queue --queue-name="$1"
