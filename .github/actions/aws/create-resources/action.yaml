@@ -93,7 +93,7 @@ runs:
     if: contains(steps.get-localstack-services.outputs.services, 'sqs')
     uses: ocadotechnology/codeforlife-workspace/.github/actions/github/process-string-array@workspace-220 # TODO: set to @main
     with:
-      strings: ${{ inputs.sqs-queue }}
+      strings: ${{ inputs.sqs-queues }}
       process_string: aws sqs create-queue --queue-name="$1"
 
   - name: 🏗️ Create S3 Buckets
