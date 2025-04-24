@@ -84,18 +84,18 @@ on:
       django:
         description: "Whether the Django web framework is used."
         type: boolean
-        required: true
+        required: false
         default: true
       # AWS
       aws-sqs-queues:
         description: "A CSV of AWS SQS queues to create. If using Django, this will default to the service's name."
         type: string
-        required: true
+        required: false
         default: ""
       aws-s3-buckets:
         description: "A CSV of AWS S3 buckets to create. If using Django, this will default to the service's name."
         type: string
-        required: true
+        required: false
         default: ""
     secrets: # All secrets should not be required to support contributors.
       CODECOV_TOKEN:
