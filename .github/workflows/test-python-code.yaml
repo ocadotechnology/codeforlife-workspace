@@ -3,11 +3,13 @@ name: Test Python Code
 on:
   workflow_call:
     inputs:
+      # Python
       python-version:
         description: "The python version to set up."
         type: number
         required: false
         default: 3.12
+      # Shell
       working-directory:
         description: "The current working directory."
         type: string
@@ -18,6 +20,7 @@ on:
         type: string
         required: false
         default: "."
+      # pyproject.toml
       pyproject-toml-download-branch:
         description: "The branch of the workspace repo to download the pyproject.toml from."
         type: string
@@ -28,6 +31,7 @@ on:
         type: string
         required: false
         default: "./pyproject.toml"
+      # Codecov
       codecov-slug:
         description: "The slug provided to Codecov for the coverage report."
         type: string
@@ -43,6 +47,7 @@ on:
         type: string
         required: false
         default: "./codecov.yml"
+      # PostgreSQL
       postgres-version:
         description: "The postgres version to set up."
         type: number
@@ -63,16 +68,35 @@ on:
         type: string
         required: false
         default: "password"
+      # Snyk
       snyk-config-path:
         description: "The path of the Snyk config file in the workspace."
         type: string
         required: false
         default: "backend/.snyk"
+      # Redis
       redis-version:
         description: "The redis version to set up."
         type: number
         required: false
         default: 7.4
+      # Django
+      django:
+        description: "Whether the Django web framework is used."
+        type: boolean
+        required: true
+        default: true
+      # AWS
+      aws-sqs-queues:
+        description: "A CSV of AWS SQS queues to create. If using Django, this will default to the service's name."
+        type: string
+        required: true
+        default: ""
+      aws-s3-buckets:
+        description: "A CSV of AWS S3 buckets to create. If using Django, this will default to the service's name."
+        type: string
+        required: true
+        default: ""
     secrets: # All secrets should not be required to support contributors.
       CODECOV_TOKEN:
         description: "The token used to gain access to Codecov."
@@ -132,10 +156,39 @@ jobs:
           python-version: ${{ inputs.python-version }}
           install-args: --dev
 
+      - name: 🗂️ Get Service Name
+        if: |
+          inputs.django == 'true' && (
+            inputs.aws-sqs-queues == '' ||
+            inputs.aws-s3-buckets == ''
+          )
+        id: get-service-name
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/service/backend/get-name@main
+
+      - name: 🗂️ Get AWS Resource Names
+        id: get-aws-resource-names
+        run: |
+          function get_names() {
+            local names="$1"
+            if [ "$names" = "" ] && [ "${{ inputs.django }}" = "true" ]; then
+              names="${{ steps.get-service-name.outputs.service-name }}"
+            fi
+
+            echo "$2=$names" >> $GITHUB_OUTPUT
+          }
+
+          get_names "${{ inputs.aws-sqs-queues }}" "sqs_queues"
+          get_names "${{ inputs.aws-s3-buckets }}" "s3_buckets"
+
       - name: 🏗️ Create AWS Resources
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/aws/create-resources@main
+        if: |
+          steps.get-aws-resource-names.outputs.sqs_queues != '' ||
+          steps.get-aws-resource-names.outputs.s3_buckets != ''
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/aws/create-resources@workspace-220 # TODO: set to @main
         with:
           region: ${{ env.AWS_REGION }}
+          sqs-queues: ${{ steps.get-aws-resource-names.outputs.sqs_queues }}
+          s3-buckets: ${{ steps.get-aws-resource-names.outputs.s3_buckets }}
 
       - name: 📥 Download Project Config File
         # Download default file if one is not already present in the repo.
@@ -165,6 +218,7 @@ jobs:
         run: ./cli code:check
 
       - name: 🔎 Check Django Migrations
+        if: inputs.django
         run: ./cli migrations:check
 
       - name: 🧪 Test Code Units

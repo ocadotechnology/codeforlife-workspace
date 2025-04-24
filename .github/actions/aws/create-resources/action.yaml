@@ -20,12 +20,12 @@ inputs:
     default: 2.26.1
   # SQS
   sqs-queues:
-    description: "A CSV of AWS SQS queues to create. If using Django, this will default to the service's name."
+    description: "A CSV of AWS SQS queues to create."
     required: true
     default: ""
   # S3
   s3-buckets:
-    description: "A CSV of AWS S3 buckets to create. If using Django, this will default to the service's name."
+    description: "A CSV of AWS S3 buckets to create."
     required: true
     default: ""
   # LocalStack
@@ -37,33 +37,20 @@ inputs:
     description: "The LocalStack version to set up."
     required: false
     default: "4.3.0"
-  # Django
-  django:
-    description: "Whether the Django web framework is used."
-    required: true
-    default: "false"
 runs:
   using: composite
   steps:
-  # Based on inputs, determine what AWS services are required.
-  - name: ⚙️ Get AWS Services
-    id: get-aws-services
+  # Based on inputs, determine what LocalStack services are required.
+  - name: ⚙️ Get LocalStack Services
+    id: get-localstack-services
     shell: bash
     run: |
-      # Empty string array to append AWS service names to.
-      services=()
+      services=() # Empty string array to append LocalStack service names to.
 
-      # Check if creating SQS queues.
-      if [ "${{ inputs.sqs-queues }}" != "" ] || \
-         [ "${{ inputs.django }}" = "true" ]; then
-        services+=("sqs")
-      fi
-
-      # Check if creating S3 buckets.
-      if [ "${{ inputs.s3-buckets }}" != "" ] || \
-         [ "${{ inputs.django }}" = "true" ]; then
-        services+=("s3")
-      fi
+      # Append service if it has resources.
+      function append_service() {
+        if [ "$1" != "" ]; then services+=("$2"); fi
+      }
 
       # Convert array to single-line CSV string.
       array_to_csv() {
@@ -71,33 +58,30 @@ runs:
         echo "${services[*]}"
       }
 
-      # Output CSV to GitHub Actions.
+      append_service "${{ inputs.sqs-queues }}" "sqs"
+      append_service "${{ inputs.s3-buckets }}" "s3"
+
       echo "services=$(array_to_csv)" >> $GITHUB_OUTPUT
 
   - name: 📥 Install AWS CLI
-    if: steps.get-aws-services.outputs.services != ''
+    if: steps.get-localstack-services.outputs.services != ''
     uses: ocadotechnology/codeforlife-workspace/.github/actions/aws/install-cli@main
     with:
       version: ${{ inputs.cli-version }}
 
   - name: 🚀 Set Up LocalStack
-    if: steps.get-aws-services.outputs.services != ''
+    if: steps.get-localstack-services.outputs.services != ''
     uses: LocalStack/setup-localstack@v0.2.4
     with:
       image-tag: ${{ inputs.localstack-version }}
       install-awslocal: "false"
       configuration: |
         DEBUG=${{ inputs.localstack-debug }}
-        SERVICES=${{ steps.get-aws-services.outputs.services }}
+        SERVICES=${{ steps.get-localstack-services.outputs.services }}
         DEFAULT_REGION=${{ inputs.region }}
-
-  - name: 🗂️ Get Service Name
-    if: steps.get-aws-services.outputs.services != '' && inputs.django == 'true'
-    id: get-service-name
-    uses: ocadotechnology/codeforlife-workspace/.github/actions/service/backend/get-name@main
   
   - name: ⚙️ Set Environment Variables
-    if: steps.get-aws-services.outputs.services != ''
+    if: steps.get-localstack-services.outputs.services != ''
     shell: bash
     run: | # Used by AWS CLI.
       echo "AWS_REGION=${{ inputs.region }}" >> $GITHUB_ENV
@@ -105,42 +89,16 @@ runs:
       echo "AWS_SECRET_ACCESS_KEY=${{ inputs.secret-access-key }}" >> $GITHUB_ENV
       echo "AWS_ENDPOINT_URL=http://localhost:4566" >> $GITHUB_ENV
 
-  - name: 🗂️ Get SQS Queue Names
-    if: contains(steps.get-aws-services.outputs.services, 'sqs')
-    id: get-sqs-queue-names
-    shell: bash
-    run: |
-      sqs_queue_names=$(
-        if [ "${{ inputs.sqs-queues }}" != "" ]
-        then echo "${{ inputs.sqs-queues }}"
-        else echo "${{ steps.get-service-name.outputs.service-name }}"
-        fi
-      )
-      echo "sqs-queue-names=$sqs_queue_names" >> $GITHUB_OUTPUT
-
   - name: 🏗️ Create SQS Queues
-    if: contains(steps.get-aws-services.outputs.services, 'sqs')
+    if: contains(steps.get-localstack-services.outputs.services, 'sqs')
     uses: ocadotechnology/codeforlife-workspace/.github/actions/github/process-string-array@workspace-220 # TODO: set to @main
     with:
-      strings: ${{ steps.get-sqs-queue-names.outputs.sqs-queue-names }}
+      strings: ${{ inputs.sqs-queue }}
       process_string: aws sqs create-queue --queue-name="$1"
 
-  - name: 🗂️ Get S3 Bucket Names
-    if: contains(steps.get-aws-services.outputs.services, 's3')
-    id: get-s3-bucket-names
-    shell: bash
-    run: |
-      s3_bucket_names=$(
-        if [ "${{ inputs.s3-buckets }}" != "" ]
-        then echo "${{ inputs.s3-buckets }}"
-        else echo "${{ steps.get-service-name.outputs.service-name }}"
-        fi
-      )
-      echo "s3-bucket-names=$s3_bucket_names" >> $GITHUB_OUTPUT
-
   - name: 🏗️ Create S3 Buckets
-    if: contains(steps.get-aws-services.outputs.services, 's3')
+    if: contains(steps.get-localstack-services.outputs.services, 's3')
     uses: ocadotechnology/codeforlife-workspace/.github/actions/github/process-string-array@workspace-220 # TODO: set to @main
     with:
-      strings: ${{ steps.get-s3-bucket-names.outputs.s3-bucket-names }}
+      strings: ${{ inputs.s3-buckets }}
       process_string: aws s3api create-bucket --bucket="$1"
