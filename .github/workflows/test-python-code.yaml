@@ -202,6 +202,7 @@ jobs:
       - name: 📥 Download CLI Script File
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-script-file@main
         with:
+          branch: workspace-220 # TODO: delete
           path: backend
           save-to: ./cli
 
