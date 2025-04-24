@@ -1,22 +1,29 @@
 name: "Code for Life - AWS - Create Resources"
 description: "Create the AWS resources used in our environment."
 inputs:
+  # CLI
   region:
     description: "The region of the resources."
-    required: false
+    required: true
     default: us-east-1
   access-key-id:
     description: "The ID of the AWS credentials."
-    required: false
+    required: true
     default: test
   secret-access-key:
     description: "The secret of the AWS credentials."
-    required: false
+    required: true
     default: test
   cli-version:
     description: "The version of the AWS CLI to install."
-    required: false
+    required: true
     default: 2.26.1
+  # SQS
+  sqs-queues:
+    description: "A CSV of AWS SQS queues to create. If using Django, this will default to the service's name."
+    required: true
+    default: ""
+  # LocalStack
   localstack-debug:
     description: "Whether LocalStack is in debug mode."
     required: false
@@ -25,38 +32,111 @@ inputs:
     description: "The LocalStack version to set up."
     required: false
     default: "4.3.0"
-  localstack-services:
-    description: "The LocalStack services to set up."
-    required: false
-    default: "s3,sqs"
+  # Django
+  django:
+    description: "Whether the Django web framework is used."
+    required: true
+    default: "false"
 runs:
   using: composite
   steps:
+  # Based on inputs, determine what AWS services are required.
+  - name: ⚙️ Get AWS Services
+    id: get-aws-services
+    shell: bash
+    run: |
+      # Empty string array to append AWS service names to.
+      services=()
+
+      # Check if creating SQS queues.
+      if [ "${{ inputs.sqs-queues }}" != "" ] || \
+         [ "${{ inputs.django }}" = "true" ]; then
+        services+=("sqs")
+      fi
+
+      # Convert array to single-line CSV string.
+      array_to_csv() {
+        local IFS=","
+        echo "${services[*]}"
+      }
+
+      # Output CSV to GitHub Actions.
+      echo "services=$(array_to_csv)" >> $GITHUB_OUTPUT
+
   - name: 📥 Install AWS CLI
+    if: steps.get-aws-services.outputs.services != ''
     uses: ocadotechnology/codeforlife-workspace/.github/actions/aws/install-cli@main
     with:
       version: ${{ inputs.cli-version }}
 
-  - name: 🚀 Set up LocalStack
+  - name: 🚀 Set Up LocalStack
+    if: steps.get-aws-services.outputs.services != ''
     uses: LocalStack/setup-localstack@v0.2.4
     with:
       image-tag: ${{ inputs.localstack-version }}
       install-awslocal: "false"
       configuration: |
         DEBUG=${{ inputs.localstack-debug }}
-        SERVICES=${{ inputs.localstack-services }}
+        SERVICES=${{ steps.get-aws-services.outputs.services }}
         DEFAULT_REGION=${{ inputs.region }}
 
   - name: 🗂️ Get Service Name
+    if: steps.get-aws-services.outputs.services != '' && inputs.django == 'true'
     id: get-service-name
     uses: ocadotechnology/codeforlife-workspace/.github/actions/service/backend/get-name@main
-
-  - name: 🏗️ Create AWS Resources
+  
+  - name: ⚙️ Set Environment Variables
+    if: steps.get-aws-services.outputs.services != ''
     shell: bash
-    env:
-      AWS_REGION: ${{ inputs.region }}
-      AWS_ACCESS_KEY_ID: ${{ inputs.access-key-id }}
-      AWS_SECRET_ACCESS_KEY: ${{ inputs.secret-access-key }}
-      AWS_ENDPOINT_URL: http://localhost:4566
+    run: | # Used by AWS CLI.
+      echo "AWS_REGION=${{ inputs.region }}" >> $GITHUB_ENV
+      echo "AWS_ACCESS_KEY_ID=${{ inputs.access-key-id }}" >> $GITHUB_ENV
+      echo "AWS_SECRET_ACCESS_KEY=${{ inputs.secret-access-key }}" >> $GITHUB_ENV
+      echo "AWS_ENDPOINT_URL=http://localhost:4566" >> $GITHUB_ENV
+
+  - name: 🏗️ Create SQS Queues
+    shell: bash
+    if: contains(steps.get-aws-services.outputs.services, 'sqs')
     run: |
-      aws sqs create-queue --queue-name=${{ steps.get-service-name.outputs.service-name }}
+      # Function to process the CSV string, with a callback
+      process_string_array() {
+        local csv_string="$1"
+        local delimiter="$2"
+        local callback="$3"
+
+        # Function to trim whitespace
+        local trim() {
+          echo "$1" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'
+        }
+
+        # Use a here-string to feed the string to the while loop
+        echo "$csv_string" | while IFS="$delimiter" read -r line; do
+          # Split the line into individual values
+          IFS="$delimiter" read -ra values <<< "$line"
+
+          # Iterate through the values and call the callback for each
+          for value in "${values[@]}"; do
+            local trimmed_value=$(trim "$value")
+            "$callback" "$trimmed_value"
+          done
+        done
+      }
+
+      create_queue() {
+        local queue="$1"
+        echo "Queue: $queue"
+        aws sqs create-queue --queue-name="$queue"
+      }
+
+      # Set the delimiter (comma or newline)
+      delimiter=$','
+
+      sqs_queues=$(
+        if [ "${{ inputs.sqs-queues }}" != "" ]
+        then echo "${{ inputs.sqs-queues }}"
+        else echo "${{ steps.get-service-name.outputs.service-name }}"
+        fi
+      )
+
+      # Call the function with the CSV string, delimiter, and callback
+      process_string_array "$sqs_queues" "$delimiter" "create_queue"
