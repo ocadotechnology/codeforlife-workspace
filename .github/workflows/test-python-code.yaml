@@ -123,6 +123,7 @@ jobs:
       DB_PASSWORD: ${{ inputs.postgres-password }}
       REDIS_HOST: localhost
       AWS_REGION: us-east-1
+      DJANGO: ${{ inputs.django }}
     services:
       postgres: # https://docs.github.com/en/actions/use-cases-and-examples/using-containerized-services/creating-postgresql-service-containers
         image: postgres:${{ inputs.postgres-version }}
