@@ -153,9 +153,9 @@
     "version": "0.2.0",
     "inputs": [
       {
-        "id": "django-service",
+        "id": "backend-service",
         "type": "pickString",
-        "description": "Select the Django service.",
+        "description": "Select the backend service.",
         "options": [
           "codeforlife-package-python",
           "codeforlife-portal-backend",
@@ -184,13 +184,27 @@
           "runserver",
           "${input:django-network}"
         ],
+        "env": {
+          "SERVER": "DjangoServer"
+        },
         "django": true,
         "justMyCode": false,
         "name": "Django Server",
         "program": "manage.py",
         "request": "launch",
         "type": "debugpy",
-        "cwd": "/codeforlife-workspace/${input:django-service}"
+        "cwd": "/codeforlife-workspace/${input:backend-service}"
+      },
+      {
+        "env": {
+          "SERVER": "CeleryServer"
+        },
+        "justMyCode": false,
+        "name": "Celery Server",
+        "program": "application.py",
+        "request": "launch",
+        "type": "debugpy",
+        "cwd": "/codeforlife-workspace/${input:backend-service}"
       }
     ]
   },
