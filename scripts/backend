@@ -142,18 +142,17 @@ function test:coverage:check() {
 
 function setup() {
   # Setup your local environment.
-  fixtures=${FIXTURES:-"api"}
-
   pipenv install --dev
-  pipenv run python manage.py migrate --noinput
-  pipenv run python manage.py load_fixtures $fixtures
-  pipenv run python manage.py collectstatic --noinput --clear
 }
 
-function run() {
+function run:django() {
   # Run a local Django server.
   setup $@
-  pipenv run python manage.py runserver localhost:$service_port
+  SERVER="DjangoServer" pipenv run \
+    python \
+    manage.py \
+    runserver \
+    localhost:$service_port
 }
 
 function hard-install() {

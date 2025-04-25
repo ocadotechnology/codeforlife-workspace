@@ -1,14 +1,6 @@
 {
   "configurations": [
     {
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "name": "Python: Current File",
-      "program": "${file}",
-      "request": "launch",
-      "type": "debugpy"
-    },
-    {
       "justMyCode": false,
       "name": "Pytest",
       "presentation": {
