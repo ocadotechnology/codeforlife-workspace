@@ -15,7 +15,7 @@ on:
         description: "The path to the source files."
         type: string
         required: false
-        default: "api"
+        default: "src"
       # pyproject.toml
       pyproject-toml-download-branch:
         description: "The branch of the workspace repo to download the pyproject.toml from."
