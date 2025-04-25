@@ -123,20 +123,15 @@
         ]
       },
       {
-        "id": "func",
-        "type": "promptString",
-        "description": "The name of the function to call."
-      },
-      {
         "id": "args",
         "type": "promptString",
-        "description": "The arguments to pass to the function. (Press 'Enter' if none)"
+        "description": "Expected Format: \"{func} {arg1} {arg2} ...\"."
       },
     ],
     "tasks": [
       {
         "label": "scripts:backend",
-        "command": "sudo chmod +x ../scripts/backend && ../scripts/backend ${input:func} ${input:args}",
+        "command": "sudo chmod +x ../scripts/backend && ../scripts/backend ${input:args}",
         "type": "shell",
         "problemMatcher": [],
         "options": {
@@ -145,12 +140,57 @@
       },
       {
         "label": "scripts:frontend",
-        "command": "sudo chmod +x ../scripts/frontend && ../scripts/frontend ${input:func} ${input:args}",
+        "command": "sudo chmod +x ../scripts/frontend && ../scripts/frontend ${input:args}",
         "type": "shell",
         "problemMatcher": [],
         "options": {
           "cwd": "${workspaceFolder}/${input:frontend-folder}"
         },
+      }
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "inputs": [
+      {
+        "id": "django-service",
+        "type": "pickString",
+        "description": "Select the Django service.",
+        "options": [
+          "codeforlife-package-python",
+          "codeforlife-portal-backend",
+          "codeforlife-contributor-backend",
+          "codeforlife-template-backend"
+        ]
+      },
+      {
+        "id": "django-network",
+        "type": "promptString",
+        "description": "Expected Format: \"{host}:{port}\".",
+        "default": "localhost:8000"
+      }
+    ],
+    "configurations": [
+      {
+        "console": "integratedTerminal",
+        "justMyCode": false,
+        "name": "Python: Current File",
+        "program": "${file}",
+        "request": "launch",
+        "type": "debugpy"
+      },
+      {
+        "args": [
+          "runserver",
+          "${input:django-network}"
+        ],
+        "django": true,
+        "justMyCode": false,
+        "name": "Django Server",
+        "program": "manage.py",
+        "request": "launch",
+        "type": "debugpy",
+        "cwd": "/codeforlife-workspace/${input:django-service}"
       }
     ]
   },
