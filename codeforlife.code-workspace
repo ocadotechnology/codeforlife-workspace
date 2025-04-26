@@ -54,14 +54,95 @@
     }
   ],
   "settings": {
-    "files.eol": "auto",
-    "autoDocstring.customTemplatePath": "configs/backend/python-docstring.mustache",
+    // General
+    "editor.tabSize": 2,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    },
+    "editor.formatOnSave": true,
+    "editor.rulers": [
+      80
+    ],
     "workbench.colorCustomizations": {
       "editorRuler.foreground": "#008000"
     },
+    "files.eol": "auto",
+    "files.exclude": {
+      // Python
+      "**/.hypothesis": true,
+      "**/.mypy_cache": true,
+      "**/.pytest_cache": true,
+      "**/__pycache__": true
+    },
+    "cSpell.words": [
+      "codeforlife",
+      "klass",
+      "ocado",
+      "kurono",
+      "pipenv"
+    ],
+    // Markdown
+    "[md]": {
+      "editor.tabSize": 4
+    },
+    // Shell
     "[shellscript]": {
       "editor.defaultFormatter": "foxundermoon.shell-format"
     },
+    // Python
+    "python.defaultInterpreterPath": ".venv/bin/python",
+    "python.testing.pytestArgs": [
+      "-n=auto",
+      "--cov=src",
+      "--cov-report=html",
+      "-c=/codeforlife-workspace/configs/backend/pyproject.toml",
+      "src"
+    ],
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false,
+    "[python]": {
+      "editor.defaultFormatter": "ms-python.black-formatter",
+      "editor.tabSize": 4
+    },
+    "autoDocstring.customTemplatePath": "/codeforlife-workspace/configs/backend/python-docstring.mustache",
+    "black-formatter.args": [
+      "--config",
+      "/codeforlife-workspace/configs/backend/pyproject.toml"
+    ],
+    "black-formatter.path": [
+      ".venv/bin/python",
+      "-m",
+      "black"
+    ],
+    "isort.args": [
+      "--settings-file=/codeforlife-workspace/configs/backend/pyproject.toml"
+    ],
+    "isort.path": [
+      ".venv/bin/python",
+      "-m",
+      "isort"
+    ],
+    "mypy-type-checker.args": [
+      "--config-file=/codeforlife-workspace/configs/backend/pyproject.toml"
+    ],
+    "mypy-type-checker.path": [
+      ".venv/bin/python",
+      "-m",
+      "mypy"
+    ],
+    "pylint.args": [
+      "--rcfile=/codeforlife-workspace/configs/backend/pyproject.toml"
+    ],
+    "pylint.path": [
+      ".venv/bin/python",
+      "-m",
+      "pylint"
+    ],
+    // Uncomment if installing as locally in editable mode.
+    // "python.analysis.extraPaths": [
+    //   "../codeforlife-package-python"
+    // ],
+    // Database 
     // TODO: create workflow to update sql connections for each BE service.
     "sqltools.connections": [
       {
