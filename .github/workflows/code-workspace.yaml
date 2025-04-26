@@ -19,7 +19,7 @@ jobs:
         with:
           python-version: 3.12
 
-      - name: 🔎 Check JSON Loads
+      - name: 🔎 Check JSON Load
         run: |
           python -c "
           import json
