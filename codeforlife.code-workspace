@@ -207,7 +207,7 @@
         "id": "args",
         "type": "promptString",
         "description": "Expected Format: \"{func} {arg1} {arg2} ...\"."
-      },
+      }
     ],
     "tasks": [
       {
@@ -217,7 +217,7 @@
         "problemMatcher": [],
         "options": {
           "cwd": "/codeforlife-workspace/${input:backend-folder}"
-        },
+        }
       },
       {
         "label": "scripts:frontend",
@@ -226,7 +226,7 @@
         "problemMatcher": [],
         "options": {
           "cwd": "/codeforlife-workspace/${input:frontend-folder}"
-        },
+        }
       }
     ]
   },
