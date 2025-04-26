@@ -159,7 +159,7 @@ jobs:
 
       - name: 🗂️ Get Service Name
         if: |
-          inputs.django == 'true' && (
+          inputs.django == true && (
             inputs.aws-sqs-queues == '' ||
             inputs.aws-s3-buckets == ''
           )
