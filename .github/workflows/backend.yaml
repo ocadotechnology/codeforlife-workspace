@@ -9,13 +9,6 @@ on:
         type: number
         required: false
         default: 3.12
-      # Shell
-      # TODO: remove this after restructure and standardize source path.
-      source-path:
-        description: "The path to the source files."
-        type: string
-        required: false
-        default: "src"
       # pyproject.toml
       pyproject-toml-download-branch:
         description: "The branch of the workspace repo to download the pyproject.toml from."
@@ -88,8 +81,8 @@ jobs:
     uses: ocadotechnology/codeforlife-workspace/.github/workflows/test-python-code.yaml@workspace-220 # TODO: set to @main
     secrets: inherit
     with:
+      source-path: src
       python-version: ${{ inputs.python-version }}
-      source-path: ${{ inputs.source-path }}
       pyproject-toml-download-branch: ${{ inputs.pyproject-toml-download-branch }}
       pyproject-toml-path: ${{ inputs.pyproject-toml-path }}
       postgres-db: ${{ inputs.postgres-db }}
