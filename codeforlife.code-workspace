@@ -216,7 +216,7 @@
         "type": "shell",
         "problemMatcher": [],
         "options": {
-          "cwd": "${workspaceFolder}/${input:backend-folder}"
+          "cwd": "/codeforlife-workspace/${input:backend-folder}"
         },
       },
       {
@@ -225,7 +225,7 @@
         "type": "shell",
         "problemMatcher": [],
         "options": {
-          "cwd": "${workspaceFolder}/${input:frontend-folder}"
+          "cwd": "/codeforlife-workspace/${input:frontend-folder}"
         },
       }
     ]
