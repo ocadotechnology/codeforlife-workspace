@@ -7,8 +7,6 @@ import typing as t
 
 import pyjson5
 
-from .settings import WORKSPACE_DIR
-
 
 class Folder(t.TypedDict):
     """A code workspace folder."""
@@ -33,7 +31,7 @@ def load_code_workspace() -> CodeWorkspace:
         A JSON dict containing the code workspace.
     """
     with open(
-        WORKSPACE_DIR / "codeforlife.code-workspace",
+        "/codeforlife-workspace/codeforlife.code-workspace",
         "r",
         encoding="utf-8",
     ) as code_workspace:

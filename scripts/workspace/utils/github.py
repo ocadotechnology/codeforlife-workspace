@@ -15,7 +15,6 @@ import inquirer  # type: ignore[import-untyped]
 
 from . import pprint
 from .git import SubmoduleDict
-from .settings import WORKSPACE_DIR
 
 
 def login():
@@ -33,6 +32,7 @@ def login():
         subprocess.run(
             ["gh", "auth", "status"],
             check=True,
+            stderr=subprocess.DEVNULL,
         )
     except CalledProcessError:
         logged_in = False
@@ -112,7 +112,7 @@ def clone_repo(name: str, path: str):
     # pylint: enable=line-too-long
     pprint.notice("Cloning repo...")
 
-    repo_dir = str(WORKSPACE_DIR / path)
+    repo_dir = str("/codeforlife-workspace" / path)
 
     if os.path.isdir(repo_dir) and os.listdir(repo_dir):
         pprint.notice(f"{repo_dir} already exists.")
