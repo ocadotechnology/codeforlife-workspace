@@ -141,8 +141,7 @@ function types:check() {
 
 function setup() {
   # Setup your local environment.
-  # TODO: do not ignore engines and upgrade to JS >=22
-  yarn install --production=false --ignore-engines
+  yarn install --production=false
 }
 
 function run:server() {

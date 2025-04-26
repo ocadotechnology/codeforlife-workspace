@@ -1,0 +1,29 @@
+name: Code Workspace
+
+on:
+  push:
+    paths:
+      - ".github/workflows/code-workspace.yaml"
+      - "codeforlife.code-workspace"
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: 🛫 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🐍 Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+
+      - name: 🔎 Check JSON Load
+        run: |
+          python -c "
+          import json
+
+          with open('codeforlife.code-workspace', 'r', encoding='utf-8') as code_workspace:
+            json.load(code_workspace)
+          "
