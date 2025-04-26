@@ -65,7 +65,7 @@
     6379, // Redis
     4566 // LocalStack
   ],
-  "postCreateCommand": "sudo chmod +x scripts/workspace/setup/run && scripts/workspace/setup/run",
+  "postCreateCommand": "sudo chmod +x scripts/workspace/setup && scripts/workspace/setup",
   "remoteUser": "root",
   "service": "app",
   "workspaceFolder": "/codeforlife-workspace"
