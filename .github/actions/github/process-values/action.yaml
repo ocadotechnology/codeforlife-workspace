@@ -1,0 +1,42 @@
+name: "Code for Life - GitHub - Process Values"
+description: "Process each value in an array."
+inputs:
+  values:
+    description: "The array of values to process."
+    required: true
+  delimiter:
+    description: "What characters to split on."
+    required: true
+    default: "$','" # newline or comma
+  process:
+    description: "A callback which processes each value in the array."
+    required: true
+runs:
+  using: composite
+  steps:
+  - name: ⚙️ Process Values
+    shell: bash
+    run: |
+      # A callback to process each value.
+      _process() {
+        ${{ inputs.process }}
+      }
+
+      # Function to trim whitespace.
+      trim() {
+        echo "$1" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'
+      }
+
+      # Use a here-string to feed the string to the while loop.
+      echo "${{ inputs.values }}" | while IFS="${{ inputs.delimiter }}" read -r line; do
+        # Split the line into individual values.
+        IFS="${{ inputs.delimiter }}" read -ra values_array <<<"$line"
+
+        # Iterate through the values and call the callback for each.
+        for value in "${values_array[@]}"; do
+          trimmed_value=$(trim "$value")
+          if [ "$trimmed_value" != "" ]; then
+            _process "$trimmed_value"
+          fi
+        done
+      done

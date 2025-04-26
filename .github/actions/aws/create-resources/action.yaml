@@ -91,14 +91,14 @@ runs:
 
   - name: 🏗️ Create SQS Queues
     if: contains(steps.get-localstack-services.outputs.services, 'sqs')
-    uses: ocadotechnology/codeforlife-workspace/.github/actions/github/process-string-array@workspace-220 # TODO: set to @main
+    uses: ocadotechnology/codeforlife-workspace/.github/actions/github/process-values@workspace-220 # TODO: set to @main
     with:
-      strings: ${{ inputs.sqs-queues }}
-      process_string: aws sqs create-queue --queue-name="$1"
+      values: ${{ inputs.sqs-queues }}
+      process: aws sqs create-queue --queue-name="$1"
 
   - name: 🏗️ Create S3 Buckets
     if: contains(steps.get-localstack-services.outputs.services, 's3')
-    uses: ocadotechnology/codeforlife-workspace/.github/actions/github/process-string-array@workspace-220 # TODO: set to @main
+    uses: ocadotechnology/codeforlife-workspace/.github/actions/github/process-values@workspace-220 # TODO: set to @main
     with:
-      strings: ${{ inputs.s3-buckets }}
-      process_string: aws s3api create-bucket --bucket="$1"
+      values: ${{ inputs.s3-buckets }}
+      process: aws s3api create-bucket --bucket="$1"
