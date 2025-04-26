@@ -205,6 +205,18 @@
         "request": "launch",
         "type": "debugpy",
         "cwd": "/codeforlife-workspace/${input:backend-service}"
+      },
+      {
+        "env": {
+          "PYTEST_ADDOPTS": "--no-cov"
+        },
+        "justMyCode": false,
+        "name": "Pytest",
+        "presentation": {
+          "hidden": true
+        },
+        "request": "test",
+        "type": "debugpy"
       }
     ]
   },
