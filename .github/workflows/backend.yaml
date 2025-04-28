@@ -78,7 +78,7 @@ on:
 
 jobs:
   test:
-    uses: ocadotechnology/codeforlife-workspace/.github/workflows/test-python-code.yaml@workspace-220 # TODO: set to @main
+    uses: ocadotechnology/codeforlife-workspace/.github/workflows/test-python-code.yaml@main
     secrets: inherit
     with:
       source-path: src

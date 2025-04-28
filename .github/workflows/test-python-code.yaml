@@ -185,7 +185,7 @@ jobs:
         if: |
           steps.get-aws-resource-names.outputs.sqs_queues != '' ||
           steps.get-aws-resource-names.outputs.s3_buckets != ''
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/aws/create-resources@workspace-220 # TODO: set to @main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/aws/create-resources@main
         with:
           region: ${{ env.AWS_REGION }}
           sqs-queues: ${{ steps.get-aws-resource-names.outputs.sqs_queues }}
