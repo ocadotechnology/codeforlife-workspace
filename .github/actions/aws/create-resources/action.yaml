@@ -79,7 +79,7 @@ runs:
         DEBUG=${{ inputs.localstack-debug }}
         SERVICES=${{ steps.get-localstack-services.outputs.services }}
         DEFAULT_REGION=${{ inputs.region }}
-  
+
   - name: ⚙️ Set Environment Variables
     if: steps.get-localstack-services.outputs.services != ''
     shell: bash
