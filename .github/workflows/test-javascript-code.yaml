@@ -71,7 +71,7 @@ jobs:
       - name: 📥 Download CLI Script File
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-script-file@main
         with:
-          path: frontend/cli
+          path: frontend
           save-to: ./cli
 
       - name: 🔎 Check Code Format

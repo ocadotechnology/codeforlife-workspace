@@ -3,11 +3,9 @@
 Created on 14/04/2025 at 16:23:22(+01:00).
 """
 
-import json
-import re
 import typing as t
 
-from .settings import WORKSPACE_DIR
+import pyjson5
 
 
 class Folder(t.TypedDict):
@@ -33,12 +31,8 @@ def load_code_workspace() -> CodeWorkspace:
         A JSON dict containing the code workspace.
     """
     with open(
-        WORKSPACE_DIR / "codeforlife.code-workspace",
+        "/codeforlife-workspace/codeforlife.code-workspace",
         "r",
         encoding="utf-8",
     ) as code_workspace:
-        code_workspace_str = code_workspace.read()
-
-    code_workspace_str = re.sub(r"//.*", "", code_workspace_str)
-
-    return json.loads(code_workspace_str)
+        return pyjson5.load(code_workspace)

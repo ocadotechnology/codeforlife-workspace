@@ -168,7 +168,5 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea/
 
-# Database
-/.postgres-data
-/.redis-data
-/.localstack-data
+# Data from 3rd party services (see: .devcontainer/docker-compose.yml)
+/.data

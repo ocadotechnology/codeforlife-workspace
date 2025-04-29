@@ -1,8 +1,0 @@
-#!/bin/bash
-set -e
-
-cd "${BASH_SOURCE%/*}"
-
-pipenv install --dev
-
-pipenv run python .

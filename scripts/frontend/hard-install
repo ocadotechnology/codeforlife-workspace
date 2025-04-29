@@ -1,7 +1,0 @@
-#!/bin/bash
-set -e
-
-rm -f yarn.lock
-rm -rf node_modules
-yarn cache clean codeforlife
-yarn install --production=false

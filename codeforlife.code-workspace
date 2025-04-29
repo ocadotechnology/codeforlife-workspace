@@ -54,14 +54,95 @@
     }
   ],
   "settings": {
-    "files.eol": "auto",
-    "autoDocstring.customTemplatePath": "configs/backend/python-docstring.mustache",
+    // General
+    "editor.tabSize": 2,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    },
+    "editor.formatOnSave": true,
+    "editor.rulers": [
+      80
+    ],
     "workbench.colorCustomizations": {
       "editorRuler.foreground": "#008000"
     },
+    "files.eol": "auto",
+    "files.exclude": {
+      // Python
+      "**/.hypothesis": true,
+      "**/.mypy_cache": true,
+      "**/.pytest_cache": true,
+      "**/__pycache__": true
+    },
+    "cSpell.words": [
+      "codeforlife",
+      "klass",
+      "ocado",
+      "kurono",
+      "pipenv"
+    ],
+    // Markdown
+    "[md]": {
+      "editor.tabSize": 4
+    },
+    // Shell
     "[shellscript]": {
       "editor.defaultFormatter": "foxundermoon.shell-format"
     },
+    // Python
+    "python.defaultInterpreterPath": ".venv/bin/python",
+    "python.testing.pytestArgs": [
+      "-n=auto",
+      "--cov=src",
+      "--cov-report=html",
+      "-c=/codeforlife-workspace/configs/backend/pyproject.toml",
+      "src"
+    ],
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false,
+    "python.analysis.extraPaths": [
+      // Uncomment if installing locally in editable mode.
+      // "/codeforlife-workspace/codeforlife-package-python"
+    ],
+    "[python]": {
+      "editor.defaultFormatter": "ms-python.black-formatter",
+      "editor.tabSize": 4
+    },
+    "autoDocstring.customTemplatePath": "/codeforlife-workspace/configs/backend/python-docstring.mustache",
+    "black-formatter.args": [
+      "--config",
+      "/codeforlife-workspace/configs/backend/pyproject.toml"
+    ],
+    "black-formatter.path": [
+      ".venv/bin/python",
+      "-m",
+      "black"
+    ],
+    "isort.args": [
+      "--settings-file=/codeforlife-workspace/configs/backend/pyproject.toml"
+    ],
+    "isort.path": [
+      ".venv/bin/python",
+      "-m",
+      "isort"
+    ],
+    "mypy-type-checker.args": [
+      "--config-file=/codeforlife-workspace/configs/backend/pyproject.toml"
+    ],
+    "mypy-type-checker.path": [
+      ".venv/bin/python",
+      "-m",
+      "mypy"
+    ],
+    "pylint.args": [
+      "--rcfile=/codeforlife-workspace/configs/backend/pyproject.toml"
+    ],
+    "pylint.path": [
+      ".venv/bin/python",
+      "-m",
+      "pylint"
+    ],
+    // Database 
     // TODO: create workflow to update sql connections for each BE service.
     "sqltools.connections": [
       {
@@ -93,6 +174,130 @@
         "database": "template",
         "username": "root",
         "password": "password"
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "inputs": [
+      {
+        "id": "backend-folder",
+        "type": "pickString",
+        "description": "Select the backend folder.",
+        "options": [
+          "codeforlife-scheduler",
+          "codeforlife-package-python",
+          "codeforlife-portal-backend",
+          "codeforlife-contributor-backend",
+          "codeforlife-template-backend"
+        ]
+      },
+      {
+        "id": "frontend-folder",
+        "type": "pickString",
+        "description": "Select the frontend folder.",
+        "options": [
+          "codeforlife-package-javascript",
+          "codeforlife-portal-frontend",
+          "codeforlife-contributor-frontend",
+          "codeforlife-template-frontend"
+        ]
+      },
+      {
+        "id": "args",
+        "type": "promptString",
+        "description": "Expected Format: \"{func} {arg1} {arg2} ...\"."
+      }
+    ],
+    "tasks": [
+      {
+        "label": "scripts:backend",
+        "command": "sudo chmod +x /codeforlife-workspace/scripts/backend && /codeforlife-workspace/scripts/backend ${input:args}",
+        "type": "shell",
+        "problemMatcher": [],
+        "options": {
+          "cwd": "/codeforlife-workspace/${input:backend-folder}"
+        }
+      },
+      {
+        "label": "scripts:frontend",
+        "command": "sudo chmod +x /codeforlife-workspace/scripts/frontend && /codeforlife-workspace/scripts/frontend ${input:args}",
+        "type": "shell",
+        "problemMatcher": [],
+        "options": {
+          "cwd": "/codeforlife-workspace/${input:frontend-folder}"
+        }
+      }
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "inputs": [
+      {
+        "id": "backend-service",
+        "type": "pickString",
+        "description": "Select the backend service.",
+        "options": [
+          "codeforlife-package-python",
+          "codeforlife-portal-backend",
+          "codeforlife-contributor-backend",
+          "codeforlife-template-backend"
+        ]
+      },
+      {
+        "id": "django-network",
+        "type": "promptString",
+        "description": "Expected Format: \"{host}:{port}\".",
+        "default": "localhost:8000"
+      }
+    ],
+    "configurations": [
+      {
+        "console": "integratedTerminal",
+        "justMyCode": false,
+        "name": "Python: Current File",
+        "program": "${file}",
+        "request": "launch",
+        "type": "debugpy"
+      },
+      {
+        "args": [
+          "runserver",
+          "${input:django-network}"
+        ],
+        "env": {
+          "SERVER": "DjangoServer"
+        },
+        "django": true,
+        "justMyCode": false,
+        "name": "Django Server",
+        "program": "manage.py",
+        "request": "launch",
+        "type": "debugpy",
+        "cwd": "/codeforlife-workspace/${input:backend-service}"
+      },
+      {
+        "env": {
+          "SERVER": "CeleryServer"
+        },
+        "justMyCode": false,
+        "name": "Celery Server",
+        "program": "application.py",
+        "request": "launch",
+        "type": "debugpy",
+        "cwd": "/codeforlife-workspace/${input:backend-service}"
+      },
+      {
+        "env": {
+          "PYTEST_ADDOPTS": "--no-cov"
+        },
+        "justMyCode": false,
+        "name": "Pytest",
+        "presentation": {
+          "hidden": true
+        },
+        "request": "test",
+        "type": "debugpy"
       }
     ]
   },

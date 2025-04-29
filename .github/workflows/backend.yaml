@@ -3,17 +3,13 @@ name: Backend
 on:
   workflow_call:
     inputs:
+      # Python
       python-version:
         description: "The Python version to set up."
         type: number
         required: false
         default: 3.12
-      # TODO: remove this after restructure and standardize source path.
-      source-path:
-        description: "The path to the source files."
-        type: string
-        required: false
-        default: "api"
+      # pyproject.toml
       pyproject-toml-download-branch:
         description: "The branch of the workspace repo to download the pyproject.toml from."
         type: string
@@ -24,6 +20,7 @@ on:
         type: string
         required: false
         default: "./pyproject.toml"
+      # PostgreSQL
       postgres-db:
         description: "The postgres database to test against."
         type: string
@@ -34,11 +31,13 @@ on:
         type: number
         required: false
         default: 17
+      # Snyk
       snyk-config-path:
         description: "The path of the Snyk config file in the workspace."
         type: string
         required: false
         default: "backend/.snyk"
+      # Codecov
       codecov-yml-download-branch:
         description: "The branch of the workspace repo to download the codecov.yml from."
         type: string
@@ -49,6 +48,23 @@ on:
         type: string
         required: false
         default: "./codecov.yml"
+      # Django
+      django:
+        description: "Whether the Django web framework is used."
+        type: boolean
+        required: false
+        default: true
+      # AWS
+      aws-sqs-queues:
+        description: "A CSV of AWS SQS queues to create. If using Django, this will default to the service's name."
+        type: string
+        required: false
+        default: ""
+      aws-s3-buckets:
+        description: "A CSV of AWS S3 buckets to create. If using Django, this will default to the service's name."
+        type: string
+        required: false
+        default: ""
     secrets: # All secrets should not be required to support contributors.
       CODECOV_TOKEN:
         description: "The token used to gain access to Codecov."
@@ -65,8 +81,8 @@ jobs:
     uses: ocadotechnology/codeforlife-workspace/.github/workflows/test-python-code.yaml@main
     secrets: inherit
     with:
+      source-path: src
       python-version: ${{ inputs.python-version }}
-      source-path: ${{ inputs.source-path }}
       pyproject-toml-download-branch: ${{ inputs.pyproject-toml-download-branch }}
       pyproject-toml-path: ${{ inputs.pyproject-toml-path }}
       postgres-db: ${{ inputs.postgres-db }}
@@ -74,6 +90,9 @@ jobs:
       snyk-config-path: ${{ inputs.snyk-config-path }}
       codecov-yml-download-branch: ${{ inputs.codecov-yml-download-branch }}
       codecov-yml-path: ${{ inputs.codecov-yml-path }}
+      django: ${{ inputs.django }}
+      aws-sqs-queues: ${{ inputs.aws-sqs-queues }}
+      aws-s3-buckets: ${{ inputs.aws-s3-buckets }}
 
   build:
     runs-on: ubuntu-22.04
@@ -102,6 +121,7 @@ jobs:
           sed -i '1d' requirements.txt # Remove 1st line (contains package index)
 
       - name: 🏗️ Collect Static Files
+        if: inputs.django
         run: pipenv run python ./manage.py collectstatic --noinput --clear
 
       - name: 📤 Upload Build Artifact

@@ -7,8 +7,6 @@ import re
 import typing as t
 from dataclasses import dataclass
 
-from .settings import WORKSPACE_DIR
-
 
 @dataclass(frozen=True)
 class Submodule:
@@ -29,7 +27,7 @@ def read_submodules() -> SubmoduleDict:
         of the submodule's attributes.
     """
     with open(
-        WORKSPACE_DIR / ".gitmodules",
+        "/codeforlife-workspace/.gitmodules",
         "r",
         encoding="utf-8",
     ) as gitmodules:
