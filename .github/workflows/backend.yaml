@@ -149,6 +149,7 @@ jobs:
           name: build
 
       - name: 📁 Zip Static Files
+        if: inputs.django
         working-directory: static
         run: zip --quiet --recurse-paths ../static.zip .
 
