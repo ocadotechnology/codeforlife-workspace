@@ -45,6 +45,7 @@ runs:
         snyk test \
           --project-name=${{ steps.get-repo-name.outputs.repo-name }} \
           --severity-threshold=${{ inputs.severity-threshold }} \
+          --fail-on=all \
           ${{ inputs.add-test-args }}
 
     # Ocado doesn't have an agreement with Snyk for SAST. If this ever changes,
