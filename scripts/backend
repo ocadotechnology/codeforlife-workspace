@@ -148,7 +148,7 @@ function setup() {
 function run:django() {
   # Run a local Django server.
   setup $@
-  SERVER="DjangoServer" pipenv run \
+  SERVER_MODE="django" pipenv run \
     python \
     manage.py \
     runserver \
