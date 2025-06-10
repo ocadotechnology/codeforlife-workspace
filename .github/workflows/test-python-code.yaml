@@ -80,12 +80,6 @@ on:
         type: number
         required: false
         default: 7.4
-      # Django
-      django:
-        description: "Whether the Django web framework is used."
-        type: boolean
-        required: false
-        default: true
       # AWS
       aws-sqs-queues:
         description: "A CSV of AWS SQS queues to create. If using Django, this will default to the service's name."
@@ -123,7 +117,6 @@ jobs:
       DB_PASSWORD: ${{ inputs.postgres-password }}
       REDIS_HOST: localhost
       AWS_REGION: us-east-1
-      DJANGO: ${{ inputs.django }}
     services:
       postgres: # https://docs.github.com/en/actions/use-cases-and-examples/using-containerized-services/creating-postgresql-service-containers
         image: postgres:${{ inputs.postgres-version }}
@@ -158,11 +151,7 @@ jobs:
           install-args: --dev
 
       - name: 🗂️ Get Service Name
-        if: |
-          inputs.django == true && (
-            inputs.aws-sqs-queues == '' ||
-            inputs.aws-s3-buckets == ''
-          )
+        if: inputs.aws-sqs-queues == '' || inputs.aws-s3-buckets == ''
         id: get-service-name
         uses: ocadotechnology/codeforlife-workspace/.github/actions/service/backend/get-name@main
 
@@ -171,7 +160,7 @@ jobs:
         run: |
           function get_names() {
             local names="$1"
-            if [ "$names" = "" ] && [ "${{ inputs.django }}" = "true" ]; then
+            if [ "$names" = "" ]; then
               names="${{ steps.get-service-name.outputs.service-name }}"
             fi
 
@@ -219,7 +208,6 @@ jobs:
         run: ./cli code:check
 
       - name: 🔎 Check Django Migrations
-        if: inputs.django
         run: ./cli migrations:check
 
       - name: 🧪 Test Code Units

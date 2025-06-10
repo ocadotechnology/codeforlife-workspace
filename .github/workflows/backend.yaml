@@ -90,7 +90,6 @@ jobs:
       snyk-config-path: ${{ inputs.snyk-config-path }}
       codecov-yml-download-branch: ${{ inputs.codecov-yml-download-branch }}
       codecov-yml-path: ${{ inputs.codecov-yml-path }}
-      django: ${{ inputs.django }}
       aws-sqs-queues: ${{ inputs.aws-sqs-queues }}
       aws-s3-buckets: ${{ inputs.aws-s3-buckets }}
 
@@ -121,7 +120,6 @@ jobs:
           sed -i '1d' requirements.txt # Remove 1st line (contains package index)
 
       - name: 🏗️ Collect Static Files
-        if: inputs.django
         run: pipenv run python ./manage.py collectstatic --noinput --clear
 
       - name: 📤 Upload Build Artifact
@@ -149,7 +147,6 @@ jobs:
           name: build
 
       - name: 📁 Zip Static Files
-        if: inputs.django
         working-directory: static
         run: zip --quiet --recurse-paths ../static.zip .
 
