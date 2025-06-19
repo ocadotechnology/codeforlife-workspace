@@ -3,12 +3,6 @@ name: Backend
 on:
   workflow_call:
     inputs:
-      # Pull Request
-      pr-number:
-        description: "The number of the pull request that triggered the original workflow."
-        type: number
-        required: false
-        default: 0
       # Python
       python-version:
         description: "The Python version to set up."
@@ -84,12 +78,12 @@ on:
 
 jobs:
   contributor:
-    # if: inputs.pr-number > 0
+    if: github.event_name == 'pull_request'
     # uses: ocadotechnology/codeforlife-contributor-backend/.github/workflows/check-pr-authors-signed-latest-agreement.yaml@contributor--backend-49 # TODO: set to @main
     runs-on: ubuntu-22.04
     steps:
       - name: Echo Event
-        run: echo "${{ github.event_name }}"
+        run: echo "${{ github.event.pull_request.number }}"
 
 
   test:
