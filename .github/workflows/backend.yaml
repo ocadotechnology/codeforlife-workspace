@@ -78,13 +78,7 @@ on:
 
 jobs:
   contributor:
-    if: github.event_name == 'pull_request'
-    # uses: ocadotechnology/codeforlife-contributor-backend/.github/workflows/check-pr-authors-signed-latest-agreement.yaml@contributor--backend-49 # TODO: set to @main
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Echo Event
-        run: echo "${{ github.event.pull_request.number }}"
-
+    uses: ocadotechnology/codeforlife-contributor-backend/.github/workflows/check-pr-authors-signed-latest-agreement.yaml@contributor--backend-49 # TODO: set to @main
 
   test:
     uses: ocadotechnology/codeforlife-workspace/.github/workflows/test-python-code.yaml@main
