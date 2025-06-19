@@ -3,6 +3,12 @@ name: Backend
 on:
   workflow_call:
     inputs:
+      # Pull Request
+      pr-number:
+        description: "The number of the pull request that triggered the original workflow."
+        type: number
+        required: false
+        default: 0
       # Python
       python-version:
         description: "The Python version to set up."
@@ -77,6 +83,15 @@ on:
         required: false
 
 jobs:
+  contributor:
+    # if: inputs.pr-number > 0
+    # uses: ocadotechnology/codeforlife-contributor-backend/.github/workflows/check-pr-authors-signed-latest-agreement.yaml@contributor--backend-49 # TODO: set to @main
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Echo Event
+        run: echo "${{ github.event_name }}"
+
+
   test:
     uses: ocadotechnology/codeforlife-workspace/.github/workflows/test-python-code.yaml@main
     secrets: inherit
@@ -95,7 +110,7 @@ jobs:
 
   build:
     runs-on: ubuntu-22.04
-    needs: [test]
+    needs: [test] # TODO: add contributor
     # Build if:
     #  - the repo's owner is Ocado Tech.
     #  - the repo is not the backend template.
