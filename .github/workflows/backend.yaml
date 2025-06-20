@@ -78,7 +78,7 @@ on:
 
 jobs:
   contributor:
-    uses: ocadotechnology/codeforlife-contributor-backend/.github/workflows/check-pr-authors-signed-latest-agreement.yaml@contributor--backend-49 # TODO: set to @main
+    uses: ocadotechnology/codeforlife-contributor-backend/.github/workflows/check-pr-authors-signed-latest-agreement.yaml@main
 
   test:
     uses: ocadotechnology/codeforlife-workspace/.github/workflows/test-python-code.yaml@main
