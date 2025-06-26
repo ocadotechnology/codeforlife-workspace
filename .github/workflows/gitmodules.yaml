@@ -41,12 +41,16 @@ jobs:
         if: github.event.repository.name != 'codeforlife-workspace'
         id: get-submodule-path
         run: |
+          target_url="${{ github.repositoryUrl }}"
+          target_url="${target_url#git://}"
+          echo "Target URL: \"$target_url\"."
+
           git config --file .gitmodules --list | \
           grep 'submodule\..*\.url=' | \
           while read -r line; do
             url=$(echo "$line" | cut -d'=' -f2-)
 
-            if [ "$url" = "${{ github.event.repository.url }}" ]; then
+            if [ "$url" = "$target_url" ]; then
               name=$(echo "$line" | cut -d'.' -f2 | cut -d'=' -f1)
               path="$(git config --file .gitmodules "submodule.$name.path")"
 
