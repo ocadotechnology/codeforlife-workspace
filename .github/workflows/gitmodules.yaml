@@ -49,6 +49,8 @@ jobs:
           grep 'submodule\..*\.url=' | \
           while read -r line; do
             url=$(echo "$line" | cut -d'=' -f2-)
+            url="${url#https://}"
+            echo "Current URL: \"$url\"."
 
             if [ "$url" = "$target_url" ]; then
               name=$(echo "$line" | cut -d'.' -f2 | cut -d'=' -f1)
