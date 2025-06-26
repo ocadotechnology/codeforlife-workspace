@@ -24,8 +24,7 @@ jobs:
         with:
           token: ${{ secrets.CFL_BOT_GH_TOKEN }}
           repository: ocadotechnology/codeforlife-workspace
-          submodules: false
-          # submodules: ${{ github.event_name != 'workflow_call' }}
+          submodules: ${{ github.event_name != 'workflow_call' }}
 
       - name: 🛫 Sync Submodules
         run: |
