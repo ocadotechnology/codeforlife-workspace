@@ -71,7 +71,7 @@ jobs:
           token: ${{ secrets.CFL_BOT_GH_TOKEN }}
           path: ${{ steps.get-submodule-path.outputs.value }}
 
-      - name: 🔄 Sync One Submodule
+      - name: 🔄 Update Submodule HEAD
         if: steps.get-submodule-path.conclusion == 'success'
         run: |
           echo "Adding submodule to workspace's staging area..."
@@ -80,7 +80,7 @@ jobs:
             exit 1
           }
 
-      - name: 🔄 Sync All Submodules
+      - name: 🔄 Update All Submodule HEADs
         if: steps.get-submodule-path.conclusion == 'skipped'
         continue-on-error: true
         run: |
