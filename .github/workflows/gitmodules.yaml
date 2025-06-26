@@ -30,33 +30,32 @@ jobs:
         github.event.repository.default_branch == github.ref_name
       )
     steps:
-      - name: 📖 Get Submodule Path
-        if: github.event.repository.name != 'codeforlife-workspace'
-        id: get-submodule-path
-        run: |
-          function get_submodule_path() {
-            git config --file .gitmodules --list | \
-            grep 'submodule\..*\.url=' | \
-            while read -r line; do
-              url=$(echo "$line" | cut -d'=' -f2-)
-              if [ "$url" = "${{ github.repositoryUrl }}" ]; then
-                name=$(echo "$line" | cut -d'.' -f2 | cut -d'=' -f1)
-                echo "$(git config --file .gitmodules "submodule.$name.path")"
-                return 0
-              fi
-            done
-
-            return 1
-          }
-
-          echo "value=$(get_submodule_path)" >> "$GITHUB_OUTPUT"
-
       - name: 🛫 Checkout Workspace
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.CFL_BOT_GH_TOKEN }}
           repository: ocadotechnology/codeforlife-workspace
-          submodules: ${{ steps.get-submodule-path.conclusion == 'skipped' }}
+          submodules: ${{ github.event.repository.name == 'codeforlife-workspace' }}
+
+      - name: 📖 Get Submodule Path
+        if: github.event.repository.name != 'codeforlife-workspace'
+        id: get-submodule-path
+        run: |
+          git config --file .gitmodules --list | \
+          grep 'submodule\..*\.url=' | \
+          while read -r line; do
+            url=$(echo "$line" | cut -d'=' -f2-)
+
+            if [ "$url" = "${{ github.repositoryUrl }}" ]; then
+              name=$(echo "$line" | cut -d'.' -f2 | cut -d'=' -f1)
+              path="$(git config --file .gitmodules "submodule.$name.path")"
+
+              echo "value=$(get_submodule_path)" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          done
+
+          exit 1
 
       - name: 🤖 Set up cfl-bot as Git User
         uses: ocadotechnology/codeforlife-workspace/.github/actions/git/setup-bot@main
