@@ -42,5 +42,24 @@ jobs:
           fi
 
           for submodule_path in $submodule_paths; do
-            echo "$submodule_path"
+            echo "Processing submodule: $submodule_path"
+
+            # Navigate into the submodule directory.
+            if [ ! -d "$submodule_path" ]; then
+              echo "Submodule path '$submodule_path' not found after initial clone."
+              exit 1
+            fi
+            pushd "$submodule_path" > /dev/null
+
+            # Get default branch.
+            default_branch=$(
+              git remote show origin 2>/dev/null | \
+              grep 'HEAD branch' | \
+              awk '{print $NF}'
+            )
+            if [ -z "$default_branch" ]; then
+              echo "Default branch not found from remote 'origin'."
+              exit 1
+            fi
+            echo "  Identified default branch from remote 'origin': $default_branch"
           done
