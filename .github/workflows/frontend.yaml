@@ -84,3 +84,8 @@ jobs:
     with:
       node-version: ${{ inputs.node-version }}
       snyk-config-path: ${{ inputs.snyk-config-path }}
+
+  submodule:
+    uses: ocadotechnology/codeforlife-workspace/.github/workflows/gitmodules.yaml@main
+    secrets: inherit
+    needs: [release]

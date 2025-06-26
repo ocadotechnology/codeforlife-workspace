@@ -170,4 +170,4 @@ jobs:
   submodule:
     uses: ocadotechnology/codeforlife-workspace/.github/workflows/gitmodules.yaml@main
     secrets: inherit
-    # needs: [release]
+    needs: [release]
