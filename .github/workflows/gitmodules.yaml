@@ -61,4 +61,7 @@ jobs:
               exit 1
             fi
             echo "  Identified default branch from remote 'origin': $default_branch"
+
+            # Navigate back to workspace directory.
+            popd > /dev/null
           done
