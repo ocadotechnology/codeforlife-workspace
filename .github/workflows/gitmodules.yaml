@@ -45,11 +45,13 @@ jobs:
           target_url="${target_url#git://}"
           echo "Target URL: \"$target_url\"."
 
-          exit_code=1
+          readarray -t submodule_lines < <(
+            git config --file .gitmodules --list | \
+            grep 'submodule\..*\.url='
+          )
 
-          git config --file .gitmodules --list | \
-          grep 'submodule\..*\.url=' | \
-          while read -r line; do
+          exit_code=1
+          for line in "${submodule_lines[@]}"; do
             url=$(echo "$line" | cut -d'=' -f2-)
             url="${url#https://}"
             echo "Current URL: \"$url\"."
