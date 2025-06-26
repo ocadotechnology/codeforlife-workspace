@@ -70,6 +70,7 @@ jobs:
         with:
           token: ${{ secrets.CFL_BOT_GH_TOKEN }}
           path: ${{ steps.get-submodule-path.outputs.value }}
+          ref: ${{ github.event.repository.default_branch }}
 
       - name: 🔄 Update Submodule HEAD
         if: steps.get-submodule-path.conclusion == 'success'
