@@ -24,7 +24,8 @@ jobs:
         with:
           token: ${{ secrets.CFL_BOT_GH_TOKEN }}
           repository: ocadotechnology/codeforlife-workspace
-          submodules: ${{ github.event_name != 'workflow_call' }}
+          submodules: false
+          # submodules: ${{ github.event_name != 'workflow_call' }}
 
       - name: 🛫 Sync Submodules
         run: |
@@ -39,6 +40,8 @@ jobs:
             echo "No submodules found in .gitmodules."
             exit 1
           else
+
+          echo "$submodule_paths"
 
           for submodule_path in $submodule_paths; do
             echo "$submodule_path"
