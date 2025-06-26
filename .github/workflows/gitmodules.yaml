@@ -35,3 +35,8 @@ jobs:
               --get-regexp path | \
             awk '{ print $2 }'
           )"
+
+          if [ -z "$submodule_paths" ]; then
+            echo "No submodules found in .gitmodules."
+            exit 1
+          else
