@@ -26,7 +26,10 @@ jobs:
           repository: ocadotechnology/codeforlife-workspace
           submodules: ${{ github.event_name != 'workflow_call' }}
 
-      - name: 🛫 Sync Submodules
+      - name: 🤖 Set up cfl-bot as Git User
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/git/setup-bot@main
+
+      - name: 🔄 Sync Submodules
         run: |
           submodule_paths="$(
             git config \
@@ -70,17 +73,24 @@ jobs:
               continue_on_error "Default branch not found."
             fi
 
-            echo "Checking out $default_branch..."
+            echo "Checking out '$default_branch'..."
             git checkout "$default_branch" || \
-              continue_on_error "Failed to checkout branch '$default_branch'."
-
-            echo "Pulling latest changes from $default_branch..."
-            git pull $remote "$default_branch" || \
-              continue_on_error "Failed to pull latest changes for $default_branch."
+              continue_on_error "Failed to checkout branch."
 
             popd > /dev/null
+            echo "Adding submodule to workspace's staging area..."
+            git add "$submodule_path" || \
+              continue_on_error "Failed to add submodule."
 
             echo "-------------------------------------------------------------"
           done
+
+          if git diff --cached --quiet; then
+            echo "No submodule HEAD updates to commit in the workspace."
+          else
+            echo "Committing and pushing workspace's changes..."
+            git commit -m "chore(submodules): sync [skip ci]"
+            git push origin HEAD
+          fi
 
           exit $exit_code
