@@ -7,7 +7,9 @@ on:
       - .gitmodules
       - .github/workflows/gitmodules.yaml
   schedule:
-    - cron: "0 */3 * * *" # Every 3rd hour
+    - cron: "0 9 * * *" # Every day at 9am.
+    - cron: "0 13 * * *" # Every day at 1pm.
+    - cron: "0 17 * * *" # Every day at 5pm.
   workflow_call:
     secrets:
       CFL_BOT_GH_TOKEN:
@@ -20,22 +22,60 @@ jobs:
     runs-on: ubuntu-22.04
     # Sync if:
     #  - the repo's owner is Ocado Tech.
-    #  - a change is made to the default branch.
+    #  - the repo 'codeforlife-workspace' triggered the event OR the event was
+    #    triggered by the repo's default branch.
     if: |
-      github.repository_owner_id == 2088731 &&
-      github.ref_name == github.event.repository.default_branch
+      github.repository_owner_id == 2088731 && (
+        github.event.repository.name == 'codeforlife-workspace' ||
+        github.event.repository.default_branch == github.ref_name
+      )
     steps:
+      - name: 📖 Get Submodule Path
+        if: github.event.repository.name != 'codeforlife-workspace'
+        id: get-submodule-path
+        run: |
+          function get_submodule_path() {
+            git config --file .gitmodules --list | \
+            grep 'submodule\..*\.url=' | \
+            while read -r line; do
+              url=$(echo "$line" | cut -d'=' -f2-)
+              if [ "$url" = "${{ github.repositoryUrl }}" ]; then
+                name=$(echo "$line" | cut -d'.' -f2 | cut -d'=' -f1)
+                echo "$(git config --file .gitmodules "submodule.$name.path")"
+                return 0
+              fi
+            done
+
+            return 1
+          }
+
+          echo "value=$(get_submodule_path)" >> "$GITHUB_OUTPUT"
+
       - name: 🛫 Checkout Workspace
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.CFL_BOT_GH_TOKEN }}
           repository: ocadotechnology/codeforlife-workspace
-          submodules: ${{ github.event_name != 'workflow_call' }}
+          submodules: ${{ steps.get-submodule-path.conclusion == 'skipped' }}
 
       - name: 🤖 Set up cfl-bot as Git User
         uses: ocadotechnology/codeforlife-workspace/.github/actions/git/setup-bot@main
 
-      - name: 🔄 Sync Submodules
+      - name: 🔄 Sync One Submodule
+        if: steps.get-submodule-path.conclusion == 'success'
+        run: |
+          echo "Cloning '${{ github.repository }}'..."
+          git clone ${{ github.repositoryUrl }} ${{ steps.get-submodule-path.outputs.value }}
+
+          echo "Adding submodule to workspace's staging area..."
+          git add "${{ steps.get-submodule-path.outputs.value }}" || {
+            echo "Failed to add submodule."
+            exit 1
+          }
+
+      - name: 🔄 Sync All Submodules
+        if: steps.get-submodule-path.conclusion == 'skipped'
+        continue-on-error: true
         run: |
           submodule_paths="$(
             git config \
@@ -52,9 +92,9 @@ jobs:
           exit_code=0
           remote="origin"
           for submodule_path in $submodule_paths; do
+            echo "-------------------------------------------------------------"
             echo "Processing submodule: $submodule_path"
 
-            # Navigate into the submodule directory.
             if [ ! -d "$submodule_path" ]; then
               echo "Submodule path '$submodule_path' not found."
               exit_code=1
@@ -87,10 +127,12 @@ jobs:
             echo "Adding submodule to workspace's staging area..."
             git add "$submodule_path" || \
               continue_on_error "Failed to add submodule."
-
-            echo "-------------------------------------------------------------"
           done
 
+          exit $exit_code
+
+      - name: ⬆️ Push Submodule HEAD Updates
+        run: |
           if git diff --cached --quiet; then
             echo "No submodule HEAD updates to commit in the workspace."
           else
@@ -98,5 +140,3 @@ jobs:
             git commit -m "chore(submodules): sync [skip ci]"
             git push origin HEAD
           fi
-
-          exit $exit_code
