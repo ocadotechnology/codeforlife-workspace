@@ -166,3 +166,15 @@ jobs:
     with:
       python-version: ${{ inputs.python-version }}
       snyk-config-path: ${{ inputs.snyk-config-path }}
+
+  submodule:
+    needs: [release]
+    # Sync submodule if:
+    #  - the repo's owner is Ocado Tech.
+    #  - the repo is not the backend template.
+    #  - a change is made to the default branch.
+    if: |
+      github.repository_owner_id == 2088731 &&
+      github.ref_name == github.event.repository.default_branch
+    uses: ocadotechnology/codeforlife-workspace/.github/workflows/gitmodules.yaml@main
+    secrets: inherit
