@@ -43,6 +43,6 @@ jobs:
 
           echo "$submodule_paths"
 
-          for submodule_path in $submodule_paths; do
-            echo "$submodule_path"
-          done
+          # for submodule_path in $submodule_paths; do
+          #   echo "$submodule_path"
+          # done
