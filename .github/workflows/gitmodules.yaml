@@ -45,6 +45,8 @@ jobs:
           target_url="${target_url#git://}"
           echo "Target URL: \"$target_url\"."
 
+          exit_code=1
+
           git config --file .gitmodules --list | \
           grep 'submodule\..*\.url=' | \
           while read -r line; do
@@ -58,11 +60,12 @@ jobs:
 
               echo "value=$path"
               echo "value=$path" >> "$GITHUB_OUTPUT"
-              exit 0
+              exit_code=0
+              break
             fi
           done
 
-          exit 1
+          exit $exit_code
 
       - name: 🤖 Set up cfl-bot as Git User
         uses: ocadotechnology/codeforlife-workspace/.github/actions/git/setup-bot@main
