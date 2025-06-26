@@ -43,31 +43,26 @@ jobs:
         run: |
           target_url="${{ github.repositoryUrl }}"
           target_url="${target_url#git://}"
-          echo "Target URL: \"$target_url\"."
 
           readarray -t submodule_lines < <(
             git config --file .gitmodules --list | \
             grep 'submodule\..*\.url='
           )
 
-          exit_code=1
           for line in "${submodule_lines[@]}"; do
             url=$(echo "$line" | cut -d'=' -f2-)
             url="${url#https://}"
-            echo "Current URL: \"$url\"."
 
             if [ "$url" = "$target_url" ]; then
               name=$(echo "$line" | cut -d'.' -f2 | cut -d'=' -f1)
               path="$(git config --file .gitmodules "submodule.$name.path")"
 
-              echo "value=$path"
               echo "value=$path" >> "$GITHUB_OUTPUT"
-              exit_code=0
-              break
+              exit 0
             fi
           done
 
-          exit $exit_code
+          exit 1
 
       - name: 🛫 Checkout Submodule
         uses: actions/checkout@v4
