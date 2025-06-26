@@ -9,6 +9,10 @@ on:
   schedule:
     - cron: "0 */3 * * *" # Every 3rd hour
   workflow_call:
+    secrets:
+      CFL_BOT_GH_TOKEN:
+        description: "The CFL-bot's GitHub token. Used to sync."
+        required: true
   workflow_dispatch:
 
 jobs:
@@ -22,14 +26,13 @@ jobs:
           repository: ocadotechnology/codeforlife-workspace
           submodules: ${{ github.event_name != 'workflow_call' }}
 
-      - name: 🗂️ Get Submodule Paths
-        id: get-submodule-paths
+      - name: 🛫 Sync Submodules
         run: |
           submodule_paths=$(
             git config \
               --file .gitmodules \
               --get-regexp path | \
-            awk "{ print $2 }"
+            awk '{ print $2 }'
           )
 
           if [ -z "$submodule_paths" ]; then
@@ -37,11 +40,6 @@ jobs:
             exit 1
           else
 
-          echo "$submodule_paths"
-          echo "submodule-paths=$submodule_paths" >> "$GITHUB_OUTPUT"
-
-      - name: 🛫 Checkout Submodules
-        run: |
-          for submodule_path in "${{ steps.get-submodule-paths.outputs.submodule-paths }}"; do
+          for submodule_path in $submodule_paths; do
             echo "$submodule_path"
           done
