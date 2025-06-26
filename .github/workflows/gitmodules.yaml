@@ -56,7 +56,8 @@ jobs:
               name=$(echo "$line" | cut -d'.' -f2 | cut -d'=' -f1)
               path="$(git config --file .gitmodules "submodule.$name.path")"
 
-              echo "value=$(get_submodule_path)" >> "$GITHUB_OUTPUT"
+              echo "value=$path"
+              echo "value=$path" >> "$GITHUB_OUTPUT"
               exit 0
             fi
           done
