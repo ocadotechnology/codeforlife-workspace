@@ -69,15 +69,16 @@ jobs:
 
           exit $exit_code
 
-      - name: 🤖 Set up cfl-bot as Git User
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/git/setup-bot@main
+      - name: 🛫 Checkout Submodule
+        uses: actions/checkout@v4
+        if: steps.get-submodule-path.conclusion == 'success'
+        with:
+          token: ${{ secrets.CFL_BOT_GH_TOKEN }}
+          path: ${{ steps.get-submodule-path.outputs.value }}
 
       - name: 🔄 Sync One Submodule
         if: steps.get-submodule-path.conclusion == 'success'
         run: |
-          echo "Cloning '${{ github.repository }}'..."
-          git clone ${{ github.repositoryUrl }} ${{ steps.get-submodule-path.outputs.value }}
-
           echo "Adding submodule to workspace's staging area..."
           git add "${{ steps.get-submodule-path.outputs.value }}" || {
             echo "Failed to add submodule."
@@ -141,6 +142,9 @@ jobs:
           done
 
           exit $exit_code
+
+      - name: 🤖 Set up cfl-bot as Git User
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/git/setup-bot@main
 
       - name: ⬆️ Push Submodule HEAD Updates
         run: |
