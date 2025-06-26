@@ -29,20 +29,9 @@ jobs:
 
       - name: 🛫 Sync Submodules
         run: |
-          submodule_paths=$(
+          submodule_paths="$(
             git config \
               --file .gitmodules \
               --get-regexp path | \
             awk '{ print $2 }'
-          )
-
-          if [ -z "$submodule_paths" ]; then
-            echo "No submodules found in .gitmodules."
-            exit 1
-          else
-
-          echo "$submodule_paths"
-
-          # for submodule_path in $submodule_paths; do
-          #   echo "$submodule_path"
-          # done
+          )"
