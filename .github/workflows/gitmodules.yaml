@@ -41,6 +41,7 @@ jobs:
           fi
 
           exit_code=0
+          remote="origin"
           for submodule_path in $submodule_paths; do
             echo "Processing submodule: $submodule_path"
 
@@ -52,18 +53,14 @@ jobs:
             fi
             pushd "$submodule_path" > /dev/null
 
-            # Utilities.
-            function t_echo() { echo "  $1"; }
             function continue_on_error() {
-              t_echo "$1"
+              echo "$1"
               exit_code=1
               popd > /dev/null
               continue
             }
 
-            remote="origin"
-
-            t_echo "Getting default branch from remote '$remote'."
+            echo "Getting default branch from remote '$remote'."
             default_branch=$(
               git remote show $remote 2>/dev/null | \
               grep 'HEAD branch' | \
@@ -73,15 +70,17 @@ jobs:
               continue_on_error "Default branch not found."
             fi
 
-            t_echo "Checking out $default_branch..."
+            echo "Checking out $default_branch..."
             git checkout "$default_branch" || \
               continue_on_error "Failed to checkout branch '$default_branch'."
 
-            t_echo "Pulling latest changes from $default_branch..."
+            echo "Pulling latest changes from $default_branch..."
             git pull $remote "$default_branch" || \
               continue_on_error "Failed to pull latest changes for $default_branch."
 
             popd > /dev/null
+
+            echo "-------------------------------------------------------------"
           done
 
           exit $exit_code
