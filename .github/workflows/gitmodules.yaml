@@ -39,4 +39,8 @@ jobs:
           if [ -z "$submodule_paths" ]; then
             echo "No submodules found in .gitmodules."
             exit 1
-          else
+          fi
+
+          for submodule_path in $submodule_paths; do
+            echo "$submodule_path"
+          done
