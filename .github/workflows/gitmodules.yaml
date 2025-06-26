@@ -1,0 +1,47 @@
+name: Git Modules
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .gitmodules
+      - .github/workflows/gitmodules.yaml
+  schedule:
+    - cron: "0 */3 * * *" # Every 3rd hour
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: 🛫 Checkout Workspace
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.CFL_BOT_GH_TOKEN }}
+          repository: ocadotechnology/codeforlife-workspace
+          submodules: ${{ github.event_name != 'workflow_call' }}
+
+      - name: 🗂️ Get Submodule Paths
+        id: get-submodule-paths
+        run: |
+          submodule_paths=$(
+            git config \
+              --file .gitmodules \
+              --get-regexp path | \
+            awk "{ print $2 }"
+          )
+
+          if [ -z "$submodule_paths" ]; then
+            echo "No submodules found in .gitmodules."
+            exit 1
+          else
+
+          echo "$submodule_paths"
+          echo "submodule-paths=$submodule_paths" >> "$GITHUB_OUTPUT"
+
+      - name: 🛫 Checkout Submodules
+        run: |
+          for submodule_path in "${{ steps.get-submodule-paths.outputs.submodule-paths }}"; do
+            echo "$submodule_path"
+          done
