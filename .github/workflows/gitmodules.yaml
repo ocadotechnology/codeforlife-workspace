@@ -18,6 +18,12 @@ on:
 jobs:
   sync:
     runs-on: ubuntu-22.04
+    # Sync if:
+    #  - the repo's owner is Ocado Tech.
+    #  - a change is made to the default branch.
+    if: |
+      github.repository_owner_id == 2088731 &&
+      github.ref_name == github.event.repository.default_branch
     steps:
       - name: 🛫 Checkout Workspace
         uses: actions/checkout@v4
