@@ -185,7 +185,7 @@
         "type": "pickString",
         "description": "Select the backend folder.",
         "options": [
-          "codeforlife-scheduler",
+          "codeforlife-scheduler-backend",
           "codeforlife-package-python",
           "codeforlife-portal-backend",
           "codeforlife-contributor-backend",
@@ -266,7 +266,7 @@
           "${input:django-network}"
         ],
         "env": {
-          "SERVER": "DjangoServer"
+          "SERVER_MODE": "django"
         },
         "django": true,
         "justMyCode": false,
@@ -278,7 +278,7 @@
       },
       {
         "env": {
-          "SERVER": "CeleryServer"
+          "SERVER_MODE": "celery"
         },
         "justMyCode": false,
         "name": "Celery Server",
