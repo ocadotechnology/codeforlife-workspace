@@ -14,7 +14,7 @@ on:
     secrets:
       CFL_BOT_GH_TOKEN:
         description: "The CFL-bot's GitHub token. Used to sync."
-        required: true
+        required: false
   workflow_dispatch:
 
 jobs:
