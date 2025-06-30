@@ -7,9 +7,9 @@ on:
       - .gitmodules
       - .github/workflows/gitmodules.yaml
   schedule:
-    - cron: "0 9 * * *" # Every day at 9am.
-    - cron: "0 13 * * *" # Every day at 1pm.
-    - cron: "0 17 * * *" # Every day at 5pm.
+    - cron: "0 9 * * 1-5" # Every weekday at 9am UTC.
+    - cron: "0 13 * * 1-5" # Every weekday at 1pm UTC.
+    - cron: "0 17 * * 1-5" # Every weekday at 5pm UTC.
   workflow_call:
     secrets:
       CFL_BOT_GH_TOKEN:
