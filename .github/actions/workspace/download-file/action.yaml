@@ -10,10 +10,21 @@ inputs:
     required: true
   save-to:
     description: "Where to save the file."
-    required: true
+    required: false
 runs:
   using: composite
   steps:
+    - name: Get Output Path
+      id: get-output-path
+      shell: bash
+      run: |
+        output_path="${{ inputs.save-to }}"
+        if [ -z "$output_path" ]; then
+          output_path=".workspace/${{ inputs.path }}"
+        fi
+
+        echo "value=$output_path" >> $GITHUB_OUTPUT
+
     - name: 📥 Download File
       shell: bash
-      run: wget https://raw.githubusercontent.com/ocadotechnology/codeforlife-workspace/refs/heads/${{ inputs.branch }}/${{ inputs.path }} -O ${{ inputs.save-to }}
+      run: wget https://raw.githubusercontent.com/ocadotechnology/codeforlife-workspace/refs/heads/${{ inputs.branch }}/${{ inputs.path }} -O ${{ steps.get-output-path.outputs.value }}
