@@ -69,10 +69,11 @@ jobs:
           install-args: --production=false
 
       - name: 📥 Download CLI Script File
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-script-file@main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
         with:
-          path: frontend
+          path: scripts/frontend
           save-to: ./cli
+          type: bash
 
       - name: 🔎 Check Code Format
         run: ./cli format:check

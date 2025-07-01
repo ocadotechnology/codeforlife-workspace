@@ -11,6 +11,9 @@ inputs:
   save-to:
     description: "Where to save the file."
     required: false
+  type:
+    description: "The type of file being downloaded."
+    required: false
 runs:
   using: composite
   steps:
@@ -28,3 +31,8 @@ runs:
     - name: 📥 Download File
       shell: bash
       run: wget https://raw.githubusercontent.com/ocadotechnology/codeforlife-workspace/refs/heads/${{ inputs.branch }}/${{ inputs.path }} -O ${{ steps.get-output-path.outputs.value }}
+
+    - name: ⚙️ Make Script Executable
+      if: inputs.type == 'bash'
+      shell: bash
+      run: chmod +x ${{ steps.get-output-path.outputs.value }}
