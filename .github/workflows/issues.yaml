@@ -173,6 +173,7 @@ jobs:
           steps.ready-for-review-not-assigned.conclusion == 'skipped'
         run: |
           gh label create "${{ env.READY_FOR_REVIEW_PROMPT }}" \
+            --repo=${{ github.repository }} \
             --force \
             --color="#fbca04" \
             --description="This issue is awaiting review by a CFL team member."
