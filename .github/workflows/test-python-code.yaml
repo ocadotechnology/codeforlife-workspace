@@ -190,10 +190,11 @@ jobs:
           save-to: ${{ inputs.pyproject-toml-path }}
 
       - name: 📥 Download CLI Script File
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-script-file@main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
         with:
-          path: backend
+          path: scripts/backend
           save-to: ./cli
+          type: bash
 
       - name: 🔎 Check Import Sort
         run: ./cli imports:check

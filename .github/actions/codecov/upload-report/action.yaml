@@ -25,10 +25,10 @@ runs:
     - name: 📥 Download Codecov Config File
       # Download default file if one is not already present in the repo.
       if: hashFiles(inputs.config-path) == ''
-      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-config-file@main
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
         branch: ${{ inputs.config-download-branch }}
-        path: codecov.yml
+        path: configs/codecov.yml
         save-to: ${{ inputs.config-path }}
 
     - name: 📈 Upload Coverage Reports to Codecov

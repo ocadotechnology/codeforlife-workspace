@@ -1,0 +1,38 @@
+name: "Code for Life - Workspace - Download File"
+description: "Download a file from the workspace."
+inputs:
+  branch:
+    description: "The branch on the workspace repo."
+    required: true
+    default: "main"
+  path:
+    description: "The path of the file."
+    required: true
+  save-to:
+    description: "Where to save the file."
+    required: false
+  type:
+    description: "The type of file being downloaded."
+    required: false
+runs:
+  using: composite
+  steps:
+    - name: Get Output Path
+      id: get-output-path
+      shell: bash
+      run: |
+        output_path="${{ inputs.save-to }}"
+        if [ -z "$output_path" ]; then
+          output_path=".workspace/${{ inputs.path }}"
+        fi
+
+        echo "value=$output_path" >> $GITHUB_OUTPUT
+
+    - name: 📥 Download File
+      shell: bash
+      run: wget https://raw.githubusercontent.com/ocadotechnology/codeforlife-workspace/refs/heads/${{ inputs.branch }}/${{ inputs.path }} -O ${{ steps.get-output-path.outputs.value }}
+
+    - name: ⚙️ Make Script Executable
+      if: inputs.type == 'bash'
+      shell: bash
+      run: chmod +x ${{ steps.get-output-path.outputs.value }}

@@ -1,0 +1,183 @@
+name: Issues
+
+on:
+  issues:
+    types: [opened]
+  issue_comment:
+    types: [created, edited]
+  workflow_call:
+    secrets:
+      CFL_BOT_GH_TOKEN:
+        description: "The CFL-bot's GitHub token. Used to comment."
+        required: false
+
+jobs:
+  opened:
+    runs-on: ubuntu-22.04
+    if: |
+      github.repository_owner_id == 2088731 &&
+      github.event_name == 'issue' &&
+      github.event.action == 'opened'
+    env:
+      GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
+    steps:
+      - name: ✍️ Download and Write Opened Comment
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@main
+        with:
+          download-issue-comment-path: opened.md
+
+  comment-created-or-edited:
+    runs-on: ubuntu-22.04
+    if: |
+      github.repository_owner_id == 2088731 &&
+      github.event_name == 'issue_comment' &&
+      !github.event.issue.pull_request &&
+      contains(fromJSON('["created", "edited"]'), github.event.action)
+    env:
+      GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
+      PROJECT_NODE_ID: PVT_kwDOAB_fG84AmfxN
+      STATUS_FIELD_NODE_ID: PVTSSF_lADOAB_fG84AmfxNzgeYqqQ
+      STATUS_OPTION_TO_DO_ID: f75ad846
+      STATUS_OPTION_IN_PROGRESS_ID: 47fc9ee4
+      STATUS_OPTION_REVIEWING_ID: cae0cfc1
+      STATUS_OPTION_STAGING_ID: b595bde1
+      STATUS_OPTION_PRODUCTION_ID: a0264d2c
+      STATUS_OPTION_CLOSED_ID: 98236657
+      ASSIGN_ME_PROMPT: assign me
+      UNASSIGN_ME_PROMPT: unassign me
+      READY_FOR_REVIEW_PROMPT: ready for review
+    steps:
+      - name: 🔍 Extract Prompt
+        id: extract-prompt
+        run: |
+          prompt=$(
+            echo "${{ github.event.comment.body }}" |
+            sed --regexp-extended 's/^[[:space:]]*|[[:space:]]*$//g' |
+            sed --regexp-extended 's/[[:space:]]{2,}/ /g'
+          )
+
+          echo "prompt=$prompt" >> $GITHUB_OUTPUT
+
+      # Prompt: assign me
+
+      - name: "✍️ Assign Me: Download and Write Closed-State Comment"
+        id: assign-me-closed-state
+        if: |
+          steps.extract-prompt.outputs.prompt == env.ASSIGN_ME_PROMPT &&
+          github.event.issue.state == 'closed'
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@main
+        with:
+          download-issue-comment-path: assign-me/closed-state.md
+          write-substitutions: |
+            contributor=@${{ github.event.comment.user.login }}
+
+      - name: "✍️ Assign Me: Download and Write Max-Assignees Comment"
+        id: assign-me-max-assignees
+        if: |
+          steps.extract-prompt.outputs.prompt == env.ASSIGN_ME_PROMPT &&
+          github.event.issue.state == 'open' &&
+          github.event.issue.assignees.length >= 5
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@main
+        with:
+          download-issue-comment-path: assign-me/max-assignees.md
+          write-substitutions: |
+            contributor=@${{ github.event.comment.user.login }}
+
+      - name: "🏃 Assign Me: Run"
+        if: |
+          steps.extract-prompt.outputs.prompt == env.ASSIGN_ME_PROMPT &&
+          steps.assign-me-closed-state.conclusion == 'skipped' &&
+          steps.assign-me-max-assignees.conclusion == 'skipped'
+        run: |
+          gh api graphql -f query='
+            mutation {
+              updateStatus: updateProjectV2ItemFieldValue(input: {
+                projectId: "${{ env.PROJECT_NODE_ID }}"
+                itemId: "${{ github.event.issue.node_id }}"
+                fieldId: "${{ env.STATUS_FIELD_NODE_ID }}"
+                value: {
+                  singleSelectOptionId: "${{ env.STATUS_OPTION_IN_PROGRESS_ID }}"
+                }
+              }) {
+                projectV2Item { id }
+              }
+              addAssignee: addAssigneesToAssignable(input: {
+                assignableId: "${{ github.event.issue.id }}"
+                assigneeIds: ["${{ github.event.comment.user.id }}"]
+              }) {
+                assignable { ... on Issue { id } }
+              }
+            }'
+
+      # Prompt: unassign me
+
+      - name: "✍️ Unassign Me: Download and Write Not-Assigned Comment"
+        id: unassign-me-not-assigned
+        if: |
+          steps.extract-prompt.outputs.prompt == env.UNASSIGN_ME_PROMPT &&
+          !contains(github.event.issue.assignees.*.id, github.event.comment.user.id)
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@main
+        with:
+          download-issue-comment-path: unassign-me/not-assigned.md
+          write-substitutions: |
+            contributor=@${{ github.event.comment.user.login }}
+
+      - name: "🏃 Unassign Me: Run"
+        if: |
+          steps.extract-prompt.outputs.prompt == env.UNASSIGN_ME_PROMPT &&
+          steps.unassign-me-not-assigned.conclusion == 'skipped'
+        run: |
+          gh api graphql -f query='
+            mutation {
+              removeAssignee: removeAssigneesFromAssignable(input: {
+                assignableId: "${{ github.event.issue.id }}"
+                assigneeIds: ["${{ github.event.comment.user.id }}"]
+              }) {
+                assignable { ... on Issue { id } }
+              }
+            }'
+
+      # Prompt: ready for review
+
+      - name: "✍️ Ready for Review: Download and Write Closed-State Comment"
+        id: ready-for-review-closed-state
+        if: |
+          steps.extract-prompt.outputs.prompt == env.READY_FOR_REVIEW_PROMPT &&
+          github.event.issue.state == 'closed'
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@main
+        with:
+          download-issue-comment-path: ready-for-review/closed-state.md
+          write-substitutions: |
+            contributor=@${{ github.event.comment.user.login }}
+
+      - name: "✍️ Ready for Review: Download and Write Not-Assigned Comment"
+        id: ready-for-review-not-assigned
+        if: |
+          steps.extract-prompt.outputs.prompt == env.READY_FOR_REVIEW_PROMPT &&
+          github.event.issue.state == 'open' &&
+          !contains(github.event.issue.assignees.*.id, github.event.comment.user.id)
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@main
+        with:
+          download-issue-comment-path: ready-for-review/not-assigned.md
+          write-substitutions: |
+            contributor=@${{ github.event.comment.user.login }}
+
+      - name: "🏃 Ready for Review: Run"
+        if: |
+          steps.extract-prompt.outputs.prompt == env.READY_FOR_REVIEW_PROMPT &&
+          steps.ready-for-review-closed-state.conclusion == 'skipped' &&
+          steps.ready-for-review-not-assigned.conclusion == 'skipped'
+        run: |
+          gh api graphql -f query='
+            mutation {
+              updateStatus: updateProjectV2ItemFieldValue(input: {
+                projectId: "${{ env.PROJECT_NODE_ID }}"
+                itemId: "${{ github.event.issue.node_id }}"
+                fieldId: "${{ env.STATUS_FIELD_NODE_ID }}"
+                value: {
+                  singleSelectOptionId: "${{ env.STATUS_OPTION_REVIEWING_ID }}"
+                }
+              }) {
+                projectV2Item { id }
+              }
+            }'
