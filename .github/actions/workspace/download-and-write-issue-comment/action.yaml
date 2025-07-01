@@ -21,7 +21,7 @@ inputs:
   write-issue-repo:
     description: "The repository of the issue."
     required: true
-    default: ${{ github.event.repository }}
+    default: ${{ github.repository }}
 runs:
   using: composite
   steps:
