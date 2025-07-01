@@ -50,7 +50,7 @@ runs:
           local key="${1%=*}"
           local value="${1#*=}"
           sed --in-place \
-            's/{{$key}}/$value/g' \
+            's/{{ *$key *}}/$value/g' \
             ${{ steps.get-download-inputs.outputs.save-to }}
 
     - name: ✍️ Write Issue-Comment
