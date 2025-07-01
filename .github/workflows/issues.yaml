@@ -68,6 +68,7 @@ jobs:
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@main
         with:
           download-issue-comment-path: assign-me/already-assigned.md
+          download-save-to: assign-me-already-assigned.md
           write-substitutions: |
             contributor=@${{ github.event.comment.user.login }}
 
