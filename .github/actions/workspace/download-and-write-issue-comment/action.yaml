@@ -1,0 +1,60 @@
+name: "Code for Life - Workspace - Download and Write Issue Comment"
+description: "Download an issue-comment file from the workspace and write it."
+inputs:
+  download-branch:
+    description: "The branch on the workspace repo to download from."
+    required: true
+    default: "main"
+  download-issue-comment-path:
+    description: "The path of the issue-comment file to download."
+    required: true
+  download-save-to:
+    description: "Where to save the downloaded file."
+    required: false
+  write-substitutions:
+    description: "Substitutions to make before writing the comment"
+    required: false
+  write-issue-number:
+    description: "The number of the issue to write the comment to."
+    required: true
+    default: ${{ github.event.issue.number }}
+runs:
+  using: composite
+  steps:
+    - name: 🔣 Get Download Inputs
+      id: get-download-inputs
+      shell: bash
+      run: |
+        function output_to_github() { echo "$1=$2" >> $GITHUB_OUTPUT; }
+
+        path=".github/comments/issue/${{ inputs.download-issue-comment-path }}"
+        output_to_github "path" "$path"
+
+        save_to="${{ inputs.download-save-to }}"
+        if [ -z "$save_to" ]; then save_to="$path"; fi
+        output_to_github "save-to" "$save_to"
+
+    - name: 📥 Download Issue-Comment File
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@workspace-241 # TODO: set to @main
+      with:
+        branch: ${{ inputs.download-branch }}
+        path: ${{ steps.get-download-inputs.outputs.path }}
+        save-to: ${{ steps.get-download-inputs.outputs.save-to }}
+
+    - name: 🔄 Substitute Values
+      if: inputs.write-substitutions
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/process-values@main
+      with:
+        values: ${{ inputs.write-substitutions }}
+        process: |
+          local key="${1%=*}"
+          local value="${1#*=}"
+          sed --in-place \
+            's/{{$key}}/$value/g' \
+            ${{ steps.get-download-inputs.outputs.save-to }}
+
+    - name: ✍️ Write Issue-Comment
+      shell: bash
+      run: |
+        gh issue comment ${{ inputs.write-issue-number }} \
+          --body-file=${{ steps.get-download-inputs.outputs.save-to }}
