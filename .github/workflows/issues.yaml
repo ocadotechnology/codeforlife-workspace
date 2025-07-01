@@ -117,7 +117,7 @@ jobs:
               }
               addAssignee: addAssigneesToAssignable(input: {
                 assignableId: "${{ github.event.issue.node_id }}"
-                assigneeIds: ["${{ github.event.comment.user.id }}"]
+                assigneeIds: ["${{ github.event.comment.user.node_id }}"]
               }) {
                 assignable { ... on Issue { id } }
               }
@@ -145,7 +145,7 @@ jobs:
             mutation {
               removeAssignee: removeAssigneesFromAssignable(input: {
                 assignableId: "${{ github.event.issue.node_id }}"
-                assigneeIds: ["${{ github.event.comment.user.id }}"]
+                assigneeIds: ["${{ github.event.comment.user.node_id }}"]
               }) {
                 assignable { ... on Issue { id } }
               }
