@@ -1,0 +1,130 @@
+name: Issues
+
+on:
+  issues:
+    types: [opened]
+  issue_comment:
+    types: [created, edited]
+  workflow_call:
+    secrets:
+      CFL_BOT_GH_TOKEN:
+        description: "The CFL-bot's GitHub token. Used to comment."
+        required: false
+
+jobs:
+  opened:
+    runs-on: ubuntu-22.04
+    if: |
+      github.repository_owner_id == 2088731 &&
+      github.event_name == 'issue' &&
+      github.event.action == 'opened'
+    env:
+      GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
+      BODY_FILE_PATH: .github/comments/issue/opened.md
+    steps:
+      - name: 📥 Download Opened Comment's Body-File
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@workspace-241 # TODO: set to @main
+        with:
+          path: ${{ env.BODY_FILE_PATH }}
+
+      - name: ✍️ Write Opened Comment
+        run: |
+          gh issue comment ${{ github.event.issue.number }} \
+            --body-file=.workspace/${{ env.BODY_FILE_PATH }}
+
+  comment-created-or-edited:
+    runs-on: ubuntu-22.04
+    if: |
+      github.repository_owner_id == 2088731 &&
+      github.event_name == 'issue_comment' &&
+      !github.event.issue.pull_request &&
+      contains(fromJSON('["created", "edited"]'), github.event.action)
+    env:
+      PROJECT_NODE_ID: PVT_kwDOAB_fG84AmfxN
+      STATUS_FIELD_NODE_ID: PVTSSF_lADOAB_fG84AmfxNzgeYqqQ
+      STATUS_OPTION_TO_DO_ID: f75ad846
+      STATUS_OPTION_IN_PROGRESS_ID: 47fc9ee4
+      STATUS_OPTION_REVIEWING_ID: cae0cfc1
+      STATUS_OPTION_STAGING_ID: b595bde1
+      STATUS_OPTION_PRODUCTION_ID: a0264d2c
+      STATUS_OPTION_CLOSED_ID: 98236657
+      GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
+      ASSIGN_ME_PROMPT: assign me
+      ASSIGN_ME_CLOSED_STATE_PATH: .github/comments/issue/closed-state.md
+      ASSIGN_ME_MAX_ASSIGNEES_PATH: .github/comments/issue/max-assignees.md
+    steps:
+      - name: 🔍 Extract Prompt
+        id: extract-prompt
+        run: |
+          comment_body="${{ github.event.comment.body }}"
+
+      # Prompt: assign me
+
+      - name: "📥 Assign Me: Download Closed-State Comment"
+        id: assign-me-download-closed-state-comment
+        if: |
+          steps.extract-prompt.outputs.prompt == env.ASSIGN_ME_PROMPT &&
+          github.event.issue.state == 'closed'
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@workspace-241 # TODO: set to @main
+        with:
+          path: ${{ env.ASSIGN_ME_CLOSED_STATE_PATH }}
+          save-to: ${{ env.ASSIGN_ME_CLOSED_STATE_PATH }}
+
+      - name: "✍️ Assign Me: Write Closed-State Comment"
+        if: steps.assign-me-download-closed-state-comment.conclusion == 'success'
+        run: |
+          sed --in-place \
+            's/{{contributor}}/@${{ github.event.comment.user.login }}/g' \
+            ${{ env.ASSIGN_ME_CLOSED_STATE_PATH }}  
+
+          gh issue comment ${{ github.event.issue.number }} \
+            --body-file=${{ env.ASSIGN_ME_CLOSED_STATE_PATH }}
+
+      - name: "📥 Assign Me: Download Max-Assignees Comment"
+        id: assign-me-download-max-assignees-comment
+        if: |
+          steps.extract-prompt.outputs.prompt == env.ASSIGN_ME_PROMPT &&
+          github.event.issue.state == 'open' &&
+          github.event.issue.assignees.length >= 5
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@workspace-241 # TODO: set to @main
+        with:
+          path: ${{ env.ASSIGN_ME_MAX_ASSIGNEES_PATH }}
+          save-to: ${{ env.ASSIGN_ME_MAX_ASSIGNEES_PATH }}
+
+      - name: "✍️ Assign Me: Write Max-Assignees Comment"
+        if: steps.assign-me-download-max-assignees-comment.conclusion == 'success'
+        run: |
+          sed --in-place \
+            's/{{contributor}}/@${{ github.event.comment.user.login }}/g' \
+            ${{ env.ASSIGN_ME_MAX_ASSIGNEES_PATH }}
+
+          gh issue comment ${{ github.event.issue.number }} \
+            --body-file=${{ env.ASSIGN_ME_MAX_ASSIGNEES_PATH }}
+
+      - name: "🧑 Assign Me: Run"
+        if: |
+          steps.extract-prompt.outputs.prompt == env.ASSIGN_ME_PROMPT &&
+          steps.assign-me-download-closed-state-comment.conclusion == 'skipped' &&
+          steps.assign-me-download-max-assignees-comment.conclusion == 'skipped'
+        run: |
+          gh api graphql -f query='
+            mutation {
+              updateStatus: updateProjectV2ItemFieldValue(input: {
+                projectId: "${{ env.PROJECT_NODE_ID }}"
+                itemId: "${{ github.event.issue.node_id }}"
+                fieldId: "${{ env.STATUS_FIELD_NODE_ID }}"
+                value: {
+                  singleSelectOptionId: "${{ env.STATUS_OPTION_IN_PROGRESS_ID }}"
+                }
+              }) {
+                projectV2Item { id }
+              }
+              addAssignee: addAssigneesToAssignable(input: {
+                assignableId: "${{ github.event.issue.id }}"
+                assigneeIds: ["${{ github.event.comment.user.id }}"]
+              }) {
+                assignable { ... on Issue { id } }
+              }
+            }'
+
+      # Prompt: unassign me
