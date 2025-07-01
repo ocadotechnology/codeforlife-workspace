@@ -60,6 +60,17 @@ jobs:
 
       # Prompt: assign me
 
+      - name: "✍️ Assign Me: Download and Write Already-Assigned Comment"
+        id: assign-me-already-assigned
+        if: |
+          steps.extract-prompt.outputs.prompt == env.ASSIGN_ME_PROMPT &&
+          contains(github.event.issue.assignees.*.id, github.event.comment.user.id)
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@main
+        with:
+          download-issue-comment-path: assign-me/already-assigned.md
+          write-substitutions: |
+            contributor=@${{ github.event.comment.user.login }}
+
       - name: "✍️ Assign Me: Download and Write Closed-State Comment"
         id: assign-me-closed-state
         if: |
@@ -76,6 +87,7 @@ jobs:
         if: |
           steps.extract-prompt.outputs.prompt == env.ASSIGN_ME_PROMPT &&
           github.event.issue.state == 'open' &&
+          !contains(github.event.issue.assignees.*.id, github.event.comment.user.id) &&
           github.event.issue.assignees.length >= 5
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@main
         with:
@@ -86,6 +98,7 @@ jobs:
       - name: "🏃 Assign Me: Run"
         if: |
           steps.extract-prompt.outputs.prompt == env.ASSIGN_ME_PROMPT &&
+          steps.assign-me-already-assigned.conclusion == 'skipped' &&
           steps.assign-me-closed-state.conclusion == 'skipped' &&
           steps.assign-me-max-assignees.conclusion == 'skipped'
         run: |
