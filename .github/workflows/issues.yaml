@@ -56,8 +56,13 @@ jobs:
       - name: 🔍 Extract Prompt
         id: extract-prompt
         run: |
-          comment_body="${{ github.event.comment.body }}"
-          echo "prompt=$comment_body" >> $GITHUB_OUTPUT
+          prompt=$(
+            echo "${{ github.event.comment.body }}" |
+            sed --regexp-extended 's/^[[:space:]]*|[[:space:]]*$//g' |
+            sed --regexp-extended 's/[[:space:]]{2,}/ /g'
+          )
+
+          echo "prompt=$prompt" >> $GITHUB_OUTPUT
 
       # Prompt: assign me
 
