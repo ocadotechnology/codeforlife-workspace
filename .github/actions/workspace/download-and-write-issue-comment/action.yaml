@@ -35,7 +35,7 @@ runs:
         output_to_github "save-to" "$save_to"
 
     - name: 📥 Download Issue-Comment File
-      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@workspace-241 # TODO: set to @main
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
         branch: ${{ inputs.download-branch }}
         path: ${{ steps.get-download-inputs.outputs.path }}

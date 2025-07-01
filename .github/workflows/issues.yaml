@@ -20,17 +20,11 @@ jobs:
       github.event.action == 'opened'
     env:
       GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
-      BODY_FILE_PATH: .github/comments/issue/opened.md
     steps:
-      - name: 📥 Download Opened Comment's Body-File
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@workspace-241 # TODO: set to @main
+      - name: ✍️ Download and Write Opened Comment
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@main
         with:
-          path: ${{ env.BODY_FILE_PATH }}
-
-      - name: ✍️ Write Opened Comment
-        run: |
-          gh issue comment ${{ github.event.issue.number }} \
-            --body-file=.workspace/${{ env.BODY_FILE_PATH }}
+          download-issue-comment-path: opened.md
 
   comment-created-or-edited:
     runs-on: ubuntu-22.04
@@ -71,7 +65,7 @@ jobs:
         if: |
           steps.extract-prompt.outputs.prompt == env.ASSIGN_ME_PROMPT &&
           github.event.issue.state == 'closed'
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@workspace-241 # TODO: set to @main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@main
         with:
           download-issue-comment-path: assign-me/closed-state.md
           write-substitutions: |
@@ -83,7 +77,7 @@ jobs:
           steps.extract-prompt.outputs.prompt == env.ASSIGN_ME_PROMPT &&
           github.event.issue.state == 'open' &&
           github.event.issue.assignees.length >= 5
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@workspace-241 # TODO: set to @main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@main
         with:
           download-issue-comment-path: assign-me/max-assignees.md
           write-substitutions: |
@@ -122,7 +116,7 @@ jobs:
         if: |
           steps.extract-prompt.outputs.prompt == env.UNASSIGN_ME_PROMPT &&
           !contains(github.event.issue.assignees.*.id, github.event.comment.user.id)
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@workspace-241 # TODO: set to @main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@main
         with:
           download-issue-comment-path: unassign-me/not-assigned.md
           write-substitutions: |
@@ -150,7 +144,7 @@ jobs:
         if: |
           steps.extract-prompt.outputs.prompt == env.READY_FOR_REVIEW_PROMPT &&
           github.event.issue.state == 'closed'
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@workspace-241 # TODO: set to @main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@main
         with:
           download-issue-comment-path: ready-for-review/closed-state.md
           write-substitutions: |
@@ -162,7 +156,7 @@ jobs:
           steps.extract-prompt.outputs.prompt == env.READY_FOR_REVIEW_PROMPT &&
           github.event.issue.state == 'open' &&
           !contains(github.event.issue.assignees.*.id, github.event.comment.user.id)
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@workspace-241 # TODO: set to @main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@main
         with:
           download-issue-comment-path: ready-for-review/not-assigned.md
           write-substitutions: |
