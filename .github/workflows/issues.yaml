@@ -40,6 +40,7 @@ jobs:
       !github.event.issue.pull_request &&
       contains(fromJSON('["created", "edited"]'), github.event.action)
     env:
+      GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
       PROJECT_NODE_ID: PVT_kwDOAB_fG84AmfxN
       STATUS_FIELD_NODE_ID: PVTSSF_lADOAB_fG84AmfxNzgeYqqQ
       STATUS_OPTION_TO_DO_ID: f75ad846
@@ -48,7 +49,6 @@ jobs:
       STATUS_OPTION_STAGING_ID: b595bde1
       STATUS_OPTION_PRODUCTION_ID: a0264d2c
       STATUS_OPTION_CLOSED_ID: 98236657
-      GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
       ASSIGN_ME_PROMPT: assign me
       ASSIGN_ME_CLOSED_STATE_PATH: .github/comments/issue/closed-state.md
       ASSIGN_ME_MAX_ASSIGNEES_PATH: .github/comments/issue/max-assignees.md
@@ -57,6 +57,7 @@ jobs:
         id: extract-prompt
         run: |
           comment_body="${{ github.event.comment.body }}"
+          echo "prompt=$comment_body" >> $GITHUB_OUTPUT
 
       # Prompt: assign me
 
