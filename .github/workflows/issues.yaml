@@ -50,10 +50,8 @@ jobs:
       STATUS_OPTION_PRODUCTION_ID: a0264d2c
       STATUS_OPTION_CLOSED_ID: 98236657
       ASSIGN_ME_PROMPT: assign me
-      ASSIGN_ME_CLOSED_STATE_PATH: .github/comments/issue/assign-me/closed-state.md
-      ASSIGN_ME_MAX_ASSIGNEES_PATH: .github/comments/issue/assign-me/max-assignees.md
       UNASSIGN_ME_PROMPT: unassign me
-      UNASSIGN_ME_NOT_ASSIGNED_PATH: .github/comments/issue/unassign-me/not-assigned.md
+      READY_FOR_REVIEW_PROMPT: ready for review
     steps:
       - name: 🔍 Extract Prompt
         id: extract-prompt
@@ -68,52 +66,34 @@ jobs:
 
       # Prompt: assign me
 
-      - name: "📥 Assign Me: Download Closed-State Comment"
-        id: assign-me-download-closed-state-comment
+      - name: "✍️ Assign Me: Download and Write Closed-State Comment"
+        id: assign-me-closed-state
         if: |
           steps.extract-prompt.outputs.prompt == env.ASSIGN_ME_PROMPT &&
           github.event.issue.state == 'closed'
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@workspace-241 # TODO: set to @main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@workspace-241 # TODO: set to @main
         with:
-          path: ${{ env.ASSIGN_ME_CLOSED_STATE_PATH }}
-          save-to: ${{ env.ASSIGN_ME_CLOSED_STATE_PATH }}
+          download-issue-comment-path: assign-me/closed-state.md
+          write-substitutions: |
+            contributor=@${{ github.event.comment.user.login }}
 
-      - name: "✍️ Assign Me: Write Closed-State Comment"
-        if: steps.assign-me-download-closed-state-comment.conclusion == 'success'
-        run: |
-          sed --in-place \
-            's/{{contributor}}/@${{ github.event.comment.user.login }}/g' \
-            ${{ env.ASSIGN_ME_CLOSED_STATE_PATH }}  
-
-          gh issue comment ${{ github.event.issue.number }} \
-            --body-file=${{ env.ASSIGN_ME_CLOSED_STATE_PATH }}
-
-      - name: "📥 Assign Me: Download Max-Assignees Comment"
-        id: assign-me-download-max-assignees-comment
+      - name: "✍️ Assign Me: Download and Write Max-Assignees Comment"
+        id: assign-me-max-assignees
         if: |
           steps.extract-prompt.outputs.prompt == env.ASSIGN_ME_PROMPT &&
           github.event.issue.state == 'open' &&
           github.event.issue.assignees.length >= 5
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@workspace-241 # TODO: set to @main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@workspace-241 # TODO: set to @main
         with:
-          path: ${{ env.ASSIGN_ME_MAX_ASSIGNEES_PATH }}
-          save-to: ${{ env.ASSIGN_ME_MAX_ASSIGNEES_PATH }}
+          download-issue-comment-path: assign-me/max-assignees.md
+          write-substitutions: |
+            contributor=@${{ github.event.comment.user.login }}
 
-      - name: "✍️ Assign Me: Write Max-Assignees Comment"
-        if: steps.assign-me-download-max-assignees-comment.conclusion == 'success'
-        run: |
-          sed --in-place \
-            's/{{contributor}}/@${{ github.event.comment.user.login }}/g' \
-            ${{ env.ASSIGN_ME_MAX_ASSIGNEES_PATH }}
-
-          gh issue comment ${{ github.event.issue.number }} \
-            --body-file=${{ env.ASSIGN_ME_MAX_ASSIGNEES_PATH }}
-
-      - name: "🧑 Assign Me: Run"
+      - name: "🏃 Assign Me: Run"
         if: |
           steps.extract-prompt.outputs.prompt == env.ASSIGN_ME_PROMPT &&
-          steps.assign-me-download-closed-state-comment.conclusion == 'skipped' &&
-          steps.assign-me-download-max-assignees-comment.conclusion == 'skipped'
+          steps.assign-me-closed-state.conclusion == 'skipped' &&
+          steps.assign-me-max-assignees.conclusion == 'skipped'
         run: |
           gh api graphql -f query='
             mutation {
@@ -136,30 +116,22 @@ jobs:
             }'
 
       # Prompt: unassign me
-      - name: "📥 Unassign Me: Download Not-Assigned Comment"
-        id: unassign-me-download-not-assigned-comment
+
+      - name: "✍️ Unassign Me: Download and Write Not-Assigned Comment"
+        id: unassign-me-not-assigned
         if: |
           steps.extract-prompt.outputs.prompt == env.UNASSIGN_ME_PROMPT &&
           !contains(github.event.issue.assignees.*.id, github.event.comment.user.id)
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@workspace-241 # TODO: set to @main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@workspace-241 # TODO: set to @main
         with:
-          path: ${{ env.UNASSIGN_ME_NOT_ASSIGNED_PATH }}
-          save-to: ${{ env.UNASSIGN_ME_NOT_ASSIGNED_PATH }}
+          download-issue-comment-path: unassign-me/not-assigned.md
+          write-substitutions: |
+            contributor=@${{ github.event.comment.user.login }}
 
-      - name: "✍️ Unassign Me: Write Not-Assigned Comment"
-        if: steps.unassign-me-download-not-assigned-comment.conclusion == 'success'
-        run: |
-          sed --in-place \
-            's/{{contributor}}/@${{ github.event.comment.user.login }}/g' \
-            ${{ env.UNASSIGN_ME_NOT_ASSIGNED_PATH }}
-
-          gh issue comment ${{ github.event.issue.number }} \
-            --body-file=${{ env.UNASSIGN_ME_NOT_ASSIGNED_PATH }}
-
-      - name: "🧑 Unassign Me: Run"
+      - name: "🏃 Unassign Me: Run"
         if: |
           steps.extract-prompt.outputs.prompt == env.UNASSIGN_ME_PROMPT &&
-          steps.unassign-me-download-not-assigned-comment.conclusion == 'skipped'
+          steps.unassign-me-not-assigned.conclusion == 'skipped'
         run: |
           gh api graphql -f query='
             mutation {
@@ -168,5 +140,50 @@ jobs:
                 assigneeIds: ["${{ github.event.comment.user.id }}"]
               }) {
                 assignable { ... on Issue { id } }
+              }
+            }'
+
+      # Prompt: ready for review
+
+      - name: "✍️ Ready for Review: Download and Write Closed-State Comment"
+        id: ready-for-review-closed-state
+        if: |
+          steps.extract-prompt.outputs.prompt == env.READY_FOR_REVIEW_PROMPT &&
+          github.event.issue.state == 'closed'
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@workspace-241 # TODO: set to @main
+        with:
+          download-issue-comment-path: ready-for-review/closed-state.md
+          write-substitutions: |
+            contributor=@${{ github.event.comment.user.login }}
+
+      - name: "✍️ Ready for Review: Download and Write Not-Assigned Comment"
+        id: ready-for-review-not-assigned
+        if: |
+          steps.extract-prompt.outputs.prompt == env.READY_FOR_REVIEW_PROMPT &&
+          github.event.issue.state == 'open' &&
+          !contains(github.event.issue.assignees.*.id, github.event.comment.user.id)
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@workspace-241 # TODO: set to @main
+        with:
+          download-issue-comment-path: ready-for-review/not-assigned.md
+          write-substitutions: |
+            contributor=@${{ github.event.comment.user.login }}
+
+      - name: "🏃 Ready for Review: Run"
+        if: |
+          steps.extract-prompt.outputs.prompt == env.READY_FOR_REVIEW_PROMPT &&
+          steps.ready-for-review-closed-state.conclusion == 'skipped' &&
+          steps.ready-for-review-not-assigned.conclusion == 'skipped'
+        run: |
+          gh api graphql -f query='
+            mutation {
+              updateStatus: updateProjectV2ItemFieldValue(input: {
+                projectId: "${{ env.PROJECT_NODE_ID }}"
+                itemId: "${{ github.event.issue.node_id }}"
+                fieldId: "${{ env.STATUS_FIELD_NODE_ID }}"
+                value: {
+                  singleSelectOptionId: "${{ env.STATUS_OPTION_REVIEWING_ID }}"
+                }
+              }) {
+                projectV2Item { id }
               }
             }'
