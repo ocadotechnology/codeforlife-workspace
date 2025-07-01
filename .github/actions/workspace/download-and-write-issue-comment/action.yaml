@@ -18,6 +18,10 @@ inputs:
     description: "The number of the issue to write the comment to."
     required: true
     default: ${{ github.event.issue.number }}
+  write-issue-repo:
+    description: "The repository of the issue."
+    required: true
+    default: ${{ github.event.repository }}
 runs:
   using: composite
   steps:
@@ -57,4 +61,5 @@ runs:
       shell: bash
       run: |
         gh issue comment ${{ inputs.write-issue-number }} \
+          --repo=${{ inputs.write-issue-repo }} \
           --body-file=${{ steps.get-download-inputs.outputs.save-to }}
