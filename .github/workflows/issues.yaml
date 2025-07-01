@@ -50,8 +50,10 @@ jobs:
       STATUS_OPTION_PRODUCTION_ID: a0264d2c
       STATUS_OPTION_CLOSED_ID: 98236657
       ASSIGN_ME_PROMPT: assign me
-      ASSIGN_ME_CLOSED_STATE_PATH: .github/comments/issue/closed-state.md
-      ASSIGN_ME_MAX_ASSIGNEES_PATH: .github/comments/issue/max-assignees.md
+      ASSIGN_ME_CLOSED_STATE_PATH: .github/comments/issue/assign-me/closed-state.md
+      ASSIGN_ME_MAX_ASSIGNEES_PATH: .github/comments/issue/assign-me/max-assignees.md
+      UNASSIGN_ME_PROMPT: unassign me
+      UNASSIGN_ME_NOT_ASSIGNED_PATH: .github/comments/issue/unassign-me/not-assigned.md
     steps:
       - name: 🔍 Extract Prompt
         id: extract-prompt
@@ -134,3 +136,37 @@ jobs:
             }'
 
       # Prompt: unassign me
+      - name: "📥 Unassign Me: Download Not-Assigned Comment"
+        id: unassign-me-download-not-assigned-comment
+        if: |
+          steps.extract-prompt.outputs.prompt == env.UNASSIGN_ME_PROMPT &&
+          !contains(github.event.issue.assignees.*.id, github.event.comment.user.id)
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@workspace-241 # TODO: set to @main
+        with:
+          path: ${{ env.UNASSIGN_ME_NOT_ASSIGNED_PATH }}
+          save-to: ${{ env.UNASSIGN_ME_NOT_ASSIGNED_PATH }}
+
+      - name: "✍️ Unassign Me: Write Not-Assigned Comment"
+        if: steps.unassign-me-download-not-assigned-comment.conclusion == 'success'
+        run: |
+          sed --in-place \
+            's/{{contributor}}/@${{ github.event.comment.user.login }}/g' \
+            ${{ env.UNASSIGN_ME_NOT_ASSIGNED_PATH }}
+
+          gh issue comment ${{ github.event.issue.number }} \
+            --body-file=${{ env.UNASSIGN_ME_NOT_ASSIGNED_PATH }}
+
+      - name: "🧑 Unassign Me: Run"
+        if: |
+          steps.extract-prompt.outputs.prompt == env.UNASSIGN_ME_PROMPT &&
+          steps.unassign-me-download-not-assigned-comment.conclusion == 'skipped'
+        run: |
+          gh api graphql -f query='
+            mutation {
+              removeAssignee: removeAssigneesFromAssignable(input: {
+                assignableId: "${{ github.event.issue.id }}"
+                assigneeIds: ["${{ github.event.comment.user.id }}"]
+              }) {
+                assignable { ... on Issue { id } }
+              }
+            }'
