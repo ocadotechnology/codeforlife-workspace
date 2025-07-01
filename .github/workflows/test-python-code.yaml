@@ -194,7 +194,7 @@ jobs:
         with:
           path: scripts/backend
           save-to: ./cli
-          type: script
+          type: bash
 
       - name: 🔎 Check Import Sort
         run: ./cli imports:check
