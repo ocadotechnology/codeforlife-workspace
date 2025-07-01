@@ -116,7 +116,7 @@ jobs:
                 projectV2Item { id }
               }
               addAssignee: addAssigneesToAssignable(input: {
-                assignableId: "${{ github.event.issue.id }}"
+                assignableId: "${{ github.event.issue.node_id }}"
                 assigneeIds: ["${{ github.event.comment.user.id }}"]
               }) {
                 assignable { ... on Issue { id } }
@@ -144,7 +144,7 @@ jobs:
           gh api graphql -f query='
             mutation {
               removeAssignee: removeAssigneesFromAssignable(input: {
-                assignableId: "${{ github.event.issue.id }}"
+                assignableId: "${{ github.event.issue.node_id }}"
                 assigneeIds: ["${{ github.event.comment.user.id }}"]
               }) {
                 assignable { ... on Issue { id } }
