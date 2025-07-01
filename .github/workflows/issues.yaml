@@ -105,16 +105,6 @@ jobs:
         run: |
           gh api graphql -f query='
             mutation {
-              updateStatus: updateProjectV2ItemFieldValue(input: {
-                projectId: "${{ env.PROJECT_NODE_ID }}"
-                itemId: "${{ github.event.issue.node_id }}"
-                fieldId: "${{ env.STATUS_FIELD_NODE_ID }}"
-                value: {
-                  singleSelectOptionId: "${{ env.STATUS_OPTION_IN_PROGRESS_ID }}"
-                }
-              }) {
-                projectV2Item { id }
-              }
               addAssignee: addAssigneesToAssignable(input: {
                 assignableId: "${{ github.event.issue.node_id }}"
                 assigneeIds: ["${{ github.event.comment.user.node_id }}"]
@@ -182,16 +172,11 @@ jobs:
           steps.ready-for-review-closed-state.conclusion == 'skipped' &&
           steps.ready-for-review-not-assigned.conclusion == 'skipped'
         run: |
-          gh api graphql -f query='
-            mutation {
-              updateStatus: updateProjectV2ItemFieldValue(input: {
-                projectId: "${{ env.PROJECT_NODE_ID }}"
-                itemId: "${{ github.event.issue.node_id }}"
-                fieldId: "${{ env.STATUS_FIELD_NODE_ID }}"
-                value: {
-                  singleSelectOptionId: "${{ env.STATUS_OPTION_REVIEWING_ID }}"
-                }
-              }) {
-                projectV2Item { id }
-              }
-            }'
+          gh label create "${{ env.READY_FOR_REVIEW_PROMPT }}" \
+            --force \
+            --color="#fbca04" \
+            --description="This issue is awaiting review by a CFL team member."
+
+          gh issue edit ${{ github.event.issue.number }} \
+            --repo=${{ github.repository }} \
+            --add-label="${{ env.READY_FOR_REVIEW_PROMPT }}"
