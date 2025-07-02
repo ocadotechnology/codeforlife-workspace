@@ -227,3 +227,52 @@ jobs:
           gh issue edit ${{ github.event.issue.number }} \
             --repo=${{ github.repository }} \
             --add-label="${{ env.READY_FOR_REVIEW_LABEL }}"
+
+      # Prompt: requires changes
+
+      - name: "✍️ Requires Changes: Download and Write Closed-State Comment"
+        id: requires-changes-closed-state
+        if: |
+          steps._.outputs.prompt == env.REQUIRES_CHANGES_PROMPT &&
+          env.IS_OPEN == 'false'
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@main
+        with:
+          download-issue-comment-path: requires-changes/closed-state.md
+          write-substitutions: |
+            contributor=@${{ github.event.comment.user.login }}
+
+      - name: "✍️ Requires Changes: Download and Write Not-Assigned Comment"
+        id: requires-changes-not-assigned
+        if: |
+          steps._.outputs.prompt == env.REQUIRES_CHANGES_PROMPT &&
+          env.IS_OPEN == 'true' &&
+          env.COMMENTER_IS_ASSIGNED == 'false'
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@main
+        with:
+          download-issue-comment-path: requires-changes/not-assigned.md
+          write-substitutions: |
+            contributor=@${{ github.event.comment.user.login }}
+
+      - name: "✍️ Requires Changes: Download and Write Not-Labelled Comment"
+        id: requires-changes-not-labelled
+        if: |
+          steps._.outputs.prompt == env.REQUIRES_CHANGES_PROMPT &&
+          env.IS_OPEN == 'true' &&
+          env.COMMENTER_IS_ASSIGNED == 'true' &&
+          steps._.outputs.has-label == 'false'
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@main
+        with:
+          download-issue-comment-path: requires-changes/not-labelled.md
+          write-substitutions: |
+            contributor=@${{ github.event.comment.user.login }}
+
+      - name: "🏃 Requires Changes: Run"
+        if: |
+          steps._.outputs.prompt == env.REQUIRES_CHANGES_PROMPT &&
+          steps.requires-changes-closed-state.conclusion == 'skipped' &&
+          steps.requires-changes-not-assigned.conclusion == 'skipped' &&
+          steps.requires-changes-not-labelled.conclusion == 'skipped'
+        run: |
+          gh issue edit ${{ github.event.issue.number }} \
+            --repo=${{ github.repository }} \
+            --remove-label="${{ env.READY_FOR_REVIEW_LABEL }}"
