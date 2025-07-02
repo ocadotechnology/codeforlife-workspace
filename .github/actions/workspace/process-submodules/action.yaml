@@ -1,0 +1,45 @@
+name: "Code for Life - Workspace - Process Submodules"
+description: "Process each submodule in the workspace."
+inputs:
+  branch:
+    description: "The branch on the workspace repo."
+    required: true
+    default: "main"
+  process:
+    description: "A callback which processes each submodule."
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: 📥 Download .gitmodules
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
+      with:
+        branch: ${{ inputs.branch }}
+        path: .gitmodules
+        save-to: .gitmodules
+
+    - name: ⚙️ Process Submodules
+      shell: bash
+      run: |
+        readarray -t submodules < <(
+          grep '\[submodule ".*"\]' .gitmodules |
+          sed -E 's/\[submodule "(.*)"\]/\1/'
+        )
+
+        function get_submodule_value() {
+          local name="$1"
+          local key="$2"
+
+          git config --file .gitmodules "submodule.$name.$key"
+        }
+
+        function process() {
+          ${{ inputs.process }}
+        }
+
+        for submodule in "${submodules[@]}"; do
+          path=$(get_submodule_value "$submodule" "path")
+          url=$(get_submodule_value "$submodule" "url")
+
+          process "$submodule" "$path" "$url"
+        done
