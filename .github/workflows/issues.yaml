@@ -21,10 +21,10 @@ jobs:
     env:
       GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
     steps:
-      - name: ✍️ Download and Write Opened Comment
+      - name: ✍️ Download and Write Was-Opened Comment
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@main
         with:
-          download-issue-comment-path: opened.md
+          download-issue-comment-path: was-opened.md
 
   comment-created-or-edited:
     runs-on: ubuntu-22.04
@@ -35,36 +35,79 @@ jobs:
       contains(fromJSON('["created", "edited"]'), github.event.action)
     env:
       GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
-      PROJECT_NODE_ID: PVT_kwDOAB_fG84AmfxN
-      STATUS_FIELD_NODE_ID: PVTSSF_lADOAB_fG84AmfxNzgeYqqQ
-      STATUS_OPTION_TO_DO_ID: f75ad846
-      STATUS_OPTION_IN_PROGRESS_ID: 47fc9ee4
-      STATUS_OPTION_REVIEWING_ID: cae0cfc1
-      STATUS_OPTION_STAGING_ID: b595bde1
-      STATUS_OPTION_PRODUCTION_ID: a0264d2c
-      STATUS_OPTION_CLOSED_ID: 98236657
-      ASSIGN_ME_PROMPT: assign me
-      UNASSIGN_ME_PROMPT: unassign me
-      READY_FOR_REVIEW_PROMPT: ready for review
+      # Prompts
+      ASSIGN_ME_PROMPT: "+"
+      UNASSIGN_ME_PROMPT: "-"
+      READY_FOR_REVIEW_PROMPT: "!"
+      READY_FOR_REVIEW_LABEL: "ready for review"
+      REQUIRES_CHANGES_PROMPT: "?"
+      # Common Conditions
+      COMMENTER_IS_ASSIGNED: ${{ contains(github.event.issue.assignees.*.id, github.event.comment.user.id) }}
+      IS_OPEN: ${{ github.event.issue.state == 'open' }}
     steps:
       - name: 🔍 Extract Prompt
-        id: extract-prompt
+        id: _ # Shorthand
         run: |
-          prompt=$(
+          comment_body=$(
             echo "${{ github.event.comment.body }}" |
-            sed --regexp-extended 's/^[[:space:]]*|[[:space:]]*$//g' |
-            sed --regexp-extended 's/[[:space:]]{2,}/ /g'
+            sed --regexp-extended '
+              s/^@cfl-bot +| +@cfl-bot$//g;
+              s/ +@cfl-bot +/ /g;
+              s/@cfl-bot//g;
+              s/^[[:space:]]*|[[:space:]]*$//g;
+              s/[[:space:]]{2,}/ /g
+            ' |
+            tr '[:upper:]' '[:lower:]'
           )
 
-          echo "prompt=$prompt" >> $GITHUB_OUTPUT
+          prompt_aliases=(
+            "assign me=${{ env.ASSIGN_ME_PROMPT }}"
+            "unassign me=${{ env.UNASSIGN_ME_PROMPT }}"
+            "ready for review=${{ env.READY_FOR_REVIEW_PROMPT }}"
+            "requires changes=${{ env.REQUIRES_CHANGES_PROMPT }}"
+          )
+          prompt=""
+          for prompt_alias in "${prompt_aliases[@]}"; do
+            text="${prompt_alias%=*}"
+            symbol="${prompt_alias#*=}"
+            if [ "$comment_body" = "$text" ] || [ "$comment_body" = "$symbol" ]; then
+              prompt="$symbol"
+              break
+            fi
+          done
+
+          function set_output() { echo "$1=$2" >> $GITHUB_OUTPUT; }
+
+          set_output "prompt" "$prompt"
+
+          if [ -z "$prompt" ]; then exit 0; fi
+
+          if [ "$prompt" = "${{ env.ASSIGN_ME_PROMPT }}" ]; then
+            set_output "max-assignees" "${{ github.event.issue.assignees.length >= 5 }}"
+          fi
+          if [ "$prompt" = "${{ env.READY_FOR_REVIEW_PROMPT }}" ] || [ "$prompt" = "${{ env.REQUIRES_CHANGES_PROMPT }}" ]; then
+            set_output "has-label" "${{ contains(github.event.issue.labels.*.name, env.READY_FOR_REVIEW_LABEL)  }}"
+          fi
 
       # Prompt: assign me
+
+      - name: "✍️ Assign Me: Download and Write Closed-State Comment"
+        id: assign-me-closed-state
+        if: |
+          steps._.outputs.prompt == env.ASSIGN_ME_PROMPT &&
+          env.IS_OPEN == 'false'
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@main
+        with:
+          download-issue-comment-path: assign-me/closed-state.md
+          write-substitutions: |
+            contributor=@${{ github.event.comment.user.login }}
 
       - name: "✍️ Assign Me: Download and Write Already-Assigned Comment"
         id: assign-me-already-assigned
         if: |
-          steps.extract-prompt.outputs.prompt == env.ASSIGN_ME_PROMPT &&
-          contains(github.event.issue.assignees.*.id, github.event.comment.user.id)
+          steps._.outputs.prompt == env.ASSIGN_ME_PROMPT &&
+          env.IS_OPEN == 'true' &&
+          env.COMMENTER_IS_ASSIGNED == 'true'
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@main
         with:
           download-issue-comment-path: assign-me/already-assigned.md
@@ -72,24 +115,13 @@ jobs:
           write-substitutions: |
             contributor=@${{ github.event.comment.user.login }}
 
-      - name: "✍️ Assign Me: Download and Write Closed-State Comment"
-        id: assign-me-closed-state
-        if: |
-          steps.extract-prompt.outputs.prompt == env.ASSIGN_ME_PROMPT &&
-          github.event.issue.state == 'closed'
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@main
-        with:
-          download-issue-comment-path: assign-me/closed-state.md
-          write-substitutions: |
-            contributor=@${{ github.event.comment.user.login }}
-
       - name: "✍️ Assign Me: Download and Write Max-Assignees Comment"
         id: assign-me-max-assignees
         if: |
-          steps.extract-prompt.outputs.prompt == env.ASSIGN_ME_PROMPT &&
-          github.event.issue.state == 'open' &&
-          !contains(github.event.issue.assignees.*.id, github.event.comment.user.id) &&
-          github.event.issue.assignees.length >= 5
+          steps._.outputs.prompt == env.ASSIGN_ME_PROMPT &&
+          env.IS_OPEN == 'true' &&
+          env.COMMENTER_IS_ASSIGNED == 'false' &&
+          steps._.outputs.max-assignees == 'true'
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@main
         with:
           download-issue-comment-path: assign-me/max-assignees.md
@@ -98,7 +130,7 @@ jobs:
 
       - name: "🏃 Assign Me: Run"
         if: |
-          steps.extract-prompt.outputs.prompt == env.ASSIGN_ME_PROMPT &&
+          steps._.outputs.prompt == env.ASSIGN_ME_PROMPT &&
           steps.assign-me-already-assigned.conclusion == 'skipped' &&
           steps.assign-me-closed-state.conclusion == 'skipped' &&
           steps.assign-me-max-assignees.conclusion == 'skipped'
@@ -118,8 +150,8 @@ jobs:
       - name: "✍️ Unassign Me: Download and Write Not-Assigned Comment"
         id: unassign-me-not-assigned
         if: |
-          steps.extract-prompt.outputs.prompt == env.UNASSIGN_ME_PROMPT &&
-          !contains(github.event.issue.assignees.*.id, github.event.comment.user.id)
+          steps._.outputs.prompt == env.UNASSIGN_ME_PROMPT &&
+          env.COMMENTER_IS_ASSIGNED == 'false'
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@main
         with:
           download-issue-comment-path: unassign-me/not-assigned.md
@@ -128,7 +160,7 @@ jobs:
 
       - name: "🏃 Unassign Me: Run"
         if: |
-          steps.extract-prompt.outputs.prompt == env.UNASSIGN_ME_PROMPT &&
+          steps._.outputs.prompt == env.UNASSIGN_ME_PROMPT &&
           steps.unassign-me-not-assigned.conclusion == 'skipped'
         run: |
           gh api graphql -f query='
@@ -146,8 +178,8 @@ jobs:
       - name: "✍️ Ready for Review: Download and Write Closed-State Comment"
         id: ready-for-review-closed-state
         if: |
-          steps.extract-prompt.outputs.prompt == env.READY_FOR_REVIEW_PROMPT &&
-          github.event.issue.state == 'closed'
+          steps._.outputs.prompt == env.READY_FOR_REVIEW_PROMPT &&
+          env.IS_OPEN == 'false'
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@main
         with:
           download-issue-comment-path: ready-for-review/closed-state.md
@@ -157,20 +189,34 @@ jobs:
       - name: "✍️ Ready for Review: Download and Write Not-Assigned Comment"
         id: ready-for-review-not-assigned
         if: |
-          steps.extract-prompt.outputs.prompt == env.READY_FOR_REVIEW_PROMPT &&
-          github.event.issue.state == 'open' &&
-          !contains(github.event.issue.assignees.*.id, github.event.comment.user.id)
+          steps._.outputs.prompt == env.READY_FOR_REVIEW_PROMPT &&
+          env.IS_OPEN == 'true' &&
+          env.COMMENTER_IS_ASSIGNED == 'false'
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@main
         with:
           download-issue-comment-path: ready-for-review/not-assigned.md
           write-substitutions: |
             contributor=@${{ github.event.comment.user.login }}
 
+      - name: "✍️ Ready for Review: Download and Write Already-Labelled Comment"
+        id: ready-for-review-already-labelled
+        if: |
+          steps._.outputs.prompt == env.READY_FOR_REVIEW_PROMPT &&
+          env.IS_OPEN == 'true' &&
+          env.COMMENTER_IS_ASSIGNED == 'true' &&
+          steps._.outputs.has-label == 'true'
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-write-issue-comment@main
+        with:
+          download-issue-comment-path: ready-for-review/already-labelled.md
+          write-substitutions: |
+            contributor=@${{ github.event.comment.user.login }}
+
       - name: "🏃 Ready for Review: Run"
         if: |
-          steps.extract-prompt.outputs.prompt == env.READY_FOR_REVIEW_PROMPT &&
+          steps._.outputs.prompt == env.READY_FOR_REVIEW_PROMPT &&
           steps.ready-for-review-closed-state.conclusion == 'skipped' &&
-          steps.ready-for-review-not-assigned.conclusion == 'skipped'
+          steps.ready-for-review-not-assigned.conclusion == 'skipped' &&
+          steps.ready-for-review-already-labelled.conclusion == 'skipped'
         run: |
           gh label create "${{ env.READY_FOR_REVIEW_PROMPT }}" \
             --repo=${{ github.repository }} \
@@ -180,4 +226,4 @@ jobs:
 
           gh issue edit ${{ github.event.issue.number }} \
             --repo=${{ github.repository }} \
-            --add-label="${{ env.READY_FOR_REVIEW_PROMPT }}"
+            --add-label="${{ env.READY_FOR_REVIEW_LABEL }}"
