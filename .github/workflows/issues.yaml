@@ -315,7 +315,7 @@ jobs:
       - name: ⚙️ Process Submodules
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/process-submodules@main
         with:
-          pre-processing: process "${{ github.event.repository.name }}"; names=() # TODO: delete names
+          pre-processing: process "${{ github.event.repository.name }}"
           process: |
             repo="ocadotechnology/$1"
             echo "-------------------------------------------------------------"
@@ -372,7 +372,7 @@ jobs:
               )
 
               if [ $? -eq 0 ]; then
-                echo "    Wrote comment: $all_outputs."
+                echo "    Wrote comment: $all_outputs"
               else
                 echo "    $all_outputs"
                 exit_code=1
@@ -425,7 +425,7 @@ jobs:
                 elif is_ge_start_and_lt_end_days_old "$last_updated_at" 15 14; then
                   comment_on_issue $issue_number "${{ env.TWO_WEEKS_MD }}" \
                     "assignee=@$issue_assignee_login"
-                elif is_ge_start_and_lt_end_days_old "$last_updated_at" 1 0; then # TODO: set to 0 21
+                elif is_ge_start_and_lt_end_days_old "$last_updated_at" 0 21; then
                   comment_on_issue $issue_number "${{ env.THREE_WEEKS_MD }}" \
                     "assignee=@$issue_assignee_login"
 
