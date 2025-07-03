@@ -366,7 +366,7 @@ jobs:
 
               gh issue comment $issue_number \
                 --repo=$repo \
-                --body=$(sed "$substitutions" "$comment_path")
+                --body="$(sed "$substitutions" "$comment_path")"
             }
 
             issues=$(
