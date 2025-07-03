@@ -35,7 +35,9 @@ runs:
         output_to_github "path" "$path"
 
         save_to="${{ inputs.download-save-to }}"
-        if [ -z "$save_to" ]; then save_to="$path"; fi
+        if [ -z "$save_to" ]; then
+          save_to=$(echo "$path" | sed 's/\//-/g')
+        fi
         output_to_github "save-to" "$save_to"
 
     - name: 📥 Download Issue-Comment File
