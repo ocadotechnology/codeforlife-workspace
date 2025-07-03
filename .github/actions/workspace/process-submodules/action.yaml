@@ -8,7 +8,7 @@ inputs:
   pre-processing:
     description: "A callback right before any submodules are processed."
     required: true
-    default: return 0
+    default: ""
   pre-process:
     description: "A callback right before each submodule is processed."
     required: true
@@ -23,7 +23,7 @@ inputs:
   post-processing:
     description: "A callback right after all submodules are processed."
     required: true
-    default: return 0
+    default: ""
 runs:
   using: composite
   steps:
