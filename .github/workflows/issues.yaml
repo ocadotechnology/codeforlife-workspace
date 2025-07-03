@@ -19,7 +19,8 @@ jobs:
     if: |
       github.repository_owner_id == 2088731 &&
       github.event_name == 'issue' &&
-      github.event.action == 'opened'
+      github.event.action == 'opened' &&
+      !contains(github.event.issue.labels.*.name, 'bot ignore')
     env:
       GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
     steps:
@@ -34,7 +35,8 @@ jobs:
       github.repository_owner_id == 2088731 &&
       github.event_name == 'issue_comment' &&
       !github.event.issue.pull_request &&
-      contains(fromJSON('["created", "edited"]'), github.event.action)
+      contains(fromJSON('["created", "edited"]'), github.event.action) &&
+      !contains(github.event.issue.labels.*.name, 'bot ignore')
     env:
       GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
       # Prompts
@@ -378,7 +380,7 @@ jobs:
               gh issue list \
                 --repo=$repo \
                 --limit=10000 \
-                --search="is:open has:assignee" \
+                --search="is:open has:assignee -label:\"bot ignore\"" \
                 --json=id,number,url,assignees \
                 --jq="map(select(.assignees | length > 0))"
             )
