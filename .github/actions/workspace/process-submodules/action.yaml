@@ -7,19 +7,23 @@ inputs:
     default: "main"
   pre-processing:
     description: "A callback right before any submodules are processed."
-    required: false
+    required: true
+    default: return 0
   pre-process:
     description: "A callback right before each submodule is processed."
-    required: false
+    required: true
+    default: return 0
   process:
     description: "A callback which processes each submodule."
     required: true
   post-process:
     description: "A callback right after each submodule is processed."
-    required: false
+    required: true
+    default: return 0
   post-processing:
     description: "A callback right after all submodules are processed."
-    required: false
+    required: true
+    default: return 0
 runs:
   using: composite
   steps:
