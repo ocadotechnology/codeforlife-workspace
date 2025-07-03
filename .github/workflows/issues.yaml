@@ -284,6 +284,7 @@ jobs:
 
   inactive:
     runs-on: ubuntu-22.04
+    # TODO: change event name
     if: |
       github.repository_owner_id == 2088731 &&
       github.event_name == 'push'
