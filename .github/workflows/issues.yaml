@@ -5,12 +5,8 @@ on:
     types: [opened]
   issue_comment:
     types: [created, edited]
-  # schedule:
-  #   - cron: "0 9 * * 1-5" # Every weekday at 9am UTC.
-  push:
-    branches: [main]
-    paths:
-      - .github/workflows/issues.yaml
+  schedule:
+    - cron: "0 9 * * *" # Every day at 9am UTC.
   workflow_call:
     secrets:
       CFL_BOT_GH_TOKEN:
@@ -284,10 +280,9 @@ jobs:
 
   inactive:
     runs-on: ubuntu-22.04
-    # TODO: change event name.
     if: |
       github.repository_owner_id == 2088731 &&
-      github.event_name == 'push'
+      github.event_name == 'schedule'
     env:
       GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
       ONE_WEEK_MD: 1-week.md
@@ -312,7 +307,7 @@ jobs:
           path: .github/comments/issue/inactive/3-weeks.md
           save-to: ${{ env.THREE_WEEKS_MD }}
 
-      - name: ⚙️ Process Submodules
+      - name: ⚙️ Unassign Inactive Contributors
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/process-submodules@main
         with:
           pre-processing: process "${{ github.event.repository.name }}"
