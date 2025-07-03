@@ -84,22 +84,12 @@ jobs:
       - name: 🔄 Update All Submodule HEADs
         if: steps.get-submodule-path.conclusion == 'skipped'
         continue-on-error: true
-        run: |
-          submodule_paths="$(
-            git config \
-              --file .gitmodules \
-              --get-regexp path | \
-            awk '{ print $2 }'
-          )"
-
-          if [ -z "$submodule_paths" ]; then
-            echo "No submodules found in .gitmodules."
-            exit 1
-          fi
-
-          exit_code=0
-          remote="origin"
-          for submodule_path in $submodule_paths; do
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/process-submodules@main
+        env:
+          REMOTE: origin
+        with:
+          process: |
+            submodule_path="$2"
             echo "-------------------------------------------------------------"
             echo "Processing submodule: $submodule_path"
 
@@ -117,9 +107,9 @@ jobs:
               continue
             }
 
-            echo "Getting default branch from remote '$remote'."
+            echo "Getting default branch from remote '${{ env.REMOTE }}'."
             default_branch=$(
-              git remote show $remote 2>/dev/null | \
+              git remote show ${{ env.REMOTE }} 2>/dev/null | \
               grep 'HEAD branch' | \
               awk '{print $NF}'
             )
@@ -135,9 +125,61 @@ jobs:
             echo "Adding submodule to workspace's staging area..."
             git add "$submodule_path" || \
               continue_on_error "Failed to add submodule."
-          done
 
-          exit $exit_code
+        # run: |
+        #   submodule_paths="$(
+        #     git config \
+        #       --file .gitmodules \
+        #       --get-regexp path | \
+        #     awk '{ print $2 }'
+        #   )"
+
+        #   if [ -z "$submodule_paths" ]; then
+        #     echo "No submodules found in .gitmodules."
+        #     exit 1
+        #   fi
+
+        #   exit_code=0
+        #   remote="origin"
+        #   for submodule_path in $submodule_paths; do
+        #     echo "-------------------------------------------------------------"
+        #     echo "Processing submodule: $submodule_path"
+
+        #     if [ ! -d "$submodule_path" ]; then
+        #       echo "Submodule path '$submodule_path' not found."
+        #       exit_code=1
+        #       continue
+        #     fi
+        #     pushd "$submodule_path" > /dev/null
+
+        #     function continue_on_error() {
+        #       echo "$1"
+        #       exit_code=1
+        #       popd > /dev/null
+        #       continue
+        #     }
+
+        #     echo "Getting default branch from remote '$remote'."
+        #     default_branch=$(
+        #       git remote show $remote 2>/dev/null | \
+        #       grep 'HEAD branch' | \
+        #       awk '{print $NF}'
+        #     )
+        #     if [ -z "$default_branch" ]; then
+        #       continue_on_error "Default branch not found."
+        #     fi
+
+        #     echo "Checking out '$default_branch'..."
+        #     git checkout "$default_branch" || \
+        #       continue_on_error "Failed to checkout branch."
+
+        #     popd > /dev/null
+        #     echo "Adding submodule to workspace's staging area..."
+        #     git add "$submodule_path" || \
+        #       continue_on_error "Failed to add submodule."
+        #   done
+
+        #   exit $exit_code
 
       - name: 🤖 Set up cfl-bot as Git User
         uses: ocadotechnology/codeforlife-workspace/.github/actions/git/setup-bot@main
