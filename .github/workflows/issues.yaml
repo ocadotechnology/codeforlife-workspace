@@ -364,9 +364,19 @@ jobs:
                 substitutions+='s/{{ *'$key' *}}/'$value'/g;'
               done
 
-              gh issue comment $issue_number \
-                --repo=$repo \
-                --body="$(sed "$substitutions" "$comment_path")"
+              all_outputs=$(
+                gh issue comment $issue_number \
+                  --repo=$repo \
+                  --body="$(sed "$substitutions" "$comment_path")" \
+                  2>&1
+              )
+
+              if [ $? -eq 0 ]; then
+                echo "    Wrote comment: $all_outputs."
+              else
+                echo "    $all_outputs"
+                exit_code=1
+              fi
             }
 
             issues=$(
@@ -439,7 +449,7 @@ jobs:
                     jq -r 'map(.id | "\"" + . + "\"") | join(",")'
                 )
 
-                all_output=$(
+                error_output=$(
                   gh api graphql -f query='
                     mutation {
                       removeAssigneesFromAssignable(input: {
@@ -448,12 +458,12 @@ jobs:
                       }) {
                         assignable { ... on Issue { id } }
                       }
-                    }' &> /dev/null
+                    }' 2>&1 >/dev/null
                 )
                 
                 if [ $? -ne 0 ]; then
-                  echo "      Error: Failed to remove assignees."
-                  echo "      $all_output"
+                  echo "    $error_output"
+                  exit_code=1
                 fi
               fi
             done

@@ -59,6 +59,8 @@ runs:
           ${{ inputs.post-process }}
         }
 
+        exit_code=0
+
         ${{ inputs.pre-processing }}
 
         for name in "${names[@]}"; do
@@ -71,3 +73,5 @@ runs:
         done
 
         ${{ inputs.post-processing }}
+
+        exit $exit_code
