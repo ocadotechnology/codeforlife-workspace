@@ -5,9 +5,21 @@ inputs:
     description: "The branch on the workspace repo."
     required: true
     default: "main"
+  pre-processing:
+    description: "A callback right before any submodules are processed."
+    required: false
+  pre-process:
+    description: "A callback right before each submodule is processed."
+    required: false
   process:
     description: "A callback which processes each submodule."
     required: true
+  post-process:
+    description: "A callback right after each submodule is processed."
+    required: false
+  post-processing:
+    description: "A callback right after all submodules are processed."
+    required: false
 runs:
   using: composite
   steps:
@@ -33,13 +45,25 @@ runs:
           git config --file .gitmodules "submodule.$name.$key"
         }
 
+        function pre_process() {
+          ${{ inputs.pre-process }}
+        }
         function process() {
           ${{ inputs.process }}
         }
+        function post_process() {
+          ${{ inputs.post-process }}
+        }
+
+        ${{ inputs.pre-processing }}
 
         for name in "${names[@]}"; do
           path=$(get_value "$name" "path")
           url=$(get_value "$name" "url")
 
+          pre_process "$name" "$path" "$url"
           process "$name" "$path" "$url"
+          post_process "$name" "$path" "$url"
         done
+
+        ${{ inputs.post-processing }}
