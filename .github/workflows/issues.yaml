@@ -439,14 +439,21 @@ jobs:
                     jq -r 'map(.id | "\"" + . + "\"") | join(",")'
                 )
 
-                gh api graphql -f query='
-                  mutation {
-                    removeAssigneesFromAssignable(input: {
-                      assignableId: "'$issue_id'"
-                      assigneeIds: ['$issue_assignee_ids_to_remove']
-                    }) {
-                      assignable { ... on Issue { id } }
-                    }
-                  }'
+                all_output=$(
+                  gh api graphql -f query='
+                    mutation {
+                      removeAssigneesFromAssignable(input: {
+                        assignableId: "'$issue_id'"
+                        assigneeIds: ['$issue_assignee_ids_to_remove']
+                      }) {
+                        assignable { ... on Issue { id } }
+                      }
+                    }' &> /dev/null
+                )
+                
+                if [ $? -ne 0 ]; then
+                  echo "      Error: Failed to remove assignees."
+                  echo "      $all_output"
+                fi
               fi
             done
