@@ -21,12 +21,12 @@ runs:
     - name: ⚙️ Process Submodules
       shell: bash
       run: |
-        readarray -t submodules < <(
+        readarray -t names < <(
           grep '\[submodule ".*"\]' .gitmodules |
           sed -E 's/\[submodule "(.*)"\]/\1/'
         )
 
-        function get_submodule_value() {
+        function get_value() {
           local name="$1"
           local key="$2"
 
@@ -37,9 +37,9 @@ runs:
           ${{ inputs.process }}
         }
 
-        for submodule in "${submodules[@]}"; do
-          path=$(get_submodule_value "$submodule" "path")
-          url=$(get_submodule_value "$submodule" "url")
+        for name in "${names[@]}"; do
+          path=$(get_value "$name" "path")
+          url=$(get_value "$name" "url")
 
-          process "$submodule" "$path" "$url"
+          process "$name" "$path" "$url"
         done

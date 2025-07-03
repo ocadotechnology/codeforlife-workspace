@@ -1,4 +1,4 @@
-name: "Code for Life - Workspace - Download and Write Issue Comment"
+name: "Code for Life - Bot - Comment on Issue"
 description: "Download an issue-comment file from the workspace and write it."
 inputs:
   download-branch:
