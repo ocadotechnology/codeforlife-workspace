@@ -315,7 +315,7 @@ jobs:
       - name: ⚙️ Process Submodules
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/process-submodules@main
         with:
-          pre-processing: process "${{ github.event.repository.name }}"
+          pre-processing: process "${{ github.event.repository.name }}"; names=() # TODO: delete names
           process: |
             repo="ocadotechnology/$1"
             echo "-------------------------------------------------------------"
@@ -364,9 +364,9 @@ jobs:
                 substitutions+='s/{{ *'$key' *}}/'$value'/g;'
               done
 
-              body=$(sed "$substitutions" "$comment_path")
-              echo "    Writing comment: \"$body\"."
-              # gh issue comment $issue_number --repo=$repo --body=$body
+              gh issue comment $issue_number \
+                --repo=$repo \
+                --body=$(sed "$substitutions" "$comment_path")
             }
 
             issues=$(
@@ -415,7 +415,7 @@ jobs:
                 elif is_ge_start_and_lt_end_days_old "$last_updated_at" 15 14; then
                   comment_on_issue $issue_number "${{ env.TWO_WEEKS_MD }}" \
                     "assignee=@$issue_assignee_login"
-                elif is_ge_start_and_lt_end_days_old "$last_updated_at" 0 21; then
+                elif is_ge_start_and_lt_end_days_old "$last_updated_at" 1 0; then # TODO: set to 0 21
                   comment_on_issue $issue_number "${{ env.THREE_WEEKS_MD }}" \
                     "assignee=@$issue_assignee_login"
 
@@ -439,14 +439,14 @@ jobs:
                     jq -r 'map(.id | "\"" + . + "\"") | join(",")'
                 )
 
-                # gh api graphql -f query='
-                #   mutation {
-                #     removeAssignees: removeAssigneesFromAssignable(input: {
-                #       assignableId: "'$issue_id'"
-                #       assigneeIds: ['$issue_assignee_ids_to_remove']
-                #     }) {
-                #       assignable { ... on Issue { id } }
-                #     }
-                #   }'
+                gh api graphql -f query='
+                  mutation {
+                    removeAssigneesFromAssignable(input: {
+                      assignableId: "'$issue_id'"
+                      assigneeIds: ['$issue_assignee_ids_to_remove']
+                    }) {
+                      assignable { ... on Issue { id } }
+                    }
+                  }'
               fi
             done
