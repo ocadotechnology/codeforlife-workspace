@@ -315,7 +315,7 @@ jobs:
       - name: ⚙️ Process Submodules
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/process-submodules@main
         with:
-          pre-processing: names+=("codeforlife-workspace")
+          pre-processing: names+=("codeforlife-workspace"); echo "${names[@]}"
           process: |
             repo="ocadotechnology/$1"
             echo "-------------------------------------------------------------"
