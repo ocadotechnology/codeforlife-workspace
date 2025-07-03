@@ -1,8 +1,12 @@
 name: "Code for Life - Workspace - Process Submodules"
 description: "Process each submodule in the workspace."
 inputs:
-  branch:
-    description: "The branch on the workspace repo."
+  download:
+    description: "A flag designating whether to download the .gitmodules file."
+    required: true
+    default: "true"
+  download-branch:
+    description: "The branch on the workspace repo to download .gitmodules from."
     required: true
     default: "main"
   pre-processing:
@@ -28,9 +32,10 @@ runs:
   using: composite
   steps:
     - name: 📥 Download .gitmodules
+      if: inputs.download == 'true'
       uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
-        branch: ${{ inputs.branch }}
+        branch: ${{ inputs.download-branch }}
         path: .gitmodules
         save-to: .gitmodules
 
