@@ -288,6 +288,7 @@ jobs:
       github.repository_owner_id == 2088731 &&
       github.event_name == 'push'
     env:
+      GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
       ONE_WEEK_MD: 1-week.md
       TWO_WEEKS_MD: 2-weeks.md
       THREE_WEEKS_MD: 3-weeks.md
