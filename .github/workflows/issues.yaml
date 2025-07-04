@@ -38,7 +38,7 @@ jobs:
       github.event_name == 'issue_comment' &&
       !github.event.issue.pull_request &&
       contains(fromJSON('["created", "edited"]'), github.event.action) &&
-      github.event.issue.user.login != 'cfl-bot' &&
+      github.event.comment.user.login != 'cfl-bot' &&
       !contains(github.event.issue.labels.*.name, 'bot ignore')
     env:
       GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
