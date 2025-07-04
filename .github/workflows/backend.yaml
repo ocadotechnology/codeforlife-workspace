@@ -77,6 +77,10 @@ on:
         required: false
 
 jobs:
+  issue:
+    uses: ocadotechnology/codeforlife-workspace/.github/workflows/issues.yaml@main
+    secrets: inherit
+
   contributor:
     uses: ocadotechnology/codeforlife-contributor-backend/.github/workflows/check-pr-authors-signed-latest-agreement.yaml@main
 
@@ -98,7 +102,7 @@ jobs:
 
   build:
     runs-on: ubuntu-22.04
-    needs: [test] # TODO: add contributor
+    needs: [test]
     # Build if:
     #  - the repo's owner is Ocado Tech.
     #  - the repo is not the backend template.
