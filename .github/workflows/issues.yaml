@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-22.04
     if: |
       github.repository_owner_id == 2088731 &&
-      github.event_name == 'issue' &&
+      github.event_name == 'issues' &&
       github.event.action == 'opened' &&
       github.event.issue.user.login != 'cfl-bot' &&
       !contains(github.event.issue.labels.*.name, 'bot ignore')
