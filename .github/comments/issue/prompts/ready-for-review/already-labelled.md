@@ -1,1 +1,1 @@
-{{contributor}}, you have already requested a review of this issue.
+{{contributor}}, a review has already been requested for this issue.
