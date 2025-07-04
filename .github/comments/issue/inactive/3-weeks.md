@@ -1,1 +1,1 @@
-{{assignee}}, you haven't commented on this issue within the last 3 weeks. I will unassign you from this issue but you're welcome to assign yourself again if you'd like to continue working on this issue.
+{{assignee}}, you haven't interacted with this issue in the last 3 weeks. I will unassign you from this issue but you're welcome to assign yourself again if you'd like to continue working on this issue.

@@ -1,1 +1,1 @@
-{{assignee}}, you haven't commented on this issue within the last week. If you're still working on this issue, please write a comment within the next 2 weeks otherwise you'll be unassigned from this issue.
+{{assignee}}, you haven't interacted with this issue in the last week. If you're still working on this issue, please write a comment within the next 2 weeks otherwise you'll be unassigned from this issue.

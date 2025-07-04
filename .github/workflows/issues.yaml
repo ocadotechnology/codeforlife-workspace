@@ -399,11 +399,16 @@ jobs:
               echo "  Issue: #$issue_number"
 
               issue_comments=$(
-                gh api \
+                gh api "/repos/$repo/issues/$issue_number/comments" \
                   --paginate \
                   --header "Accept: application/vnd.github+json" \
-                  "/repos/$repo/issues/$issue_number/comments" \
                   --jq="sort_by(.updated_at)"
+              )
+
+              issue_assigned_events=$(
+                gh api "repos/$repo/issues/$issue_number/events" \
+                  --paginate \
+                  --jq='map(select(.event == "assigned")) | sort_by(.created_at)'
               )
 
               issue_assignees_to_remove=()
@@ -414,28 +419,39 @@ jobs:
 
                 if [ "$issue_assignee_login" = "cfl-bot" ]; then continue; fi
 
-                last_issue_assignee_comment=$(
+                issue_assignee_last_comment=$(
                   echo "$issue_comments" |
                     jq -r 'map(select(.user.node_id == "'$issue_assignee_id'")) | last'
                 )
-                if [ "$last_issue_assignee_comment" = "null" ]; then continue; fi
+                if [ "$issue_assignee_last_comment" = "null" ]; then
+                  issue_assignee_last_active_at=$(
+                    echo "$issue_assigned_events" | jq -r '
+                      map(select(.assignee.login == "'$issue_assignee_login'")) | 
+                      last | 
+                      .created_at'
+                  )
+                else
+                  issue_assignee_last_active_at=$(
+                    echo "$issue_assignee_last_comment" | jq -r '.updated_at'
+                  )
+                fi
 
                 last_issue_assignee_comment_update_at=$(
-                  echo "$last_issue_assignee_comment" | jq -r '.updated_at'
+                  echo "$issue_assignee_last_comment" | jq -r '.updated_at'
                 )
 
                 if is_ge_start_and_lt_end_days_old \
-                  "$last_issue_assignee_comment_update_at" \
+                  "$issue_assignee_last_active_at" \
                   8 7; then
                   comment_on_issue $issue_number "${{ env.ONE_WEEK_MD }}" \
                     "assignee=@$issue_assignee_login"
                 elif is_ge_start_and_lt_end_days_old \
-                  "$last_issue_assignee_comment_update_at" \
+                  "$issue_assignee_last_active_at" \
                   15 14; then
                   comment_on_issue $issue_number "${{ env.TWO_WEEKS_MD }}" \
                     "assignee=@$issue_assignee_login"
                 elif is_ge_start_and_lt_end_days_old \
-                  "$last_issue_assignee_comment_update_at" \
+                  "$issue_assignee_last_active_at" \
                   0 21; then
                   comment_on_issue $issue_number "${{ env.THREE_WEEKS_MD }}" \
                     "assignee=@$issue_assignee_login"
