@@ -16,7 +16,7 @@ If you would like to work on this issue, you can instruct our bot by commenting 
     - issue must not have the *ready for review* label.
 1. **"requires changes"** or **"?"** - removes the *ready for review* label from this issue.
     - you must be an assignee.
-    - issue must be in open state.
+    - issue must be in an open state.
     - issue must have the *ready for review* label.
 
 ---
