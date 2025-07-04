@@ -7,6 +7,7 @@ on:
     types: [created, edited]
   schedule:
     - cron: "0 9 * * *" # Every day at 9am UTC.
+  workflow_dispatch:
   workflow_call:
     secrets:
       CFL_BOT_GH_TOKEN:
@@ -286,7 +287,7 @@ jobs:
     runs-on: ubuntu-22.04
     if: |
       github.repository_owner_id == 2088731 &&
-      github.event_name == 'schedule'
+      contains(fromJSON('["schedule", "workflow_dispatch"]'), github.event_name)
     env:
       GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
       ONE_WEEK_MD: 1-week.md
@@ -325,16 +326,19 @@ jobs:
               local start_days=$2
               local end_days=$3
 
-              if [[ "$start_days" -eq 0 && "$end_days" -eq 0 ]]; then
+              if [ -z "$d" ]; then
+                echo "Error: No date provided."
+                exit 2
+              elif [[ "$start_days" -eq 0 && "$end_days" -eq 0 ]]; then
                 echo "Error: The start and end cannot both be unset."
-                return 2
+                exit 3
               elif [[ 
                 "$start_days" -ne 0 &&
                 "$end_days" -ne 0 &&
                 "$end_days" -gt "$start_days"
               ]]; then
                 echo "Error: The end is greater than the start."
-                return 3
+                exit 4
               fi
 
               local timestamp=$(TZ="UTC" date --date="$d" +%s)
@@ -420,13 +424,19 @@ jobs:
                   echo "$last_issue_assignee_comment" | jq -r '.updated_at'
                 )
 
-                if is_ge_start_and_lt_end_days_old "$last_updated_at" 8 7; then
+                if is_ge_start_and_lt_end_days_old \
+                  "$last_issue_assignee_comment_update_at" \
+                  8 7; then
                   comment_on_issue $issue_number "${{ env.ONE_WEEK_MD }}" \
                     "assignee=@$issue_assignee_login"
-                elif is_ge_start_and_lt_end_days_old "$last_updated_at" 15 14; then
+                elif is_ge_start_and_lt_end_days_old \
+                  "$last_issue_assignee_comment_update_at" \
+                  15 14; then
                   comment_on_issue $issue_number "${{ env.TWO_WEEKS_MD }}" \
                     "assignee=@$issue_assignee_login"
-                elif is_ge_start_and_lt_end_days_old "$last_updated_at" 0 21; then
+                elif is_ge_start_and_lt_end_days_old \
+                  "$last_issue_assignee_comment_update_at" \
+                  0 21; then
                   comment_on_issue $issue_number "${{ env.THREE_WEEKS_MD }}" \
                     "assignee=@$issue_assignee_login"
 
