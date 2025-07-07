@@ -2,36 +2,66 @@ repo="ocadotechnology/$1"
 echo "-------------------------------------------------------------"
 echo "Repository: $repo"
 
+function timestamp_to_unix_epoch() {
+  local timestamp="$1"
+  if [ -z "$timestamp" ]; then
+    echo "Error: No date provided."
+    exit 1
+  fi
+
+  local unix_epoch=$(TZ="UTC" date --date="$timestamp" +%s)
+  if [ -z "$unix_epoch" ]; then
+    echo "Error: Invalid timestamp format for '$timestamp'."
+    exit 2
+  fi
+
+  echo "$unix_epoch"
+}
+
+function get_latest_timestamp() {
+  local timestamp_1="$1"
+  local timestamp_2="$2"
+
+  local unix_epoch_1="$(timestamp_to_unix_epoch "$timestamp_1")"
+  local unix_epoch_2="$(timestamp_to_unix_epoch "$timestamp_2")"
+
+  if [[ "$unix_epoch_1" -gt "$unix_epoch_2" ]]; then
+    echo "$timestamp_1"
+  elif [[ "$unix_epoch_2" -gt "$unix_epoch_1" ]]; then
+    echo "$timestamp_2"
+  else # "$unix_epoch_1" -eq "$unix_epoch_2"
+    echo "$timestamp_1"
+  fi
+}
+
 function is_ge_start_and_lt_end_days_old() {
-  local d="$1" # date
+  local timestamp="$1" # date
   local start_days=$2
   local end_days=$3
 
-  if [ -z "$d" ]; then
-    echo "Error: No date provided."
-    exit 2
-  elif [[ "$start_days" -eq 0 && "$end_days" -eq 0 ]]; then
+  local unix_epoch="$(timestamp_to_unix_epoch "$timestamp")"
+
+  if [[ "$start_days" -eq 0 && "$end_days" -eq 0 ]]; then
     echo "Error: The start and end cannot both be unset."
-    exit 3
+    exit 2
   elif [[ 
     "$start_days" -ne 0 &&
     "$end_days" -ne 0 &&
     "$end_days" -gt "$start_days" ]] \
     ; then
     echo "Error: The end is greater than the start."
-    exit 4
+    exit 3
   fi
 
-  local timestamp=$(TZ="UTC" date --date="$d" +%s)
   local now=$(date +%s)
 
   if [[ 
     (
     "$start_days" -eq 0 ||
-    "$timestamp" -ge $((now - (60 * 60 * 24 * start_days)))) &&
+    "$unix_epoch" -ge $((now - (60 * 60 * 24 * start_days)))) &&
     (
     "$end_days" -eq 0 ||
-    "$timestamp" -lt $((now - (60 * 60 * 24 * end_days)))) ]] \
+    "$unix_epoch" -lt $((now - (60 * 60 * 24 * end_days)))) ]] \
     ; then return 0; else return 1; fi
 }
 
@@ -99,26 +129,31 @@ echo "$issues" | jq -c '.[]' | while read -r issue; do
 
     if [ "$issue_assignee_login" = "cfl-bot" ]; then continue; fi
 
-    issue_assignee_last_comment=$(
+    issue_assignee_last_comment_updated_at=$(
       echo "$issue_comments" |
-        jq -r 'map(select(.user.node_id == "'$issue_assignee_id'")) | last'
+        jq -r '
+          map(select(.user.node_id == "'$issue_assignee_id'")) |
+          last |
+          .updated_at'
     )
-    if [ "$issue_assignee_last_comment" = "null" ]; then
-      issue_assignee_last_active_at=$(
-        echo "$issue_assigned_events" | jq -r '
+
+    issue_assignee_last_assigned_event_created_at=$(
+      echo "$issue_assigned_events" | jq -r '
           map(select(.assignee.login == "'$issue_assignee_login'")) | 
           last | 
           .created_at'
-      )
+    )
+
+    if [ "$issue_assignee_last_comment_updated_at" = "null" ]; then
+      issue_assignee_last_active_at= \
+        "$issue_assignee_last_assigned_event_created_at"
     else
       issue_assignee_last_active_at=$(
-        echo "$issue_assignee_last_comment" | jq -r '.updated_at'
+        get_latest_timestamp \
+          "$issue_assignee_last_comment_updated_at" \
+          "$issue_assignee_last_assigned_event_created_at"
       )
     fi
-
-    last_issue_assignee_comment_update_at=$(
-      echo "$issue_assignee_last_comment" | jq -r '.updated_at'
-    )
 
     if is_ge_start_and_lt_end_days_old \
       "$issue_assignee_last_active_at" \
