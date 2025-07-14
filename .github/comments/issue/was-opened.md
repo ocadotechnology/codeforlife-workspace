@@ -6,10 +6,10 @@ If you would like to work on this issue, you can instruct our bot by commenting 
 
 |Prompt|Description|Use When|
 |---|---|---|
-|**assign me**|Assigns you to this issue.|You want to work on this issue.|
-|**unassign me**|Unassigns you from this issue.|You no longer want to work on this issue.|
-|**ready for review**|Adds the *ready for review* label to this issue.|You've attached deliverables to this issue and you would like a CFL team member to review it.|
-|**requires changes**|Removes the *ready for review* label from this issue.|You've realized that your deliverables are missing something.|
+|*assign me*|Assigns you to this issue.|You want to work on this issue.|
+|*unassign me*|Unassigns you from this issue.|You no longer want to work on this issue.|
+|*ready for review*|Adds the *ready for review* label to this issue.|You've attached deliverables to this issue and you would like a CFL team member to review it.|
+|*requires changes*|Removes the *ready for review* label from this issue.|You've realized that your deliverables are missing something.|
 
 ---
 
