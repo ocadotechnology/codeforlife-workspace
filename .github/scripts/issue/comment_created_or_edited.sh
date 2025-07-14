@@ -115,10 +115,6 @@ function remove_assignee() {
 }
 
 function add_label() {
-  local label="$1"
-  local color="$2"
-  local description="$3"
-
   gh label create "$label" \
     --repo=$REPO \
     --force \
@@ -126,13 +122,11 @@ function add_label() {
     --description="$description"
 
   gh issue edit $ISSUE_NUMBER \
-    --repo=$repo \
+    --repo=$REPO \
     --add-label="$label"
 }
 
 function remove_label() {
-  local label="$1"
-
   gh issue edit $ISSUE_NUMBER \
     --repo=$REPO \
     --remove-label="$label"

@@ -182,9 +182,10 @@ jobs:
           steps.ready-for-review-not-assigned.conclusion == 'skipped' &&
           steps.ready-for-review-already-labelled.conclusion == 'skipped'
         run: |
-          ${{ env.SCRIPT }} add_label "${{ env.READY_FOR_REVIEW_LABEL }}" \
-            "#fbca04" \
-            "This issue is awaiting review by a CFL team member."
+          label="${{ env.READY_FOR_REVIEW_LABEL }}" \
+            color="#fbca04" \
+            description="This issue is awaiting review by a CFL team member." \
+            ${{ env.SCRIPT }} add_label
 
       # requires changes
 
@@ -230,7 +231,9 @@ jobs:
           steps.requires-changes-closed-state.conclusion == 'skipped' &&
           steps.requires-changes-not-assigned.conclusion == 'skipped' &&
           steps.requires-changes-not-labelled.conclusion == 'skipped'
-        run: ${{ env.SCRIPT }} remove_label "${{ env.READY_FOR_REVIEW_LABEL }}"
+        run: |
+          label="${{ env.READY_FOR_REVIEW_LABEL }}" \
+            ${{ env.SCRIPT }} remove_label
 
   inactive:
     runs-on: ubuntu-22.04
