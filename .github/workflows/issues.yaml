@@ -59,7 +59,7 @@ jobs:
       - name: 📥 Download Script
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
         with:
-          path: .github/scripts/issue/extract_prompt_from_comment.sh
+          path: .github/scripts/issue/comment_created_or_edited.sh
           save-to: ${{ env.SCRIPT }}
           type: bash
 
