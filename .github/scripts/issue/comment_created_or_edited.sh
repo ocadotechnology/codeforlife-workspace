@@ -12,7 +12,7 @@ function extract_prompt() {
   # 3. Substitute all 2+ recurring spaces with a single space.
   # 4. Replace all upper-case characters with lower-case.
   comment_body=$(
-    echo "$1" |
+    echo "$@" |
       sed --regexp-extended '
       s/(^|\W)@cfl-bot($|\W)/\1\2/g;
       s/^[[:space:]]*|[[:space:]]*$//g;
@@ -35,12 +35,12 @@ function extract_prompt() {
   # Define the POSIX regex pattern of each prompt.
   # Used to check if the comment's body matches any of the prompts' pattern.
   declare -A prompt_patterns=(
-    ["$ASSIGN_ME_PROMPT_ID"]="^assign me$"
-    ["$UNASSIGN_ME_PROMPT_ID"]="^unassign me$"
-    ["$READY_FOR_REVIEW_PROMPT_ID"]="^ready for review$"
-    ["$REQUIRES_CHANGES_PROMPT_ID"]="^requires changes$"
-    ["$LINK_PR_PROMPT_ID"]="^link pr ([0-9]+)$"
-    ["$UNLINK_PR_PROMPT_ID"]="^unlink pr ([0-9]+)$"
+    ["$ASSIGN_ME_PROMPT_ID"]="^assign\ me$"
+    ["$UNASSIGN_ME_PROMPT_ID"]="^unassign\ me$"
+    ["$READY_FOR_REVIEW_PROMPT_ID"]="^ready\ for\ review$"
+    ["$REQUIRES_CHANGES_PROMPT_ID"]="^requires\ changes$"
+    ["$LINK_PR_PROMPT_ID"]="^link\ pr\ ([0-9]+)$"
+    ["$UNLINK_PR_PROMPT_ID"]="^unlink\ pr\ ([0-9]+)$"
   )
 
   # Define a CSV of group names for each POSIX regex pattern that contains a group.
@@ -61,7 +61,7 @@ function extract_prompt() {
     comment_body_char_set=$(echo "$comment_body" | tr -dc "$prompt_char_set")
 
     # Check if the comment's body matches the prompt's pattern.
-    if [[ "$comment_body_charset" =~ $prompt_pattern ]]; then
+    if [[ "$comment_body_char_set" =~ $prompt_pattern ]]; then
       # Output the matching prompt.
       set_output "$prompt_id_key" "$prompt_id"
 
