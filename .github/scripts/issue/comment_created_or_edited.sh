@@ -1,7 +1,7 @@
 # A helper utility to set outputs on the GitHub step.
 function set_output() {
   local output="$1=$2"
-  echo "Outputting to GitHub: $output"
+  echo "Outputting to GitHub: \"$output\"."
   echo "$output" >>$GITHUB_OUTPUT
 }
 
