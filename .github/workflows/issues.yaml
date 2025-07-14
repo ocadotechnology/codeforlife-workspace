@@ -42,67 +42,37 @@ jobs:
       !contains(github.event.issue.labels.*.name, 'bot ignore')
     env:
       GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
+      SCRIPT: ./comment_created_or_edited.sh
       # Prompts
-      ASSIGN_ME_PROMPT: "+"
-      UNASSIGN_ME_PROMPT: "-"
-      READY_FOR_REVIEW_PROMPT: "!"
+      ASSIGN_ME_PROMPT_ID: "assign-me"
+      UNASSIGN_ME_PROMPT_ID: "unassign-me"
+      READY_FOR_REVIEW_PROMPT_ID: "ready-for-review"
+      REQUIRES_CHANGES_PROMPT_ID: "requires-changes"
+      LINK_PR_PROMPT_ID: "link-pr"
+      UNLINK_PR_PROMPT_ID: "unlink-pr"
+      # Labels
       READY_FOR_REVIEW_LABEL: "ready for review"
-      REQUIRES_CHANGES_PROMPT: "?"
       # Common Conditions
       COMMENTER_IS_ASSIGNED: ${{ contains(github.event.issue.assignees.*.id, github.event.comment.user.id) }}
       IS_OPEN: ${{ github.event.issue.state == 'open' }}
     steps:
+      - name: 📥 Download Script
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
+        with:
+          path: .github/scripts/issue/extract_prompt_from_comment.sh
+          save-to: ${{ env.SCRIPT }}
+          type: bash
+
       - name: 🔍 Extract Prompt
-        id: _ # Shorthand
-        run: |
-          comment_body=$(
-            echo "${{ github.event.comment.body }}" |
-            sed --regexp-extended '
-              s/(^|\W)@cfl-bot($|\W)/\1\2/g;
-              s/^[[:space:]]*|[[:space:]]*$//g;
-              s/[[:space:]]{2,}/ /g
-            ' |
-            tr '[:upper:]' '[:lower:]'
-          )
-          comment_body_alpha=$(echo "$comment_body" | tr -dc '[:alpha:]')
-          comment_body_punct=$(echo "$comment_body" | tr -dc '[:punct:]')
-
-          prompt_aliases=(
-            "assign me=${{ env.ASSIGN_ME_PROMPT }}"
-            "unassign me=${{ env.UNASSIGN_ME_PROMPT }}"
-            "ready for review=${{ env.READY_FOR_REVIEW_PROMPT }}"
-            "requires changes=${{ env.REQUIRES_CHANGES_PROMPT }}"
-          )
-          prompt=""
-          for prompt_alias in "${prompt_aliases[@]}"; do
-            text="${prompt_alias%=*}"
-            symbol="${prompt_alias#*=}"
-            if [ "$comment_body_alpha" = "$text" ] ||
-              [ "$comment_body_punct" = "$symbol" ]; then
-              prompt="$symbol"
-              break
-            fi
-          done
-
-          function set_output() { echo "$1=$2" >> $GITHUB_OUTPUT; }
-
-          set_output "prompt" "$prompt"
-
-          if [ -z "$prompt" ]; then exit 0; fi
-
-          if [ "$prompt" = "${{ env.ASSIGN_ME_PROMPT }}" ]; then
-            set_output "max-assignees" "${{ github.event.issue.assignees.length >= 5 }}"
-          fi
-          if [ "$prompt" = "${{ env.READY_FOR_REVIEW_PROMPT }}" ] || [ "$prompt" = "${{ env.REQUIRES_CHANGES_PROMPT }}" ]; then
-            set_output "has-label" "${{ contains(github.event.issue.labels.*.name, env.READY_FOR_REVIEW_LABEL)  }}"
-          fi
+        id: extract-prompt
+        run: ${{ env.SCRIPT }} extract_prompt "${{ github.event.comment.body }}"
 
       # assign me
 
       - name: "✍️ Assign Me: Download and Write Closed-State Comment"
         id: assign-me-closed-state
         if: |
-          steps._.outputs.prompt == env.ASSIGN_ME_PROMPT &&
+          steps.extract-prompt.outputs.id == env.ASSIGN_ME_PROMPT_ID &&
           env.IS_OPEN == 'false'
         uses: ocadotechnology/codeforlife-workspace/.github/actions/bot/comment-on-issue@main
         with:
@@ -113,7 +83,7 @@ jobs:
       - name: "✍️ Assign Me: Download and Write Already-Assigned Comment"
         id: assign-me-already-assigned
         if: |
-          steps._.outputs.prompt == env.ASSIGN_ME_PROMPT &&
+          steps.extract-prompt.outputs.id == env.ASSIGN_ME_PROMPT_ID &&
           env.IS_OPEN == 'true' &&
           env.COMMENTER_IS_ASSIGNED == 'true'
         uses: ocadotechnology/codeforlife-workspace/.github/actions/bot/comment-on-issue@main
@@ -125,10 +95,10 @@ jobs:
       - name: "✍️ Assign Me: Download and Write Max-Assignees Comment"
         id: assign-me-max-assignees
         if: |
-          steps._.outputs.prompt == env.ASSIGN_ME_PROMPT &&
+          steps.extract-prompt.outputs.id == env.ASSIGN_ME_PROMPT_ID &&
           env.IS_OPEN == 'true' &&
           env.COMMENTER_IS_ASSIGNED == 'false' &&
-          steps._.outputs.max-assignees == 'true'
+          github.event.issue.assignees.length >= 5
         uses: ocadotechnology/codeforlife-workspace/.github/actions/bot/comment-on-issue@main
         with:
           download-issue-comment-path: prompts/assign-me/max-assignees.md
@@ -137,7 +107,7 @@ jobs:
 
       - name: "🏃 Assign Me: Run"
         if: |
-          steps._.outputs.prompt == env.ASSIGN_ME_PROMPT &&
+          steps.extract-prompt.outputs.id == env.ASSIGN_ME_PROMPT_ID &&
           steps.assign-me-already-assigned.conclusion == 'skipped' &&
           steps.assign-me-closed-state.conclusion == 'skipped' &&
           steps.assign-me-max-assignees.conclusion == 'skipped'
@@ -157,7 +127,7 @@ jobs:
       - name: "✍️ Unassign Me: Download and Write Not-Assigned Comment"
         id: unassign-me-not-assigned
         if: |
-          steps._.outputs.prompt == env.UNASSIGN_ME_PROMPT &&
+          steps.extract-prompt.outputs.id == env.UNASSIGN_ME_PROMPT_ID &&
           env.COMMENTER_IS_ASSIGNED == 'false'
         uses: ocadotechnology/codeforlife-workspace/.github/actions/bot/comment-on-issue@main
         with:
@@ -167,7 +137,7 @@ jobs:
 
       - name: "🏃 Unassign Me: Run"
         if: |
-          steps._.outputs.prompt == env.UNASSIGN_ME_PROMPT &&
+          steps.extract-prompt.outputs.id == env.UNASSIGN_ME_PROMPT_ID &&
           steps.unassign-me-not-assigned.conclusion == 'skipped'
         run: |
           gh api graphql -f query='
@@ -185,7 +155,7 @@ jobs:
       - name: "✍️ Ready for Review: Download and Write Closed-State Comment"
         id: ready-for-review-closed-state
         if: |
-          steps._.outputs.prompt == env.READY_FOR_REVIEW_PROMPT &&
+          steps.extract-prompt.outputs.id == env.READY_FOR_REVIEW_PROMPT_ID &&
           env.IS_OPEN == 'false'
         uses: ocadotechnology/codeforlife-workspace/.github/actions/bot/comment-on-issue@main
         with:
@@ -196,7 +166,7 @@ jobs:
       - name: "✍️ Ready for Review: Download and Write Not-Assigned Comment"
         id: ready-for-review-not-assigned
         if: |
-          steps._.outputs.prompt == env.READY_FOR_REVIEW_PROMPT &&
+          steps.extract-prompt.outputs.id == env.READY_FOR_REVIEW_PROMPT_ID &&
           env.IS_OPEN == 'true' &&
           env.COMMENTER_IS_ASSIGNED == 'false'
         uses: ocadotechnology/codeforlife-workspace/.github/actions/bot/comment-on-issue@main
@@ -208,10 +178,10 @@ jobs:
       - name: "✍️ Ready for Review: Download and Write Already-Labelled Comment"
         id: ready-for-review-already-labelled
         if: |
-          steps._.outputs.prompt == env.READY_FOR_REVIEW_PROMPT &&
+          steps.extract-prompt.outputs.id == env.READY_FOR_REVIEW_PROMPT_ID &&
           env.IS_OPEN == 'true' &&
           env.COMMENTER_IS_ASSIGNED == 'true' &&
-          steps._.outputs.has-label == 'true'
+          contains(github.event.issue.labels.*.name, env.READY_FOR_REVIEW_LABEL)
         uses: ocadotechnology/codeforlife-workspace/.github/actions/bot/comment-on-issue@main
         with:
           download-issue-comment-path: prompts/ready-for-review/already-labelled.md
@@ -220,12 +190,12 @@ jobs:
 
       - name: "🏃 Ready for Review: Run"
         if: |
-          steps._.outputs.prompt == env.READY_FOR_REVIEW_PROMPT &&
+          steps.extract-prompt.outputs.id == env.READY_FOR_REVIEW_PROMPT_ID &&
           steps.ready-for-review-closed-state.conclusion == 'skipped' &&
           steps.ready-for-review-not-assigned.conclusion == 'skipped' &&
           steps.ready-for-review-already-labelled.conclusion == 'skipped'
         run: |
-          gh label create "${{ env.READY_FOR_REVIEW_PROMPT }}" \
+          gh label create "${{ env.READY_FOR_REVIEW_PROMPT_ID }}" \
             --repo=${{ github.repository }} \
             --force \
             --color="#fbca04" \
@@ -240,7 +210,7 @@ jobs:
       - name: "✍️ Requires Changes: Download and Write Closed-State Comment"
         id: requires-changes-closed-state
         if: |
-          steps._.outputs.prompt == env.REQUIRES_CHANGES_PROMPT &&
+          steps.extract-prompt.outputs.id == env.REQUIRES_CHANGES_PROMPT_ID &&
           env.IS_OPEN == 'false'
         uses: ocadotechnology/codeforlife-workspace/.github/actions/bot/comment-on-issue@main
         with:
@@ -251,7 +221,7 @@ jobs:
       - name: "✍️ Requires Changes: Download and Write Not-Assigned Comment"
         id: requires-changes-not-assigned
         if: |
-          steps._.outputs.prompt == env.REQUIRES_CHANGES_PROMPT &&
+          steps.extract-prompt.outputs.id == env.REQUIRES_CHANGES_PROMPT_ID &&
           env.IS_OPEN == 'true' &&
           env.COMMENTER_IS_ASSIGNED == 'false'
         uses: ocadotechnology/codeforlife-workspace/.github/actions/bot/comment-on-issue@main
@@ -263,10 +233,10 @@ jobs:
       - name: "✍️ Requires Changes: Download and Write Not-Labelled Comment"
         id: requires-changes-not-labelled
         if: |
-          steps._.outputs.prompt == env.REQUIRES_CHANGES_PROMPT &&
+          steps.extract-prompt.outputs.id == env.REQUIRES_CHANGES_PROMPT_ID &&
           env.IS_OPEN == 'true' &&
           env.COMMENTER_IS_ASSIGNED == 'true' &&
-          steps._.outputs.has-label == 'false'
+          !contains(github.event.issue.labels.*.name, env.READY_FOR_REVIEW_LABEL)
         uses: ocadotechnology/codeforlife-workspace/.github/actions/bot/comment-on-issue@main
         with:
           download-issue-comment-path: prompts/requires-changes/not-labelled.md
@@ -275,7 +245,7 @@ jobs:
 
       - name: "🏃 Requires Changes: Run"
         if: |
-          steps._.outputs.prompt == env.REQUIRES_CHANGES_PROMPT &&
+          steps.extract-prompt.outputs.id == env.REQUIRES_CHANGES_PROMPT_ID &&
           steps.requires-changes-closed-state.conclusion == 'skipped' &&
           steps.requires-changes-not-assigned.conclusion == 'skipped' &&
           steps.requires-changes-not-labelled.conclusion == 'skipped'
@@ -317,7 +287,7 @@ jobs:
       - name: 📥 Download Script
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
         with:
-          path: .github/scripts/unassign_inactive_issue_assignees.sh
+          path: .github/scripts/issue/unassign_inactive_assignees.sh
           save-to: ${{ env.SCRIPT }}
           type: bash
 
