@@ -145,8 +145,7 @@ echo "$issues" | jq -c '.[]' | while read -r issue; do
     )
 
     if [ "$issue_assignee_last_comment_updated_at" = "null" ]; then
-      issue_assignee_last_active_at= \
-        "$issue_assignee_last_assigned_event_created_at"
+      issue_assignee_last_active_at="$issue_assignee_last_assigned_event_created_at"
     else
       issue_assignee_last_active_at=$(
         get_latest_timestamp \
