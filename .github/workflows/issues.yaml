@@ -52,6 +52,11 @@ jobs:
       UNLINK_PR_PROMPT_ID: "unlink-pr"
       # Labels
       READY_FOR_REVIEW_LABEL: "ready for review"
+      # GitHub context.
+      REPO: "${{ github.repository }}"
+      ISSUE_NUMBER: "${{ github.event.issue.number }}"
+      ISSUE_NODE_ID: "${{ github.event.issue.node_id }}"
+      USER_NODE_ID: "${{ github.event.comment.user.node_id }}"
       # Common Conditions
       COMMENTER_IS_ASSIGNED: ${{ contains(github.event.issue.assignees.*.id, github.event.comment.user.id) }}
       IS_OPEN: ${{ github.event.issue.state == 'open' }}
@@ -111,16 +116,7 @@ jobs:
           steps.assign-me-already-assigned.conclusion == 'skipped' &&
           steps.assign-me-closed-state.conclusion == 'skipped' &&
           steps.assign-me-max-assignees.conclusion == 'skipped'
-        run: |
-          gh api graphql -f query='
-            mutation {
-              addAssignee: addAssigneesToAssignable(input: {
-                assignableId: "${{ github.event.issue.node_id }}"
-                assigneeIds: ["${{ github.event.comment.user.node_id }}"]
-              }) {
-                assignable { ... on Issue { id } }
-              }
-            }'
+        run: ${{ env.SCRIPT }} add_assignee
 
       # unassign me
 
@@ -139,16 +135,7 @@ jobs:
         if: |
           steps.extract-prompt.outputs.id == env.UNASSIGN_ME_PROMPT_ID &&
           steps.unassign-me-not-assigned.conclusion == 'skipped'
-        run: |
-          gh api graphql -f query='
-            mutation {
-              removeAssignee: removeAssigneesFromAssignable(input: {
-                assignableId: "${{ github.event.issue.node_id }}"
-                assigneeIds: ["${{ github.event.comment.user.node_id }}"]
-              }) {
-                assignable { ... on Issue { id } }
-              }
-            }'
+        run: ${{ env.SCRIPT }} remove_assignee
 
       # ready for review
 
@@ -195,15 +182,9 @@ jobs:
           steps.ready-for-review-not-assigned.conclusion == 'skipped' &&
           steps.ready-for-review-already-labelled.conclusion == 'skipped'
         run: |
-          gh label create "${{ env.READY_FOR_REVIEW_PROMPT_ID }}" \
-            --repo=${{ github.repository }} \
-            --force \
-            --color="#fbca04" \
-            --description="This issue is awaiting review by a CFL team member."
-
-          gh issue edit ${{ github.event.issue.number }} \
-            --repo=${{ github.repository }} \
-            --add-label="${{ env.READY_FOR_REVIEW_LABEL }}"
+          ${{ env.SCRIPT }} add_label "${{ env.READY_FOR_REVIEW_LABEL }}" \
+            "#fbca04" \
+            "This issue is awaiting review by a CFL team member."
 
       # requires changes
 
@@ -249,10 +230,7 @@ jobs:
           steps.requires-changes-closed-state.conclusion == 'skipped' &&
           steps.requires-changes-not-assigned.conclusion == 'skipped' &&
           steps.requires-changes-not-labelled.conclusion == 'skipped'
-        run: |
-          gh issue edit ${{ github.event.issue.number }} \
-            --repo=${{ github.repository }} \
-            --remove-label="${{ env.READY_FOR_REVIEW_LABEL }}"
+        run: ${{ env.SCRIPT }} remove_label "${{ env.READY_FOR_REVIEW_LABEL }}"
 
   inactive:
     runs-on: ubuntu-22.04

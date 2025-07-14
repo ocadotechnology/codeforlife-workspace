@@ -90,5 +90,53 @@ function extract_prompt() {
   set_output "$prompt_id_key" ""
 }
 
+function add_assignee() {
+  gh api graphql -f query='
+    mutation {
+      addAssignee: addAssigneesToAssignable(input: {
+        assignableId: "'$ISSUE_NODE_ID'"
+        assigneeIds: ["'$USER_NODE_ID'"]
+      }) {
+        assignable { ... on Issue { id } }
+      }
+    }'
+}
+
+function remove_assignee() {
+  gh api graphql -f query='
+    mutation {
+      removeAssignee: removeAssigneesFromAssignable(input: {
+        assignableId: "'$ISSUE_NODE_ID'"
+        assigneeIds: ["'$USER_NODE_ID'"]
+      }) {
+        assignable { ... on Issue { id } }
+      }
+    }'
+}
+
+function add_label() {
+  local label="$1"
+  local color="$2"
+  local description="$3"
+
+  gh label create "$label" \
+    --repo=$REPO \
+    --force \
+    --color="$color" \
+    --description="$description"
+
+  gh issue edit $ISSUE_NUMBER \
+    --repo=$repo \
+    --add-label="$label"
+}
+
+function remove_label() {
+  local label="$1"
+
+  gh issue edit $ISSUE_NUMBER \
+    --repo=$REPO \
+    --remove-label="$label"
+}
+
 # Call function by name and pass the remaining arguments.
 if [ $# -gt 0 ]; then $1 ${@:2}; fi
