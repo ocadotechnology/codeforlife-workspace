@@ -43,23 +43,15 @@ jobs:
     env:
       GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
       SCRIPT: ./comment_created_or_edited.sh
-      # Prompts
-      ASSIGN_ME_PROMPT_ID: "assign-me"
-      UNASSIGN_ME_PROMPT_ID: "unassign-me"
-      READY_FOR_REVIEW_PROMPT_ID: "ready-for-review"
-      REQUIRES_CHANGES_PROMPT_ID: "requires-changes"
-      LINK_PR_PROMPT_ID: "link-pr"
-      UNLINK_PR_PROMPT_ID: "unlink-pr"
-      # Labels
-      READY_FOR_REVIEW_LABEL: "ready for review"
       # GitHub context.
       REPO: "${{ github.repository }}"
       ISSUE_NUMBER: "${{ github.event.issue.number }}"
       ISSUE_NODE_ID: "${{ github.event.issue.node_id }}"
       USER_NODE_ID: "${{ github.event.comment.user.node_id }}"
+      USER_LOGIN: "${{ github.event.comment.user.login }}"
       # Common Conditions
-      COMMENTER_IS_ASSIGNED: ${{ contains(github.event.issue.assignees.*.id, github.event.comment.user.id) }}
-      IS_OPEN: ${{ github.event.issue.state == 'open' }}
+      ISSUE_IS_OPEN: "${{ github.event.issue.state == 'open' }}"
+      ISSUE_HAS_COMMENTER_ASSIGNED: "${{ contains(github.event.issue.assignees.*.id, github.event.comment.user.id) }}"
     steps:
       - name: 📥 Download Script
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
@@ -68,172 +60,8 @@ jobs:
           save-to: ${{ env.SCRIPT }}
           type: bash
 
-      - name: 🔍 Extract Prompt
-        id: extract-prompt
-        run: ${{ env.SCRIPT }} extract_prompt "${{ github.event.comment.body }}"
-
-      # assign me
-
-      - name: "✍️ Assign Me: Download and Write Closed-State Comment"
-        id: assign-me-closed-state
-        if: |
-          steps.extract-prompt.outputs.id == env.ASSIGN_ME_PROMPT_ID &&
-          env.IS_OPEN == 'false'
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/bot/comment-on-issue@main
-        with:
-          download-issue-comment-path: prompts/assign-me/closed-state.md
-          write-substitutions: |
-            contributor=@${{ github.event.comment.user.login }}
-
-      - name: "✍️ Assign Me: Download and Write Already-Assigned Comment"
-        id: assign-me-already-assigned
-        if: |
-          steps.extract-prompt.outputs.id == env.ASSIGN_ME_PROMPT_ID &&
-          env.IS_OPEN == 'true' &&
-          env.COMMENTER_IS_ASSIGNED == 'true'
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/bot/comment-on-issue@main
-        with:
-          download-issue-comment-path: prompts/assign-me/already-assigned.md
-          write-substitutions: |
-            contributor=@${{ github.event.comment.user.login }}
-
-      - name: "✍️ Assign Me: Download and Write Max-Assignees Comment"
-        id: assign-me-max-assignees
-        if: |
-          steps.extract-prompt.outputs.id == env.ASSIGN_ME_PROMPT_ID &&
-          env.IS_OPEN == 'true' &&
-          env.COMMENTER_IS_ASSIGNED == 'false' &&
-          github.event.issue.assignees.length >= 5
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/bot/comment-on-issue@main
-        with:
-          download-issue-comment-path: prompts/assign-me/max-assignees.md
-          write-substitutions: |
-            contributor=@${{ github.event.comment.user.login }}
-
-      - name: "🏃 Assign Me: Run"
-        if: |
-          steps.extract-prompt.outputs.id == env.ASSIGN_ME_PROMPT_ID &&
-          steps.assign-me-already-assigned.conclusion == 'skipped' &&
-          steps.assign-me-closed-state.conclusion == 'skipped' &&
-          steps.assign-me-max-assignees.conclusion == 'skipped'
-        run: ${{ env.SCRIPT }} add_assignee
-
-      # unassign me
-
-      - name: "✍️ Unassign Me: Download and Write Not-Assigned Comment"
-        id: unassign-me-not-assigned
-        if: |
-          steps.extract-prompt.outputs.id == env.UNASSIGN_ME_PROMPT_ID &&
-          env.COMMENTER_IS_ASSIGNED == 'false'
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/bot/comment-on-issue@main
-        with:
-          download-issue-comment-path: prompts/unassign-me/not-assigned.md
-          write-substitutions: |
-            contributor=@${{ github.event.comment.user.login }}
-
-      - name: "🏃 Unassign Me: Run"
-        if: |
-          steps.extract-prompt.outputs.id == env.UNASSIGN_ME_PROMPT_ID &&
-          steps.unassign-me-not-assigned.conclusion == 'skipped'
-        run: ${{ env.SCRIPT }} remove_assignee
-
-      # ready for review
-
-      - name: "✍️ Ready for Review: Download and Write Closed-State Comment"
-        id: ready-for-review-closed-state
-        if: |
-          steps.extract-prompt.outputs.id == env.READY_FOR_REVIEW_PROMPT_ID &&
-          env.IS_OPEN == 'false'
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/bot/comment-on-issue@main
-        with:
-          download-issue-comment-path: prompts/ready-for-review/closed-state.md
-          write-substitutions: |
-            contributor=@${{ github.event.comment.user.login }}
-
-      - name: "✍️ Ready for Review: Download and Write Not-Assigned Comment"
-        id: ready-for-review-not-assigned
-        if: |
-          steps.extract-prompt.outputs.id == env.READY_FOR_REVIEW_PROMPT_ID &&
-          env.IS_OPEN == 'true' &&
-          env.COMMENTER_IS_ASSIGNED == 'false'
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/bot/comment-on-issue@main
-        with:
-          download-issue-comment-path: prompts/ready-for-review/not-assigned.md
-          write-substitutions: |
-            contributor=@${{ github.event.comment.user.login }}
-
-      - name: "✍️ Ready for Review: Download and Write Already-Labelled Comment"
-        id: ready-for-review-already-labelled
-        if: |
-          steps.extract-prompt.outputs.id == env.READY_FOR_REVIEW_PROMPT_ID &&
-          env.IS_OPEN == 'true' &&
-          env.COMMENTER_IS_ASSIGNED == 'true' &&
-          contains(github.event.issue.labels.*.name, env.READY_FOR_REVIEW_LABEL)
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/bot/comment-on-issue@main
-        with:
-          download-issue-comment-path: prompts/ready-for-review/already-labelled.md
-          write-substitutions: |
-            contributor=@${{ github.event.comment.user.login }}
-
-      - name: "🏃 Ready for Review: Run"
-        if: |
-          steps.extract-prompt.outputs.id == env.READY_FOR_REVIEW_PROMPT_ID &&
-          steps.ready-for-review-closed-state.conclusion == 'skipped' &&
-          steps.ready-for-review-not-assigned.conclusion == 'skipped' &&
-          steps.ready-for-review-already-labelled.conclusion == 'skipped'
-        run: |
-          label="${{ env.READY_FOR_REVIEW_LABEL }}" \
-            color="#fbca04" \
-            description="This issue is awaiting review by a CFL team member." \
-            ${{ env.SCRIPT }} add_label
-
-      # requires changes
-
-      - name: "✍️ Requires Changes: Download and Write Closed-State Comment"
-        id: requires-changes-closed-state
-        if: |
-          steps.extract-prompt.outputs.id == env.REQUIRES_CHANGES_PROMPT_ID &&
-          env.IS_OPEN == 'false'
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/bot/comment-on-issue@main
-        with:
-          download-issue-comment-path: prompts/requires-changes/closed-state.md
-          write-substitutions: |
-            contributor=@${{ github.event.comment.user.login }}
-
-      - name: "✍️ Requires Changes: Download and Write Not-Assigned Comment"
-        id: requires-changes-not-assigned
-        if: |
-          steps.extract-prompt.outputs.id == env.REQUIRES_CHANGES_PROMPT_ID &&
-          env.IS_OPEN == 'true' &&
-          env.COMMENTER_IS_ASSIGNED == 'false'
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/bot/comment-on-issue@main
-        with:
-          download-issue-comment-path: prompts/requires-changes/not-assigned.md
-          write-substitutions: |
-            contributor=@${{ github.event.comment.user.login }}
-
-      - name: "✍️ Requires Changes: Download and Write Not-Labelled Comment"
-        id: requires-changes-not-labelled
-        if: |
-          steps.extract-prompt.outputs.id == env.REQUIRES_CHANGES_PROMPT_ID &&
-          env.IS_OPEN == 'true' &&
-          env.COMMENTER_IS_ASSIGNED == 'true' &&
-          !contains(github.event.issue.labels.*.name, env.READY_FOR_REVIEW_LABEL)
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/bot/comment-on-issue@main
-        with:
-          download-issue-comment-path: prompts/requires-changes/not-labelled.md
-          write-substitutions: |
-            contributor=@${{ github.event.comment.user.login }}
-
-      - name: "🏃 Requires Changes: Run"
-        if: |
-          steps.extract-prompt.outputs.id == env.REQUIRES_CHANGES_PROMPT_ID &&
-          steps.requires-changes-closed-state.conclusion == 'skipped' &&
-          steps.requires-changes-not-assigned.conclusion == 'skipped' &&
-          steps.requires-changes-not-labelled.conclusion == 'skipped'
-        run: |
-          label="${{ env.READY_FOR_REVIEW_LABEL }}" \
-            ${{ env.SCRIPT }} remove_label
+      - name: 🏃 Run Script
+        run: ${{ env.SCRIPT }}
 
   inactive:
     runs-on: ubuntu-22.04
