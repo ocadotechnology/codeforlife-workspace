@@ -274,7 +274,7 @@ function handle_ready_for_review_prompt() {
       download_and_write_prompt_comment \
       "$ready_for_review_prompt_id" \
       "already-labelled"
-  elif status_is_reviewing; then
+  elif status_is_one_of "Reviewing"; then
     substitutions="contributor=@$USER_LOGIN" \
       download_and_write_prompt_comment \
       "$ready_for_review_prompt_id" \
