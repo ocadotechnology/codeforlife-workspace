@@ -72,6 +72,21 @@ function remove_assignee() {
     }'
 }
 
+function get_project_item_node_id() {
+  gh api graphql -f query='
+    query {
+      repository(owner: "'"$REPO_OWNER"'", name: "'"$REPO_NAME"'") {
+        issue(number: '"$ISSUE_NUMBER"') {
+          projectItems(first: 1) {
+            nodes {
+              id
+            }
+          }
+        }
+      }
+    }' | jq '.data.repository.issue.projectItems.nodes[0].id'
+}
+
 function add_label() {
   local label="$@"
 
@@ -113,23 +128,42 @@ function get_status() {
     --json=projectItems \
     --jq='.projectItems[0] | .status.optionId'
 }
-function status_is_to_do() {
-  if [ "$(get_status)" = "f75ad846" ]; then return 0; else return 1; fi
+
+function set_status() {
+  local name="$@"
+
+  gh project item-edit "$project_number" \
+    --id="$project_item_node_id" \
+    --project-id="$project_id" \
+    --field-id="$status_field_id" \
+    --single-select-option-id="${status_option_ids["$name"]}"
 }
-function status_is_in_progress() {
-  if [ "$(get_status)" = "47fc9ee4" ]; then return 0; else return 1; fi
-}
-function status_is_reviewing() {
-  if [ "$(get_status)" = "cae0cfc1" ]; then return 0; else return 1; fi
-}
-function status_is_staging() {
-  if [ "$(get_status)" = "b595bde1" ]; then return 0; else return 1; fi
-}
-function status_is_production() {
-  if [ "$(get_status)" = "a0264d2c" ]; then return 0; else return 1; fi
-}
-function status_is_closed() {
-  if [ "$(get_status)" = "98236657" ]; then return 0; else return 1; fi
+
+status_field_id="PVTSSF_lADOAB_fG84AmfxNzgeYqqQ"
+declare -A status_option_ids=(
+  ["To Do"]="f75ad846"
+  ["In Progress"]="47fc9ee4"
+  ["Reviewing"]="cae0cfc1"
+  ["Staging"]="b595bde1"
+  ["Production"]="a0264d2c"
+  ["Closed"]="98236657"
+)
+
+function status_is_one_of() {
+  local no_status="${no_status:-1}"
+  local option_name_csv="$@"
+
+  local actual_option_id="$(get_status)"
+  if [ -z "$actual_option_id" ]; then return $no_status; fi
+
+  IFS=',' read -ra option_names <<<"$option_name_csv"
+
+  for option_name in "${option_names[@]}"; do
+    local option_id="${status_option_ids["$option_name"]}"
+    if [ "$option_id" = "$actual_option_id" ]; then return 0; fi
+  done
+
+  return 1
 }
 
 # Labels.
@@ -208,6 +242,10 @@ function handle_assign_me_prompt() {
       "max-assignees"
   else
     add_assignee
+
+    if no_status=0 status_is_one_of "To Do"; then
+      set_status "Reviewing"
+    fi
   fi
 }
 function handle_unassign_me_prompt() {
@@ -275,6 +313,10 @@ function handle_unlink_pr_prompt() {
   echo "TODO: implement"
   exit 1
 }
+
+project_id="PVT_kwDOAB_fG84AmfxN"
+project_number="3"
+project_item_node_id="$(get_project_item_node_id)"
 
 # Normalize the comment's body:
 # 1. Remove any mention of "@cfl-bot".
