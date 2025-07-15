@@ -244,7 +244,7 @@ function handle_assign_me_prompt() {
     add_assignee
 
     if no_status=0 status_is_one_of "To Do"; then
-      set_status "Reviewing"
+      set_status "In Progress"
     fi
   fi
 }
