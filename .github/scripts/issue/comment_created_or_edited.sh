@@ -9,8 +9,12 @@ function trim_spaces() {
 function download_workspace_file() {
   local branch="${branch:-"main"}"
   local path="$1"
-  local save_to="$2"
+  local save_to="${2:-"$path"}"
 
+  # Make parent directories.
+  mkdir -p "$(dirname "$save_to")"
+
+  # Download file.
   wget https://raw.githubusercontent.com/ocadotechnology/codeforlife-workspace/refs/heads/$branch/$path \
     -O "$save_to"
 }
@@ -23,9 +27,8 @@ function download_and_write_prompt_comment() {
   prompt_id="$(echo "$prompt_id" | sed 's/_/-/g')"
 
   local comment_path=".github/comments/issue/prompts/$prompt_id/$comment_md.md"
-  local save_to="$(echo "$comment_path" | sed 's/\//-/g')"
 
-  download_workspace_file "$comment_path" "$save_to"
+  download_workspace_file "$comment_path"
 
   # Write substitution to file.
   echo "$substitutions" | while IFS= read -r line; do
@@ -38,11 +41,11 @@ function download_and_write_prompt_comment() {
       local key="${pair%=*}"
       local value="${pair#*=}"
 
-      sed --in-place 's/{{ *'$key' *}}/'$value'/g' $save_to
+      sed --in-place 's/{{ *'$key' *}}/'$value'/g' $comment_path
     done
   done
 
-  gh issue comment $ISSUE_NUMBER --repo=$REPO --body-file=$save_to
+  gh issue comment $ISSUE_NUMBER --repo=$REPO --body-file=$comment_path
 }
 
 function add_assignee() {
@@ -98,7 +101,7 @@ function has_label() {
     gh issue view $ISSUE_NUMBER \
       --repo=$REPO \
       --json=labels \
-      --jq='.labels | map(.name) | contains(["'$label'"])'
+      --jq='.labels | map(.name) | contains(["'"$label"'"])'
   )
 
   return $(eval_bool "$has_label")
