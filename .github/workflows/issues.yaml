@@ -61,7 +61,7 @@ jobs:
           type: bash
 
       - name: 🏃 Run Script
-        run: ${{ env.SCRIPT }}
+        run: ${{ env.SCRIPT }} "${{ github.event.comment.body }}"
 
   inactive:
     runs-on: ubuntu-22.04

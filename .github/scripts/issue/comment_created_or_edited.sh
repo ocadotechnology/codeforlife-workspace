@@ -42,8 +42,7 @@ function download_and_write_prompt_comment() {
     done
   done
 
-  echo "Writing comment: \"$(cat $save_to)\"."
-  # gh issue comment $ISSUE_NUMBER --repo=$REPO --body-file=$save_to
+  gh issue comment $ISSUE_NUMBER --repo=$REPO --body-file=$save_to
 }
 
 function add_assignee() {
