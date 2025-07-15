@@ -107,6 +107,31 @@ function has_label() {
   return $(eval_bool "$has_label")
 }
 
+function get_status() {
+  gh issue view $ISSUE_NUMBER \
+    --repo=$REPO \
+    --json=projectItems \
+    --jq='.projectItems[0] | .status.optionId'
+}
+function status_is_to_do() {
+  if [ "$(get_status)" = "f75ad846" ]; then return 0; else return 1; fi
+}
+function status_is_in_progress() {
+  if [ "$(get_status)" = "47fc9ee4" ]; then return 0; else return 1; fi
+}
+function status_is_reviewing() {
+  if [ "$(get_status)" = "cae0cfc1" ]; then return 0; else return 1; fi
+}
+function status_is_staging() {
+  if [ "$(get_status)" = "b595bde1" ]; then return 0; else return 1; fi
+}
+function status_is_production() {
+  if [ "$(get_status)" = "a0264d2c" ]; then return 0; else return 1; fi
+}
+function status_is_closed() {
+  if [ "$(get_status)" = "98236657" ]; then return 0; else return 1; fi
+}
+
 # Labels.
 ready_for_review_label="ready for review"
 
@@ -211,6 +236,11 @@ function handle_ready_for_review_prompt() {
       download_and_write_prompt_comment \
       "$ready_for_review_prompt_id" \
       "already-labelled"
+  elif status_is_reviewing; then
+    substitutions="contributor=@$USER_LOGIN" \
+      download_and_write_prompt_comment \
+      "$ready_for_review_prompt_id" \
+      "already-reviewing"
   else
     color="#fbca04" \
       description="This issue is awaiting review by a CFL team member." \
