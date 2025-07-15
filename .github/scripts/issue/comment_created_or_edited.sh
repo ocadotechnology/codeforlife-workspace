@@ -84,7 +84,7 @@ function get_project_item_node_id() {
           }
         }
       }
-    }' | jq '.data.repository.issue.projectItems.nodes[0].id'
+    }' | jq -r '.data.repository.issue.projectItems.nodes[0].id'
 }
 
 function add_label() {
