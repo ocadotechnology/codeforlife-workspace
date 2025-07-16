@@ -1,23 +1,12 @@
-function eval_bool() {
-  if [ "$1" = "true" ]; then return 0; else return 1; fi
-}
+#!/bin/bash
 
-function trim_spaces() {
-  echo "$@" | sed --regexp-extended 's/^[[:space:]]*|[[:space:]]*$//g'
-}
+set -e
 
-function download_workspace_file() {
-  local branch="${branch:-"main"}"
-  local path="$1"
-  local save_to="${2:-"$path"}"
+source .github/scripts/general.sh
+source .github/scripts/github.sh
+source .github/scripts/workspace.sh
 
-  # Make parent directories.
-  mkdir -p "$(dirname "$save_to")"
-
-  # Download file.
-  wget https://raw.githubusercontent.com/ocadotechnology/codeforlife-workspace/refs/heads/$branch/$path \
-    -O "$save_to"
-}
+echo_intro
 
 function download_and_write_prompt_comment() {
   local substitutions="$substitutions"
@@ -46,124 +35,6 @@ function download_and_write_prompt_comment() {
   done
 
   gh issue comment $ISSUE_NUMBER --repo=$REPO --body-file=$comment_path
-}
-
-function add_assignee() {
-  gh api graphql -f query='
-    mutation {
-      addAssignee: addAssigneesToAssignable(input: {
-        assignableId: "'$ISSUE_NODE_ID'"
-        assigneeIds: ["'$USER_NODE_ID'"]
-      }) {
-        assignable { ... on Issue { id } }
-      }
-    }'
-}
-
-function remove_assignee() {
-  gh api graphql -f query='
-    mutation {
-      removeAssignee: removeAssigneesFromAssignable(input: {
-        assignableId: "'$ISSUE_NODE_ID'"
-        assigneeIds: ["'$USER_NODE_ID'"]
-      }) {
-        assignable { ... on Issue { id } }
-      }
-    }'
-}
-
-function get_project_item_node_id() {
-  gh api graphql -f query='
-    query {
-      repository(owner: "'"$REPO_OWNER"'", name: "'"$REPO_NAME"'") {
-        issue(number: '"$ISSUE_NUMBER"') {
-          projectItems(first: 1) {
-            nodes {
-              id
-            }
-          }
-        }
-      }
-    }' | jq -r '.data.repository.issue.projectItems.nodes[0].id'
-}
-
-function add_label() {
-  local label="$@"
-
-  gh label create "$label" \
-    --repo=$REPO \
-    --force \
-    --color="$color" \
-    --description="$description"
-
-  gh issue edit $ISSUE_NUMBER \
-    --repo=$REPO \
-    --add-label="$label"
-}
-
-function remove_label() {
-  local label="$@"
-
-  gh issue edit $ISSUE_NUMBER \
-    --repo=$REPO \
-    --remove-label="$label"
-}
-
-function has_label() {
-  local label="$@"
-
-  has_label=$(
-    gh issue view $ISSUE_NUMBER \
-      --repo=$REPO \
-      --json=labels \
-      --jq='.labels | map(.name) | contains(["'"$label"'"])'
-  )
-
-  return $(eval_bool "$has_label")
-}
-
-function get_status() {
-  gh issue view $ISSUE_NUMBER \
-    --repo=$REPO \
-    --json=projectItems \
-    --jq='.projectItems[0] | .status.optionId'
-}
-
-function set_status() {
-  local name="$@"
-
-  gh project item-edit "$project_number" \
-    --id="$project_item_node_id" \
-    --project-id="$project_id" \
-    --field-id="$status_field_id" \
-    --single-select-option-id="${status_option_ids["$name"]}"
-}
-
-status_field_id="PVTSSF_lADOAB_fG84AmfxNzgeYqqQ"
-declare -A status_option_ids=(
-  ["To Do"]="f75ad846"
-  ["In Progress"]="47fc9ee4"
-  ["Reviewing"]="cae0cfc1"
-  ["Staging"]="b595bde1"
-  ["Production"]="a0264d2c"
-  ["Closed"]="98236657"
-)
-
-function status_is_one_of() {
-  local no_status="${no_status:-1}"
-  local option_name_csv="$@"
-
-  local actual_option_id="$(get_status)"
-  if [ -z "$actual_option_id" ]; then return $no_status; fi
-
-  IFS=',' read -ra option_names <<<"$option_name_csv"
-
-  for option_name in "${option_names[@]}"; do
-    local option_id="${status_option_ids["$option_name"]}"
-    if [ "$option_id" = "$actual_option_id" ]; then return 0; fi
-  done
-
-  return 1
 }
 
 # Labels.
@@ -241,10 +112,14 @@ function handle_assign_me_prompt() {
       "$assign_me_prompt_id" \
       "max-assignees"
   else
-    add_assignee
+    add_assignee "$ISSUE_NODE_ID" "$USER_NODE_ID"
 
-    if no_status=0 status_is_one_of "To Do"; then
-      set_status "In Progress"
+    if no_status=0 issue_status_is_one_of "$ISSUE_NUMBER" "$REPO" "To Do"; then
+      issue_project_item_id="$(
+        get_issue_project_item_id "$REPO_OWNER" "$REPO_NAME" "$ISSUE_NUMBER"
+      )"
+
+      set_project_status "$issue_project_item_id" "In Progress"
     fi
   fi
 }
@@ -255,7 +130,7 @@ function handle_unassign_me_prompt() {
       "$unassign_me_prompt_id" \
       "not-assigned"
   else
-    remove_assignee
+    remove_assignee "$ISSUE_NODE_ID" "$USER_NODE_ID"
   fi
 }
 function handle_ready_for_review_prompt() {
@@ -269,12 +144,12 @@ function handle_ready_for_review_prompt() {
       download_and_write_prompt_comment \
       "$ready_for_review_prompt_id" \
       "not-assigned"
-  elif has_label "$ready_for_review_label"; then
+  elif issue_has_label "$ISSUE_NUMBER" "$REPO" "$ready_for_review_label"; then
     substitutions="contributor=@$USER_LOGIN" \
       download_and_write_prompt_comment \
       "$ready_for_review_prompt_id" \
       "already-labelled"
-  elif status_is_one_of "Reviewing"; then
+  elif issue_status_is_one_of "$ISSUE_NUMBER" "$REPO" "Reviewing"; then
     substitutions="contributor=@$USER_LOGIN" \
       download_and_write_prompt_comment \
       "$ready_for_review_prompt_id" \
@@ -282,7 +157,7 @@ function handle_ready_for_review_prompt() {
   else
     color="#fbca04" \
       description="This issue is awaiting review by a CFL team member." \
-      add_label "$ready_for_review_label"
+      add_issue_label "$ISSUE_NUMBER" "$REPO" "$ready_for_review_label"
   fi
 }
 function handle_requires_changes_prompt() {
@@ -296,13 +171,13 @@ function handle_requires_changes_prompt() {
       download_and_write_prompt_comment \
       "$requires_changes_prompt_id" \
       "not-assigned"
-  elif ! has_label "$ready_for_review_label"; then
+  elif ! issue_has_label "$ISSUE_NUMBER" "$REPO" "$ready_for_review_label"; then
     substitutions="contributor=@$USER_LOGIN" \
       download_and_write_prompt_comment \
       "$requires_changes_prompt_id" \
       "not-labelled"
   else
-    remove_label "$ready_for_review_label"
+    remove_issue_label "$ISSUE_NUMBER" "$REPO" "$ready_for_review_label"
   fi
 }
 function handle_link_pr_prompt() {
@@ -313,10 +188,6 @@ function handle_unlink_pr_prompt() {
   echo "TODO: implement"
   exit 1
 }
-
-project_id="PVT_kwDOAB_fG84AmfxN"
-project_number="3"
-project_item_node_id="$(get_project_item_node_id)"
 
 # Normalize the comment's body:
 # 1. Remove any mention of "@cfl-bot".
