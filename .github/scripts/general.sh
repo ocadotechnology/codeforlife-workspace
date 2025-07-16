@@ -53,9 +53,9 @@ function eval_bool() {
 
   bool=$(echo "$bool" | tr '[:upper:]' '[:lower:]')
 
-  if [ "$bool" -eq 1 ] || [ "$bool" = "true" ] || [ "$bool" = "t" ]; then
+  if [ "$bool" = "1" ] || [ "$bool" = "true" ] || [ "$bool" = "t" ]; then
     return 0
-  elif [ "$bool" -eq 0 ] || [ "$bool" = "false" ] || [ "$bool" = "f" ]; then
+  elif [ "$bool" = "0" ] || [ "$bool" = "false" ] || [ "$bool" = "f" ]; then
     return 1
   fi
 

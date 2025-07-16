@@ -212,10 +212,10 @@ for prompt_id in "${prompt_ids[@]}"; do
 
   # Check if the comment's body matches the prompt's pattern.
   if [[ "$comment_body_char_set" =~ $prompt_pattern ]]; then
-    echo "Found matching prompt: \"$prompt_id\"."
+    echo_success "Found matching prompt: \"$prompt_id\"."
     "handle_${prompt_id}_prompt"
     exit 0
   fi
 done
 
-echo "No matching prompt was found."
+echo_info "No matching prompt was found."
