@@ -106,7 +106,7 @@ function handle_assign_me_prompt() {
       download_and_write_prompt_comment \
       "$assign_me_prompt_id" \
       "already-assigned"
-  elif eval_bool "$ISSUE_HAS_MAX_ASSIGNEES"; then
+  elif [ "$ISSUE_ASSIGNEES_LENGTH" -ge 5 ]; then
     substitutions="contributor=@$USER_LOGIN" \
       download_and_write_prompt_comment \
       "$assign_me_prompt_id" \
