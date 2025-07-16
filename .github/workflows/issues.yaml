@@ -43,7 +43,7 @@ jobs:
     env:
       GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
       SCRIPT_PATH: .github/scripts/issue/comment_created_or_edited.sh
-      # GitHub context.
+      # String variables.
       REPO: "${{ github.repository }}"
       REPO_OWNER: "${{ github.repository_owner }}"
       REPO_NAME: "${{ github.event.repository.name }}"
@@ -51,9 +51,10 @@ jobs:
       ISSUE_NODE_ID: "${{ github.event.issue.node_id }}"
       USER_NODE_ID: "${{ github.event.comment.user.node_id }}"
       USER_LOGIN: "${{ github.event.comment.user.login }}"
-      # Common Conditions
+      # Boolean variables.
       ISSUE_IS_OPEN: "${{ github.event.issue.state == 'open' }}"
       ISSUE_HAS_COMMENTER_ASSIGNED: "${{ contains(github.event.issue.assignees.*.id, github.event.comment.user.id) }}"
+      ISSUE_HAS_MAX_ASSIGNEES: "${{ github.event.issue.assignees.length >= 5 }}"
     steps:
       - name: 📥 Download General Script
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
