@@ -34,7 +34,7 @@ function download_and_write_prompt_comment() {
     done
   done
 
-  gh issue comment $ISSUE_NUMBER --repo=$REPO --body-file=$comment_path
+  comment_on_issue "$ISSUE_NUMBER" "$ISSUE_REPO_NAME" "$comment_path"
 }
 
 # Labels.
@@ -56,8 +56,8 @@ declare -A prompt_char_sets=(
   ["$unassign_me_prompt_id"]="[:alpha:][:blank:]"
   ["$ready_for_review_prompt_id"]="[:alpha:][:blank:]"
   ["$requires_changes_prompt_id"]="[:alpha:][:blank:]"
-  ["$link_pr_prompt_id"]="[:alnum:][:blank:]"
-  ["$unlink_pr_prompt_id"]="[:alnum:][:blank:]"
+  ["$link_pr_prompt_id"]="[:alnum:][:blank:][=-=]"
+  ["$unlink_pr_prompt_id"]="[:alnum:][:blank:][=-=]"
 )
 
 # Define the POSIX regex pattern of each prompt.
@@ -67,8 +67,8 @@ declare -A prompt_patterns=(
   ["$unassign_me_prompt_id"]="^unassign\ me$"
   ["$ready_for_review_prompt_id"]="^ready\ for\ review$"
   ["$requires_changes_prompt_id"]="^requires\ changes$"
-  ["$link_pr_prompt_id"]="^link\ pr\ ([0-9]+)$"
-  ["$unlink_pr_prompt_id"]="^unlink\ pr\ ([0-9]+)$"
+  ["$link_pr_prompt_id"]="^link\ pr\ ([0-9]+)\ ?([a-z-]*)$"
+  ["$unlink_pr_prompt_id"]="^unlink\ pr\ ([0-9]+)\ ?([a-z-]*)$"
 )
 
 # Auto-collect all prompt ids into an array.
@@ -114,9 +114,10 @@ function handle_assign_me_prompt() {
   else
     add_assignee "$ISSUE_NODE_ID" "$USER_NODE_ID"
 
-    if no_status=0 issue_status_is_one_of "$ISSUE_NUMBER" "$REPO" "To Do"; then
+    if no_status=0 issue_status_is_one_of "$ISSUE_NUMBER" "$ISSUE_REPO_NAME" \
+      "To Do"; then
       issue_project_item_id="$(
-        get_issue_project_item_id "$REPO_OWNER" "$REPO_NAME" "$ISSUE_NUMBER"
+        get_issue_project_item_id "$ISSUE_REPO_NAME" "$ISSUE_NUMBER"
       )"
 
       set_project_status "$issue_project_item_id" "In Progress"
@@ -144,12 +145,14 @@ function handle_ready_for_review_prompt() {
       download_and_write_prompt_comment \
       "$ready_for_review_prompt_id" \
       "not-assigned"
-  elif issue_has_label "$ISSUE_NUMBER" "$REPO" "$ready_for_review_label"; then
+  elif issue_has_label "$ISSUE_NUMBER" "$ISSUE_REPO_NAME" \
+    "$ready_for_review_label"; then
     substitutions="contributor=@$USER_LOGIN" \
       download_and_write_prompt_comment \
       "$ready_for_review_prompt_id" \
       "already-labelled"
-  elif issue_status_is_one_of "$ISSUE_NUMBER" "$REPO" "Reviewing"; then
+  elif issue_status_is_one_of "$ISSUE_NUMBER" "$ISSUE_REPO_NAME" \
+    "Reviewing"; then
     substitutions="contributor=@$USER_LOGIN" \
       download_and_write_prompt_comment \
       "$ready_for_review_prompt_id" \
@@ -157,7 +160,8 @@ function handle_ready_for_review_prompt() {
   else
     color="#fbca04" \
       description="This issue is awaiting review by a CFL team member." \
-      add_issue_label "$ISSUE_NUMBER" "$REPO" "$ready_for_review_label"
+      add_issue_label "$ISSUE_NUMBER" "$ISSUE_REPO_NAME" \
+      "$ready_for_review_label"
   fi
 }
 function handle_requires_changes_prompt() {
@@ -171,22 +175,69 @@ function handle_requires_changes_prompt() {
       download_and_write_prompt_comment \
       "$requires_changes_prompt_id" \
       "not-assigned"
-  elif ! issue_has_label "$ISSUE_NUMBER" "$REPO" "$ready_for_review_label"; then
+  elif ! issue_has_label "$ISSUE_NUMBER" "$ISSUE_REPO_NAME" \
+    "$ready_for_review_label"; then
     substitutions="contributor=@$USER_LOGIN" \
       download_and_write_prompt_comment \
       "$requires_changes_prompt_id" \
       "not-labelled"
   else
-    remove_issue_label "$ISSUE_NUMBER" "$REPO" "$ready_for_review_label"
+    remove_issue_label "$ISSUE_NUMBER" "$ISSUE_REPO_NAME" \
+      "$ready_for_review_label"
   fi
 }
 function handle_link_pr_prompt() {
-  echo "TODO: implement"
-  exit 1
+  local pr_number="${BASH_REMATCH[1]}"
+  local pr_repo_name="${BASH_REMATCH[2]}"
+
+  if [ -z "$pr_repo_name" ]; then pr_repo_name="$ISSUE_REPO_NAME"; fi
+
+  if ! eval_bool "$ISSUE_IS_OPEN"; then
+    substitutions="contributor=@$USER_LOGIN" \
+      download_and_write_prompt_comment \
+      "$link_pr_prompt_id" \
+      "closed-state"
+  elif ! eval_bool "$ISSUE_HAS_COMMENTER_ASSIGNED"; then
+    substitutions="contributor=@$USER_LOGIN" \
+      download_and_write_prompt_comment \
+      "$link_pr_prompt_id" \
+      "not-assigned"
+  elif issue_has_pr_link \
+    "$ISSUE_NUMBER" "$ISSUE_REPO_NAME" \
+    "$pr_number" "$pr_repo_name"; then
+    substitutions="contributor=@$USER_LOGIN" \
+      download_and_write_prompt_comment \
+      "$link_pr_prompt_id" \
+      "already-linked"
+  else
+    link_pr_to_issue \
+      "$ISSUE_NUMBER" "$ISSUE_REPO_NAME" \
+      "$pr_number" "$pr_repo_name"
+  fi
 }
 function handle_unlink_pr_prompt() {
-  echo "TODO: implement"
-  exit 1
+  local pr_number="${BASH_REMATCH[1]}"
+  local pr_repo_name="${BASH_REMATCH[2]}"
+
+  if [ -z "$pr_repo_name" ]; then pr_repo_name="$ISSUE_REPO_NAME"; fi
+
+  if ! eval_bool "$ISSUE_HAS_COMMENTER_ASSIGNED"; then
+    substitutions="contributor=@$USER_LOGIN" \
+      download_and_write_prompt_comment \
+      "$unlink_pr_prompt_id" \
+      "not-assigned"
+  elif ! issue_has_pr_link \
+    "$ISSUE_NUMBER" "$ISSUE_REPO_NAME" \
+    "$pr_number" "$pr_repo_name"; then
+    substitutions="contributor=@$USER_LOGIN" \
+      download_and_write_prompt_comment \
+      "$unlink_pr_prompt_id" \
+      "not-linked"
+  else
+    unlink_pr_from_issue \
+      "$ISSUE_NUMBER" "$ISSUE_REPO_NAME" \
+      "$pr_number" "$pr_repo_name"
+  fi
 }
 
 # Normalize the comment's body:

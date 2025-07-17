@@ -44,9 +44,7 @@ jobs:
       GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
       SCRIPT_PATH: .github/scripts/issue/comment_created_or_edited.sh
       # String variables.
-      REPO: "${{ github.repository }}"
-      REPO_OWNER: "${{ github.repository_owner }}"
-      REPO_NAME: "${{ github.event.repository.name }}"
+      ISSUE_REPO_NAME: "${{ github.event.repository.name }}"
       ISSUE_NUMBER: "${{ github.event.issue.number }}"
       ISSUE_NODE_ID: "${{ github.event.issue.node_id }}"
       ISSUE_ASSIGNEES_LENGTH: "${{ github.event.issue.assignees.length }}"
