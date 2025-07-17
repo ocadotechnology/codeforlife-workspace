@@ -13,7 +13,7 @@ If you would like to work on this issue, you can instruct our bot by commenting 
 |*link pr \<number> \<repo?>*|Links a pull request to this issue.|**\<number>**<br/>The number of the PR to link.<br/>**\<repo?>**<br/>The repo the PR is in.* Defaults to this issue's repo.|You want to associate your code changes with this issue.|
 |*unlink pr \<number> \<repo?>*|Unlinks a pull request from this issue.|**\<number>**<br/>The number of the PR to link.<br/>**\<repo?>**<br/>The repo the PR is in.* Defaults to this issue's repo.|You want to disassociate your code changes with this issue.|
 
-*Only [CFL repos](https://github.com/orgs/ocadotechnology/repositories?q=codeforlife-) may be specified, without the "codeforlife-" prefix. E.g. to specify the repo "codeforlife-portal" you would comment `link pr 123 portal`.
+*Only [CFL repos](https://github.com/orgs/ocadotechnology/repositories?q=codeforlife-) may be specified. You can optionally omit the "codeforlife-" prefix.
 
 ---
 
