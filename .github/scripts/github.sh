@@ -54,6 +54,7 @@ function make_repo() {
 
 function make_cfl_body_section() {
   local cfl_body_section="$@"
+  cfl_body_section="$(trim_spaces "$cfl_body_section")"
 
   echo "${cfl_body_section_start}${cfl_body_section}${cfl_body_section_end}"
 }
