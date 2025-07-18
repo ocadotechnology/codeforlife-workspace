@@ -56,13 +56,13 @@ function make_cfl_body_section() {
   local cfl_body_section="$@"
   cfl_body_section="$(trim_spaces "$cfl_body_section")"
 
-  echo "${cfl_body_section_start}${cfl_body_section}${cfl_body_section_end}"
+  echo "$cfl_body_section_start
+$cfl_body_section
+$cfl_body_section_end"
 }
 
 function append_cfl_body_section() {
-  local cfl_body_section="$(make_cfl_body_section "
-$cfl_body_section
-")"
+  local cfl_body_section="$(make_cfl_body_section "$cfl_body_section")"
 
   if [ -z "$body" ]; then
     echo "$cfl_body_section"
@@ -277,8 +277,7 @@ function link_pr_to_issue() {
   function _link_pr_to_issue__match() {
     local pr_body="$before_cfl_body_section"
     pr_body+="$(make_cfl_body_section "$cfl_body_section
-$issue_link
-")"
+$issue_link")"
     pr_body+="$after_cfl_body_section"
 
     gh pr edit "$pr_number" --repo="$pr_repo" --body="$pr_body"
