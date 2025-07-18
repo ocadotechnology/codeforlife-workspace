@@ -206,7 +206,7 @@ function handle_link_pr_prompt() {
       download_and_write_prompt_comment \
       "$link_pr_prompt_id" \
       "already-linked"
-  elif ! is_pr_author "$ISSUE_NUMBER" "$ISSUE_REPO_NAME" "$USER_LOGIN"; then
+  elif ! is_pr_author "$pr_number" "$pr_repo_name" "$USER_LOGIN"; then
     substitutions="contributor=@$USER_LOGIN" \
       download_and_write_prompt_comment \
       "$link_pr_prompt_id" \
@@ -243,7 +243,7 @@ function handle_unlink_pr_prompt() {
       download_and_write_prompt_comment \
       "$unlink_pr_prompt_id" \
       "not-linked"
-  elif ! is_pr_author "$ISSUE_NUMBER" "$ISSUE_REPO_NAME" "$USER_LOGIN"; then
+  elif ! is_pr_author "$pr_number" "$pr_repo_name" "$USER_LOGIN"; then
     substitutions="contributor=@$USER_LOGIN" \
       download_and_write_prompt_comment \
       "$link_pr_prompt_id" \
