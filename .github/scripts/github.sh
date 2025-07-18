@@ -352,5 +352,5 @@ function is_pr_author() {
       --jq='.author.login == "'"$author_login"'"'
   )"
 
-  return $(eval_bool "$has_label")
+  return $(eval_bool "$is_pr_author")
 }
