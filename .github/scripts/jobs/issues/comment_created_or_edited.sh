@@ -210,6 +210,14 @@ function handle_link_pr_prompt() {
     link_pr_to_issue \
       "$ISSUE_NUMBER" "$ISSUE_REPO_NAME" \
       "$pr_number" "$pr_repo_name"
+
+    substitutions="
+    contributor=@$USER_LOGIN
+    repo=$(make_repo "$pr_repo_name")
+    pr_number=$pr_number" \
+      download_and_write_prompt_comment \
+      "$link_pr_prompt_id" \
+      "success"
   fi
 }
 function handle_unlink_pr_prompt() {
@@ -234,6 +242,14 @@ function handle_unlink_pr_prompt() {
     unlink_pr_from_issue \
       "$ISSUE_NUMBER" "$ISSUE_REPO_NAME" \
       "$pr_number" "$pr_repo_name"
+
+    substitutions="
+    contributor=@$USER_LOGIN
+    repo=$(make_repo "$pr_repo_name")
+    pr_number=$pr_number" \
+      download_and_write_prompt_comment \
+      "$unlink_pr_prompt_id" \
+      "success"
   fi
 }
 
