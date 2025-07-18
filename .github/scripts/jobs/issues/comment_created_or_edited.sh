@@ -246,7 +246,7 @@ function handle_unlink_pr_prompt() {
   elif ! is_pr_author "$pr_number" "$pr_repo_name" "$USER_LOGIN"; then
     substitutions="contributor=@$USER_LOGIN" \
       download_and_write_prompt_comment \
-      "$link_pr_prompt_id" \
+      "$unlink_pr_prompt_id" \
       "not-author"
   else
     unlink_pr_from_issue \
