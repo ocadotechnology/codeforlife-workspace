@@ -1,0 +1,51 @@
+name: "Code for Life - Workspace - Download And Run Job Script"
+description: "Download a job script from the workspace and run it."
+inputs:
+  branch:
+    description: "The branch on the workspace repo."
+    required: true
+    default: "main"
+  args:
+    description: "The arguments to pass to the script."
+    required: false
+    default: ""
+runs:
+  using: composite
+  steps:
+    - name: 📥 Download General Script
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
+      with:
+        branch: ${{ inputs.branch }}
+        path: .github/scripts/general.sh
+        type: bash
+
+    - name: 📥 Download GitHub Script
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
+      with:
+        branch: ${{ inputs.branch }}
+        path: .github/scripts/github.sh
+        type: bash
+
+    - name: Make Script Path
+      id: make-script-path
+      shell: bash
+      run: |
+        workflow="$(
+          echo "${{ github.workflow_ref }}" |
+            sed -E 's/^.+\/.github\/workflows\/(.+)\.(yml|yaml)@.+$/\1/'
+        )"
+
+        script_path=".github/scripts/jobs/$workflow/${{ github.job }}.sh"
+
+        echo "value=$script_path" >> $GITHUB_OUTPUT
+
+    - name: 📥 Download Job Script
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
+      with:
+        branch: ${{ inputs.branch }}
+        path: ${{ steps.make-script-path.outputs.value }} 
+        type: bash
+
+    - name: 🏃 Run Script
+      shell: bash
+      run: ${{ steps.make-script-path.outputs.value }} "${{ inputs.args }}"
