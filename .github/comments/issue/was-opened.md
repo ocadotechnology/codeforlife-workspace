@@ -1,8 +1,10 @@
+---
+
 ### Want to work on this issue?
 
 [Code for Life](https://www.codeforlife.education/) welcomes and encourages community contributions!
 
-If you would like to work on this issue, you can instruct our bot by commenting one of the following prompts:
+If you would like to work on this issue, you can instruct @cfl-bot by commenting one of the following prompts:
 
 |Prompt|Description|Arguments|Use When|
 |---|---|---|---|
