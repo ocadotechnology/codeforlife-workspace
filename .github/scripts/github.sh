@@ -18,9 +18,22 @@ declare -A project_status_option_ids=(
   ["Closed"]="98236657"
 )
 
-cfl_body_section_name='Code For Life'
+cfl_body_section_name='cfl-bot'
 cfl_body_section_start='<!-- '$cfl_body_section_name':start -->'
 cfl_body_section_end='<!-- '$cfl_body_section_name':end -->'
+
+function download_workspace_file() {
+  local branch="${branch:-"main"}"
+  local path="$1"
+  local save_to="${2:-"$path"}"
+
+  # Make parent directories.
+  mkdir -p "$(dirname "$save_to")"
+
+  # Download file.
+  wget https://raw.githubusercontent.com/$org_name/codeforlife-workspace/refs/heads/$branch/$path \
+    -O "$save_to"
+}
 
 function make_repo() {
   local repo_name="$1"
@@ -308,4 +321,14 @@ function comment_on_issue() {
   gh issue comment "$issue_number" \
     --repo="$(make_repo "$issue_repo_name")" \
     --body-file="$body_file"
+}
+
+function edit_issue() {
+  local number="$1"
+  local repo_name="$2"
+  local args="${@:3}"
+
+  gh issue edit "$number" \
+    --repo="$(make_repo "$repo_name")" \
+    "$args"
 }

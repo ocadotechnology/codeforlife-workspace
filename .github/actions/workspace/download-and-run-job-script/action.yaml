@@ -35,7 +35,9 @@ runs:
             sed -E 's/^.+\/.github\/workflows\/(.+)\.(yml|yaml)@.+$/\1/'
         )"
 
-        script_path=".github/scripts/jobs/$workflow/${{ github.job }}.sh"
+        job="$(echo "${{ github.job }}" | sed 's/-/_/g')"
+
+        script_path=".github/scripts/jobs/${workflow}/${job}.sh"
 
         echo "value=$script_path" >> $GITHUB_OUTPUT
 

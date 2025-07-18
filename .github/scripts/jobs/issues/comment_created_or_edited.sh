@@ -4,7 +4,6 @@ set -e
 
 source .github/scripts/general.sh
 source .github/scripts/github.sh
-source .github/scripts/workspace.sh
 
 echo_intro
 
