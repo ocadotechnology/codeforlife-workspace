@@ -35,12 +35,19 @@ function download_workspace_file() {
     -O "$save_to"
 }
 
-function make_repo() {
+function normalize_repo_name() {
   local repo_name="$1"
 
   if [[ ! "$repo_name" =~ ^$repo_name_prefix ]]; then
     repo_name="${repo_name_prefix}${repo_name}"
   fi
+
+  echo "$repo_name"
+}
+
+function make_repo() {
+  local repo_name="$1"
+  repo_name="$(normalize_repo_name "$repo_name")"
 
   echo "$org_name/$repo_name"
 }

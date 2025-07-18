@@ -213,7 +213,7 @@ function handle_link_pr_prompt() {
 
     substitutions="
     contributor=@$USER_LOGIN
-    repo=$(make_repo "$pr_repo_name")
+    repo=$org_name\/$(normalize_repo_name "$pr_repo_name")
     pr_number=$pr_number" \
       download_and_write_prompt_comment \
       "$link_pr_prompt_id" \
@@ -245,7 +245,7 @@ function handle_unlink_pr_prompt() {
 
     substitutions="
     contributor=@$USER_LOGIN
-    repo=$(make_repo "$pr_repo_name")
+    repo=$org_name\/$(normalize_repo_name "$pr_repo_name")
     pr_number=$pr_number" \
       download_and_write_prompt_comment \
       "$unlink_pr_prompt_id" \
