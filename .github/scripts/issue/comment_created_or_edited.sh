@@ -63,12 +63,12 @@ declare -A prompt_char_sets=(
 # Define the POSIX regex pattern of each prompt.
 # Used to check if the comment's body matches any of the prompts' pattern.
 declare -A prompt_patterns=(
-  ["$assign_me_prompt_id"]="^assign\ me$"
-  ["$unassign_me_prompt_id"]="^unassign\ me$"
-  ["$ready_for_review_prompt_id"]="^ready\ for\ review$"
-  ["$requires_changes_prompt_id"]="^requires\ changes$"
-  ["$link_pr_prompt_id"]="^link\ pr\ ([0-9]+)\ ?([a-z-]*)$"
-  ["$unlink_pr_prompt_id"]="^unlink\ pr\ ([0-9]+)\ ?([a-z-]*)$"
+  ["$assign_me_prompt_id"]='^assign me$'
+  ["$unassign_me_prompt_id"]='^unassign me$'
+  ["$ready_for_review_prompt_id"]='^ready for review$'
+  ["$requires_changes_prompt_id"]='^requires changes$'
+  ["$link_pr_prompt_id"]='^link pr ([0-9]+) ?([a-z-]*)$'
+  ["$unlink_pr_prompt_id"]='^unlink pr ([0-9]+) ?([a-z-]*)$'
 )
 
 # Auto-collect all prompt ids into an array.
