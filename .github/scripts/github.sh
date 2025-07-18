@@ -339,3 +339,18 @@ function edit_issue() {
     --repo="$(make_repo "$repo_name")" \
     "$args"
 }
+
+function is_pr_author() {
+  local number="$1"
+  local repo_name="$2"
+  local author_login="$3"
+
+  local is_pr_author="$(
+    gh pr view "$number" \
+      --repo="$(make_repo "$repo_name")" \
+      --json=author \
+      --jq='.author.login == "'"$author_login"'"'
+  )"
+
+  return $(eval_bool "$has_label")
+}
