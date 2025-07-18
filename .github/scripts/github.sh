@@ -354,3 +354,12 @@ function is_pr_author() {
 
   return $(eval_bool "$is_pr_author")
 }
+
+function pr_exists() {
+  local number="$1"
+  local repo_name="$2"
+
+  gh pr view "$number" --repo="$(make_repo "$repo_name")" >/dev/null 2>&1
+
+  if [ $? -eq 0 ]; then return 0; else return 1; fi
+}
