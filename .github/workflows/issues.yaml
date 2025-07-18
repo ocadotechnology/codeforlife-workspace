@@ -25,11 +25,13 @@ jobs:
       !contains(github.event.issue.labels.*.name, 'bot ignore')
     env:
       GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
+      ISSUE_REPO_NAME: "${{ github.event.repository.name }}"
+      ISSUE_NUMBER: "${{ github.event.issue.number }}"
     steps:
-      - name: ✍️ Download and Write Was-Opened Comment
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/bot/comment-on-issue@main
+      - name: 🏃 Download Run Job Script
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-run-job-script@main
         with:
-          download-issue-comment-path: was-opened.md
+          args: "${{ github.event.issue.body }}"
 
   comment-created-or-edited:
     runs-on: ubuntu-22.04
@@ -42,7 +44,6 @@ jobs:
       !contains(github.event.issue.labels.*.name, 'bot ignore')
     env:
       GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
-      SCRIPT_PATH: .github/scripts/issue/comment_created_or_edited.sh
       # String variables.
       ISSUE_REPO_NAME: "${{ github.event.repository.name }}"
       ISSUE_NUMBER: "${{ github.event.issue.number }}"
@@ -54,32 +55,10 @@ jobs:
       ISSUE_IS_OPEN: "${{ github.event.issue.state == 'open' }}"
       ISSUE_HAS_COMMENTER_ASSIGNED: "${{ contains(github.event.issue.assignees.*.id, github.event.comment.user.id) }}"
     steps:
-      - name: 📥 Download General Script
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
+      - name: 🏃 Download Run Job Script
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-run-job-script@main
         with:
-          path: .github/scripts/general.sh
-          type: bash
-
-      - name: 📥 Download GitHub Script
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
-        with:
-          path: .github/scripts/github.sh
-          type: bash
-
-      - name: 📥 Download Workspace Script
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
-        with:
-          path: .github/scripts/workspace.sh
-          type: bash
-
-      - name: 📥 Download Comment-Created-Or-Edited Script
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
-        with:
-          path: ${{ env.SCRIPT_PATH }}
-          type: bash
-
-      - name: 🏃 Run Comment-Created-Or-Edited Script
-        run: ${{ env.SCRIPT_PATH }} "${{ github.event.comment.body }}"
+          args: "${{ github.event.comment.body }}"
 
   inactive:
     runs-on: ubuntu-22.04
@@ -114,7 +93,7 @@ jobs:
       - name: 📥 Download Script
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
         with:
-          path: .github/scripts/issue/unassign_inactive_assignees.sh
+          path: .github/scripts/jobs/issues/unassign_inactive_assignees.sh
           save-to: ${{ env.SCRIPT }}
           type: bash
 
