@@ -5,8 +5,6 @@ set -e
 source .github/scripts/general.sh
 source .github/scripts/github.sh
 
-echo_intro
-
 # Download and read file containing body section from the workspace.
 issue_opened_body_section_file=".github/comments/issue/was-opened.md"
 download_workspace_file "$issue_opened_body_section_file"

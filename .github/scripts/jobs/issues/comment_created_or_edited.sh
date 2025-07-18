@@ -5,8 +5,6 @@ set -e
 source .github/scripts/general.sh
 source .github/scripts/github.sh
 
-echo_intro
-
 function download_and_write_prompt_comment() {
   local substitutions="$substitutions"
   local prompt_id="$1"

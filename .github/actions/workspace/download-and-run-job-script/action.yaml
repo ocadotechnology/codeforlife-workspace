@@ -12,22 +12,36 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: 📥 Download General Script
-      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
+    - shell: bash
+      run: |
+        M='\e[35m' # magenta
+        C='\e[36m' # cyan
+        Y='\e[33m' # yellow
+        RESET='\e[0m'
+
+        echo -en "
+          ${M}_____          ${Y}_        ______           _      ${M}_  ${C}__
+         ${M}/ ____|        ${Y}| |      |  ____|         | |    ${M}(_)${C}/ _|
+        ${M}| |     ${C}___   ${Y}__| | ${M}___  ${Y}| |__ ${M}___  ${C}_ __  ${Y}| |     ${M}_| ${C}|_ ${Y}___
+        ${M}| |    ${C}/ _ \\ ${Y}/ _\` |${M}/ _ \\ ${Y}|  __${M}/ _ \\"
+        echo -e "${C}| '__| ${Y}| |    ${M}| |  ${C}_${Y}/ _ \\
+        ${M}| |___${C}| (_) | ${Y}(_| |  ${M}__/ ${Y}| | ${M}| (_) ${C}| |    ${Y}| |____${M}| | ${C}|${Y}|  __/
+         ${M}\\_____${C}\\___/ ${Y}\\__,_|${M}\\___| ${Y}|_|  ${M}\\___/${C}|_|    ${Y}|______${M}|_|${C}_| ${Y}\\___|
+        ${RESET}"
+
+    - uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
         branch: ${{ inputs.branch }}
         path: .github/scripts/general.sh
         type: bash
 
-    - name: 📥 Download GitHub Script
-      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
+    - uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
         branch: ${{ inputs.branch }}
         path: .github/scripts/github.sh
         type: bash
 
-    - name: Make Script Path
-      id: make-script-path
+    - id: make-script-path
       shell: bash
       run: |
         workflow="$(
@@ -41,13 +55,11 @@ runs:
 
         echo "value=$script_path" >> $GITHUB_OUTPUT
 
-    - name: 📥 Download Job Script
-      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
+    - uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
         branch: ${{ inputs.branch }}
         path: ${{ steps.make-script-path.outputs.value }} 
         type: bash
 
-    - name: 🏃 Run Script
-      shell: bash
+    - shell: bash
       run: ${{ steps.make-script-path.outputs.value }} "${{ inputs.args }}"
