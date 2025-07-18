@@ -345,8 +345,6 @@ function is_pr_author() {
   local repo_name="$2"
   local author_login="$3"
 
-  echo "number: \"$number\""
-
   local is_pr_author="$(
     gh pr view "$number" \
       --repo="$(make_repo "$repo_name")" \
