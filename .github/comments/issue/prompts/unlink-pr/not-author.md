@@ -1,1 +1,1 @@
-{{contributor}}, you cannot unlink that pull request to this issue as you aren't its author.
+{{contributor}}, you cannot unlink that pull request from this issue as you aren't its author.
