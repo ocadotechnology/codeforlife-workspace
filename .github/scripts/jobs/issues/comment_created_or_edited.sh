@@ -5,34 +5,9 @@ set -e
 source .github/scripts/general.sh
 source .github/scripts/github.sh
 
-function download_and_write_prompt_comment() {
-  local substitutions="$substitutions"
-  local prompt_id="$1"
-  local comment_md="$2"
-
-  prompt_id="$(echo "$prompt_id" | sed 's/_/-/g')"
-
-  local comment_path=".github/comments/issue/prompts/$prompt_id/$comment_md.md"
-
-  download_workspace_file "$comment_path"
-
-  # Write substitution to file.
-  echo "$substitutions" | while IFS= read -r line; do
-    IFS=',' read -ra pairs <<<"$line"
-
-    for pair in "${pairs[@]}"; do
-      pair=$(trim_spaces "$pair")
-      if [ -z "$pair" ]; then continue; fi
-
-      local key="${pair%=*}"
-      local value="${pair#*=}"
-
-      sed --in-place 's/{{ *'$key' *}}/'$value'/g' $comment_path
-    done
-  done
-
-  comment_on_issue "$ISSUE_NUMBER" "$ISSUE_REPO_NAME" "$comment_path"
-}
+# ------------------------------------------------------------------------------
+# Prompt registry.
+# ------------------------------------------------------------------------------
 
 # Labels.
 ready_for_review_label="ready for review"
@@ -90,24 +65,21 @@ while read -r var_name; do
   prompt_ids+=("$prompt_id")
 done < <(compgen -v)
 
+# ------------------------------------------------------------------------------
 # Prompt handlers.
 # Must follow the naming convention "handle_{prompt_id}_prompt".
+# ------------------------------------------------------------------------------
+
 function handle_assign_me_prompt() {
   if ! eval_bool "$ISSUE_IS_OPEN"; then
-    substitutions="contributor=@$USER_LOGIN" \
-      download_and_write_prompt_comment \
-      "$assign_me_prompt_id" \
-      "closed-state"
+    comment_on_issue "closed-state" \
+      "contributor=@$USER_LOGIN"
   elif eval_bool "$ISSUE_HAS_COMMENTER_ASSIGNED"; then
-    substitutions="contributor=@$USER_LOGIN" \
-      download_and_write_prompt_comment \
-      "$assign_me_prompt_id" \
-      "already-assigned"
+    comment_on_issue "already-assigned" \
+      "contributor=@$USER_LOGIN"
   elif [ "$ISSUE_ASSIGNEES_LENGTH" -ge 5 ]; then
-    substitutions="contributor=@$USER_LOGIN" \
-      download_and_write_prompt_comment \
-      "$assign_me_prompt_id" \
-      "max-assignees"
+    comment_on_issue "max-assignees" \
+      "contributor=@$USER_LOGIN"
   else
     add_assignee "$ISSUE_NODE_ID" "$USER_NODE_ID"
 
@@ -121,39 +93,31 @@ function handle_assign_me_prompt() {
     fi
   fi
 }
+
 function handle_unassign_me_prompt() {
   if ! eval_bool "$ISSUE_HAS_COMMENTER_ASSIGNED"; then
-    substitutions="contributor=@$USER_LOGIN" \
-      download_and_write_prompt_comment \
-      "$unassign_me_prompt_id" \
-      "not-assigned"
+    comment_on_issue "not-assigned" \
+      "contributor=@$USER_LOGIN"
   else
     remove_assignee "$ISSUE_NODE_ID" "$USER_NODE_ID"
   fi
 }
+
 function handle_ready_for_review_prompt() {
   if ! eval_bool "$ISSUE_IS_OPEN"; then
-    substitutions="contributor=@$USER_LOGIN" \
-      download_and_write_prompt_comment \
-      "$ready_for_review_prompt_id" \
-      "closed-state"
+    comment_on_issue "closed-state" \
+      "contributor=@$USER_LOGIN"
   elif ! eval_bool "$ISSUE_HAS_COMMENTER_ASSIGNED"; then
-    substitutions="contributor=@$USER_LOGIN" \
-      download_and_write_prompt_comment \
-      "$ready_for_review_prompt_id" \
-      "not-assigned"
+    comment_on_issue "not-assigned" \
+      "contributor=@$USER_LOGIN"
   elif issue_has_label "$ISSUE_NUMBER" "$ISSUE_REPO_NAME" \
     "$ready_for_review_label"; then
-    substitutions="contributor=@$USER_LOGIN" \
-      download_and_write_prompt_comment \
-      "$ready_for_review_prompt_id" \
-      "already-labelled"
+    comment_on_issue "already-labelled" \
+      "contributor=@$USER_LOGIN"
   elif issue_status_is_one_of "$ISSUE_NUMBER" "$ISSUE_REPO_NAME" \
     "Reviewing"; then
-    substitutions="contributor=@$USER_LOGIN" \
-      download_and_write_prompt_comment \
-      "$ready_for_review_prompt_id" \
-      "already-reviewing"
+    comment_on_issue "already-reviewing" \
+      "contributor=@$USER_LOGIN"
   else
     color="#fbca04" \
       description="This issue is awaiting review by a CFL team member." \
@@ -161,28 +125,24 @@ function handle_ready_for_review_prompt() {
       "$ready_for_review_label"
   fi
 }
+
 function handle_requires_changes_prompt() {
   if ! eval_bool "$ISSUE_IS_OPEN"; then
-    substitutions="contributor=@$USER_LOGIN" \
-      download_and_write_prompt_comment \
-      "$requires_changes_prompt_id" \
-      "closed-state"
+    comment_on_issue "closed-state" \
+      "contributor=@$USER_LOGIN"
   elif ! eval_bool "$ISSUE_HAS_COMMENTER_ASSIGNED"; then
-    substitutions="contributor=@$USER_LOGIN" \
-      download_and_write_prompt_comment \
-      "$requires_changes_prompt_id" \
-      "not-assigned"
+    comment_on_issue "not-assigned" \
+      "contributor=@$USER_LOGIN"
   elif ! issue_has_label "$ISSUE_NUMBER" "$ISSUE_REPO_NAME" \
     "$ready_for_review_label"; then
-    substitutions="contributor=@$USER_LOGIN" \
-      download_and_write_prompt_comment \
-      "$requires_changes_prompt_id" \
-      "not-labelled"
+    comment_on_issue "not-labelled" \
+      "contributor=@$USER_LOGIN"
   else
     remove_issue_label "$ISSUE_NUMBER" "$ISSUE_REPO_NAME" \
       "$ready_for_review_label"
   fi
 }
+
 function handle_link_pr_prompt() {
   local pr_number="${BASH_REMATCH[1]}"
   local pr_repo_name="${BASH_REMATCH[2]}"
@@ -190,46 +150,34 @@ function handle_link_pr_prompt() {
   if [ -z "$pr_repo_name" ]; then pr_repo_name="$ISSUE_REPO_NAME"; fi
 
   if ! eval_bool "$ISSUE_IS_OPEN"; then
-    substitutions="contributor=@$USER_LOGIN" \
-      download_and_write_prompt_comment \
-      "$link_pr_prompt_id" \
-      "closed-state"
+    comment_on_issue "closed-state" \
+      "contributor=@$USER_LOGIN"
   elif ! eval_bool "$ISSUE_HAS_COMMENTER_ASSIGNED"; then
-    substitutions="contributor=@$USER_LOGIN" \
-      download_and_write_prompt_comment \
-      "$link_pr_prompt_id" \
-      "not-assigned"
+    comment_on_issue "not-assigned" \
+      "contributor=@$USER_LOGIN"
   elif issue_has_pr_link \
     "$ISSUE_NUMBER" "$ISSUE_REPO_NAME" \
     "$pr_number" "$pr_repo_name"; then
-    substitutions="contributor=@$USER_LOGIN" \
-      download_and_write_prompt_comment \
-      "$link_pr_prompt_id" \
-      "already-linked"
+    comment_on_issue "already-linked" \
+      "contributor=@$USER_LOGIN"
   elif ! pr_exists "$pr_number" "$pr_repo_name"; then
-    substitutions="contributor=@$USER_LOGIN" \
-      download_and_write_prompt_comment \
-      "$link_pr_prompt_id" \
-      "not-exists"
+    comment_on_issue "not-exists" \
+      "contributor=@$USER_LOGIN"
   elif ! is_pr_author "$pr_number" "$pr_repo_name" "$USER_LOGIN"; then
-    substitutions="contributor=@$USER_LOGIN" \
-      download_and_write_prompt_comment \
-      "$link_pr_prompt_id" \
-      "not-author"
+    comment_on_issue "not-author" \
+      "contributor=@$USER_LOGIN"
   else
     link_pr_to_issue \
       "$ISSUE_NUMBER" "$ISSUE_REPO_NAME" \
       "$pr_number" "$pr_repo_name"
 
-    substitutions="
-    contributor=@$USER_LOGIN
-    repo=$org_name\/$(normalize_repo_name "$pr_repo_name")
-    pr_number=$pr_number" \
-      download_and_write_prompt_comment \
-      "$link_pr_prompt_id" \
-      "success"
+    comment_on_issue "success" \
+      "contributor=@$USER_LOGIN" \
+      "repo=$org_name\/$(normalize_repo_name "$pr_repo_name")" \
+      "pr_number=$pr_number"
   fi
 }
+
 function handle_unlink_pr_prompt() {
   local pr_number="${BASH_REMATCH[1]}"
   local pr_repo_name="${BASH_REMATCH[2]}"
@@ -237,35 +185,47 @@ function handle_unlink_pr_prompt() {
   if [ -z "$pr_repo_name" ]; then pr_repo_name="$ISSUE_REPO_NAME"; fi
 
   if ! eval_bool "$ISSUE_HAS_COMMENTER_ASSIGNED"; then
-    substitutions="contributor=@$USER_LOGIN" \
-      download_and_write_prompt_comment \
-      "$unlink_pr_prompt_id" \
-      "not-assigned"
+    comment_on_issue "not-assigned" \
+      "contributor=@$USER_LOGIN"
   elif ! issue_has_pr_link \
     "$ISSUE_NUMBER" "$ISSUE_REPO_NAME" \
     "$pr_number" "$pr_repo_name"; then
-    substitutions="contributor=@$USER_LOGIN" \
-      download_and_write_prompt_comment \
-      "$unlink_pr_prompt_id" \
-      "not-linked"
+    comment_on_issue "not-linked" \
+      "contributor=@$USER_LOGIN"
   elif ! is_pr_author "$pr_number" "$pr_repo_name" "$USER_LOGIN"; then
-    substitutions="contributor=@$USER_LOGIN" \
-      download_and_write_prompt_comment \
-      "$unlink_pr_prompt_id" \
-      "not-author"
+    comment_on_issue "not-author" \
+      "contributor=@$USER_LOGIN"
   else
     unlink_pr_from_issue \
       "$ISSUE_NUMBER" "$ISSUE_REPO_NAME" \
       "$pr_number" "$pr_repo_name"
 
-    substitutions="
-    contributor=@$USER_LOGIN
-    repo=$org_name\/$(normalize_repo_name "$pr_repo_name")
-    pr_number=$pr_number" \
-      download_and_write_prompt_comment \
-      "$unlink_pr_prompt_id" \
-      "success"
+    comment_on_issue "success" \
+      "contributor=@$USER_LOGIN" \
+      "repo=$org_name\/$(normalize_repo_name "$pr_repo_name")" \
+      "pr_number=$pr_number"
   fi
+}
+
+# ------------------------------------------------------------------------------
+# Script.
+# ------------------------------------------------------------------------------
+
+repo="$(make_repo "$ISSUE_REPO_NAME")"
+
+# Utility to write a prompt's comment on an issue.
+function _comment_on_issue() {
+  local prompt_id="$1"
+  local comment_md="$2"
+  local substitutions="${@:3}"
+
+  prompt_id="$(echo "$prompt_id" | sed 's/_/-/g')"
+
+  local body="$(
+    make_comment "issue/prompts/$prompt_id/$comment_md.md" "$substitutions"
+  )"
+
+  gh issue comment "$ISSUE_NUMBER" --repo="$repo" --body="$body"
 }
 
 # Normalize the comment's body:
@@ -291,6 +251,8 @@ for prompt_id in "${prompt_ids[@]}"; do
 
   # Check if the comment's body matches the prompt's pattern.
   if [[ "$comment_body_char_set" =~ $prompt_pattern ]]; then
+    function comment_on_issue() { _comment_on_issue "$prompt_id" "$@"; }
+
     echo_success "Found matching prompt: \"$prompt_id\"."
     "handle_${prompt_id}_prompt"
     exit 0

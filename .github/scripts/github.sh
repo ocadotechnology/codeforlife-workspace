@@ -4,6 +4,7 @@ source .github/scripts/general.sh
 
 org_name="ocadotechnology"
 repo_name_prefix='codeforlife-'
+comment_path_prefix='.github/comments/'
 
 project_id="PVT_kwDOAB_fG84AmfxN"
 project_number="3"
@@ -320,24 +321,30 @@ function unlink_pr_from_issue() {
   gh pr edit "$pr_number" --repo="$pr_repo" --body="$pr_body"
 }
 
-function comment_on_issue() {
-  local issue_number="$1"
-  local issue_repo_name="$2"
-  local body_file="$3"
+function make_comment() {
+  local body_file="$1"
+  local substitutions="${@:2}"
 
-  gh issue comment "$issue_number" \
-    --repo="$(make_repo "$issue_repo_name")" \
-    --body-file="$body_file"
-}
+  if [[ ! "$body_file" =~ ^$comment_path_prefix ]]; then
+    body_file="${comment_path_prefix}${body_file}"
+  fi
 
-function edit_issue() {
-  local number="$1"
-  local repo_name="$2"
-  local args="${@:3}"
+  if [ ! -f "$body_file" ]; then download_workspace_file "$body_file"; fi
 
-  gh issue edit "$number" \
-    --repo="$(make_repo "$repo_name")" \
-    "$args"
+  local body="$(cat "$body_file")"
+
+  IFS=' ' read -ra pairs <<<"$substitutions"
+  for pair in "${pairs[@]}"; do
+    pair=$(trim_spaces "$pair")
+    if [ -z "$pair" ]; then continue; fi
+
+    local key="${pair%=*}"
+    local value="${pair#*=}"
+
+    body="$(echo "$body" | sed 's/{{ *'$key' *}}/'$value'/g')"
+  done
+
+  echo "$body"
 }
 
 function is_pr_author() {
