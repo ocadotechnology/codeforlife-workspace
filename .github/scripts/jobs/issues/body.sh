@@ -26,7 +26,7 @@ function enforce_issue_body() {
   if [ -n "$(trim_spaces "$issue_body")" ]; then return 0; fi
 
   local issue_comment_body="$(
-    stdout="/dev/null" make_comment "issue/enforce-body.md" "assignees=$(
+    make_comment "issue/enforce-body.md" "assignees=$(
       echo "$issue_assignees" | jq -r 'map("@" + .login) | join(", ")'
     )"
   )"
