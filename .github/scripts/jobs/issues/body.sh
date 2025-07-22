@@ -27,7 +27,7 @@ function enforce_issue_body() {
 
   local issue_comment_body="$(
     make_comment "issue/enforce-body.md" "assignees=$(
-      echo "$issue_assignees" | jq 'map("@" + .login) | join(", ")'
+      echo "$issue_assignees" | jq -r 'map("@" + .login) | join(", ")'
     )"
   )"
 
