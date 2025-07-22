@@ -24,6 +24,7 @@ cfl_body_section_start='<!-- '$cfl_body_section_name':start -->'
 cfl_body_section_end='<!-- '$cfl_body_section_name':end -->'
 
 function download_workspace_file() {
+  local stdout="${stdout:-"/dev/stdout"}"
   local branch="${branch:-"main"}"
   local path="$1"
   local save_to="${2:-"$path"}"
@@ -33,7 +34,7 @@ function download_workspace_file() {
 
   # Download file.
   wget https://raw.githubusercontent.com/$org_name/codeforlife-workspace/refs/heads/$branch/$path \
-    -O "$save_to"
+    -O "$save_to" >"$stdout"
 }
 
 function process_workspace_submodules() {
