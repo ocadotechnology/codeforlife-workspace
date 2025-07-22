@@ -8,6 +8,14 @@ on:
   schedule:
     - cron: "0 9 * * *" # Every day at 9am UTC.
   workflow_dispatch:
+    inputs:
+      job:
+        description: Select the job you want to run.
+        required: true
+        type: choice
+        options:
+          - body
+          - inactive
   workflow_call:
     secrets:
       CFL_BOT_GH_TOKEN:
@@ -21,6 +29,10 @@ jobs:
       github.repository_owner_id == 2088731 &&
       (
         github.event_name == 'schedule' ||
+        (
+          github.event_name == 'workflow_dispatch' &&
+          inputs.job == 'body'
+        ) ||
         (
           github.event_name == 'issues' &&
           github.event.action == 'opened' &&
@@ -71,7 +83,13 @@ jobs:
     runs-on: ubuntu-22.04
     if: |
       github.repository_owner_id == 2088731 &&
-      contains(fromJSON('["schedule", "workflow_dispatch"]'), github.event_name)
+      (
+        github.event_name == 'schedule' ||
+        (
+          github.event_name == 'workflow_dispatch' &&
+          inputs.job == 'inactive'
+        )
+      )
     env:
       GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
       ONE_WEEK_MD: 1-week.md

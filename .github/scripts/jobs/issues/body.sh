@@ -157,6 +157,8 @@ function handle_schedule_event() {
   process_workspace_submodules "process_repo"
 }
 
+function handle_workflow_dispatch_event() { handle_schedule_event; }
+
 # ------------------------------------------------------------------------------
 # Entrypoint.
 # ------------------------------------------------------------------------------
