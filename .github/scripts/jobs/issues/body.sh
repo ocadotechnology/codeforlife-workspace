@@ -31,9 +31,18 @@ function enforce_issue_body() {
     )"
   )"
 
-  gh issue comment "$issue_number" \
-    --repo="$issue_repo" \
-    --body="$issue_comment_body"
+  all_outputs=$(
+    gh issue comment "$issue_number" \
+      --repo="$issue_repo" \
+      --body="$issue_comment_body" \
+      2>&1
+  )
+
+  if [ $? -eq 0 ]; then
+    echo "Wrote comment: $all_outputs"
+  else
+    echo_warning "$all_outputs"
+  fi
 }
 
 function get_non_cfl_bot_issue_body_section() {
