@@ -214,10 +214,9 @@ function handle_unlink_pr_prompt() {
 repo="$(make_repo "$ISSUE_REPO_NAME")"
 
 # Utility to write a prompt's comment on an issue.
-function _comment_on_issue() {
-  local prompt_id="$1"
-  local comment_md="$2"
-  local substitutions="${@:3}"
+function comment_on_issue() {
+  local comment_md="$1"
+  local substitutions="${@:2}"
 
   prompt_id="$(echo "$prompt_id" | sed 's/_/-/g')"
 
@@ -251,8 +250,6 @@ for prompt_id in "${prompt_ids[@]}"; do
 
   # Check if the comment's body matches the prompt's pattern.
   if [[ "$comment_body_char_set" =~ $prompt_pattern ]]; then
-    function comment_on_issue() { _comment_on_issue "$prompt_id" "$@"; }
-
     echo_success "Found matching prompt: \"$prompt_id\"."
     "handle_${prompt_id}_prompt"
     exit 0
