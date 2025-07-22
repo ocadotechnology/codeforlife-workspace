@@ -123,7 +123,10 @@ function handle_schedule_event() {
   function process_repo() {
     local submodule_name="$1"
 
+    echo "---------------------------------------------------------------------"
+
     local issue_repo="$(make_repo "$submodule_name")"
+    echo_success "Repository: $issue_repo"
 
     local issues=$(
       gh issue list \
