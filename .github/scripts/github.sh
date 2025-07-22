@@ -36,6 +36,24 @@ function download_workspace_file() {
     -O "$save_to"
 }
 
+function process_workspace_submodules() {
+  local process="$1"
+
+  download_workspace_file ".gitmodules"
+
+  readarray -t names < <(
+    grep '\[submodule ".*"\]' .gitmodules |
+      sed -E 's/\[submodule "(.*)"\]/\1/'
+  )
+
+  for name in "${names[@]}"; do
+    path="$(git config --file .gitmodules "submodule.$name.path")"
+    url="$(git config --file .gitmodules "submodule.$name.url")"
+
+    process "$name" "$path" "$url"
+  done
+}
+
 function normalize_repo_name() {
   local repo_name="$1"
 
