@@ -172,9 +172,9 @@ function handle_link_pr_prompt() {
       "$pr_number" "$pr_repo_name"
 
     comment_on_issue "success" \
-      "contributor=@$USER_LOGIN" \
-      "repo=$org_name\/$(normalize_repo_name "$pr_repo_name")" \
-      "pr_number=$pr_number"
+      "contributor=@$USER_LOGIN
+      repo=$org_name\/$(normalize_repo_name "$pr_repo_name")
+      pr_number=$pr_number"
   fi
 }
 
@@ -201,9 +201,9 @@ function handle_unlink_pr_prompt() {
       "$pr_number" "$pr_repo_name"
 
     comment_on_issue "success" \
-      "contributor=@$USER_LOGIN" \
-      "repo=$org_name\/$(normalize_repo_name "$pr_repo_name")" \
-      "pr_number=$pr_number"
+      "contributor=@$USER_LOGIN
+      repo=$org_name\/$(normalize_repo_name "$pr_repo_name")
+      pr_number=$pr_number"
   fi
 }
 
@@ -216,7 +216,7 @@ repo="$(make_repo "$ISSUE_REPO_NAME")"
 # Utility to write a prompt's comment on an issue.
 function comment_on_issue() {
   local comment_md="$1"
-  local substitutions="${@:2}"
+  local substitutions="$2"
 
   prompt_id="$(echo "$prompt_id" | sed 's/_/-/g')"
 

@@ -323,7 +323,7 @@ function unlink_pr_from_issue() {
 
 function make_comment() {
   local body_file="$1"
-  local substitutions="${@:2}"
+  local substitutions="$2"
 
   if [[ ! "$body_file" =~ ^$comment_path_prefix ]]; then
     body_file="${comment_path_prefix}${body_file}"
@@ -333,16 +333,15 @@ function make_comment() {
 
   local body="$(cat "$body_file")"
 
-  IFS=' ' read -ra pairs <<<"$substitutions"
-  for pair in "${pairs[@]}"; do
-    pair=$(trim_spaces "$pair")
-    if [ -z "$pair" ]; then continue; fi
+  while IFS= read -r substitution; do
+    substitution=$(trim_spaces "$substitution")
+    if [ -z "$substitution" ]; then continue; fi
 
-    local key="${pair%=*}"
-    local value="${pair#*=}"
+    local key="${substitution%=*}"
+    local value="${substitution#*=}"
 
-    body="$(echo "$body" | sed 's/{{ *'$key' *}}/'$value'/g')"
-  done
+    body="$(echo "$body" | sed 's/{{ *'"$key"' *}}/'"$value"'/g')"
+  done <<<"$substitutions"
 
   echo "$body"
 }
