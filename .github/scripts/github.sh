@@ -50,7 +50,7 @@ function process_workspace_submodules() {
     path="$(git config --file .gitmodules "submodule.$name.path")"
     url="$(git config --file .gitmodules "submodule.$name.url")"
 
-    process "$name" "$path" "$url"
+    $process "$name" "$path" "$url"
   done
 }
 
