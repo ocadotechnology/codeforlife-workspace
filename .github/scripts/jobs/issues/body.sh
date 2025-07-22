@@ -83,7 +83,7 @@ function handle_issues_event() {
         jq -c '.assignees'
     )"
 
-    if [ "$ISSUE_ASSIGNEES_LENGTH" -ge 1 ]; then
+    if [ "$(echo "$issue_assignees" | jq '. | length')" -ge 1 ]; then
       enforce_issue_body \
         "$ISSUE_NUMBER" \
         "$issue_repo" \
