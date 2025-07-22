@@ -121,11 +121,11 @@ function handle_issues_event() {
 
 function handle_schedule_event() {
   function process_repo() {
-    local submodule_name="$1"
+    local repo_name="$1"
 
     echo "---------------------------------------------------------------------"
 
-    local issue_repo="$(make_repo "$submodule_name")"
+    local issue_repo="$(make_repo "$repo_name")"
     echo_success "Repository: $issue_repo"
 
     local issues=$(
@@ -165,6 +165,8 @@ function handle_schedule_event() {
       process_issue "$issue_body"
     done
   }
+
+  process_repo "$ISSUE_REPO_NAME"
 
   process_workspace_submodules "process_repo"
 }
