@@ -1,1 +1,1 @@
-{{contributor}}, you cannot remove the review-request from this issue as you are not an assignee.
+{{contributor}}, you cannot remove the `ready for review` label from this issue as you aren't an assignee.
