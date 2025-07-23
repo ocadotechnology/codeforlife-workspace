@@ -127,6 +127,7 @@ function handle_schedule_event() {
     local issue_repo="$(make_repo "$repo_name")"
     echo_success "Repository: $issue_repo"
 
+    # TODO: only get issues that have a task-type label.
     local issues=$(
       gh issue list \
         --repo="$issue_repo" \
