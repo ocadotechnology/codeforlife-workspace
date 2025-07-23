@@ -2,14 +2,24 @@
 
 source .github/scripts/general.sh
 
+# GitHub.
 org_name="ocadotechnology"
 repo_name_prefix='codeforlife-'
 comment_path_prefix='.github/comments/'
 
+# Teams.
+full_team="@$org_name/cfl-core-team"
+devs_team="@$org_name/cfl-devs"
+senior_devs_team="@$org_name/cfl-senior-devs"
+ui_team="@$org_name/cfl-ui"
+ux_team="@$org_name/cfl-ux"
+edu_team="@$org_name/cfl-edu"
+
+# Project.
+# https://github.com/orgs/ocadotechnology/projects/3
 project_id="PVT_kwDOAB_fG84AmfxN"
 project_number="3"
 project_status_field_id="PVTSSF_lADOAB_fG84AmfxNzgeYqqQ"
-
 declare -A project_status_option_ids=(
   ["To Do"]="f75ad846"
   ["In Progress"]="47fc9ee4"
@@ -19,6 +29,7 @@ declare -A project_status_option_ids=(
   ["Closed"]="98236657"
 )
 
+# CFL bot.
 cfl_body_section_name='cfl-bot'
 cfl_body_section_start='<!-- '$cfl_body_section_name':start -->'
 cfl_body_section_end='<!-- '$cfl_body_section_name':end -->'

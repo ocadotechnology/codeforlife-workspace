@@ -20,15 +20,16 @@ function edit_issue_body() {
 function enforce_issue_body() {
   local issue_number="$1"
   local issue_repo="$2"
-  local issue_assignees="$3"
+  local issue_labels="$3"
   local issue_body="${@:4}"
 
   if [ -n "$(trim_spaces "$issue_body")" ]; then return 0; fi
 
+  # TODO: select appropriate github team based on task-type label.
+  local team="$full_team"
+
   local issue_comment_body="$(
-    make_comment "issue/enforce-body.md" "assignees=$(
-      echo "$issue_assignees" | jq -r 'map("@" + .login) | join(", ")'
-    )"
+    make_comment "issue/enforce-body.md" "team=$team"
   )"
 
   all_outputs=$(
@@ -76,20 +77,18 @@ function handle_issues_event() {
   function _enforce_issue_body() {
     local issue_body="$@"
 
-    local issue_assignees="$(
+    local issue_labels="$(
       gh issue view "$ISSUE_NUMBER" \
         --repo="$issue_repo" \
-        --json=assignees |
-        jq -c '.assignees'
+        --json=labels |
+        jq -c '.labels'
     )"
 
-    if [ "$(echo "$issue_assignees" | jq 'length')" -ge 1 ]; then
-      enforce_issue_body \
-        "$ISSUE_NUMBER" \
-        "$issue_repo" \
-        "$issue_assignees" \
-        "$issue_body"
-    fi
+    enforce_issue_body \
+      "$ISSUE_NUMBER" \
+      "$issue_repo" \
+      "$issue_labels" \
+      "$issue_body"
   }
 
   function on_match_cfl_bot_body_section() {
@@ -132,15 +131,14 @@ function handle_schedule_event() {
       gh issue list \
         --repo="$issue_repo" \
         --limit=10000 \
-        --search="is:open has:assignee -label:\"bot ignore\"" \
-        --json=body,number,assignees \
-        --jq="map(select(.assignees | length > 0))"
+        --search="is:open has:status -label:\"bot ignore\"" \
+        --json=body,number,labels
     )
 
     echo "$issues" | jq -c '.[]' | while read -r issue; do
       issue_body=$(echo "$issue" | jq -r '.body')
       issue_number=$(echo "$issue" | jq -r '.number')
-      issue_assignees=$(echo "$issue" | jq -r '.assignees')
+      issue_labels=$(echo "$issue" | jq -c '.labels')
 
       echo_info "Issue: #$issue_number"
 
@@ -150,7 +148,7 @@ function handle_schedule_event() {
         enforce_issue_body \
           "$issue_number" \
           "$issue_repo" \
-          "$issue_assignees" \
+          "$issue_labels" \
           "$issue_body"
       }
 

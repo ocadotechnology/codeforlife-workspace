@@ -1,1 +1,1 @@
-{{assignees}}, please write a description for this issue.
+{{team}}, please write a description for this issue.
