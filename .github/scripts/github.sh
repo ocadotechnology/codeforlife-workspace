@@ -30,6 +30,8 @@ declare -A project_status_option_ids=(
 )
 
 # CFL bot.
+cfl_bot_ignore_label="bot ignore"
+cfl_bot_ignore_label_filter="-label:\"$cfl_bot_ignore_label\""
 cfl_body_section_name='cfl-bot'
 cfl_body_section_start='<!-- '$cfl_body_section_name':start -->'
 cfl_body_section_end='<!-- '$cfl_body_section_name':end -->'

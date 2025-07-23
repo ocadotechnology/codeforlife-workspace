@@ -127,12 +127,14 @@ function handle_schedule_event() {
     local issue_repo="$(make_repo "$repo_name")"
     echo_success "Repository: $issue_repo"
 
-    # TODO: only get issues that have a task-type label.
+    # TODO: dynamically get labels from json file.
+    local task_type_labels="\"dev\""
+
     local issues=$(
       gh issue list \
         --repo="$issue_repo" \
         --limit=10000 \
-        --search="is:open has:status -label:\"bot ignore\"" \
+        --search="is:open label:$task_type_labels $cfl_bot_ignore_label_filter" \
         --json=body,number,labels
     )
 
