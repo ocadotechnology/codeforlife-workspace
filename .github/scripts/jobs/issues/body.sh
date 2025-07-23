@@ -29,7 +29,7 @@ function enforce_issue_body() {
   local team="$full_team"
 
   local issue_comment_body="$(
-    make_comment "issue/enforce-body.md" "team=$team"
+    make_comment "issue/enforce-body.md" "team=@$org_name\/$team"
   )"
 
   all_outputs=$(

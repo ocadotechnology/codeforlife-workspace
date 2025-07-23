@@ -8,12 +8,12 @@ repo_name_prefix='codeforlife-'
 comment_path_prefix='.github/comments/'
 
 # Teams.
-full_team="@$org_name/cfl-core-team"
-devs_team="@$org_name/cfl-devs"
-senior_devs_team="@$org_name/cfl-senior-devs"
-ui_team="@$org_name/cfl-ui"
-ux_team="@$org_name/cfl-ux"
-edu_team="@$org_name/cfl-edu"
+full_team="cfl-core-team"
+devs_team="cfl-devs"
+senior_devs_team="cfl-senior-devs"
+ui_team="cfl-ui"
+ux_team="cfl-ux"
+edu_team="cfl-edu"
 
 # Project.
 # https://github.com/orgs/ocadotechnology/projects/3
