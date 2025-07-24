@@ -22,6 +22,9 @@ on:
         description: "The CFL-bot's GitHub token. Used to comment."
         required: false
 
+env:
+  GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
+
 jobs:
   body:
     runs-on: ubuntu-22.04
@@ -41,7 +44,6 @@ jobs:
         )
       )
     env:
-      GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
       EVENT_NAME: "${{ github.event_name }}"
       ISSUE_REPO_NAME: "${{ github.event.repository.name }}"
       ISSUE_NUMBER: "${{ github.event.issue.number }}"
@@ -61,7 +63,6 @@ jobs:
       github.event.comment.user.login != 'cfl-bot' &&
       !contains(github.event.issue.labels.*.name, 'bot ignore')
     env:
-      GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
       # String variables.
       ISSUE_REPO_NAME: "${{ github.event.repository.name }}"
       ISSUE_NUMBER: "${{ github.event.issue.number }}"
@@ -90,7 +91,6 @@ jobs:
         )
       )
     env:
-      GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
       REPO_NAME: ${{ github.event.repository.name }}
     steps:
       - name: 🏃 Download and Run Job Script
