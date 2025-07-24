@@ -23,7 +23,7 @@ function process_repo() {
 
   local repo="$(make_repo "$repo_name")"
 
-  echo "$labels" | jq -c '.[]' | while read -r label; do
+  echo "$labels" | jq -c 'to_entries | .[]' | while read -r label; do
     name="$(echo "$label" | jq -r '.key')"
     colour="$(echo "$label" | jq -r '.value.colour')"
     description="$(echo "$label" | jq -r '.value.description')"
