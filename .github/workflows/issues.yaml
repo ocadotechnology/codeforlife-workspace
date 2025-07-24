@@ -91,38 +91,7 @@ jobs:
       )
     env:
       GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
-      ONE_WEEK_MD: 1-week.md
-      TWO_WEEKS_MD: 2-weeks.md
-      THREE_WEEKS_MD: 3-weeks.md
-      SCRIPT: process.sh
+      REPO_NAME: ${{ github.event.repository.name }}
     steps:
-      - name: 📥 Download 1-Week Comment
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
-        with:
-          path: .github/comments/issue/inactive/1-week.md
-          save-to: ${{ env.ONE_WEEK_MD }}
-
-      - name: 📥 Download 2-Weeks Comment
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
-        with:
-          path: .github/comments/issue/inactive/2-weeks.md
-          save-to: ${{ env.TWO_WEEKS_MD }}
-
-      - name: 📥 Download 3-Weeks Comment
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
-        with:
-          path: .github/comments/issue/inactive/3-weeks.md
-          save-to: ${{ env.THREE_WEEKS_MD }}
-
-      - name: 📥 Download Script
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
-        with:
-          path: .github/scripts/jobs/issues/unassign_inactive_assignees.sh
-          save-to: ${{ env.SCRIPT }}
-          type: bash
-
-      - name: ⚙️ Unassign Inactive Contributors
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/process-submodules@main
-        with:
-          pre-processing: process "${{ github.event.repository.name }}"
-          process: source ${{ env.SCRIPT }}
+      - name: 🏃 Download and Run Job Script
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-run-job-script@main
