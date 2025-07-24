@@ -14,22 +14,26 @@ function _echo() {
   echo -e "$@${RESET}"
 }
 
+function echo_bold() {
+  _echo "${BOLD}$@"
+}
+
 function echo_success() {
-  _echo "${GREEN}${BOLD}$@"
+  echo_bold "${GREEN}$@"
 }
 
 function echo_error() {
-  _echo "${RED}${BOLD}$@"
+  echo_bold "${RED}$@"
 
   if [[ -v exit ]]; then exit $exit; fi
 }
 
 function echo_warning() {
-  _echo "${YELLOW}${BOLD}$@"
+  echo_bold "${YELLOW}$@"
 }
 
 function echo_info() {
-  _echo "${BLUE}${BOLD}$@"
+  echo_bold "${BLUE}$@"
 }
 
 function eval_bool() {

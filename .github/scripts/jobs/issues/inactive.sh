@@ -103,10 +103,7 @@ function comment_on_issue() {
 function process_repo() {
   local repo_name="$1"
 
-  echo "-------------------------------------------------------------"
-
   local repo="$(make_repo "$repo_name")"
-  echo "Repository: $repo"
 
   local issues=$(
     gh issue list \
