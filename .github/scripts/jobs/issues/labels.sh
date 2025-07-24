@@ -23,6 +23,9 @@ function process_repo() {
 
   local repo="$(make_repo "$repo_name")"
 
+  # TODO: delete after restructure.
+  if [ "$repo" = "codeforlife-deploy-appengine" ]; then return 0; fi
+
   echo "$labels" | jq -c 'to_entries | .[]' | while read -r label; do
     name="$(echo "$label" | jq -r '.key')"
     colour="$(echo "$label" | jq -r '.value.colour')"
