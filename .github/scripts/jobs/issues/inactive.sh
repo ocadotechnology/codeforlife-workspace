@@ -1,3 +1,14 @@
+#!/bin/bash
+
+set -e
+
+source .github/scripts/general.sh
+source .github/scripts/github.sh
+
+# ------------------------------------------------------------------------------
+# Utility Functions.
+# ------------------------------------------------------------------------------
+
 function timestamp_to_unix_epoch() {
   local timestamp="$1"
   if [ -z "$timestamp" ]; then
@@ -84,6 +95,10 @@ function comment_on_issue() {
     echo_warning "    $all_outputs"
   fi
 }
+
+# ------------------------------------------------------------------------------
+# Script.
+# ------------------------------------------------------------------------------
 
 function process_repo() {
   local repo_name="$1"
