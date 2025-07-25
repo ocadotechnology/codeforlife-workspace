@@ -82,7 +82,9 @@ function eval_bool() {
 }
 
 function trim_spaces() {
-  echo "$@" | sed --regexp-extended 's/^[[:space:]]*|[[:space:]]*$//g'
+  echo -n "$@" |
+    sed --expression ':a;N;$!ba;s/^\n*//;s/\n*$//' |
+    sed --regexp-extended 's/^[[:space:]]*|[[:space:]]*$//g'
 }
 
 function handle_event() {
