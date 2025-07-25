@@ -177,4 +177,4 @@ function handle_workflow_dispatch_event() { handle_schedule_event; }
 # Entrypoint.
 # ------------------------------------------------------------------------------
 
-handle_event
+handle_event "$@"

@@ -16,7 +16,6 @@ function process_repo() {
 
   local repo="$(make_repo "$repo_name")"
   local index=1
-  local return_code=0
 
   while read -r label; do
     local name="$(echo "$label" | jq -r '.key')"
@@ -39,12 +38,10 @@ function process_repo() {
     if [ $? -eq 0 ]; then
       echo_success "✔"
     else
-      return_code=1
+      exit_code=1
       echo_error "✗\n$all_outputs"
     fi
   done < <(echo "$labels" | jq -c 'to_entries | .[]')
-
-  return $return_code
 }
 
 # ------------------------------------------------------------------------------
@@ -70,8 +67,10 @@ function handle_schedule_event() {
   echo_info "Discoverd $labels_length labels."
 
   if [ "$labels_length" -gt 0 ]; then
+    exit_code=0
     process_repo "$REPO_NAME"
     process_workspace_submodules "process_repo"
+    exit $exit_code
   fi
 }
 
@@ -83,4 +82,4 @@ function handle_push_event() { handle_schedule_event; }
 # Entrypoint.
 # ------------------------------------------------------------------------------
 
-handle_event
+handle_event "$@"
