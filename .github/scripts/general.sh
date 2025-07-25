@@ -84,3 +84,11 @@ function eval_bool() {
 function trim_spaces() {
   echo "$@" | sed --regexp-extended 's/^[[:space:]]*|[[:space:]]*$//g'
 }
+
+function handle_event() {
+  if [ -z "$EVENT_NAME" ]; then
+    exit=1 echo_error "Event name not defined."
+  fi
+
+  "handle_${EVENT_NAME}_event" "$@"
+}

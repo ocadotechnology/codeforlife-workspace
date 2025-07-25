@@ -3,7 +3,9 @@
 set -e
 
 source .github/scripts/general.sh
-source .github/scripts/github.sh
+source .github/scripts/repositories.sh
+source .github/scripts/workspace.sh
+source .github/scripts/labels.sh
 
 # ------------------------------------------------------------------------------
 # Static variables.

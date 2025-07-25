@@ -1,0 +1,51 @@
+#!/bin/bash
+
+source .github/scripts/general.sh
+
+cfl_bot_body_section_name='cfl-bot'
+cfl_bot_body_section_start='<!-- '$cfl_bot_body_section_name':start -->'
+cfl_bot_body_section_end='<!-- '$cfl_bot_body_section_name':end -->'
+
+function make_cfl_bot_body_section() {
+  local cfl_bot_body_section="$@"
+  cfl_bot_body_section="$(trim_spaces "$cfl_bot_body_section")"
+
+  echo "$cfl_bot_body_section_start
+$cfl_bot_body_section
+$cfl_bot_body_section_end"
+}
+
+function append_cfl_bot_body_section() {
+  local cfl_bot_body_section="$(
+    make_cfl_bot_body_section "$cfl_bot_body_section"
+  )"
+
+  if [ -z "$body" ]; then
+    echo "$cfl_bot_body_section"
+  else
+    echo "$body
+
+$cfl_bot_body_section"
+  fi
+}
+
+function match_cfl_bot_body_section() {
+  local match_callback="$1"
+  local no_match_callback="$2"
+  local body="${@:3}"
+
+  local pattern="(.*)"
+  pattern+="$cfl_bot_body_section_start"
+  pattern+="(.*)"
+  pattern+="$cfl_bot_body_section_end"
+  pattern+="(.*)"
+
+  if [[ "$body" =~ $pattern ]]; then
+    before_cfl_bot_body_section="${BASH_REMATCH[1]}" \
+      cfl_bot_body_section="${BASH_REMATCH[2]}" \
+      after_cfl_bot_body_section="${BASH_REMATCH[3]}" \
+      $match_callback
+  else
+    $no_match_callback "$body"
+  fi
+}
