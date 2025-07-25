@@ -50,6 +50,8 @@ function merge_individual_and_group_labels() {
 }
 
 function configure_labels() {
+  echo_h2 "labels"
+
   local index=1
 
   while read -r label; do
