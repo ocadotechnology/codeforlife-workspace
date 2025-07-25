@@ -78,7 +78,6 @@ labels="$(
   ' "$repo_descriptor"
 )"
 labels_length="$(echo "$labels" | jq 'length')"
-
 echo_info "Discoverd $labels_length labels."
 
 if [ "$labels_length" -gt 0 ]; then handle_event; fi
