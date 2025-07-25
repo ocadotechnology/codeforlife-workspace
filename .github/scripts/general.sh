@@ -13,7 +13,7 @@ OVERLINE='\e[53m'
 RESET='\e[0m'
 
 function _echo() {
-  echo -e "$options" "$@${RESET}"
+  echo -e $options "$@${RESET}"
 }
 
 function echo_bold() {
