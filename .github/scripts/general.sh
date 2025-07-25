@@ -8,10 +8,12 @@ MAGENTA='\e[35m'
 CYAN='\e[36m'
 WHITE='\e[37m'
 BOLD='\e[1m'
+UNDERLINE='\e[4m'
+OVERLINE='\e[53m'
 RESET='\e[0m'
 
 function _echo() {
-  echo -e "$@${RESET}"
+  echo -e "$options" "$@${RESET}"
 }
 
 function echo_bold() {
@@ -34,6 +36,20 @@ function echo_warning() {
 
 function echo_info() {
   echo_bold "${BLUE}$@"
+}
+
+function echo_divider() {
+  printf "${BOLD}%*s${RESET}\n" "${COLUMNS:-80}" '' | tr ' ' '-'
+}
+
+function echo_h1() {
+  echo_divider
+  echo_bold "$@"
+  echo_divider
+}
+
+function echo_h2() {
+  echo_bold "${UNDERLINE}${OVERLINE}$@"
 }
 
 function eval_bool() {

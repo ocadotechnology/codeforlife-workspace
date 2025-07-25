@@ -60,10 +60,6 @@ function process_workspace_submodules() {
   )
 
   for name in "${names[@]}"; do
-    echo_bold "----------------------------------------------------------------"
-    echo_bold "$name"
-    echo_bold "----------------------------------------------------------------"
-
     local path="$(git config --file .gitmodules "submodule.$name.path")"
     local url="$(git config --file .gitmodules "submodule.$name.url")"
 

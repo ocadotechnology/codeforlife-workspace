@@ -122,6 +122,8 @@ function handle_schedule_event() {
   function process_repo() {
     local repo_name="$1"
 
+    echo_h1 "$repo_name"
+
     local issue_repo="$(make_repo "$repo_name")"
 
     # TODO: dynamically get labels from json file.

@@ -21,15 +21,16 @@ labels="$(
 function process_repo() {
   local repo_name="$1"
 
-  local repo="$(make_repo "$repo_name")"
+  echo_h1 "$repo_name"
 
-  # TODO: delete after restructure.
-  if [ "$repo" = "codeforlife-deploy-appengine" ]; then return 0; fi
+  local repo="$(make_repo "$repo_name")"
 
   echo "$labels" | jq -c 'to_entries | .[]' | while read -r label; do
     name="$(echo "$label" | jq -r '.key')"
     colour="$(echo "$label" | jq -r '.value.colour')"
     description="$(echo "$label" | jq -r '.value.description')"
+
+    options="-n" echo_bold "$name "
 
     gh label create "$name" \
       --repo="$repo" \
@@ -37,7 +38,7 @@ function process_repo() {
       --description="$description" \
       --force
 
-    echo_success "✔ $name"
+    echo_success "✔"
   done
 }
 
