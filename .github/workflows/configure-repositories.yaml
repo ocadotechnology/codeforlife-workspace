@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - .github/scripts/jobs/repositories/repository.json
+      - .github/scripts/jobs/configure-repositories/repository.json
   schedule:
     - cron: "0 9 * * *" # Every day at 9am UTC.
   workflow_dispatch:
