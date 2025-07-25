@@ -1,0 +1,32 @@
+name: "Code for Life - Workspace - Download And Run Job Script"
+description: "Download a job script from the workspace and run it."
+inputs:
+  args:
+    description: "The arguments to pass to the script."
+    required: false
+    default: ""
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v4
+      with:
+        repository: ocadotechnology/codeforlife-workspace
+
+    - shell: bash
+      run: |
+        source .github/scripts/general.sh
+
+        echo_cfl_ascii_art
+
+        script_path=".github/scripts/jobs/$(
+          echo "${{ github.workflow_ref }}" |
+            sed -E 's/^.+\/.github\/workflows\/(.+)\.(yml|yaml)@.+$/\1/'
+        )/$(
+          echo "${{ github.job }}" | sed 's/-/_/g'
+        ).sh"
+
+        if [ ! -f "$script_path" ]; then
+          exit=1 echo_error "Job script not found at path: \"$script_path\"."
+        fi
+
+        $script_path ${{ inputs.args }}

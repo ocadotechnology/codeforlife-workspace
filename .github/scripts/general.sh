@@ -52,6 +52,21 @@ function echo_h2() {
   echo_bold "${UNDERLINE}${OVERLINE}$@"
 }
 
+function echo_cfl_ascii_art() {
+  local M=$MAGENTA
+  local C=$CYAN
+  local Y=$YELLOW
+
+  echo -en "  ${M}_____          ${Y}_        ______           _      ${M}_  ${C}__
+ ${M}/ ____|        ${Y}| |      |  ____|         | |    ${M}(_)${C}/ _|
+${M}| |     ${C}___   ${Y}__| | ${M}___  ${Y}| |__ ${M}___  ${C}_ __  ${Y}| |     ${M}_| ${C}|_ ${Y}___
+${M}| |    ${C}/ _ \\ ${Y}/ _\` |${M}/ _ \\ ${Y}|  __${M}/ _ \\"
+  echo -e "${C}| '__| ${Y}| |    ${M}| |  ${C}_${Y}/ _ \\
+${M}| |___${C}| (_) | ${Y}(_| |  ${M}__/ ${Y}| | ${M}| (_) ${C}| |    ${Y}| |____${M}| | ${C}|${Y}|  __/
+ ${M}\\_____${C}\\___/ ${Y}\\__,_|${M}\\___| ${Y}|_|  ${M}\\___/${C}|_|    ${Y}|______${M}|_|${C}_| ${Y}\\___|
+${RESET}"
+}
+
 function eval_bool() {
   local bool="$1"
 
