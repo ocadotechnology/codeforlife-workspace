@@ -16,17 +16,6 @@ exit_code=0
 # Utility functions.
 # ------------------------------------------------------------------------------
 
-function insert_cfl_bot_ignore_label_into_repo_descriptor() {
-  echo "$(
-    jq '
-      .labels.individual["'"$cfl_bot_ignore_label"'"] = {
-        "description": "Instructs @cfl-bot to ignore this issue.",
-        "colour": "#000000"
-      }
-    ' "$repo_descriptor"
-  )" >"$repo_descriptor"
-}
-
 function check_repo_descriptor_schema() {
   local repo_descriptor_schema="$(
     realpath --relative-to="." "$(
@@ -38,9 +27,24 @@ function check_repo_descriptor_schema() {
 
   download_workspace_file "$repo_descriptor_schema"
 
-  pip install check-jsonschema==0.33.*
+  pip install check-jsonschema==0.33.* >/dev/null
 
   check-jsonschema --schemafile="$repo_descriptor_schema" "$repo_descriptor"
+}
+
+function check_repo_descriptor_has_predefined_labels() {
+  local labels=(
+    "$cfl_bot_ignore_label"
+    "$ready_for_review_label"
+  )
+
+  for label in "${labels[@]}"; do
+    if ! eval_bool "$(
+      jq '.labels.individual | has("'"$label"'")' "$repo_descriptor"
+    )"; then
+      exit=1 echo_error "Label: \"$label\" is missing in \"$repo_descriptor\"."
+    fi
+  done
 }
 
 function merge_individual_and_group_labels() {
@@ -97,6 +101,8 @@ function handle_schedule_event() {
   download_workspace_file "$repo_descriptor"
 
   check_repo_descriptor_schema
+
+  check_repo_descriptor_has_predefined_labels
 
   local labels="$(merge_individual_and_group_labels)"
   local labels_length="$(echo "$labels" | jq 'length')"

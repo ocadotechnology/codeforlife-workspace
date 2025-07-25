@@ -9,9 +9,6 @@ source .github/scripts/github.sh
 # Prompt registry.
 # ------------------------------------------------------------------------------
 
-# Labels.
-ready_for_review_label="ready for review"
-
 # Prompt IDs.
 # Must be written in snake case and end with "_prompt_id".
 assign_me_prompt_id="assign_me"

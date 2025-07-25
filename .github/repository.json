@@ -2,6 +2,10 @@
   "$schema": "./repository-schema.json",
   "labels": {
     "individual": {
+      "bot ignore": {
+        "description": "Instructs @cfl-bot to ignore this issue.",
+        "colour": "#000000"
+      },
       "good first issue": {
         "description": "A good issue to work on if it's your first.",
         "colour": "#0e8a16"
