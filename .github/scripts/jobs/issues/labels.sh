@@ -24,13 +24,14 @@ function process_repo() {
   echo_h1 "$repo_name"
 
   local repo="$(make_repo "$repo_name")"
+  local index=1
 
-  echo "$labels" | jq -c 'to_entries | .[]' | while read -r label; do
-    name="$(echo "$label" | jq -r '.key')"
-    colour="$(echo "$label" | jq -r '.value.colour')"
-    description="$(echo "$label" | jq -r '.value.description')"
+  while read -r label; do
+    local name="$(echo "$label" | jq -r '.key')"
+    local colour="$(echo "$label" | jq -r '.value.colour')"
+    local description="$(echo "$label" | jq -r '.value.description')"
 
-    options="-n" echo_bold "$name "
+    options="-n" echo_bold "$index. \"$name\" "
 
     gh label create "$name" \
       --repo="$repo" \
@@ -39,7 +40,8 @@ function process_repo() {
       --force
 
     echo_success "✔"
-  done
+    index=$((index + 1))
+  done < <(echo "$labels" | jq -c 'to_entries | .[]')
 }
 
 process_repo "$REPO_NAME"
