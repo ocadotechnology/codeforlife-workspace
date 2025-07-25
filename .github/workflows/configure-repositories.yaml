@@ -1,0 +1,27 @@
+name: Configure Repositories
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/scripts/jobs/repositories/repository.json
+  schedule:
+    - cron: "0 9 * * *" # Every day at 9am UTC.
+  workflow_dispatch:
+
+env:
+  GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
+  EVENT_NAME: ${{ github.event_name }}
+  REPO_NAME: ${{ github.event.repository.name }}
+
+jobs:
+  main:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 🏃 Download and Run Job Script
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/run-job-script@main

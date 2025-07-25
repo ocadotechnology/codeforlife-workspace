@@ -1,10 +1,6 @@
 name: Issues
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - .github/repository.json
   issues:
     types: [opened]
   issue_comment:
@@ -19,7 +15,6 @@ on:
         type: choice
         options:
           - body
-          - labels
           - inactive
   workflow_call:
     secrets:
@@ -59,26 +54,6 @@ jobs:
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/run-job-script@main
         with:
           args: "${{ github.event.issue.body }}"
-
-  labels:
-    runs-on: ubuntu-22.04
-    if: |
-      github.repository_owner_id == 2088731 &&
-      github.repository_id == 610732754 && (
-        github.event_name == 'schedule' ||
-        github.event_name == 'push' || (
-          github.event_name == 'workflow_dispatch' &&
-          inputs.job == 'labels'
-        )
-      )
-    steps:
-      - name: 🐍 Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: 🏃 Download and Run Job Script
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/run-job-script@main
 
   prompt:
     runs-on: ubuntu-22.04

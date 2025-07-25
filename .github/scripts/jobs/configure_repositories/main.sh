@@ -11,7 +11,7 @@ source .github/scripts/labels.sh
 # Static variables.
 # ------------------------------------------------------------------------------
 
-repo_descriptor=".github/repository.json"
+repo_descriptor=".github/scripts/jobs/repositories/repository.json"
 exit_code=0
 
 # ------------------------------------------------------------------------------
