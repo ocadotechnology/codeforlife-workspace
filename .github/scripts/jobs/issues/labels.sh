@@ -6,8 +6,52 @@ source .github/scripts/general.sh
 source .github/scripts/github.sh
 
 # ------------------------------------------------------------------------------
+# Static variables.
+# ------------------------------------------------------------------------------
+
+repo_descriptor=".github/repository.json"
+exit_code=0
+
+# ------------------------------------------------------------------------------
 # Utility functions.
 # ------------------------------------------------------------------------------
+
+function insert_cfl_bot_ignore_label_into_repo_descriptor() {
+  echo "$(
+    jq '
+      .labels.individual["'"$cfl_bot_ignore_label"'"] = {
+        "description": "Instructs @cfl-bot to ignore this issue.",
+        "colour": "#000000"
+      }
+    ' "$repo_descriptor"
+  )" >"$repo_descriptor"
+}
+
+function check_repo_descriptor_schema() {
+  local repo_descriptor_schema="$(
+    realpath --relative-to="." "$(
+      dirname "$repo_descriptor"
+    )/$(
+      jq -r '.["$schema"]' "$repo_descriptor"
+    )"
+  )"
+
+  download_workspace_file "$repo_descriptor_schema"
+
+  pip install check-jsonschema==0.33.*
+
+  check-jsonschema --schemafile="$repo_descriptor_schema" "$repo_descriptor"
+}
+
+function merge_individual_and_group_labels() {
+  jq '
+    .labels.individual + (
+      .labels.group |
+      [.[] | .colour as $colour | .labels | map_values(.colour = $colour)] |
+      add
+    )
+  ' "$repo_descriptor"
+}
 
 function process_repo() {
   local repo_name="$1"
@@ -50,49 +94,17 @@ function process_repo() {
 # ------------------------------------------------------------------------------
 
 function handle_schedule_event() {
-  # Download the repository descriptor.
-  local repo_descriptor=".github/repository.json"
   download_workspace_file "$repo_descriptor"
 
-  # Dynamically insert cfl-bot's ignore label.
-  echo "$(
-    jq '
-      .labels.individual["'"$cfl_bot_ignore_label"'"] = {
-        "description": "Instructs @cfl-bot to ignore this issue.",
-        "colour": "#000000"
-      }
-    ' "$repo_descriptor"
-  )" >"$repo_descriptor"
+  check_repo_descriptor_schema
 
-  # Validate the the repository descriptor's schema.
-  $(
-    pip install check-jsonschema==0.33.*
-    cd "$(dirname "$repo_descriptor")"
-    repo_descriptor="$(basename "$repo_descriptor")"
-    check-jsonschema \
-      --schemafile="$(jq -r '.["$schema"]' "$repo_descriptor")" \
-      "$repo_descriptor"
-  )
-
-  # Merge individual and group labels.
-  labels="$(
-    jq '
-      .labels.individual + (
-        .labels.group |
-        [.[] | .colour as $colour | .labels | map_values(.colour = $colour)] |
-        add
-      )
-    ' "$repo_descriptor"
-  )"
-
+  local labels="$(merge_individual_and_group_labels)"
   local labels_length="$(echo "$labels" | jq 'length')"
   echo_info "Discoverd $labels_length labels."
 
   if [ "$labels_length" -gt 0 ]; then
-    exit_code=0
-    process_repo "$REPO_NAME"
-    process_workspace_submodules "process_repo"
-    exit $exit_code
+    labels="$labels" process_repo "$REPO_NAME"
+    labels="$labels" process_workspace_submodules "process_repo"
   fi
 }
 
@@ -105,3 +117,5 @@ function handle_push_event() { handle_schedule_event; }
 # ------------------------------------------------------------------------------
 
 handle_event "$@"
+
+exit $exit_code
