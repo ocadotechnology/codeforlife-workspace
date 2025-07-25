@@ -7,7 +7,7 @@ org_name="ocadotechnology"
 repo_name_prefix='codeforlife-'
 comment_path_prefix='.github/comments/'
 
-# Teams.
+# Teams (naming convention: "{name}_team").
 full_team="cfl-core-team"
 devs_team="cfl-devs"
 senior_devs_team="cfl-senior-devs"
@@ -15,12 +15,12 @@ ui_team="cfl-ui"
 ux_team="cfl-ux"
 edu_team="cfl-edu"
 
-# Labels.
+# Labels (naming convention: "{name}_label").
 ready_for_review_label="ready for review"
 cfl_bot_ignore_label="bot ignore"
 cfl_bot_ignore_label_filter="-label:\"$cfl_bot_ignore_label\""
 
-# Project.
+# Project (naming convention: "project_{variable}").
 # https://github.com/orgs/ocadotechnology/projects/3
 project_id="PVT_kwDOAB_fG84AmfxN"
 project_number="3"
@@ -34,10 +34,10 @@ declare -A project_status_option_ids=(
   ["Closed"]="98236657"
 )
 
-# CFL bot.
-cfl_body_section_name='cfl-bot'
-cfl_body_section_start='<!-- '$cfl_body_section_name':start -->'
-cfl_body_section_end='<!-- '$cfl_body_section_name':end -->'
+# CFL bot body section.
+cfl_bot_body_section_name='cfl-bot'
+cfl_bot_body_section_start='<!-- '$cfl_bot_body_section_name':start -->'
+cfl_bot_body_section_end='<!-- '$cfl_bot_body_section_name':end -->'
 
 function handle_event() {
   if [ -z "$EVENT_NAME" ]; then
@@ -101,42 +101,44 @@ function make_repo() {
   echo "$org_name/$repo_name"
 }
 
-function make_cfl_body_section() {
-  local cfl_body_section="$@"
-  cfl_body_section="$(trim_spaces "$cfl_body_section")"
+function make_cfl_bot_body_section() {
+  local cfl_bot_body_section="$@"
+  cfl_bot_body_section="$(trim_spaces "$cfl_bot_body_section")"
 
-  echo "$cfl_body_section_start
-$cfl_body_section
-$cfl_body_section_end"
+  echo "$cfl_bot_body_section_start
+$cfl_bot_body_section
+$cfl_bot_body_section_end"
 }
 
-function append_cfl_body_section() {
-  local cfl_body_section="$(make_cfl_body_section "$cfl_body_section")"
+function append_cfl_bot_body_section() {
+  local cfl_bot_body_section="$(
+    make_cfl_bot_body_section "$cfl_bot_body_section"
+  )"
 
   if [ -z "$body" ]; then
-    echo "$cfl_body_section"
+    echo "$cfl_bot_body_section"
   else
     echo "$body
 
-$cfl_body_section"
+$cfl_bot_body_section"
   fi
 }
 
-function match_cfl_body_section() {
+function match_cfl_bot_body_section() {
   local match_callback="$1"
   local no_match_callback="$2"
   local body="${@:3}"
 
   local pattern="(.*)"
-  pattern+="$cfl_body_section_start"
+  pattern+="$cfl_bot_body_section_start"
   pattern+="(.*)"
-  pattern+="$cfl_body_section_end"
+  pattern+="$cfl_bot_body_section_end"
   pattern+="(.*)"
 
   if [[ "$body" =~ $pattern ]]; then
-    before_cfl_body_section="${BASH_REMATCH[1]}" \
-      cfl_body_section="${BASH_REMATCH[2]}" \
-      after_cfl_body_section="${BASH_REMATCH[3]}" \
+    before_cfl_bot_body_section="${BASH_REMATCH[1]}" \
+      cfl_bot_body_section="${BASH_REMATCH[2]}" \
+      after_cfl_bot_body_section="${BASH_REMATCH[3]}" \
       $match_callback
   else
     $no_match_callback "$body"
@@ -324,10 +326,10 @@ function link_pr_to_issue() {
   )"
 
   function _link_pr_to_issue__match() {
-    local pr_body="$before_cfl_body_section"
-    pr_body+="$(make_cfl_body_section "$cfl_body_section
+    local pr_body="$before_cfl_bot_body_section"
+    pr_body+="$(make_cfl_bot_body_section "$cfl_bot_body_section
 $issue_link")"
-    pr_body+="$after_cfl_body_section"
+    pr_body+="$after_cfl_bot_body_section"
 
     gh pr edit "$pr_number" --repo="$pr_repo" --body="$pr_body"
   }
@@ -335,13 +337,14 @@ $issue_link")"
   function _link_pr_to_issue__no_match() {
     local pr_body="$@"
     pr_body="$(
-      body="$pr_body" cfl_body_section="$issue_link" append_cfl_body_section
+      body="$pr_body" cfl_bot_body_section="$issue_link" \
+        append_cfl_bot_body_section
     )"
 
     gh pr edit "$pr_number" --repo="$pr_repo" --body="$pr_body"
   }
 
-  match_cfl_body_section \
+  match_cfl_bot_body_section \
     "_link_pr_to_issue__match" \
     "_link_pr_to_issue__no_match" \
     "$pr_body"

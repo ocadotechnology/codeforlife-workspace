@@ -47,13 +47,13 @@ function enforce_issue_body() {
 }
 
 function get_non_cfl_bot_issue_body_section() {
-  echo "${before_cfl_body_section}${after_cfl_body_section}"
+  echo "${before_cfl_bot_body_section}${after_cfl_bot_body_section}"
 }
 
 function process_issue() {
   local issue_body="$@"
 
-  match_cfl_body_section \
+  match_cfl_bot_body_section \
     "on_match_cfl_bot_body_section" \
     "on_not_match_cfl_bot_body_section" \
     "$issue_body"
@@ -94,9 +94,9 @@ function handle_issues_event() {
   function on_match_cfl_bot_body_section() {
     _enforce_issue_body "$(get_non_cfl_bot_issue_body_section)"
 
-    local issue_body="$before_cfl_body_section"
-    issue_body+="$(make_cfl_body_section "$cfl_bot_issue_body_section")"
-    issue_body+="$after_cfl_body_section"
+    local issue_body="$before_cfl_bot_body_section"
+    issue_body+="$(make_cfl_bot_body_section "$cfl_bot_issue_body_section")"
+    issue_body+="$after_cfl_bot_body_section"
 
     edit_issue_body "$ISSUE_NUMBER" "$issue_repo" "$issue_body"
   }
@@ -108,8 +108,8 @@ function handle_issues_event() {
 
     issue_body="$(
       body="$issue_body" \
-        cfl_body_section="$cfl_bot_issue_body_section" \
-        append_cfl_body_section
+        cfl_bot_body_section="$cfl_bot_issue_body_section" \
+        append_cfl_bot_body_section
     )"
 
     edit_issue_body "$ISSUE_NUMBER" "$issue_repo" "$issue_body"
