@@ -72,6 +72,11 @@ jobs:
         )
       )
     steps:
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
       - name: 🏃 Download and Run Job Script
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-and-run-job-script@main
 

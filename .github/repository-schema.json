@@ -3,9 +3,14 @@
   "description": "A GitHub repository.",
   "type": "object",
   "required": [
+    "$schema",
     "labels"
   ],
   "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "The relative path to the schema file."
+    },
     "labels": {
       "type": "object",
       "description": "Labels shared across all GitHub repositories.",

@@ -50,9 +50,30 @@ function process_repo() {
 # ------------------------------------------------------------------------------
 
 function handle_schedule_event() {
+  # Download the repository descriptor.
   local repo_descriptor=".github/repository.json"
   download_workspace_file "$repo_descriptor"
 
+  # Dynamically insert cfl-bot's ignore label.
+  echo "$(
+    jq '
+      .labels.individual["'"$cfl_bot_ignore_label"'"] = {
+        "description": "Instructs @cfl-bot to ignore this issue.",
+        "colour": "#000000"
+      }
+    ' "$repo_descriptor"
+  )" >"$repo_descriptor"
+
+  # Validate the the repository descriptor's schema.
+  $(
+    pip install check-jsonschema==0.33.*
+    cd "$(dirname "$repo_descriptor")"
+    check-jsonschema \
+      --schemafile="$(jq -r '.["$schema"]' "$repo_descriptor")" \
+      "$repo_descriptor"
+  )
+
+  # Merge individual and group labels.
   labels="$(
     jq '
       .labels.individual + (
