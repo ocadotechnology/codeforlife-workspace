@@ -177,8 +177,4 @@ function handle_workflow_dispatch_event() { handle_schedule_event; }
 # Entrypoint.
 # ------------------------------------------------------------------------------
 
-if [ -z "$EVENT_NAME" ]; then
-  exit=1 echo_error "Event name not defined."
-else
-  "handle_${EVENT_NAME}_event" "$@"
-fi
+handle_event

@@ -1,6 +1,10 @@
 name: Issues
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - .github/repository.json
   issues:
     types: [opened]
   issue_comment:
@@ -25,6 +29,7 @@ on:
 
 env:
   GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
+  EVENT_NAME: ${{ github.event_name }}
   REPO_NAME: ${{ github.event.repository.name }}
 
 jobs:
@@ -46,7 +51,6 @@ jobs:
         )
       )
     env:
-      EVENT_NAME: "${{ github.event_name }}"
       ISSUE_REPO_NAME: "${{ github.event.repository.name }}"
       ISSUE_NUMBER: "${{ github.event.issue.number }}"
     steps:
@@ -61,6 +65,7 @@ jobs:
       github.repository_owner_id == 2088731 &&
       (
         github.event_name == 'schedule' ||
+        github.event_name == 'push' ||
         (
           github.event_name == 'workflow_dispatch' &&
           inputs.job == 'labels'

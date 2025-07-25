@@ -54,6 +54,9 @@
           },
           "bug": {
             "description": "This issue involves bug fixing."
+          },
+          "feature": {
+            "description": "This issue involves creating a feature."
           }
         },
         "colour": "#c4883a",
@@ -115,7 +118,7 @@
         },
         "colour": "#ffffff",
         "select": "multi",
-        "required": false
+        "required": true
       },
       "blocked": {
         "labels": {

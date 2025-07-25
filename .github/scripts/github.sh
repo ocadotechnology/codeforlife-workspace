@@ -36,6 +36,14 @@ cfl_body_section_name='cfl-bot'
 cfl_body_section_start='<!-- '$cfl_body_section_name':start -->'
 cfl_body_section_end='<!-- '$cfl_body_section_name':end -->'
 
+function handle_event() {
+  if [ -z "$EVENT_NAME" ]; then
+    exit=1 echo_error "Event name not defined."
+  fi
+
+  "handle_${EVENT_NAME}_event" "$@"
+}
+
 function download_workspace_file() {
   local branch="${branch:-"main"}"
   local path="$1"
