@@ -68,6 +68,7 @@ function handle_schedule_event() {
   $(
     pip install check-jsonschema==0.33.*
     cd "$(dirname "$repo_descriptor")"
+    repo_descriptor="$(basename "$repo_descriptor")"
     check-jsonschema \
       --schemafile="$(jq -r '.["$schema"]' "$repo_descriptor")" \
       "$repo_descriptor"
