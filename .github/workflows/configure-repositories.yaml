@@ -4,7 +4,8 @@ on:
   push:
     branches: [main]
     paths:
-      - .github/scripts/jobs/configure-repositories/repository.json
+      - .github/workflows/configure-repositories.yaml
+      - .github/scripts/jobs/configure-repositories/*
   schedule:
     - cron: "0 9 * * *" # Every day at 9am UTC.
   workflow_dispatch:
