@@ -70,9 +70,7 @@ function handle_issues_event() {
   local issue_repo="$(make_repo "$ISSUE_REPO_NAME")"
 
   # Download and read file containing body section from the workspace.
-  local cfl_bot_issue_body_section_file=".github/comments/issue/body.md"
-  download_workspace_file "$cfl_bot_issue_body_section_file"
-  local cfl_bot_issue_body_section="$(cat "$cfl_bot_issue_body_section_file")"
+  local cfl_bot_issue_body_section="$(cat ".github/comments/issue/body.md")"
 
   function _enforce_issue_body() {
     local issue_body="$@"

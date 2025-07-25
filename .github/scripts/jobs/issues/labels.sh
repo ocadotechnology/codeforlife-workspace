@@ -25,8 +25,6 @@ function check_repo_descriptor_schema() {
     )"
   )"
 
-  download_workspace_file "$repo_descriptor_schema"
-
   pip install check-jsonschema==0.33.* >/dev/null
 
   check-jsonschema --schemafile="$repo_descriptor_schema" "$repo_descriptor"
@@ -98,8 +96,6 @@ function process_repo() {
 # ------------------------------------------------------------------------------
 
 function handle_schedule_event() {
-  download_workspace_file "$repo_descriptor"
-
   check_repo_descriptor_schema
 
   check_repo_descriptor_has_predefined_labels

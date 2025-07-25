@@ -47,23 +47,8 @@ function handle_event() {
   "handle_${EVENT_NAME}_event" "$@"
 }
 
-function download_workspace_file() {
-  local branch="${branch:-"main"}"
-  local path="$1"
-  local save_to="${2:-"$path"}"
-
-  # Make parent directories.
-  mkdir -p "$(dirname "$save_to")"
-
-  # Download file.
-  wget -q https://raw.githubusercontent.com/$org_name/codeforlife-workspace/refs/heads/$branch/$path \
-    -O "$save_to"
-}
-
 function process_workspace_submodules() {
   local process="$1"
-
-  download_workspace_file ".gitmodules"
 
   readarray -t names < <(
     grep '\[submodule ".*"\]' .gitmodules |
@@ -379,8 +364,6 @@ function make_comment() {
   if [[ ! "$body_file" =~ ^$comment_path_prefix ]]; then
     body_file="${comment_path_prefix}${body_file}"
   fi
-
-  if [ ! -f "$body_file" ]; then download_workspace_file "$body_file"; fi
 
   local body="$(cat "$body_file")"
 
