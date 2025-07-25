@@ -36,14 +36,15 @@ jobs:
   body:
     runs-on: ubuntu-22.04
     if: |
-      github.repository_owner_id == 2088731 &&
-      (
-        github.event_name == 'schedule' ||
+      github.repository_owner_id == 2088731 && (
         (
-          github.event_name == 'workflow_dispatch' &&
-          inputs.job == 'body'
-        ) ||
-        (
+          github.repository_id == 610732754 && (
+            github.event_name == 'schedule' || (
+              github.event_name == 'workflow_dispatch' &&
+              inputs.job == 'body'
+            )
+          )
+        ) || (
           github.event_name == 'issues' &&
           github.event.action == 'opened' &&
           github.event.issue.user.login != 'cfl-bot' &&
@@ -63,10 +64,9 @@ jobs:
     runs-on: ubuntu-22.04
     if: |
       github.repository_owner_id == 2088731 &&
-      (
+      github.repository_id == 610732754 && (
         github.event_name == 'schedule' ||
-        github.event_name == 'push' ||
-        (
+        github.event_name == 'push' || (
           github.event_name == 'workflow_dispatch' &&
           inputs.job == 'labels'
         )
@@ -110,9 +110,8 @@ jobs:
     runs-on: ubuntu-22.04
     if: |
       github.repository_owner_id == 2088731 &&
-      (
-        github.event_name == 'schedule' ||
-        (
+      github.repository_id == 610732754 && (
+        github.event_name == 'schedule' || (
           github.event_name == 'workflow_dispatch' &&
           inputs.job == 'inactive'
         )

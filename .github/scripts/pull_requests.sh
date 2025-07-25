@@ -1,5 +1,6 @@
 #!/bin/bash
 
+source .github/scripts/general.sh
 source .github/scripts/repositories.sh
 source .github/scripts/bodies.sh
 
