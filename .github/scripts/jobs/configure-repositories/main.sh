@@ -7,16 +7,8 @@ source .github/scripts/repositories.sh
 source .github/scripts/workspace.sh
 source .github/scripts/labels.sh
 
-# ------------------------------------------------------------------------------
-# Static variables.
-# ------------------------------------------------------------------------------
-
 repo_descriptor=".github/scripts/jobs/configure-repositories/repository.json"
 exit_code=0
-
-# ------------------------------------------------------------------------------
-# Utility functions.
-# ------------------------------------------------------------------------------
 
 function check_repo_descriptor_schema() {
   local repo_descriptor_schema="$(
@@ -57,12 +49,7 @@ function merge_individual_and_group_labels() {
   ' "$repo_descriptor"
 }
 
-function process_repo() {
-  local repo_name="$1"
-
-  echo_h1 "$repo_name"
-
-  local repo="$(make_repo "$repo_name")"
+function configure_labels() {
   local index=1
 
   while read -r label; do
@@ -92,34 +79,31 @@ function process_repo() {
   done < <(echo "$labels" | jq -c 'to_entries | .[]')
 }
 
-# ------------------------------------------------------------------------------
-# Event handlers.
-# Must follow the naming convention "handle_{event_name}_event".
-# ------------------------------------------------------------------------------
+function process_repo() {
+  local repo_name="$1"
 
-function handle_schedule_event() {
+  echo_h1 "$repo_name"
+
+  local repo="$(make_repo "$repo_name")"
+
+  configure_labels
+}
+
+function main() {
   check_repo_descriptor_schema
 
   check_repo_descriptor_has_predefined_labels
 
-  local labels="$(merge_individual_and_group_labels)"
-  local labels_length="$(echo "$labels" | jq 'length')"
+  labels="$(merge_individual_and_group_labels)"
+  labels_length="$(echo "$labels" | jq 'length')"
   echo_info "Discoverd $labels_length labels."
 
   if [ "$labels_length" -gt 0 ]; then
-    labels="$labels" process_repo "$REPO_NAME"
-    labels="$labels" process_workspace_submodules "process_repo"
+    process_repo "$REPO_NAME"
+    process_workspace_submodules "process_repo"
   fi
+
+  exit $exit_code
 }
 
-function handle_workflow_dispatch_event() { handle_schedule_event; }
-
-function handle_push_event() { handle_schedule_event; }
-
-# ------------------------------------------------------------------------------
-# Entrypoint.
-# ------------------------------------------------------------------------------
-
-handle_event "$@"
-
-exit $exit_code
+main
