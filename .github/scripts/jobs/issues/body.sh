@@ -5,6 +5,7 @@ set -e
 source .github/scripts/general.sh
 source .github/scripts/repositories.sh
 source .github/scripts/bodies.sh
+source .github/scripts/labels.sh
 source .github/scripts/templates.sh
 source .github/scripts/workspace.sh
 
@@ -127,14 +128,16 @@ function handle_schedule_event() {
 
     local issue_repo="$(make_repo "$repo_name")"
 
-    # TODO: dynamically get labels from json file.
-    local task_type_labels="\"dev\""
+    local type_label_filter="$(make_label_filter_from_descriptor_group "type")"
+    local cfl_bot_ignore_label_filter="$(
+      exclude="true" make_label_filter "$cfl_bot_ignore_label"
+    )"
 
     local issues=$(
       gh issue list \
         --repo="$issue_repo" \
         --limit=10000 \
-        --search="is:open label:$task_type_labels $cfl_bot_ignore_label_filter" \
+        --search="is:open $type_label_filter $cfl_bot_ignore_label_filter" \
         --json=body,number,labels
     )
 

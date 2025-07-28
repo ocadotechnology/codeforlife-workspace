@@ -5,6 +5,7 @@ set -e
 source .github/scripts/general.sh
 source .github/scripts/repositories.sh
 source .github/scripts/templates.sh
+source .github/scripts/labels.sh
 source .github/scripts/workspace.sh
 
 # ------------------------------------------------------------------------------
@@ -108,6 +109,9 @@ function process_repo() {
   echo_h1 "$repo_name"
 
   local repo="$(make_repo "$repo_name")"
+  local cfl_bot_ignore_label_filter="$(
+    exclude="true" make_label_filter "$cfl_bot_ignore_label"
+  )"
 
   local issues=$(
     gh issue list \
