@@ -7,7 +7,7 @@ source .github/scripts/repositories.sh
 source .github/scripts/workspace.sh
 source .github/scripts/labels.sh
 
-repo_descriptor=".github/scripts/jobs/configure-repositories/repository.json"
+repo_descriptor=".github/descriptors/repository.json"
 exit_code=0
 
 function check_repo_descriptor_schema() {
