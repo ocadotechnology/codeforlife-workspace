@@ -31,8 +31,8 @@ function make_label_filter_from_descriptor_group() {
   local group="$1"
 
   local label_csv="$(
-    jq -r '.labels.group.'"$group"'.labels | keys | join(",")' \
-      .github/descriptors/repository.json
+    jq -r '.group.'"$group"'.labels | keys | join(",")' \
+      .github/descriptors/labels.json
   )"
 
   echo "$(make_label_filter "$label_csv")"

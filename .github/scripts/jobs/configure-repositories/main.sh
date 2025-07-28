@@ -7,24 +7,24 @@ source .github/scripts/repositories.sh
 source .github/scripts/workspace.sh
 source .github/scripts/labels.sh
 
-repo_descriptor=".github/descriptors/repository.json"
+labels_descriptor=".github/descriptors/labels.json"
 exit_code=0
 
-function check_repo_descriptor_schema() {
-  local repo_descriptor_schema="$(
+function check_labels_descriptor_schema() {
+  local labels_descriptor_schema="$(
     realpath --relative-to="." "$(
-      dirname "$repo_descriptor"
+      dirname "$labels_descriptor"
     )/$(
-      jq -r '.["$schema"]' "$repo_descriptor"
+      jq -r '.["$schema"]' "$labels_descriptor"
     )"
   )"
 
   pip install check-jsonschema==0.33.* >/dev/null
 
-  check-jsonschema --schemafile="$repo_descriptor_schema" "$repo_descriptor"
+  check-jsonschema --schemafile="$labels_descriptor_schema" "$labels_descriptor"
 }
 
-function check_repo_descriptor_has_predefined_labels() {
+function check_labels_descriptor_has_predefined_labels() {
   local labels=(
     "$cfl_bot_ignore_label"
     "$ready_for_review_label"
@@ -32,21 +32,21 @@ function check_repo_descriptor_has_predefined_labels() {
 
   for label in "${labels[@]}"; do
     if ! eval_bool "$(
-      jq '.labels.individual | has("'"$label"'")' "$repo_descriptor"
+      jq '.individual | has("'"$label"'")' "$labels_descriptor"
     )"; then
-      exit=1 echo_error "Label: \"$label\" is missing in \"$repo_descriptor\"."
+      exit=1 echo_error "Label: \"$label\" is missing in \"$labels_descriptor\"."
     fi
   done
 }
 
 function merge_individual_and_group_labels() {
   jq '
-    .labels.individual + (
-      .labels.group |
+    .individual + (
+      .group |
       [.[] | .colour as $colour | .labels | map_values(.colour = $colour)] |
       add
     )
-  ' "$repo_descriptor"
+  ' "$labels_descriptor"
 }
 
 function configure_labels() {
@@ -92,9 +92,9 @@ function process_repo() {
 }
 
 function main() {
-  check_repo_descriptor_schema
+  check_labels_descriptor_schema
 
-  check_repo_descriptor_has_predefined_labels
+  check_labels_descriptor_has_predefined_labels
 
   labels="$(merge_individual_and_group_labels)"
   labels_length="$(echo "$labels" | jq 'length')"
