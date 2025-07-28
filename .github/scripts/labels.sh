@@ -7,15 +7,24 @@ labels_descriptor=".github/descriptors/labels.json"
 ready_for_review_label="ready for review"
 cfl_bot_ignore_label="bot ignore"
 
+# Auto-collect all labels into an array if not already done so.
+declare -a labels
+if [ "${#labels[@]}" -eq 0 ]; then
+  while read -r var_name; do
+    if [[ "$var_name" =~ _label$ ]]; then labels+=("${!var_name}"); fi
+  done < <(compgen -v)
+fi
+
 function make_label_filter() {
   local label_csv="$@"
-
+  local label_count=0
   local label_filter="label:"
+  local labels=()
+
   if [ -n "$exclude" ] && eval_bool "$exclude"; then
     label_filter="-$label_filter"
   fi
 
-  local label_count=0
   IFS=',' read -ra labels <<<"$label_csv"
   for label in "${labels[@]}"; do
     label="$(trim_spaces "$label")"
@@ -54,18 +63,19 @@ function check_labels_descriptor_schema() {
 }
 
 function check_labels_descriptor_has_predefined_labels() {
-  local labels=(
-    "$cfl_bot_ignore_label"
-    "$ready_for_review_label"
-  )
+  local return_code=0
+  local descriptor_labels="$(get_labels_from_descriptor)"
+  local has_label=""
 
   for label in "${labels[@]}"; do
-    if ! eval_bool "$(
-      jq '.individual | has("'"$label"'")' "$labels_descriptor"
-    )"; then
-      exit=1 echo_error "Label: \"$label\" is missing in \"$labels_descriptor\"."
+    has_label="$(echo "$descriptor_labels" | jq 'has("'"$label"'")')"
+    if ! eval_bool "$has_label"; then
+      echo_error "Label: \"$label\" is missing in \"$labels_descriptor\"."
+      return_code=1
     fi
   done
+
+  return $return_code
 }
 
 function check_labels_descriptor() {

@@ -7,8 +7,6 @@ source .github/scripts/repositories.sh
 source .github/scripts/workspace.sh
 source .github/scripts/labels.sh
 
-exit_code=0
-
 function configure_labels() {
   local repo_name="$1"
 
@@ -45,19 +43,17 @@ function configure_labels() {
   done < <(echo "$labels" | jq -c 'to_entries | .[]')
 }
 
-function main() {
-  check_labels_descriptor
+exit_code=0
 
-  labels="$(get_labels_from_descriptor)"
-  labels_length="$(echo "$labels" | jq 'length')"
-  echo_info "Discoverd $labels_length labels."
+check_labels_descriptor
 
-  if [ "$labels_length" -gt 0 ]; then
-    configure_labels "$REPO_NAME"
-    process_workspace_submodules "configure_labels"
-  fi
+labels="$(get_labels_from_descriptor)"
+labels_length="$(echo "$labels" | jq 'length')"
+echo_info "Discoverd $labels_length labels."
 
-  exit $exit_code
-}
+if [ "$labels_length" -gt 0 ]; then
+  configure_labels "$REPO_NAME"
+  process_workspace_submodules "configure_labels"
+fi
 
-main
+exit $exit_code
