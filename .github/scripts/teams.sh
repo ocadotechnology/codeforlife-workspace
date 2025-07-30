@@ -1,8 +1,10 @@
 #!/bin/bash
 
-full_team="cfl"
-dev_team="cfl-dev"
-senior_dev_team="cfl-senior-dev"
-ui_team="cfl-ui"
-ux_team="cfl-ux"
-edu_team="cfl-edu"
+declare -A teams=(
+  ["__all__"]="cfl"
+  ["dev"]="cfl-dev"
+  ["senior_dev"]="cfl-senior-dev"
+  ["ui"]="cfl-ui"
+  ["ux"]="cfl-ux"
+  ["edu"]="cfl-edu"
+)

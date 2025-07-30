@@ -30,7 +30,7 @@ function enforce_issue_body() {
   if [ -n "$(trim_spaces "$issue_body")" ]; then return 0; fi
 
   # TODO: select appropriate github team based on task-type label.
-  local team="$full_team"
+  local team="${teams["__all__"]}"
 
   local issue_comment_body="$(
     make_comment "issue/enforce-body.md" "team=@$org_name\/$team"
