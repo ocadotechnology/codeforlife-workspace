@@ -5,6 +5,14 @@ inputs:
     description: "The arguments to pass to the script."
     required: false
     default: ""
+  workflow:
+    description: "The path of the workflow. Required if a workflow is called by another."
+    required: true
+    default: "${{ github.workflow_ref }}"
+  job:
+    description: "The name of the job. Required if a workflow is called by another."
+    required: true
+    default: "${{ github.job }}"
 runs:
   using: composite
   steps:
@@ -19,10 +27,10 @@ runs:
         echo_cfl_ascii_art
 
         script_path=".github/scripts/jobs/$(
-          echo "${{ github.workflow_ref }}" |
+          echo "${{ inputs.workflow }}" |
             sed -E 's/^.+\/.github\/workflows\/(.+)\.(yml|yaml)@.+$/\1/'
         )/$(
-          echo "${{ github.job }}" | sed 's/-/_/g'
+          echo "${{ inputs.job }}" | sed 's/-/_/g'
         ).sh"
 
         if [ ! -f "$script_path" ]; then

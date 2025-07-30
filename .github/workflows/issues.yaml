@@ -26,6 +26,7 @@ env:
   GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
   EVENT_NAME: ${{ github.event_name }}
   REPO_NAME: ${{ github.event.repository.name }}
+  WORKFLOW_REF: .github/workflows/issues.yaml
 
 jobs:
   body:
@@ -54,6 +55,8 @@ jobs:
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/run-job-script@main
         with:
           args: "${{ github.event.issue.body }}"
+          workflow: "${{ env.WORKFLOW_REF }}"
+          job: "body"
 
   prompt:
     runs-on: ubuntu-22.04
@@ -80,6 +83,8 @@ jobs:
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/run-job-script@main
         with:
           args: "${{ github.event.comment.body }}"
+          workflow: "${{ env.WORKFLOW_REF }}"
+          job: "prompt"
 
   inactive:
     runs-on: ubuntu-22.04
@@ -96,3 +101,6 @@ jobs:
     steps:
       - name: 🏃 Download and Run Job Script
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/run-job-script@main
+        with:
+          workflow: "${{ env.WORKFLOW_REF }}"
+          job: "inactive"
