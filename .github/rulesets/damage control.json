@@ -1,0 +1,25 @@
+{
+  "id": 2698339,
+  "name": "damage control",
+  "target": "branch",
+  "source_type": "Repository",
+  "source": "ocadotechnology/codeforlife-portal-frontend",
+  "enforcement": "active",
+  "conditions": {
+    "ref_name": {
+      "exclude": [],
+      "include": [
+        "~DEFAULT_BRANCH"
+      ]
+    }
+  },
+  "rules": [
+    {
+      "type": "deletion"
+    },
+    {
+      "type": "non_fast_forward"
+    }
+  ],
+  "bypass_actors": []
+}
