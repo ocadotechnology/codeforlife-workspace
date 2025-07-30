@@ -11,10 +11,8 @@ runs:
     - uses: actions/checkout@v4
       with:
         repository: ocadotechnology/codeforlife-workspace
-        path: ../codeforlife-workspace
 
     - shell: bash
-      working-directory: ../codeforlife-workspace
       run: |
         source .github/scripts/general.sh
 
