@@ -25,3 +25,9 @@ function make_repo() {
 
   echo "$org_name/$repo_name"
 }
+
+function set_repo() {
+  local repo_name="$1"
+
+  export GH_REPO="$(make_repo "$repo_name")"
+}
