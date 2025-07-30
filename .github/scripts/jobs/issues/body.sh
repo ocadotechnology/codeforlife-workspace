@@ -6,6 +6,7 @@ source .github/scripts/general.sh
 source .github/scripts/repositories.sh
 source .github/scripts/bodies.sh
 source .github/scripts/labels.sh
+source .github/scripts/teams.sh
 source .github/scripts/templates.sh
 source .github/scripts/workspace.sh
 
