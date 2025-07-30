@@ -20,9 +20,6 @@
         "dev": {
           "description": "This issue involves development."
         },
-        "sec": {
-          "description": "This issue involves security."
-        },
         "ui": {
           "description": "This issue involves user interface."
         },
@@ -56,6 +53,9 @@
         },
         "feature": {
           "description": "This issue involves creating a feature."
+        },
+        "sec": {
+          "description": "This issue involves security."
         }
       },
       "colour": "#c4883a",
