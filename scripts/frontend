@@ -19,6 +19,9 @@ source=${SOURCE:-"."}
 # The path of the target node_modules.
 export NODE_PATH=${NODE_PATH:-"$(pwd)/node_modules"}
 
+# The path of the .prettierrc.json.
+prettierrc_json=${PRETTIERRC_JSON:-"/codeforlife-workspace/configs/frontend/.prettierrc.json"}
+
 # ------------------------------------------------------------------------------
 # Functions
 # ------------------------------------------------------------------------------
@@ -103,6 +106,7 @@ function format() {
   # Auto-fix known formatting issues.
   # https://prettier.io/docs/cli
   yarn run prettier \
+    --config=$prettierrc_json \
     --write \
     $source
 }
@@ -111,6 +115,7 @@ function format:check() {
   # Check formatting issues.
   # https://prettier.io/docs/cli
   yarn run prettier \
+    --config=$prettierrc_json \
     --check \
     --write=false \
     $source

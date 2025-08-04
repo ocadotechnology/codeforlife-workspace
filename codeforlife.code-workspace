@@ -72,7 +72,9 @@
       "**/.hypothesis": true,
       "**/.mypy_cache": true,
       "**/.pytest_cache": true,
-      "**/__pycache__": true
+      "**/__pycache__": true,
+      // JavaScript
+      "**/*.tsbuildinfo": true
     },
     "cSpell.words": [
       "codeforlife",
@@ -175,7 +177,41 @@
         "username": "root",
         "password": "password"
       }
-    ]
+    ],
+    // JavaScript, JavaScript React, TypeScript, TypeScript React
+    "javascript.format.semicolons": "remove",
+    "javascript.preferences.quoteStyle": "double",
+    "typescript.format.semicolons": "remove",
+    "typescript.preferences.quoteStyle": "double",
+    "[javascript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "always",
+        "source.organizeImports": "never"
+      }
+    },
+    "[javascriptreact]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "always",
+        "source.organizeImports": "never"
+      }
+    },
+    "[typescript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "always",
+        "source.organizeImports": "never"
+      }
+    },
+    "[typescriptreact]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "always",
+        "source.organizeImports": "never"
+      }
+    },
+    "prettier.configPath": "/codeforlife-workspace/configs/frontend/.prettierrc.json"
   },
   "tasks": {
     "version": "2.0.0",

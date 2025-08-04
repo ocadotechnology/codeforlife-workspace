@@ -3,16 +3,19 @@ name: Test JavaScript Code
 on:
   workflow_call:
     inputs:
+      # Node
       node-version:
         description: "The Node.js version to set up."
         type: number
         required: false
         default: 22
+      # Shell
       working-directory:
         description: "The current working directory."
         type: string
         required: false
         default: "."
+      # Codecov
       codecov-slug:
         description: "The slug provided to Codecov for the coverage report."
         type: string
@@ -33,16 +36,29 @@ on:
         type: string
         required: false
         default: "coverage/cobertura-coverage.xml"
+      # Snyk
       snyk-config-path:
         description: "The path of the Snyk config file in the workspace."
         type: string
         required: false
         default: "frontend/.snyk"
+      # Vite
       vite-config-path:
         description: "The path of the Vite config file."
         type: string
         required: false
         default: "./vite.config.ts"
+      # Prettier
+      prettierrc-json-download-branch:
+        description: "The branch of the workspace repo to download the .prettierrc.json from."
+        type: string
+        required: false
+        default: "main"
+      prettierrc-json-path:
+        description: "The path of the .prettierrc.json."
+        type: string
+        required: false
+        default: "./.prettierrc.json"
     secrets: # All secrets should not be required to support contributors.
       CODECOV_TOKEN:
         description: "The token used to gain access to Codecov."
@@ -65,12 +81,22 @@ jobs:
       LANG: C.UTF-8
       OCADO_TECH_ORG_ID: 2088731
       VITE_CONFIG: ${{ inputs.vite-config-path }}
+      PRETTIERRC_JSON: ${{ inputs.prettierrc-json-path }}
     steps:
       - name: 🌐 Set up JavaScript ${{ inputs.node-version }} Environment
         uses: ocadotechnology/codeforlife-workspace/.github/actions/javascript/setup-environment@main
         with:
           node-version: ${{ inputs.node-version }}
           install-args: --production=false
+
+      - name: 📥 Download Prettier Config File
+        # Download default file if one is not already present in the repo.
+        if: hashFiles(inputs.prettierrc-json-path) == ''
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
+        with:
+          branch: ${{ inputs.prettierrc-json-download-branch }}
+          path: configs/frontend/.prettierrc.json
+          save-to: ${{ inputs.prettierrc-json-path }}
 
       - name: 📥 Download CLI Script File
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
