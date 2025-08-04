@@ -364,6 +364,8 @@
         "url": "http://localhost:5173",
         "webRoot": "/codeforlife-workspace/${input:frontend-service}"
       }
+      // TODO: Vitest Debug
+      // https://vitest.dev/guide/debugging.html#vs-code
     ]
   },
   "extensions": {
