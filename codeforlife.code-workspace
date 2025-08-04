@@ -189,7 +189,8 @@
           "codeforlife-package-python",
           "codeforlife-portal-backend",
           "codeforlife-contributor-backend",
-          "codeforlife-template-backend"
+          "codeforlife-template-backend",
+          "codeforlife-sso-backend"
         ]
       },
       {
@@ -200,13 +201,28 @@
           "codeforlife-package-javascript",
           "codeforlife-portal-frontend",
           "codeforlife-contributor-frontend",
-          "codeforlife-template-frontend"
+          "codeforlife-template-frontend",
+          "codeforlife-sso-frontend"
         ]
+      },
+      {
+        "id": "remember-frontend-service",
+        "type": "command",
+        "command": "extension.commandvariable.transform",
+        "args": {
+          "text": "${remember:frontend-service}"
+        }
       },
       {
         "id": "args",
         "type": "promptString",
         "description": "Expected Format: \"{func} {arg1} {arg2} ...\"."
+      },
+      {
+        "id": "scripts:frontend:run:client:terminate",
+        "type": "command",
+        "command": "workbench.action.tasks.terminate",
+        "args": "scripts:frontend:run:client"
       }
     ],
     "tasks": [
@@ -227,6 +243,25 @@
         "options": {
           "cwd": "/codeforlife-workspace/${input:frontend-folder}"
         }
+      },
+      {
+        "label": "scripts:frontend:run:client",
+        "command": "sudo chmod +x /codeforlife-workspace/scripts/frontend && /codeforlife-workspace/scripts/frontend run:client",
+        "type": "shell",
+        "problemMatcher": [],
+        "isBackground": true,
+        "options": {
+          "cwd": "/codeforlife-workspace/${input:remember-frontend-service}",
+          "env": {
+            "BROWSER": "none"
+          }
+        }
+      },
+      {
+        "label": "scripts:frontend:run:client:terminate",
+        "command": "echo ${input:scripts:frontend:run:client:terminate}",
+        "type": "shell",
+        "problemMatcher": []
       }
     ]
   },
@@ -235,14 +270,35 @@
     "inputs": [
       {
         "id": "backend-service",
-        "type": "pickString",
-        "description": "Select the backend service.",
-        "options": [
-          "codeforlife-package-python",
-          "codeforlife-portal-backend",
-          "codeforlife-contributor-backend",
-          "codeforlife-template-backend"
-        ]
+        "type": "command",
+        "command": "extension.commandvariable.pickStringRemember",
+        "args": {
+          "key": "backend-service",
+          "description": "Select the backend service.",
+          "options": [
+            "codeforlife-package-python",
+            "codeforlife-portal-backend",
+            "codeforlife-contributor-backend",
+            "codeforlife-template-backend",
+            "codeforlife-sso-backend"
+          ]
+        }
+      },
+      {
+        "id": "frontend-service",
+        "type": "command",
+        "command": "extension.commandvariable.pickStringRemember",
+        "args": {
+          "key": "frontend-service",
+          "description": "Select the frontend service.",
+          "options": [
+            "codeforlife-package-javascript",
+            "codeforlife-portal-frontend",
+            "codeforlife-contributor-frontend",
+            "codeforlife-template-frontend",
+            "codeforlife-sso-frontend"
+          ]
+        }
       },
       {
         "id": "django-network",
@@ -298,6 +354,15 @@
         },
         "request": "test",
         "type": "debugpy"
+      },
+      {
+        "name": "Vite Server",
+        "preLaunchTask": "scripts:frontend:run:client",
+        "postDebugTask": "scripts:frontend:run:client:terminate",
+        "request": "launch",
+        "type": "chrome",
+        "url": "http://localhost:5173",
+        "webRoot": "/codeforlife-workspace/${input:frontend-service}"
       }
     ]
   },
