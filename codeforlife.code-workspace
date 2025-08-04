@@ -211,7 +211,8 @@
         "source.organizeImports": "never"
       }
     },
-    "prettier.configPath": "/codeforlife-workspace/configs/frontend/.prettierrc.json"
+    "prettier.configPath": "/codeforlife-workspace/configs/frontend/.prettierrc.json",
+    "prettier.ignorePath": "/codeforlife-workspace/configs/frontend/.prettierignore"
   },
   "tasks": {
     "version": "2.0.0",
