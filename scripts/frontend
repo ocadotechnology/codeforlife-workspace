@@ -22,6 +22,9 @@ export NODE_PATH=${NODE_PATH:-"$(pwd)/node_modules"}
 # The path of the .prettierrc.json.
 prettierrc_json=${PRETTIERRC_JSON:-"/codeforlife-workspace/configs/frontend/.prettierrc.json"}
 
+# The path of the .prettierignore.
+prettierignore=${PRETTIERIGNORE:-"/codeforlife-workspace/configs/frontend/.prettierignore"}
+
 # ------------------------------------------------------------------------------
 # Functions
 # ------------------------------------------------------------------------------
@@ -107,6 +110,7 @@ function format() {
   # https://prettier.io/docs/cli
   yarn run prettier \
     --config=$prettierrc_json \
+    --ignore-path=$prettierignore \
     --write \
     $source
 }
@@ -116,6 +120,7 @@ function format:check() {
   # https://prettier.io/docs/cli
   yarn run prettier \
     --config=$prettierrc_json \
+    --ignore-path=$prettierignore \
     --check \
     --write=false \
     $source
