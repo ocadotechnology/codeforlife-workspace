@@ -73,8 +73,25 @@
       "**/.mypy_cache": true,
       "**/.pytest_cache": true,
       "**/__pycache__": true,
+      "**/.coverage": true,
       // JavaScript
       "**/*.tsbuildinfo": true
+    },
+    "files.watcherExclude": {
+      // General
+      "**/.git/**": true,
+      "**/dist/**": true,
+      "**/build/**": true,
+      // Python
+      "**/.mypy_cache/**": true,
+      "**/.pytest_cache/**": true,
+      "**/__pycache__/**": true,
+      "**/.venv/**": true,
+      "**/static/**": true,
+      "**/htmlcov/**": true,
+      // JavaScript
+      "**/node_modules/**": true,
+      "**/coverage/**": true
     },
     "cSpell.words": [
       "codeforlife",
