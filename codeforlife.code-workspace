@@ -66,7 +66,7 @@
     "workbench.colorCustomizations": {
       "editorRuler.foreground": "#008000"
     },
-    "files.eol": "auto",
+    "files.eol": "\n",
     "files.exclude": {
       // Python
       "**/.hypothesis": true,
