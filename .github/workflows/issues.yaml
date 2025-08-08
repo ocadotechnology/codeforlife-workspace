@@ -54,7 +54,7 @@ jobs:
       - name: 🏃 Download and Run Job Script
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/run-job-script@main
         with:
-          args: "\"${{ github.event.issue.body }}\""
+          args: "'${{ github.event.issue.body }}'"
           workflow: "${{ env.WORKFLOW_REF }}"
           job: "body"
 
@@ -82,7 +82,7 @@ jobs:
       - name: 🏃 Download and Run Job Script
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/run-job-script@main
         with:
-          args: "\"${{ github.event.comment.body }}\""
+          args: "'${{ github.event.comment.body }}'"
           workflow: "${{ env.WORKFLOW_REF }}"
           job: "prompt"
 
