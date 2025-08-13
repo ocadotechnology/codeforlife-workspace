@@ -94,3 +94,9 @@ function handle_event() {
 
   "handle_${EVENT_NAME}_event" "$@"
 }
+
+function import() {
+  local script="$1"
+
+  source ".github/scripts/$script.sh"
+}
