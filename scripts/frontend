@@ -16,14 +16,11 @@ vite_config=${VITE_CONFIG:-"./node_modules/codeforlife/src/vite.config.ts"}
 # The path of the source code.
 source=${SOURCE:-"."}
 
-# The path of the target node_modules.
-export NODE_PATH=${NODE_PATH:-"$(pwd)/node_modules"}
+# The path of the workspace-level .prettierrc.json.
+workspace_prettierrc_json=${WORKSPACE_PRETTIERRC_JSON:-"/codeforlife-workspace/configs/frontend/.prettierrc.json"}
 
-# The path of the .prettierrc.json.
-prettierrc_json=${PRETTIERRC_JSON:-"/codeforlife-workspace/configs/frontend/.prettierrc.json"}
-
-# The path of the .prettierignore.
-prettierignore=${PRETTIERIGNORE:-"/codeforlife-workspace/configs/frontend/.prettierignore"}
+# The path of the workspace-level .prettierignore.
+workspace_prettierignore=${WORKSPACE_PRETTIERIGNORE:-"/codeforlife-workspace/configs/frontend/.prettierignore"}
 
 # ------------------------------------------------------------------------------
 # Functions
@@ -105,25 +102,29 @@ function test:ui() {
     --config $vite_config
 }
 
+function _prettier() {
+  local options="$@"
+
+  local prettierignore=".prettierignore"
+  if [ -f $prettierignore ]; then options+=" --ignore-path=$prettierignore"; fi
+
+  yarn run prettier \
+    --config=$workspace_prettierrc_json \
+    --ignore-path=$workspace_prettierignore \
+    "$options" \
+    $source
+}
+
 function format() {
   # Auto-fix known formatting issues.
   # https://prettier.io/docs/cli
-  yarn run prettier \
-    --config=$prettierrc_json \
-    --ignore-path=$prettierignore \
-    --write \
-    $source
+  _prettier --write
 }
 
 function format:check() {
   # Check formatting issues.
   # https://prettier.io/docs/cli
-  yarn run prettier \
-    --config=$prettierrc_json \
-    --ignore-path=$prettierignore \
-    --check \
-    --write=false \
-    $source
+  _prettier --check --write=false
 }
 
 function code:check() {

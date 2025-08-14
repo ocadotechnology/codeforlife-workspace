@@ -49,26 +49,26 @@ on:
         required: false
         default: "./vite.config.ts"
       # Prettier
-      prettierrc-json-download-branch:
+      workspace-prettierrc-json-download-branch:
         description: "The branch of the workspace repo to download the .prettierrc.json from."
         type: string
         required: false
         default: "main"
-      prettierrc-json-path:
+      workspace-prettierrc-json-path:
         description: "The path of the .prettierrc.json."
         type: string
         required: false
-        default: "./.prettierrc.json"
-      prettierignore-download-branch:
+        default: ".workspace/.prettierrc.json"
+      workspace-prettierignore-download-branch:
         description: "The branch of the workspace repo to download the .prettierignore from."
         type: string
         required: false
         default: "main"
-      prettierignore-path:
+      workspace-prettierignore-path:
         description: "The path of the .prettierignore."
         type: string
         required: false
-        default: "./.prettierignore"
+        default: ".workspace/.prettierignore"
     secrets: # All secrets should not be required to support contributors.
       CODECOV_TOKEN:
         description: "The token used to gain access to Codecov."
@@ -91,8 +91,8 @@ jobs:
       LANG: C.UTF-8
       OCADO_TECH_ORG_ID: 2088731
       VITE_CONFIG: ${{ inputs.vite-config-path }}
-      PRETTIERRC_JSON: ${{ inputs.prettierrc-json-path }}
-      PRETTIERIGNORE: ${{ inputs.prettierignore-path }}
+      WORKSPACE_PRETTIERRC_JSON: ${{ inputs.workspace-prettierrc-json-path }}
+      WORKSPACE_PRETTIERIGNORE: ${{ inputs.workspace-prettierignore-path }}
     steps:
       - name: 🌐 Set up JavaScript ${{ inputs.node-version }} Environment
         uses: ocadotechnology/codeforlife-workspace/.github/actions/javascript/setup-environment@main
@@ -101,22 +101,18 @@ jobs:
           install-args: --production=false
 
       - name: 📥 Download Prettier Config File
-        # Download default file if one is not already present in the repo.
-        if: hashFiles(inputs.prettierrc-json-path) == ''
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
         with:
-          branch: ${{ inputs.prettierrc-json-download-branch }}
+          branch: ${{ inputs.workspace-prettierrc-json-download-branch }}
           path: configs/frontend/.prettierrc.json
-          save-to: ${{ inputs.prettierrc-json-path }}
+          save-to: ${{ inputs.workspace-prettierrc-json-path }}
 
       - name: 📥 Download Prettier Ignore File
-        # Download default file if one is not already present in the repo.
-        if: hashFiles(inputs.prettierignore-path) == ''
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
         with:
-          branch: ${{ inputs.prettierignore-download-branch }}
+          branch: ${{ inputs.workspace-prettierignore-download-branch }}
           path: configs/frontend/.prettierignore
-          save-to: ${{ inputs.prettierignore-path }}
+          save-to: ${{ inputs.workspace-prettierignore-path }}
 
       - name: 📥 Download CLI Script File
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
