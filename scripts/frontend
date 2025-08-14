@@ -111,7 +111,7 @@ function _prettier() {
   yarn run prettier \
     --config=$workspace_prettierrc_json \
     --ignore-path=$workspace_prettierignore \
-    "$options" \
+    $options \
     $source
 }
 
