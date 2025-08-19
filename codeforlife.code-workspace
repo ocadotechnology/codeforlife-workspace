@@ -60,9 +60,7 @@
       "source.organizeImports": "explicit"
     },
     "editor.formatOnSave": true,
-    "editor.rulers": [
-      80
-    ],
+    "editor.rulers": [80],
     "workbench.colorCustomizations": {
       "editorRuler.foreground": "#008000"
     },
@@ -93,13 +91,7 @@
       "**/node_modules/**": true,
       "**/coverage/**": true
     },
-    "cSpell.words": [
-      "codeforlife",
-      "klass",
-      "ocado",
-      "kurono",
-      "pipenv"
-    ],
+    "cSpell.words": ["codeforlife", "klass", "ocado", "kurono", "pipenv"],
     // Markdown
     "[md]": {
       "editor.tabSize": 4
@@ -132,36 +124,20 @@
       "--config",
       "/codeforlife-workspace/configs/backend/pyproject.toml"
     ],
-    "black-formatter.path": [
-      ".venv/bin/python",
-      "-m",
-      "black"
-    ],
+    "black-formatter.path": [".venv/bin/python", "-m", "black"],
     "isort.args": [
       "--settings-file=/codeforlife-workspace/configs/backend/pyproject.toml"
     ],
-    "isort.path": [
-      ".venv/bin/python",
-      "-m",
-      "isort"
-    ],
+    "isort.path": [".venv/bin/python", "-m", "isort"],
     "mypy-type-checker.args": [
       "--config-file=/codeforlife-workspace/configs/backend/pyproject.toml"
     ],
-    "mypy-type-checker.path": [
-      ".venv/bin/python",
-      "-m",
-      "mypy"
-    ],
+    "mypy-type-checker.path": [".venv/bin/python", "-m", "mypy"],
     "pylint.args": [
       "--rcfile=/codeforlife-workspace/configs/backend/pyproject.toml"
     ],
-    "pylint.path": [
-      ".venv/bin/python",
-      "-m",
-      "pylint"
-    ],
-    // Database 
+    "pylint.path": [".venv/bin/python", "-m", "pylint"],
+    // Database
     // TODO: create workflow to update sql connections for each BE service.
     "sqltools.connections": [
       {
@@ -239,7 +215,14 @@
       }
     },
     "prettier.configPath": "/codeforlife-workspace/configs/frontend/.prettierrc.json",
-    "prettier.ignorePath": "/codeforlife-workspace/configs/frontend/.prettierignore"
+    "prettier.ignorePath": "/codeforlife-workspace/configs/frontend/.prettierignore",
+    "eslint.useFlatConfig": true,
+    // JSON
+    "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+    // GraphQL
+    "[graphql]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+    // Handlebars
+    "[handlebars]": { "editor.defaultFormatter": "esbenp.prettier-vscode" }
   },
   "tasks": {
     "version": "2.0.0",
@@ -381,10 +364,7 @@
         "type": "debugpy"
       },
       {
-        "args": [
-          "runserver",
-          "${input:django-network}"
-        ],
+        "args": ["runserver", "${input:django-network}"],
         "env": {
           "SERVER_MODE": "django"
         },
@@ -433,8 +413,6 @@
     ]
   },
   "extensions": {
-    "unwantedRecommendations": [
-      "ms-azuretools.vscode-docker"
-    ]
+    "unwantedRecommendations": ["ms-azuretools.vscode-docker"]
   }
 }
