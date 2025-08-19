@@ -6,7 +6,8 @@ import reactRefresh from "eslint-plugin-react-refresh"
 import eslintConfigPrettier from "eslint-config-prettier/flat"
 import ts from "typescript-eslint"
 
-// https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts
+// Base off of:
+// https://github.com/vitejs/vite/blob/main/packages/create-vite/template-react-ts/eslint.config.js
 export default ts.config(
   {
     // https://eslint.org/docs/latest/use/configure/configuration-files#globally-ignoring-files-with-ignores
