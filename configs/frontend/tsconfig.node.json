@@ -1,6 +1,10 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
+    /*
+    Specifies the library files available to your code, which includes modern
+    JavaScript features (ESNext).
+    */
     "lib": ["ESNext"]
   }
 }
