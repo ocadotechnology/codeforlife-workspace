@@ -10,6 +10,8 @@ Based off of:
   "compilerOptions": {
     /* -------------------------------------------------------------------------
     LANGUAGE
+
+    Configuring how JavaScript and TypeScript run in general.
     ------------------------------------------------------------------------- */
     /*
     Specifies the location for the TypeScript build information file, which
@@ -36,6 +38,8 @@ Based off of:
     "skipLibCheck": true,
     /* -------------------------------------------------------------------------
     BUNDLER
+
+    Making TypeScript compatible with Vite (our bundler).
     ------------------------------------------------------------------------- */
     /*
     Recommended by Vite. It aligns TypeScript's module resolution strategy with
@@ -46,6 +50,14 @@ Based off of:
     Allows you to use .ts and .tsx file extensions in your import statements.
     */
     "allowImportingTsExtensions": true,
+    /*
+    Tells TypeScript to not change the import and export statements in your code
+    at all. It is the most robust way to ensure that your module syntax exactly
+    matches what your runtime or bundler expects. If set to false, TypeScript
+    might change your imports during the compilation process which can lead to
+    subtle but significant bugs.
+    */
+    "verbatimModuleSyntax": true,
     /*
     A key configuration for bundlers that perform "isolated transpilation" like
     Vite. It requires all files to be treated as modules and helps prevent
