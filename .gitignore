@@ -170,3 +170,5 @@ cython_debug/
 
 # Data from 3rd party services (see: .devcontainer/docker-compose.yml)
 /.data
+
+node_modules

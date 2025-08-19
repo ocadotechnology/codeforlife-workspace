@@ -1,0 +1,86 @@
+/*
+This file contains all the base configurations shared by tsconfig.node.json and
+tsconfig.app.json (see current directory).
+
+Based off of:
+1. https://github.com/vitejs/vite/blob/main/packages/create-vite/template-react-ts/tsconfig.node.json
+2. https://github.com/vitejs/vite/blob/main/packages/create-vite/template-react-ts/tsconfig.app.json
+*/
+{
+  "compilerOptions": {
+    /* -------------------------------------------------------------------------
+    LANGUAGE
+    ------------------------------------------------------------------------- */
+    /*
+    Specifies the location for the TypeScript build information file, which
+    enables incremental compilation. This feature dramatically speeds up build
+    times by caching information about the previous compilation.
+    */
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
+    /*
+    Specifies the JavaScript version that TypeScript will compile your code down
+    to.
+    */
+    "target": "ESNext",
+    /*
+    Determines the module system that TypeScript should use to handle import and
+    export statements in your code.
+    */
+    "module": "ESNext",
+    /*
+    A performance-related flag that tells TypeScript to skip type-checking
+    declaration files (.d.ts). By setting to true, you are trusting that the
+    type definitions provided by libraries are correct and don't need to be
+    checked during every compilation.
+    */
+    "skipLibCheck": true,
+    /* -------------------------------------------------------------------------
+    BUNDLER
+    ------------------------------------------------------------------------- */
+    /*
+    Recommended by Vite. It aligns TypeScript's module resolution strategy with
+    how modern bundlers like Vite and esbuild resolve imports.
+    */
+    "moduleResolution": "bundler",
+    /*
+    Allows you to use .ts and .tsx file extensions in your import statements.
+    */
+    "allowImportingTsExtensions": true,
+    /*
+    A key configuration for bundlers that perform "isolated transpilation" like
+    Vite. It requires all files to be treated as modules and helps prevent
+    common issues that can occur when TypeScript transpiles files on a per-file
+    basis without a full understanding of the entire project.
+    */
+    "isolatedModules": true,
+    /*
+    Files without imports or exports are treated as global scripts, which can
+    lead to conflicts and unexpected behavior when you have variables or types
+    with the same name across different files. This ensures that every .ts and
+    .tsx file is treated as its own isolated module. This aligns with how modern
+    bundlers like Vite operate. 
+    */
+    "moduleDetection": "force",
+    /*
+    A very important setting. It tells the TypeScript compiler not to output any
+    JavaScript files. Vite is responsible for compiling your TypeScript code
+    into JavaScript using esbuild, which is much faster than the standard
+    TypeScript compiler (tsc).
+    */
+    "noEmit": true,
+    /* -------------------------------------------------------------------------
+    LINTING
+
+    Note that while we're using typescript-eslint, it's still recommended to use
+    use TS type-checking features as they are semantic checks — they understand
+    the type system and the entire program. In contrast, typescript-eslint is a
+    linter that runs syntactic and stylistic checks.
+    ------------------------------------------------------------------------- */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true
+  }
+}
