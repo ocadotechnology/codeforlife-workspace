@@ -10,6 +10,7 @@ import ts from "typescript-eslint"
 // https://github.com/vitejs/vite/blob/main/packages/create-vite/template-react-ts/eslint.config.js
 export default ts.config(
   {
+    // Global ignores.
     // https://eslint.org/docs/latest/use/configure/configuration-files#globally-ignoring-files-with-ignores
     ignores: ["dist", "**/*.d.ts", "eslint.config.js", "server.js"],
   },
