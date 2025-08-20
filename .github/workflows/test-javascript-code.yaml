@@ -3,19 +3,16 @@ name: Test JavaScript Code
 on:
   workflow_call:
     inputs:
-      # Node
       node-version:
         description: "The Node.js version to set up."
         type: number
         required: false
         default: 22
-      # Shell
       working-directory:
         description: "The current working directory."
         type: string
         required: false
         default: "."
-      # Config
       configs-download-branch:
         description: "The branch of the workspace repo to download config files from."
         type: string

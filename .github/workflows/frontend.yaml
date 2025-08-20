@@ -8,26 +8,11 @@ on:
         type: number
         required: false
         default: 22
-      snyk-config-path:
-        description: "The path of the Snyk config file in the workspace."
+      configs-download-branch:
+        description: "The branch of the workspace repo to download config files from."
         type: string
-        required: false
-        default: "frontend/.snyk"
-      codecov-yml-download-branch:
-        description: "The branch of the workspace repo to download the codecov.yml from."
-        type: string
-        required: false
+        required: true
         default: "main"
-      codecov-yml-path:
-        description: "The path of the Codecov YAML file."
-        type: string
-        required: false
-        default: "./codecov.yml"
-      vite-config-path:
-        description: "The path of the Vite config file."
-        type: string
-        required: false
-        default: "./node_modules/codeforlife/src/vite.config.ts"
     secrets: # All secrets should not be required to support contributors.
       CODECOV_TOKEN:
         description: "The token used to gain access to Codecov."
@@ -48,14 +33,11 @@ jobs:
     uses: ocadotechnology/codeforlife-contributor-backend/.github/workflows/check-pr-authors-signed-latest-agreement.yaml@main
 
   test:
-    uses: ocadotechnology/codeforlife-workspace/.github/workflows/test-javascript-code.yaml@main
+    uses: ocadotechnology/codeforlife-workspace/.github/workflows/test-javascript-code.yaml@workspace-275 # TODO: set to @main
     secrets: inherit
     with:
       node-version: ${{ inputs.node-version }}
-      snyk-config-path: ${{ inputs.snyk-config-path }}
-      vite-config-path: ${{ inputs.vite-config-path }}
-      codecov-yml-download-branch: ${{ inputs.codecov-yml-download-branch }}
-      codecov-yml-path: ${{ inputs.codecov-yml-path }}
+      configs-download-branch: ${{ inputs.configs-download-branch }}
 
   release:
     concurrency: release
