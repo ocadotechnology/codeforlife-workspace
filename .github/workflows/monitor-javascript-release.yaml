@@ -7,11 +7,6 @@ on:
         description: "The Node.js version to set up."
         type: number
         required: true
-      snyk-config-path:
-        description: "The path of the Snyk config file in the workspace."
-        type: string
-        required: false
-        default: "frontend/.snyk"
       remove-repo-name-prefix:
         description: "The prefix to remove from the repo's name."
         type: string
@@ -40,7 +35,7 @@ jobs:
         with:
           gh-token: ${{ secrets.CFL_BOT_GH_TOKEN }}
           snyk-token: ${{ secrets.SNYK_TOKEN }}
-          snyk-config-path: ${{ inputs.snyk-config-path }}
+          snyk-config-path: frontend/.snyk
           snyk-project-environment: frontend
           snyk-add-monitor-args: --package-manager=yarn
           remove-repo-name-prefix: ${{ inputs.remove-repo-name-prefix }}
