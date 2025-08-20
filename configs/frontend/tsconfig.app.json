@@ -24,15 +24,6 @@
     Tells the TypeScript compiler to transform JSX syntax into JavaScript,
     specifically using the new _jsx transform from React 17.
     */
-    "jsx": "react-jsx",
-    /*
-    Allows you to create aliases for your import paths.
-
-    Note that a similar import alias exists in vite.config.ts for the Node.js
-    environment.
-    */
-    "paths": {
-      "codeforlife/*": ["./node_modules/codeforlife/src/*"]
-    }
+    "jsx": "react-jsx"
   }
 }
