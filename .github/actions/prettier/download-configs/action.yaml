@@ -1,0 +1,27 @@
+name: "Code for Life - Prettier - Download Config Files"
+description: "Download all of prettier's config files."
+inputs:
+  download-branch:
+    description: "The branch of the workspace repo to download the config files from."
+    required: true
+    default: "main"
+  save-dir:
+    description: "The directory to save the config files to."
+    required: true
+    default: ".workspace"
+runs:
+  using: composite
+  steps:
+    - name: 📥 Download Prettier Config File
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
+      with:
+        branch: ${{ inputs.download-branch }}
+        path: configs/frontend/.prettierrc.json
+        save-to: ${{ inputs.save-dir }}/.prettierrc.json
+
+    - name: 📥 Download Prettier Ignore File
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
+      with:
+        branch: ${{ inputs.download-branch }}
+        path: configs/frontend/.prettierignore
+        save-to: ${{ inputs.save-dir }}/.prettierignore
