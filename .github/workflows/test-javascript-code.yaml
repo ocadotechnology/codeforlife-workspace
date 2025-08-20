@@ -15,60 +15,12 @@ on:
         type: string
         required: false
         default: "."
-      # Codecov
-      codecov-slug:
-        description: "The slug provided to Codecov for the coverage report."
+      # Config
+      configs-download-branch:
+        description: "The branch of the workspace repo to download config files from."
         type: string
-        required: false
-        default: ${{ github.repository }}
-      codecov-yml-download-branch:
-        description: "The branch of the workspace repo to download the codecov.yml from."
-        type: string
-        required: false
+        required: true
         default: "main"
-      codecov-yml-path:
-        description: "The path of the Codecov YAML file."
-        type: string
-        required: false
-        default: "./codecov.yml"
-      codecov-file:
-        description: "The path to the coverage file to upload."
-        type: string
-        required: false
-        default: "coverage/cobertura-coverage.xml"
-      # Snyk
-      snyk-config-path:
-        description: "The path of the Snyk config file in the workspace."
-        type: string
-        required: false
-        default: "frontend/.snyk"
-      # Vite
-      vite-config-path:
-        description: "The path of the Vite config file."
-        type: string
-        required: false
-        default: "./vite.config.ts"
-      # Prettier
-      workspace-prettierrc-json-download-branch:
-        description: "The branch of the workspace repo to download the .prettierrc.json from."
-        type: string
-        required: false
-        default: "main"
-      workspace-prettierrc-json-path:
-        description: "The path of the .prettierrc.json."
-        type: string
-        required: false
-        default: ".workspace/.prettierrc.json"
-      workspace-prettierignore-download-branch:
-        description: "The branch of the workspace repo to download the .prettierignore from."
-        type: string
-        required: false
-        default: "main"
-      workspace-prettierignore-path:
-        description: "The path of the .prettierignore."
-        type: string
-        required: false
-        default: ".workspace/.prettierignore"
     secrets: # All secrets should not be required to support contributors.
       CODECOV_TOKEN:
         description: "The token used to gain access to Codecov."
@@ -90,67 +42,57 @@ jobs:
     env:
       LANG: C.UTF-8
       OCADO_TECH_ORG_ID: 2088731
-      VITE_CONFIG: ${{ inputs.vite-config-path }}
-      WORKSPACE_PRETTIERRC_JSON: ${{ inputs.workspace-prettierrc-json-path }}
-      WORKSPACE_PRETTIERIGNORE: ${{ inputs.workspace-prettierignore-path }}
+      SAVE_DIR: .workspace
+      SCRIPTS_PATH: ./scripts
     steps:
       - name: 🌐 Set up JavaScript ${{ inputs.node-version }} Environment
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/javascript/setup-environment@main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/javascript/setup-environment@workspace-275 # TODO: set to @main
         with:
           node-version: ${{ inputs.node-version }}
+          workspace-package-save-dir: ${{ env.SAVE_DIR }}
           install-args: --production=false
 
-      - name: 📥 Download Prettier Config File
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
-        with:
-          branch: ${{ inputs.workspace-prettierrc-json-download-branch }}
-          path: configs/frontend/.prettierrc.json
-          save-to: ${{ inputs.workspace-prettierrc-json-path }}
-
-      - name: 📥 Download Prettier Ignore File
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
-        with:
-          branch: ${{ inputs.workspace-prettierignore-download-branch }}
-          path: configs/frontend/.prettierignore
-          save-to: ${{ inputs.workspace-prettierignore-path }}
-
-      - name: 📥 Download CLI Script File
+      - name: 📥 Download Scripts File
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
         with:
           path: scripts/frontend
-          save-to: ./cli
+          save-to: ${{ env.SCRIPTS_PATH }}
           type: bash
 
       - name: 🔎 Check Code Format
-        run: ./cli format:check
-
-      - name: 🔎 Check Static Type Hints
-        run: ./cli types:check
-
-      - name: 🔎 Check Static Code
-        run: ./cli code:check
-
-      - name: 🧪 Test Code Units
-        run: |
-          if [ ${{ github.repository_owner_id }} = ${{ env.OCADO_TECH_ORG_ID }} ]
-          then ./cli test:coverage:report
-          else ./cli test:coverage:check
-          fi
-
-      - name: 📈 Upload Coverage Reports to Codecov
-        if: github.repository_owner_id == env.OCADO_TECH_ORG_ID
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/codecov/upload-report@main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/prettier/check-format@workspace-275 # TODO: set to @main
         with:
-          config-path: ${{ inputs.codecov-yml-path }}
-          config-download-branch: ${{ inputs.codecov-yml-download-branch }}
-          token: ${{ secrets.CODECOV_TOKEN }}
-          slug: ${{ inputs.codecov-slug }}
-          file: ${{ inputs.codecov-file }}
+          download-branch: ${{ inputs.configs-download-branch }}
+          save-dir: ${{ env.SAVE_DIR }}
+          scripts-path: ${{ env.SCRIPTS_PATH }}
+
+      - name: 🔎 Check Code Types
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/typescript/check-types@workspace-275 # TODO: set to @main
+        with:
+          download-branch: ${{ inputs.configs-download-branch }}
+          save-dir: ${{ env.SAVE_DIR }}
+          scripts-path: ${{ env.SCRIPTS_PATH }}
+
+      - name: 🔎 Check Code
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/eslint/check-code@workspace-275 # TODO: set to @main
+        with:
+          download-branch: ${{ inputs.configs-download-branch }}
+          save-dir: ${{ env.SAVE_DIR }}
+          scripts-path: ${{ env.SCRIPTS_PATH }}
+
+      - name: 🧪 Test Code
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/vite/run-tests@workspace-275 # TODO: set to @main
+        with:
+          download-branch: ${{ inputs.configs-download-branch }}
+          save-dir: ${{ env.SAVE_DIR }}
+          scripts-path: ${{ env.SCRIPTS_PATH }}
+          ocado-tech-org-id: ${{ env.OCADO_TECH_ORG_ID }}
+          codecov-token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: 🐶 Run Snyk Tests
         if: github.repository_owner_id == env.OCADO_TECH_ORG_ID
         uses: ocadotechnology/codeforlife-workspace/.github/actions/snyk/run-tests@main
         with:
           snyk-token: ${{ secrets.SNYK_TOKEN }}
-          config-path: ${{ inputs.snyk-config-path }}
+          config-path: frontend/.snyk
           add-test-args: --package-manager=yarn
