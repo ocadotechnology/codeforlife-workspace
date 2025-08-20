@@ -16,12 +16,35 @@ inputs:
   install-args:
     description: "Arguments to pass to pipenv install."
     required: false
+  workspace-package-save-dir:
+    description: ""
+    required: true
+    default: ".workspace"
 runs:
   using: composite
   steps:
     - name: 🛫 Checkout
       if: ${{ inputs.checkout == 'true' }}
       uses: actions/checkout@v4
+
+    - name: 📥 Download Workspace Package.json
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
+      with:
+        path: configs/frontend/package.json
+        save-to: ${{ inputs.workspace-package-save-dir }}/package.json
+        type: bash
+
+    - name: ✏️ Write Path to Workspace Package.json
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        echo "$(
+          jq '
+            .devDependencies[
+              "@codeforlife/workspace"
+            ] = "link:${{ inputs.workspace-package-save-dir }}"
+          ' package.json
+        )" > package.json
 
     - name: 🌐 Set up Node
       uses: actions/setup-node@v4
