@@ -1,0 +1,20 @@
+name: "Code for Life - ESLint - Download Config File"
+description: "Download ESLint's config file."
+inputs:
+  download-branch:
+    description: "The branch of the workspace repo to download the config file from."
+    required: true
+    default: "main"
+  save-dir:
+    description: "The directory to save the config file to."
+    required: true
+    default: ".workspace"
+runs:
+  using: composite
+  steps:
+    - name: 📥 Download ESLint Config File
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
+      with:
+        branch: ${{ inputs.download-branch }}
+        path: configs/frontend/eslint.config.js
+        save-to: ${{ inputs.save-dir }}/eslint.config.js
