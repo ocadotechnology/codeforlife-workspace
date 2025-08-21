@@ -16,6 +16,10 @@ inputs:
   install-args:
     description: "Arguments to pass to pipenv install."
     required: false
+  workspace-package:
+    description: "A flag designating to install the workspace package.json."
+    required: false
+    default: "true"
   workspace-package-download-branch:
     description: "The branch to download the package.json from the workspace repo."
     required: false
@@ -28,10 +32,11 @@ runs:
   using: composite
   steps:
     - name: 🛫 Checkout
-      if: ${{ inputs.checkout == 'true' }}
+      if: inputs.checkout == 'true'
       uses: actions/checkout@v4
 
     - name: 📥 Download Workspace package.json
+      if: inputs.workspace-package == 'true'
       uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
         branch: ${{ inputs.workspace-package-download-branch }}
@@ -39,6 +44,7 @@ runs:
         save-to: ${{ inputs.workspace-package-save-dir }}/package.json
 
     - name: 📥 Download Workspace yarn.lock
+      if: inputs.workspace-package == 'true'
       uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
         branch: ${{ inputs.workspace-package-download-branch }}
@@ -46,6 +52,7 @@ runs:
         save-to: ${{ inputs.workspace-package-save-dir }}/yarn.lock
 
     - name: ✏️ Write Path to Workspace package.json
+      if: inputs.workspace-package == 'true'
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
@@ -71,6 +78,7 @@ runs:
       run: npm install --global yarn
 
     - name: 🛠 Install Workspace Dependencies
+      if: inputs.workspace-package == 'true'
       shell: bash
       working-directory: ${{ inputs.workspace-package-save-dir }}
       run: yarn install
