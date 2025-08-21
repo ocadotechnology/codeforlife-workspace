@@ -16,9 +16,13 @@ inputs:
   install-args:
     description: "Arguments to pass to pipenv install."
     required: false
+  workspace-package-download-branch:
+    description: "The branch to download the package.json from the workspace repo."
+    required: false
+    default: "main"
   workspace-package-save-dir:
-    description: ""
-    required: true
+    description: "The directory to save the workspace package.json to."
+    required: false
     default: ".workspace"
 runs:
   using: composite
@@ -30,6 +34,7 @@ runs:
     - name: 📥 Download Workspace Package.json
       uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
+        branch: ${{ inputs.workspace-package-download-branch }}
         path: configs/frontend/package.json
         save-to: ${{ inputs.workspace-package-save-dir }}/package.json
         type: bash

@@ -46,6 +46,7 @@ jobs:
         uses: ocadotechnology/codeforlife-workspace/.github/actions/javascript/setup-environment@workspace-275 # TODO: set to @main
         with:
           node-version: ${{ inputs.node-version }}
+          workspace-package-download-branch: ${{ inputs.configs-download-branch }}
           workspace-package-save-dir: ${{ env.SAVE_DIR }}
           install-args: --production=false
 
