@@ -81,5 +81,14 @@
       "//"
     ],
     "scope": "javascript,typescript,javascriptreact,typescriptreact"
+  },
+  "typescript.expect-error": {
+    "body": [
+      "// @ts-expect-error ${1:__description__}"
+    ],
+    "prefix": [
+      "//"
+    ],
+    "scope": "javascript,typescript,javascriptreact,typescriptreact"
   }
 }
