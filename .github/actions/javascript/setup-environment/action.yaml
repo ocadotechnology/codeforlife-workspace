@@ -37,7 +37,6 @@ runs:
         branch: ${{ inputs.workspace-package-download-branch }}
         path: configs/frontend/package.json
         save-to: ${{ inputs.workspace-package-save-dir }}/package.json
-        type: bash
 
     - name: ✏️ Write Path to Workspace Package.json
       shell: bash
