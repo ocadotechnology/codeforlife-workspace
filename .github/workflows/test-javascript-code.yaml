@@ -13,8 +13,8 @@ on:
         type: string
         required: false
         default: "."
-      configs-download-branch:
-        description: "The branch of the workspace repo to download config files from."
+      download-branch:
+        description: "The branch of the workspace repo to download all files from."
         type: string
         required: false
         default: "main"
@@ -46,13 +46,14 @@ jobs:
         uses: ocadotechnology/codeforlife-workspace/.github/actions/javascript/setup-environment@workspace-275 # TODO: set to @main
         with:
           node-version: ${{ inputs.node-version }}
-          workspace-package-download-branch: ${{ inputs.configs-download-branch }}
+          workspace-package-download-branch: ${{ inputs.download-branch }}
           workspace-package-save-dir: ${{ env.SAVE_DIR }}
           install-args: --production=false
 
       - name: 📥 Download Scripts File
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
         with:
+          branch: ${{ inputs.download-branch }}
           path: scripts/frontend
           save-to: ${{ env.SCRIPTS_PATH }}
           type: bash
@@ -60,28 +61,28 @@ jobs:
       - name: 🔎 Check Code Format
         uses: ocadotechnology/codeforlife-workspace/.github/actions/prettier/check-format@workspace-275 # TODO: set to @main
         with:
-          download-branch: ${{ inputs.configs-download-branch }}
+          download-branch: ${{ inputs.download-branch }}
           save-dir: ${{ env.SAVE_DIR }}
           scripts-path: ${{ env.SCRIPTS_PATH }}
 
       - name: 🔎 Check Code Types
         uses: ocadotechnology/codeforlife-workspace/.github/actions/typescript/check-types@workspace-275 # TODO: set to @main
         with:
-          download-branch: ${{ inputs.configs-download-branch }}
+          download-branch: ${{ inputs.download-branch }}
           save-dir: ${{ env.SAVE_DIR }}
           scripts-path: ${{ env.SCRIPTS_PATH }}
 
       - name: 🔎 Check Code
         uses: ocadotechnology/codeforlife-workspace/.github/actions/eslint/check-code@workspace-275 # TODO: set to @main
         with:
-          download-branch: ${{ inputs.configs-download-branch }}
+          download-branch: ${{ inputs.download-branch }}
           save-dir: ${{ env.SAVE_DIR }}
           scripts-path: ${{ env.SCRIPTS_PATH }}
 
       - name: 🧪 Test Code
         uses: ocadotechnology/codeforlife-workspace/.github/actions/vite/run-tests@workspace-275 # TODO: set to @main
         with:
-          download-branch: ${{ inputs.configs-download-branch }}
+          download-branch: ${{ inputs.download-branch }}
           save-dir: ${{ env.SAVE_DIR }}
           scripts-path: ${{ env.SCRIPTS_PATH }}
           ocado-tech-org-id: ${{ env.OCADO_TECH_ORG_ID }}

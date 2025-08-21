@@ -8,10 +8,10 @@ on:
         type: number
         required: false
         default: 22
-      configs-download-branch:
-        description: "The branch of the workspace repo to download config files from."
+      download-branch:
+        description: "The branch of the workspace repo to download all files from."
         type: string
-        required: true
+        required: false
         default: "main"
     secrets: # All secrets should not be required to support contributors.
       CODECOV_TOKEN:
@@ -37,7 +37,7 @@ jobs:
     secrets: inherit
     with:
       node-version: ${{ inputs.node-version }}
-      configs-download-branch: ${{ inputs.configs-download-branch }}
+      download-branch: ${{ inputs.download-branch }}
 
   release:
     concurrency: release
