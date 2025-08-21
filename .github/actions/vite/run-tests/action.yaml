@@ -47,6 +47,7 @@ runs:
       if: github.repository_owner_id == inputs.ocado-tech-org-id
       uses: ocadotechnology/codeforlife-workspace/.github/actions/codecov/upload-report@main
       with:
-        config-download-branch: ${{ inputs.configs-download-branch }}
+        config-download-branch: ${{ inputs.download-branch }}
+        config-path: ${{ inputs.save-dir }}/codecov.yml
         token: ${{ inputs.codecov-token }}
         file: coverage/cobertura-coverage.xml
