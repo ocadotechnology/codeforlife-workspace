@@ -17,10 +17,10 @@ vite_config=${VITE_CONFIG:-"./node_modules/codeforlife/src/vite.config.ts"}
 source=${SOURCE:-"."}
 
 # The path of the workspace-level .prettierrc.json.
-workspace_prettierrc_json=${WORKSPACE_PRETTIERRC_JSON:-"/codeforlife-workspace/configs/frontend/.prettierrc.json"}
+workspace_prettier_config=${WORKSPACE_PRETTIER_CONFIG:-"/codeforlife-workspace/configs/frontend/.prettierrc.json"}
 
 # The path of the workspace-level .prettierignore.
-workspace_prettierignore=${WORKSPACE_PRETTIERIGNORE:-"/codeforlife-workspace/configs/frontend/.prettierignore"}
+workspace_prettier_ignore=${WORKSPACE_PRETTIER_IGNORE:-"/codeforlife-workspace/configs/frontend/.prettierignore"}
 
 # ------------------------------------------------------------------------------
 # Functions
@@ -109,8 +109,8 @@ function _prettier() {
   if [ -f $prettierignore ]; then options+=" --ignore-path=$prettierignore"; fi
 
   yarn run prettier \
-    --config=$workspace_prettierrc_json \
-    --ignore-path=$workspace_prettierignore \
+    --config=$workspace_prettier_config \
+    --ignore-path=$workspace_prettier_ignore \
     $options \
     $source
 }
