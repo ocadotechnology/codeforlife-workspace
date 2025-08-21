@@ -22,9 +22,26 @@ runs:
         download-branch: ${{ inputs.download-branch }}
         save-dir: ${{ inputs.save-dir }}
 
+    - name: ✏️ Write Path to tsconfig.app.json
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        echo "$(
+          jq '
+            .extends = "${{ inputs.save-dir }}/tsconfig.app.json"
+          ' tsconfig.app.json
+        )" > tsconfig.app.json
+
+    - name: ✏️ Write Path to tsconfig.node.json
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        echo "$(
+          jq '
+            .extends = "${{ inputs.save-dir }}/tsconfig.node.json"
+          ' tsconfig.node.json
+        )" > tsconfig.node.json
+
     - name: 🔎 Check Code Types
       shell: bash
-      env:
-        WORKSPACE_TS_CONFIG_APP: ${{ inputs.save-dir }}/tsconfig.app.json
-        WORKSPACE_TS_CONFIG_NODE: ${{ inputs.save-dir }}/tsconfig.node.json
       run: ${{ inputs.scripts-path }} types:check
