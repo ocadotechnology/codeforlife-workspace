@@ -63,6 +63,11 @@ runs:
       shell: bash
       run: npm install --global yarn
 
+    - name: 🛠 Install Workspace Dependencies
+      shell: bash
+      working-directory: ${{ inputs.workspace-package-save-dir }}
+      run: yarn install
+
     - name: 🛠 Install Dependencies
       shell: bash
       working-directory: ${{ inputs.working-directory }}
