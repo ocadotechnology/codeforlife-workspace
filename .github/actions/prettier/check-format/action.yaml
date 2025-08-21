@@ -17,7 +17,7 @@ runs:
   using: composite
   steps:
     - name: 📥 Download Prettier Config Files
-      uses: ocadotechnology/codeforlife-workspace/.github/actions/prettier/download-configs@workspace-275 # TODO: set to @main
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/prettier/download-configs@main
       with:
         download-branch: ${{ inputs.download-branch }}
         save-dir: ${{ inputs.save-dir }}

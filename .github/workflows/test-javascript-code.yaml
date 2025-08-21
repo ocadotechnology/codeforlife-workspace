@@ -43,7 +43,7 @@ jobs:
       SCRIPTS_PATH: ./scripts
     steps:
       - name: 🌐 Set up JavaScript ${{ inputs.node-version }} Environment
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/javascript/setup-environment@workspace-275 # TODO: set to @main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/javascript/setup-environment@main
         with:
           node-version: ${{ inputs.node-version }}
           workspace-package-download-branch: ${{ inputs.download-branch }}
@@ -59,28 +59,28 @@ jobs:
           type: bash
 
       - name: 🔎 Check Code Format
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/prettier/check-format@workspace-275 # TODO: set to @main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/prettier/check-format@main
         with:
           download-branch: ${{ inputs.download-branch }}
           save-dir: ${{ env.SAVE_DIR }}
           scripts-path: ${{ env.SCRIPTS_PATH }}
 
       - name: 🔎 Check Code Types
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/typescript/check-types@workspace-275 # TODO: set to @main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/typescript/check-types@main
         with:
           download-branch: ${{ inputs.download-branch }}
           save-dir: ${{ env.SAVE_DIR }}
           scripts-path: ${{ env.SCRIPTS_PATH }}
 
       - name: 🔎 Check Code
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/eslint/check-code@workspace-275 # TODO: set to @main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/eslint/check-code@main
         with:
           download-branch: ${{ inputs.download-branch }}
           save-dir: ${{ env.SAVE_DIR }}
           scripts-path: ${{ env.SCRIPTS_PATH }}
 
       - name: 🧪 Test Code
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/vite/run-tests@workspace-275 # TODO: set to @main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/vite/run-tests@main
         with:
           download-branch: ${{ inputs.download-branch }}
           save-dir: ${{ env.SAVE_DIR }}

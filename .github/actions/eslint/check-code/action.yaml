@@ -17,7 +17,7 @@ runs:
   using: composite
   steps:
     - name: 📥 Download TypeScript Config File
-      uses: ocadotechnology/codeforlife-workspace/.github/actions/eslint/download-config@workspace-275 # TODO: set to @main
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/eslint/download-config@main
       with:
         download-branch: ${{ inputs.download-branch }}
         save-dir: ${{ inputs.save-dir }}

@@ -29,7 +29,7 @@ runs:
   steps:
     - name: 📥 Download Vite Config File
       if: inputs.download-config == 'true'
-      uses: ocadotechnology/codeforlife-workspace/.github/actions/vite/download-config@workspace-275 # TODO: set to @main
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/vite/download-config@main
       with:
         download-branch: ${{ inputs.download-branch }}
         save-dir: ${{ inputs.save-dir }}
