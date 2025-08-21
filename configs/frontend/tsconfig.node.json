@@ -1,0 +1,17 @@
+/*
+This file contains all the configurations needed to run our code in a Node
+environment (server-side).
+
+Based off of:
+https://github.com/vitejs/vite/blob/main/packages/create-vite/template-react-ts/tsconfig.node.json
+*/
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    /*
+    Specifies the library files available to your code, which includes modern
+    JavaScript features (ESNext).
+    */
+    "lib": ["ESNext"]
+  }
+}

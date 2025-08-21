@@ -1,0 +1,36 @@
+/*
+This file contains all the configurations needed to run our code in a browser
+environment (client-side).
+
+Based off of:
+https://github.com/vitejs/vite/blob/main/packages/create-vite/template-react-ts/tsconfig.app.json
+*/
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    /*
+    In older JavaScript (ES2019 and earlier), class fields were handled with
+    simple assignments within the constructor. However, in newer JavaScript
+    versions (ES2022), the standard for class fields changed to use
+    Object.defineProperty(). Setting this to true prevents a common class
+    inheritance bug.
+
+    This is only needed for our application code as Node.js has had native
+    support for the modern Object.defineProperty() behavior for class fields for
+    a long time. Therefore, there is no need to transpile the class fields in
+    your vite.config.ts file.
+    */
+    "useDefineForClassFields": true,
+    /*
+    Specifies the library files available to your code, which includes browser
+    APIs (DOM, DOM.Iterable) and modern JavaScript features (ESNext). This is
+    correct for code running in a web browser.
+    */
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    /*
+    Tells the TypeScript compiler to transform JSX syntax into JavaScript,
+    specifically using the new _jsx transform from React 17.
+    */
+    "jsx": "react-jsx"
+  }
+}

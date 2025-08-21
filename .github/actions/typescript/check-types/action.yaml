@@ -1,0 +1,47 @@
+name: "Code for Life - TypeScript - Check Format"
+description: "Download all of TypeScript's config files and run TypeScript to check the types of the code."
+inputs:
+  download-branch:
+    description: "The branch of the workspace repo to download the config files from."
+    required: true
+    default: "main"
+  save-dir:
+    description: "The directory to save the config files to."
+    required: true
+    default: ".workspace"
+  scripts-path:
+    description: "The path to the scripts bash file."
+    required: true
+    default: "./scripts"
+runs:
+  using: composite
+  steps:
+    - name: 📥 Download TypeScript Config Files
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/typescript/download-configs@main
+      with:
+        download-branch: ${{ inputs.download-branch }}
+        save-dir: ${{ inputs.save-dir }}
+
+    - name: ✏️ Write Path to tsconfig.app.json
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        echo "$(
+          jq '
+            .extends = "./${{ inputs.save-dir }}/tsconfig.app.json"
+          ' tsconfig.app.json
+        )" > tsconfig.app.json
+
+    - name: ✏️ Write Path to tsconfig.node.json
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        echo "$(
+          jq '
+            .extends = "./${{ inputs.save-dir }}/tsconfig.node.json"
+          ' tsconfig.node.json
+        )" > tsconfig.node.json
+
+    - name: 🔎 Check Code Types
+      shell: bash
+      run: ${{ inputs.scripts-path }} types:check
