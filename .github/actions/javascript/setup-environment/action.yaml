@@ -31,14 +31,21 @@ runs:
       if: ${{ inputs.checkout == 'true' }}
       uses: actions/checkout@v4
 
-    - name: 📥 Download Workspace Package.json
+    - name: 📥 Download Workspace package.json
       uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
         branch: ${{ inputs.workspace-package-download-branch }}
         path: configs/frontend/package.json
         save-to: ${{ inputs.workspace-package-save-dir }}/package.json
 
-    - name: ✏️ Write Path to Workspace Package.json
+    - name: 📥 Download Workspace yarn.lock
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
+      with:
+        branch: ${{ inputs.workspace-package-download-branch }}
+        path: configs/frontend/yarn.lock
+        save-to: ${{ inputs.workspace-package-save-dir }}/yarn.lock
+
+    - name: ✏️ Write Path to Workspace package.json
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
