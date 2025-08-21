@@ -12,7 +12,15 @@ export default ts.config(
   {
     // Global ignores.
     // https://eslint.org/docs/latest/use/configure/configuration-files#globally-ignoring-files-with-ignores
-    ignores: ["dist", "**/*.d.ts", "eslint.config.js", "server.js"],
+    ignores: [
+      "dist",
+      "**/*.d.ts",
+      "eslint.config.js",
+      "server.js",
+      // A special directory created during the runtime of our pipeline, into
+      // which any necessary files from the workspace are downloaded.
+      ".workspace",
+    ],
   },
   {
     files: ["**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}"],
