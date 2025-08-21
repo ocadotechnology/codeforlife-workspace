@@ -11,7 +11,7 @@ set -e
 # ------------------------------------------------------------------------------
 
 # The path of the vite.config.ts.
-vite_config=${VITE_CONFIG:-"./node_modules/codeforlife/src/vite.config.ts"}
+vite_config=${VITE_CONFIG:-"./node_modules/@codeforlife/workspace/vite.config.ts"}
 
 # The path of the source code.
 source=${SOURCE:-"."}
