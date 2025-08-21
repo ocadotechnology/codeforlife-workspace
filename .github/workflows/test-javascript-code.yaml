@@ -65,13 +65,6 @@ jobs:
           save-dir: ${{ env.SAVE_DIR }}
           scripts-path: ${{ env.SCRIPTS_PATH }}
 
-      - name: 🔎 Check Code
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/eslint/check-code@main
-        with:
-          download-branch: ${{ inputs.download-branch }}
-          save-dir: ${{ env.SAVE_DIR }}
-          scripts-path: ${{ env.SCRIPTS_PATH }}
-
       - name: 🧪 Test Code
         uses: ocadotechnology/codeforlife-workspace/.github/actions/vite/run-tests@main
         with:
@@ -83,6 +76,13 @@ jobs:
 
       - name: 🔎 Check Code Types
         uses: ocadotechnology/codeforlife-workspace/.github/actions/typescript/check-types@main
+        with:
+          download-branch: ${{ inputs.download-branch }}
+          save-dir: ${{ env.SAVE_DIR }}
+          scripts-path: ${{ env.SCRIPTS_PATH }}
+
+      - name: 🔎 Check Code
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/eslint/check-code@main
         with:
           download-branch: ${{ inputs.download-branch }}
           save-dir: ${{ env.SAVE_DIR }}
