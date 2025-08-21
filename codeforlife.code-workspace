@@ -1,57 +1,23 @@
 {
   "folders": [
-    {
-      "path": "."
-    },
-    {
-      "path": "codeforlife-contributor-backend"
-    },
-    {
-      "path": "codeforlife-contributor-frontend"
-    },
-    // {
-    //   "path": "codeforlife-deploy-appengine"
-    // },
-    {
-      "path": "codeforlife-package-javascript"
-    },
-    {
-      "path": "codeforlife-package-python"
-    },
-    {
-      "path": "codeforlife-portal"
-    },
-    {
-      "path": "codeforlife-portal-backend"
-    },
-    {
-      "path": "codeforlife-portal-frontend"
-    },
+    { "path": "." },
+    { "path": "codeforlife-contributor-backend" },
+    { "path": "codeforlife-contributor-frontend" },
+    // { "path": "codeforlife-deploy-appengine" },
+    { "path": "codeforlife-package-javascript" },
+    { "path": "codeforlife-package-python" },
+    { "path": "codeforlife-portal" },
+    { "path": "codeforlife-portal-backend" },
+    { "path": "codeforlife-portal-frontend" },
     // TODO: uncomment these as we begin restructuring them.
-    // {
-    //   "path": "codeforlife-rapid-router-backend"
-    // },
-    // {
-    //   "path": "codeforlife-rapid-router-frontend"
-    // },
-    {
-      "path": "codeforlife-scheduler-backend"
-    },
-    // {
-    //   "path": "codeforlife-sso-backend"
-    // },
-    // {
-    //   "path": "codeforlife-sso-frontend"
-    // },
-    {
-      "path": "codeforlife-template-backend"
-    },
-    {
-      "path": "codeforlife-template-frontend"
-    },
-    {
-      "path": "rapid-router"
-    }
+    // { "path": "codeforlife-rapid-router-backend" },
+    // { "path": "codeforlife-rapid-router-frontend" },
+    { "path": "codeforlife-scheduler-backend" },
+    // { "path": "codeforlife-sso-backend" },
+    // { "path": "codeforlife-sso-frontend" },
+    { "path": "codeforlife-template-backend" },
+    { "path": "codeforlife-template-frontend" },
+    { "path": "rapid-router" }
   ],
   "settings": {
     // General

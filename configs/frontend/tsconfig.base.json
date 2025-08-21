@@ -70,7 +70,7 @@ Based off of:
     lead to conflicts and unexpected behavior when you have variables or types
     with the same name across different files. This ensures that every .ts and
     .tsx file is treated as its own isolated module. This aligns with how modern
-    bundlers like Vite operate. 
+    bundlers like Vite operate.
     */
     "moduleDetection": "force",
     /*

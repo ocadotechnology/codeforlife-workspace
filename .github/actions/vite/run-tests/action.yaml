@@ -18,7 +18,7 @@ inputs:
     required: true
     default: "./scripts"
   ocado-tech-org-id:
-    description: "The ID of the Ocado Tech GitHib organization."
+    description: "The ID of the Ocado Tech GitHub organization."
     required: true
     default: "2088731"
   codecov-token:
