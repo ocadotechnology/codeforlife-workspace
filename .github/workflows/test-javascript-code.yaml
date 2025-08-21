@@ -65,13 +65,6 @@ jobs:
           save-dir: ${{ env.SAVE_DIR }}
           scripts-path: ${{ env.SCRIPTS_PATH }}
 
-      - name: 🔎 Check Code Types
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/typescript/check-types@main
-        with:
-          download-branch: ${{ inputs.download-branch }}
-          save-dir: ${{ env.SAVE_DIR }}
-          scripts-path: ${{ env.SCRIPTS_PATH }}
-
       - name: 🔎 Check Code
         uses: ocadotechnology/codeforlife-workspace/.github/actions/eslint/check-code@main
         with:
@@ -87,6 +80,13 @@ jobs:
           scripts-path: ${{ env.SCRIPTS_PATH }}
           ocado-tech-org-id: ${{ env.OCADO_TECH_ORG_ID }}
           codecov-token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: 🔎 Check Code Types
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/typescript/check-types@main
+        with:
+          download-branch: ${{ inputs.download-branch }}
+          save-dir: ${{ env.SAVE_DIR }}
+          scripts-path: ${{ env.SCRIPTS_PATH }}
 
       - name: 🐶 Run Snyk Tests
         if: github.repository_owner_id == env.OCADO_TECH_ORG_ID
