@@ -16,7 +16,7 @@ on:
       configs-download-branch:
         description: "The branch of the workspace repo to download config files from."
         type: string
-        required: true
+        required: false
         default: "main"
     secrets: # All secrets should not be required to support contributors.
       CODECOV_TOKEN:
