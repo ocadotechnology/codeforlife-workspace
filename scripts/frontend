@@ -11,10 +11,13 @@ set -e
 # ------------------------------------------------------------------------------
 
 # The path of the vite.config.ts.
-vite_config=${VITE_CONFIG:-"./node_modules/@codeforlife/workspace/vite.config.ts"}
-
-# The path of the source code.
-source=${SOURCE:-"."}
+vite_config="$(
+  if [ -f vite.config.ts ]; then
+    echo "vite.config.ts"
+  else
+    echo "./node_modules/@codeforlife/workspace/vite.config.ts"
+  fi
+)"
 
 # The path of the workspace-level .prettierrc.json.
 workspace_prettier_config=${WORKSPACE_PRETTIER_CONFIG:-"/codeforlife-workspace/configs/frontend/.prettierrc.json"}
@@ -112,7 +115,7 @@ function _prettier() {
     --config=$workspace_prettier_config \
     --ignore-path=$workspace_prettier_ignore \
     $options \
-    $source
+    .
 }
 
 function format() {
@@ -132,7 +135,7 @@ function code:check() {
   # https://eslint.org/docs/latest/use/command-line-interface
   yarn run eslint \
     --max-warnings=0 \
-    $source
+    .
 }
 
 function code:fix() {
@@ -140,7 +143,7 @@ function code:fix() {
   # https://eslint.org/docs/latest/use/command-line-interface
   yarn run eslint \
     --fix \
-    $source
+    .
 }
 
 function types:check() {
