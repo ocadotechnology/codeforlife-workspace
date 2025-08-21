@@ -80,6 +80,11 @@ Based off of:
     TypeScript compiler (tsc).
     */
     "noEmit": true,
+    /*
+    Synthesize a default import for modules that don't have one, allowing you to
+    use the modern `import ... from '...'` syntax without a type-checking error.
+    */
+    "esModuleInterop": true,
     /* -------------------------------------------------------------------------
     LINTING
 
