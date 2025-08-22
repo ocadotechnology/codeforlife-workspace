@@ -56,24 +56,6 @@ runs:
         path: configs/frontend/tsconfig.node.json
         save-to: .workspace/tsconfig.node.json
 
-    - name: ✏️ Write Path to tsconfig.app.json
-      shell: bash
-      run: |
-        echo "$(
-          jq '
-            .extends = "./.workspace/tsconfig.app.json"
-          ' tsconfig.app.json
-        )" > tsconfig.app.json
-
-    - name: ✏️ Write Path to tsconfig.node.json
-      shell: bash
-      run: |
-        echo "$(
-          jq '
-            .extends = "./.workspace/tsconfig.node.json"
-          ' tsconfig.node.json
-        )" > tsconfig.node.json
-
     # ESLint
 
     - name: 📥 Download ESLint Config File
