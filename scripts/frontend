@@ -40,7 +40,33 @@ workspace_prettier_config="$workspace_configs_dir/.prettierrc.json"
 workspace_prettier_ignore="$workspace_configs_dir/.prettierignore"
 
 # ------------------------------------------------------------------------------
-# Functions
+# Private/Utility Functions
+# ------------------------------------------------------------------------------
+
+function _prettier() {
+  local options="--config=$workspace_prettier_config"
+  options+=" --ignore-path=$workspace_prettier_ignore"
+  if [ -f .prettierignore ]; then options+=" --ignore-path=.prettierignore"; fi
+
+  yarn run prettier $options "$@"
+}
+
+function _overwrite_ts_configs_extends() {
+  if [ "$CI" = "true" ]; then
+    echo "$(
+      jq '.extends = "./.workspace/tsconfig.app.json"' tsconfig.app.json
+    )" >tsconfig.app.json
+    format tsconfig.app.json
+
+    echo "$(
+      jq '.extends = "./.workspace/tsconfig.node.json"' tsconfig.node.json
+    )" >tsconfig.node.json
+    format tsconfig.node.json
+  fi
+}
+
+# ------------------------------------------------------------------------------
+# Public/Callable Functions
 # ------------------------------------------------------------------------------
 
 function dev:server() {
@@ -124,14 +150,6 @@ function test:ui() {
     --config $vite_config
 }
 
-function _prettier() {
-  local options="--config=$workspace_prettier_config"
-  options+=" --ignore-path=$workspace_prettier_ignore"
-  if [ -f .prettierignore ]; then options+=" --ignore-path=.prettierignore"; fi
-
-  yarn run prettier $options "$@"
-}
-
 function format() {
   # Auto-fix known formatting issues.
   # https://prettier.io/docs/cli
@@ -155,20 +173,6 @@ function code:fix() {
   # Auto-fix known linting issues.
   # https://eslint.org/docs/latest/use/command-line-interface
   yarn run eslint --fix "${@:-.}"
-}
-
-function _overwrite_ts_configs_extends() {
-  if [ "$CI" = "true" ]; then
-    echo "$(
-      jq '.extends = "./.workspace/tsconfig.app.json"' tsconfig.app.json
-    )" >tsconfig.app.json
-    format tsconfig.app.json
-
-    echo "$(
-      jq '.extends = "./.workspace/tsconfig.node.json"' tsconfig.node.json
-    )" >tsconfig.node.json
-    format tsconfig.node.json
-  fi
 }
 
 function types:check() {
