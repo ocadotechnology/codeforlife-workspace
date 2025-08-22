@@ -10,6 +10,8 @@ set -e
 # Variables
 # ------------------------------------------------------------------------------
 
+# The ID of the Ocado Technology GitHub organization.
+# https://github.com/ocadotechnology
 ocado_tech_org_id=${OCADO_TECH_ORG_ID:-2088731}
 
 # The path of the workspace configs directory.
