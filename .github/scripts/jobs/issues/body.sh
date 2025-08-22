@@ -182,4 +182,13 @@ function handle_workflow_dispatch_event() { handle_schedule_event; }
 # Entrypoint.
 # ------------------------------------------------------------------------------
 
-handle_event "$@"
+issue_repo="$(make_repo "$ISSUE_REPO_NAME")"
+
+issue_body="$(
+  gh issue view "$ISSUE_NUMBER" \
+    --repo="$issue_repo" \
+    --json=body \
+    --jq=.body
+)"
+
+handle_event "$issue_body"
