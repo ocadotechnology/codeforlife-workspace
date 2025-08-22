@@ -45,7 +45,6 @@ jobs:
         with:
           node-version: ${{ inputs.node-version }}
           workspace-package-download-branch: ${{ inputs.download-branch }}
-          workspace-package-save-dir: ${{ env.SAVE_DIR }}
           install-args: --production=false
 
       - name: 📥 Download Workspace Frontend Files

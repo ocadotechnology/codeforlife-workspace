@@ -24,10 +24,6 @@ inputs:
     description: "The branch to download the package.json from the workspace repo."
     required: false
     default: "main"
-  workspace-package-save-dir:
-    description: "The directory to save the workspace package.json to."
-    required: false
-    default: ".workspace"
 runs:
   using: composite
   steps:
@@ -41,7 +37,7 @@ runs:
       with:
         branch: ${{ inputs.workspace-package-download-branch }}
         path: configs/frontend/package.json
-        save-to: ${{ inputs.workspace-package-save-dir }}/package.json
+        save-to: .workspace/package.json
 
     - name: 📥 Download Workspace yarn.lock
       if: inputs.workspace-package == 'true'
@@ -49,7 +45,7 @@ runs:
       with:
         branch: ${{ inputs.workspace-package-download-branch }}
         path: configs/frontend/yarn.lock
-        save-to: ${{ inputs.workspace-package-save-dir }}/yarn.lock
+        save-to: .workspace/yarn.lock
 
     - name: ✏️ Write Path to Workspace package.json
       if: inputs.workspace-package == 'true'
@@ -58,9 +54,7 @@ runs:
       run: |
         echo "$(
           jq '
-            .devDependencies[
-              "@codeforlife/workspace"
-            ] = "link:${{ inputs.workspace-package-save-dir }}"
+            .devDependencies["@codeforlife/workspace"] = "link:.workspace"
           ' package.json
         )" > package.json
 
@@ -80,7 +74,7 @@ runs:
     - name: 🛠 Install Workspace Dependencies
       if: inputs.workspace-package == 'true'
       shell: bash
-      working-directory: ${{ inputs.workspace-package-save-dir }}
+      working-directory: .workspace
       run: yarn install
 
     - name: 🛠 Install Dependencies
