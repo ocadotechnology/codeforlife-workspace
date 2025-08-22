@@ -11,6 +11,7 @@ set -e
 # ------------------------------------------------------------------------------
 
 # The path of the workspace configs directory.
+# https://docs.github.com/en/actions/reference/workflows-and-actions/variables#default-environment-variables
 workspace_configs_dir="$(
   if [ "$CI" = "true" ]; then
     echo ".workspace"
