@@ -10,6 +10,8 @@ set -e
 # Variables
 # ------------------------------------------------------------------------------
 
+ocado_tech_org_id=${OCADO_TECH_ORG_ID:-2088731}
+
 # The path of the workspace configs directory.
 # https://docs.github.com/en/actions/reference/workflows-and-actions/variables#default-environment-variables
 workspace_configs_dir="$(
@@ -105,6 +107,14 @@ function test:coverage:check() {
     --coverage.thresholds.branches=90 \
     --coverage.thresholds.statements=90 \
     --config $vite_config
+}
+
+function test:coverage() {
+  if [ "$GITHUB_REPOSITORY_OWNER_ID" -eq $ocado_tech_org_id ]; then
+    test:coverage:report $@
+  else
+    test:coverage:check $@
+  fi
 }
 
 function test:ui() {
