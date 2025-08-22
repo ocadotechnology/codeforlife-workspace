@@ -51,8 +51,7 @@ function dev:server() {
 function dev:client() {
   # Launch dev server with client-side rendering.
   # https://vite.dev/guide/cli
-  yarn run vite \
-    --config $vite_config
+  yarn run vite --config $vite_config
 }
 
 function build:client() {
@@ -87,16 +86,13 @@ function start() {
 function test() {
   # Run tests.
   # https://vitest.dev/guide/cli
-  yarn run vitest run \
-    --config $vite_config
+  yarn run vitest run --config $vite_config
 }
 
 function test:coverage:report() {
   # Run tests and generate coverage report.
   # https://vitest.dev/guide/cli
-  yarn run vitest run \
-    --coverage \
-    --config $vite_config
+  yarn run vitest run --coverage --config $vite_config
 }
 
 function test:coverage:check() {
@@ -150,17 +146,13 @@ function format:check() {
 function code:check() {
   # Find linting issues.
   # https://eslint.org/docs/latest/use/command-line-interface
-  yarn run eslint \
-    --max-warnings=0 \
-    .
+  yarn run eslint --max-warnings=0 "${@:-.}"
 }
 
 function code:fix() {
   # Auto-fix known linting issues.
   # https://eslint.org/docs/latest/use/command-line-interface
-  yarn run eslint \
-    --fix \
-    .
+  yarn run eslint --fix "${@:-.}"
 }
 
 function types:check() {
