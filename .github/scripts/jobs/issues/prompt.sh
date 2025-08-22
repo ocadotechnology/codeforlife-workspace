@@ -237,7 +237,8 @@ function comment_on_issue() {
 # 3. Substitute all 2+ recurring spaces with a single space.
 # 4. Replace all upper-case characters with lower-case.
 comment_body=$(
-  trim_spaces "$@" |
+  gh api repos/$repo/issues/comments/$COMMENT_ID --jq=.body |
+    trim_spaces "$@" |
     sed --regexp-extended '
       s/(^|\W)@cfl-bot($|\W)/\1\2/g;
       s/[[:space:]]{2,}/ /g

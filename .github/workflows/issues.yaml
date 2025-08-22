@@ -72,6 +72,7 @@ jobs:
       ISSUE_NUMBER: "${{ github.event.issue.number }}"
       ISSUE_NODE_ID: "${{ github.event.issue.node_id }}"
       ISSUE_ASSIGNEES_LENGTH: "${{ github.event.issue.assignees.length }}"
+      COMMENT_ID: "${{ github.event.comment.id }}"
       USER_NODE_ID: "${{ github.event.comment.user.node_id }}"
       USER_LOGIN: "${{ github.event.comment.user.login }}"
       # Boolean variables.
@@ -81,7 +82,6 @@ jobs:
       - name: 🏃 Download and Run Job Script
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/run-job-script@main
         with:
-          args: "'${{ github.event.comment.body }}'"
           workflow: "${{ env.WORKFLOW_REF }}"
           job: "prompt"
 
