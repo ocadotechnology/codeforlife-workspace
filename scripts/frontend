@@ -108,6 +108,7 @@ function test:coverage:check() {
 }
 
 function test:coverage() {
+  _overwrite_ts_configs_extends
   if [ "$GITHUB_REPOSITORY_OWNER_ID" -eq $ocado_tech_org_id ]; then
     test:coverage:report $@
   else
@@ -146,6 +147,7 @@ function format:check() {
 function code:check() {
   # Find linting issues.
   # https://eslint.org/docs/latest/use/command-line-interface
+  _overwrite_ts_configs_extends
   yarn run eslint --max-warnings=0 "${@:-.}"
 }
 
@@ -155,9 +157,7 @@ function code:fix() {
   yarn run eslint --fix "${@:-.}"
 }
 
-function types:check() {
-  # Check static types.
-  # https://www.typescriptlang.org/docs/handbook/compiler-options.html
+function _overwrite_ts_configs_extends() {
   if [ "$CI" = "true" ]; then
     echo "$(
       jq '.extends = "./.workspace/tsconfig.app.json"' tsconfig.app.json
@@ -169,7 +169,12 @@ function types:check() {
     )" >tsconfig.node.json
     format tsconfig.node.json
   fi
+}
 
+function types:check() {
+  # Check static types.
+  # https://www.typescriptlang.org/docs/handbook/compiler-options.html
+  _overwrite_ts_configs_extends
   yarn run tsc --build tsconfig.json
 }
 
