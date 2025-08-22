@@ -231,20 +231,20 @@ function comment_on_issue() {
   gh issue comment "$ISSUE_NUMBER" --repo="$repo" --body="$body"
 }
 
+comment_body="$(gh api repos/$repo/issues/comments/$COMMENT_ID --jq=.body)"
 # Normalize the comment's body:
 # 1. Remove any mention of "@cfl-bot".
 # 2. Remove all leading or trailing spaces.
 # 3. Substitute all 2+ recurring spaces with a single space.
 # 4. Replace all upper-case characters with lower-case.
-comment_body=$(
-  gh api repos/$repo/issues/comments/$COMMENT_ID --jq=.body |
-    trim_spaces "$@" |
+comment_body="$(
+  trim_spaces "$comment_body" |
     sed --regexp-extended '
       s/(^|\W)@cfl-bot($|\W)/\1\2/g;
       s/[[:space:]]{2,}/ /g
     ' |
     tr '[:upper:]' '[:lower:]'
-)
+)"
 
 for prompt_id in "${prompt_ids[@]}"; do
   prompt_char_set="${prompt_char_sets[$prompt_id]}"
