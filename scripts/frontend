@@ -128,28 +128,23 @@ function test:ui() {
 }
 
 function _prettier() {
-  local options="$@"
+  local options="--config=$workspace_prettier_config"
+  options+=" --ignore-path=$workspace_prettier_ignore"
+  if [ -f .prettierignore ]; then options+=" --ignore-path=.prettierignore"; fi
 
-  local prettierignore=".prettierignore"
-  if [ -f $prettierignore ]; then options+=" --ignore-path=$prettierignore"; fi
-
-  yarn run prettier \
-    --config=$workspace_prettier_config \
-    --ignore-path=$workspace_prettier_ignore \
-    $options \
-    .
+  yarn run prettier $options "$@"
 }
 
 function format() {
   # Auto-fix known formatting issues.
   # https://prettier.io/docs/cli
-  _prettier --write
+  _prettier --write "${@:-.}"
 }
 
 function format:check() {
   # Check formatting issues.
   # https://prettier.io/docs/cli
-  _prettier --check --write=false
+  _prettier --check --write=false "${@:-.}"
 }
 
 function code:check() {
@@ -171,8 +166,19 @@ function code:fix() {
 function types:check() {
   # Check static types.
   # https://www.typescriptlang.org/docs/handbook/compiler-options.html
-  yarn run tsc \
-    --build tsconfig.json
+  if [ "$CI" = "true" ]; then
+    echo "$(
+      jq '.extends = "./.workspace/tsconfig.app.json"' tsconfig.app.json
+    )" >tsconfig.app.json
+    format tsconfig.app.json
+
+    echo "$(
+      jq '.extends = "./.workspace/tsconfig.node.json"' tsconfig.node.json
+    )" >tsconfig.node.json
+    format tsconfig.node.json
+  fi
+
+  yarn run tsc --build tsconfig.json
 }
 
 function setup() {
