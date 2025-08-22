@@ -43,11 +43,6 @@ on:
         type: string
         required: false
         default: "main"
-      codecov-yml-path:
-        description: "The path of the Codecov YAML file."
-        type: string
-        required: false
-        default: "./codecov.yml"
       # Django
       django:
         description: "Whether the Django web framework is used."
@@ -96,7 +91,6 @@ jobs:
       postgres-version: ${{ inputs.postgres-version }}
       snyk-config-path: ${{ inputs.snyk-config-path }}
       codecov-yml-download-branch: ${{ inputs.codecov-yml-download-branch }}
-      codecov-yml-path: ${{ inputs.codecov-yml-path }}
       aws-sqs-queues: ${{ inputs.aws-sqs-queues }}
       aws-s3-buckets: ${{ inputs.aws-s3-buckets }}
 

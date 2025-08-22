@@ -10,6 +10,15 @@ set -e
 # Variables
 # ------------------------------------------------------------------------------
 
+# The path of the workspace configs directory.
+workspace_configs_dir="$(
+  if [ "$CI" = "true" ]; then
+    echo ".workspace"
+  else
+    echo "/codeforlife-workspace/configs/frontend"
+  fi
+)"
+
 # The path of the vite.config.ts.
 vite_config="$(
   if [ -f vite.config.ts ]; then
@@ -20,10 +29,10 @@ vite_config="$(
 )"
 
 # The path of the workspace-level .prettierrc.json.
-workspace_prettier_config=${WORKSPACE_PRETTIER_CONFIG:-"/codeforlife-workspace/configs/frontend/.prettierrc.json"}
+workspace_prettier_config="$workspace_configs_dir/.prettierrc.json"
 
 # The path of the workspace-level .prettierignore.
-workspace_prettier_ignore=${WORKSPACE_PRETTIER_IGNORE:-"/codeforlife-workspace/configs/frontend/.prettierignore"}
+workspace_prettier_ignore="$workspace_configs_dir/.prettierignore"
 
 # ------------------------------------------------------------------------------
 # Functions

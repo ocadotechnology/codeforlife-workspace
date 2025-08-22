@@ -39,8 +39,6 @@ jobs:
     env:
       LANG: C.UTF-8
       OCADO_TECH_ORG_ID: 2088731
-      SAVE_DIR: .workspace
-      SCRIPTS_PATH: ./scripts
     steps:
       - name: 🌐 Set up JavaScript ${{ inputs.node-version }} Environment
         uses: ocadotechnology/codeforlife-workspace/.github/actions/javascript/setup-environment@main
@@ -50,43 +48,35 @@ jobs:
           workspace-package-save-dir: ${{ env.SAVE_DIR }}
           install-args: --production=false
 
-      - name: 📥 Download Scripts File
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
+      - name: 📥 Download Workspace Frontend Files
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-frontend-files@main
         with:
-          branch: ${{ inputs.download-branch }}
-          path: scripts/frontend
-          save-to: ${{ env.SCRIPTS_PATH }}
-          type: bash
+          download-branch: ${{ inputs.download-branch }}
 
       - name: 🔎 Check Code Format
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/prettier/check-format@main
-        with:
-          download-branch: ${{ inputs.download-branch }}
-          save-dir: ${{ env.SAVE_DIR }}
-          scripts-path: ${{ env.SCRIPTS_PATH }}
-
-      - name: 🧪 Test Code
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/vite/run-tests@main
-        with:
-          download-branch: ${{ inputs.download-branch }}
-          save-dir: ${{ env.SAVE_DIR }}
-          scripts-path: ${{ env.SCRIPTS_PATH }}
-          ocado-tech-org-id: ${{ env.OCADO_TECH_ORG_ID }}
-          codecov-token: ${{ secrets.CODECOV_TOKEN }}
+        run: .workspace/scripts format:check
 
       - name: 🔎 Check Code Types
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/typescript/check-types@main
-        with:
-          download-branch: ${{ inputs.download-branch }}
-          save-dir: ${{ env.SAVE_DIR }}
-          scripts-path: ${{ env.SCRIPTS_PATH }}
+        run: .workspace/scripts types:check
 
-      - name: 🔎 Check Code
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/eslint/check-code@main
+      - name: 🔎 Check Code Types
+        run: .workspace/scripts code:check
+
+      - name: 🧪 Test Code
+        run: |
+          if [ ${{ github.repository_owner_id }} = ${{ env.OCADO_TECH_ORG_ID }} ]; then
+            .workspace/scripts test:coverage:report
+          else
+            .workspace/scripts test:coverage:check
+          fi
+
+      - name: 📈 Upload Coverage Reports to Codecov
+        if: github.repository_owner_id == env.OCADO_TECH_ORG_ID
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/codecov/upload-report@main
         with:
-          download-branch: ${{ inputs.download-branch }}
-          save-dir: ${{ env.SAVE_DIR }}
-          scripts-path: ${{ env.SCRIPTS_PATH }}
+          config-download-branch: ${{ inputs.download-branch }}
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: coverage/cobertura-coverage.xml
 
       - name: 🐶 Run Snyk Tests
         if: github.repository_owner_id == env.OCADO_TECH_ORG_ID
