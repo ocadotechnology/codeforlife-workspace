@@ -51,20 +51,6 @@ function _prettier() {
   yarn run prettier $options "$@"
 }
 
-function _overwrite_ts_configs_extends() {
-  if [ "$CI" = "true" ]; then
-    echo "$(
-      jq '.extends = "./.workspace/tsconfig.app.json"' tsconfig.app.json
-    )" >tsconfig.app.json
-    format tsconfig.app.json
-
-    echo "$(
-      jq '.extends = "./.workspace/tsconfig.node.json"' tsconfig.node.json
-    )" >tsconfig.node.json
-    format tsconfig.node.json
-  fi
-}
-
 # ------------------------------------------------------------------------------
 # Public/Callable Functions
 # ------------------------------------------------------------------------------
@@ -134,7 +120,6 @@ function test:coverage:check() {
 }
 
 function test:coverage() {
-  _overwrite_ts_configs_extends
   if [ "$GITHUB_REPOSITORY_OWNER_ID" -eq $ocado_tech_org_id ]; then
     test:coverage:report $@
   else
@@ -165,7 +150,6 @@ function format:check() {
 function code:check() {
   # Find linting issues.
   # https://eslint.org/docs/latest/use/command-line-interface
-  _overwrite_ts_configs_extends
   yarn run eslint --max-warnings=0 "${@:-.}"
 }
 
@@ -178,7 +162,6 @@ function code:fix() {
 function types:check() {
   # Check static types.
   # https://www.typescriptlang.org/docs/handbook/compiler-options.html
-  _overwrite_ts_configs_extends
   yarn run tsc --build tsconfig.json
 }
 
