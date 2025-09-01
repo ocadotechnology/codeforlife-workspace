@@ -1,0 +1,17 @@
+{
+  // Python
+  // Workspace needs to use the global python (not local in .venv).
+  "python.defaultInterpreterPath": "/usr/local/python/current/bin/python",
+  "black-formatter.path": [
+    "/usr/local/python/current/bin/python",
+    "-m",
+    "black"
+  ],
+  "isort.path": ["/usr/local/python/current/bin/python", "-m", "isort"],
+  "mypy-type-checker.path": [
+    "/usr/local/python/current/bin/python",
+    "-m",
+    "mypy"
+  ],
+  "pylint.path": ["/usr/local/python/current/bin/python", "-m", "pylint"]
+}

@@ -50,15 +50,15 @@ function _prettier() {
 function _make_vite_options() {
   local options="$@"
 
-  local mode_keys="(-m|--mode)"
+  local mode_keys="(-m|--mode)( |=)"
   if [[ ! "$options" =~ $mode_keys ]]; then
     options+=" --mode ."
-  elif [[ ! "$options" =~ $mode_keys( |=)(\.|development|staging|production) ]]; then
+  elif [[ ! "$options" =~ $mode_keys(\.|development|staging|production) ]]; then
     echo "mode must be set to one of: . (local), development, staging, production."
     exit 1
   fi
 
-  if [[ "$options" =~ (-c|--config) ]]; then
+  if [[ "$options" =~ (-c|--config)( |=) ]]; then
     echo "config cannot be set manually"
     exit 1
   fi
