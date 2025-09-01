@@ -24,31 +24,61 @@ workspace_configs_dir="$(
   fi
 )"
 
-# The path of the vite.config.ts.
-vite_config="$(
-  if [ -f vite.config.ts ]; then
-    echo "vite.config.ts"
-  else
-    echo "./node_modules/@codeforlife/workspace/vite.config.ts"
-  fi
-)"
-
-# The path of the workspace-level .prettierrc.json.
-workspace_prettier_config="$workspace_configs_dir/.prettierrc.json"
-
-# The path of the workspace-level .prettierignore.
-workspace_prettier_ignore="$workspace_configs_dir/.prettierignore"
-
 # ------------------------------------------------------------------------------
 # Private/Utility Functions
 # ------------------------------------------------------------------------------
 
 function _prettier() {
-  local options="--config=$workspace_prettier_config"
-  options+=" --ignore-path=$workspace_prettier_ignore"
+  local options="$@"
+
+  if [[ "$options" =~ --config ]]; then
+    echo "config cannot be set manually"
+    exit 1
+  fi
+  options+=" --config=$workspace_configs_dir/.prettierrc.json"
+
+  if [[ "$options" =~ --ignore-path ]]; then
+    echo "ignore paths cannot be set manually"
+    exit 1
+  fi
+  options+=" --ignore-path=$workspace_configs_dir/.prettierignore"
   if [ -f .prettierignore ]; then options+=" --ignore-path=.prettierignore"; fi
 
-  yarn run prettier $options "$@"
+  yarn run prettier $options
+}
+
+function _make_vite_options() {
+  local options="$@"
+
+  local mode_keys="(-m|--mode)"
+  if [[ ! "$options" =~ $mode_keys ]]; then
+    options+=" --mode ."
+  elif [[ ! "$options" =~ $mode_keys( |=)(\.|development|staging|production) ]]; then
+    echo "mode must be set to one of: . (local), development, staging, production."
+    exit 1
+  fi
+
+  if [[ "$options" =~ (-c|--config) ]]; then
+    echo "config cannot be set manually"
+    exit 1
+  fi
+  options+=" --config $(
+    if [ -f vite.config.ts ]; then
+      echo "vite.config.ts"
+    else
+      echo "./node_modules/@codeforlife/workspace/vite.config.ts"
+    fi
+  )"
+
+  echo "$options"
+}
+
+function _vite() {
+  yarn run vite $(_make_vite_options "$@")
+}
+
+function _vitest() {
+  yarn run vitest $(_make_vite_options "$@")
 }
 
 # ------------------------------------------------------------------------------
@@ -63,24 +93,19 @@ function dev:server() {
 function dev:client() {
   # Launch dev server with client-side rendering.
   # https://vite.dev/guide/cli
-  yarn run vite --config $vite_config
+  _vite "$@"
 }
 
 function build:client() {
   # Build production-ready, client-side entry-point.
   # https://vite.dev/guide/cli
-  yarn run vite build \
-    --outDir dist/client \
-    --config $vite_config
+  _vite build --outDir dist/client "$@"
 }
 
 function build:server() {
   # Build production-ready, server-side entry-point.
   # https://vite.dev/guide/cli
-  yarn run vite build \
-    --ssr src/entry-server.tsx \
-    --outDir dist/server \
-    --config $vite_config
+  _vite build --ssr src/entry-server.tsx --outDir dist/server "$@"
 }
 
 function build() {
@@ -98,25 +123,25 @@ function start() {
 function test() {
   # Run tests.
   # https://vitest.dev/guide/cli
-  yarn run vitest run --config $vite_config
+  _vitest run "$@"
 }
 
 function test:coverage:report() {
   # Run tests and generate coverage report.
   # https://vitest.dev/guide/cli
-  yarn run vitest run --coverage --config $vite_config
+  _vitest run --coverage "$@"
 }
 
 function test:coverage:check() {
   # Run tests and check coverage thresholds.
   # https://vitest.dev/guide/cli
-  yarn run vitest run \
+  _vitest run \
     --reporter=verbose \
     --coverage.thresholds.lines=90 \
     --coverage.thresholds.functions=90 \
     --coverage.thresholds.branches=90 \
     --coverage.thresholds.statements=90 \
-    --config $vite_config
+    "$@"
 }
 
 function test:coverage() {
@@ -130,9 +155,7 @@ function test:coverage() {
 function test:ui() {
   # Launch text explorer UI.
   # https://vitest.dev/guide/cli
-  yarn run vitest \
-    --ui \
-    --config $vite_config
+  _vitest --ui "$@"
 }
 
 function format() {
