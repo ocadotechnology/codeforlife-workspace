@@ -58,7 +58,7 @@ jobs:
       - name: 🔎 Check Code Types
         run: .workspace/scripts types:check
 
-      - name: 🔎 Check Code Types
+      - name: 🔎 Check Code
         run: .workspace/scripts code:check
 
       - name: 🧪 Test Code
