@@ -57,6 +57,7 @@
       "**/node_modules/**": true,
       "**/coverage/**": true
     },
+    "testing.defaultGutterClickAction": "debug",
     "cSpell.words": ["codeforlife", "klass", "ocado", "kurono", "pipenv"],
     // Markdown
     "[md]": {
