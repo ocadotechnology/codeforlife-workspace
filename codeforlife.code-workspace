@@ -353,6 +353,7 @@
         "type": "debugpy",
         "cwd": "/codeforlife-workspace/${input:backend-service}"
       },
+      // https://code.visualstudio.com/docs/python/testing
       {
         "env": {
           "PYTEST_ADDOPTS": "--no-cov"
@@ -362,8 +363,9 @@
         "presentation": {
           "hidden": true
         },
-        "request": "test",
-        "type": "debugpy"
+        "request": "launch",
+        "type": "debugpy",
+        "purpose": ["debug-test"]
       },
       {
         "name": "Vite Server",
