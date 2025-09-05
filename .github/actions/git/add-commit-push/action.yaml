@@ -7,9 +7,17 @@ inputs:
   commit-message:
     description: "The commit message. Prepended with 'chore: ' and post-pended with ' [skip ci]'."
     required: true
+  setup-bot:
+    description: "A flag designating whether to set up cfl-bot as the git user."
+    required: false
+    default: "true"
 runs:
   using: composite
   steps:
+    - name: 🤖 Set up CFL Bot
+      if: inputs.setup-bot == 'true'
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/git/setup-bot@main
+
     - name: ➕ Git Add
       shell: bash
       run: git add ${{ inputs.add }}
