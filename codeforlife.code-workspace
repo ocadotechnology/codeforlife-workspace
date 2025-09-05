@@ -204,7 +204,8 @@
           "codeforlife-portal-backend",
           "codeforlife-contributor-backend",
           "codeforlife-template-backend",
-          "codeforlife-sso-backend"
+          "codeforlife-sso-backend",
+          "codeforlife-rapid-router-backend"
         ]
       },
       {
@@ -216,7 +217,8 @@
           "codeforlife-portal-frontend",
           "codeforlife-contributor-frontend",
           "codeforlife-template-frontend",
-          "codeforlife-sso-frontend"
+          "codeforlife-sso-frontend",
+          "codeforlife-rapid-router-frontend"
         ]
       },
       {
@@ -294,7 +296,8 @@
             "codeforlife-portal-backend",
             "codeforlife-contributor-backend",
             "codeforlife-template-backend",
-            "codeforlife-sso-backend"
+            "codeforlife-sso-backend",
+            "codeforlife-rapid-router-backend"
           ]
         }
       },
@@ -310,7 +313,8 @@
             "codeforlife-portal-frontend",
             "codeforlife-contributor-frontend",
             "codeforlife-template-frontend",
-            "codeforlife-sso-frontend"
+            "codeforlife-sso-frontend",
+            "codeforlife-rapid-router-frontend"
           ]
         }
       },
