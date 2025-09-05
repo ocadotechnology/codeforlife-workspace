@@ -1,4 +1,4 @@
-name: "Code for Life - Workspace - Download Frontend Files"
+name: "Code for Life - Workspace - Frontend - Download Files"
 description: "Download all the frontend files that are reused across the workspace."
 inputs:
   download-branch:
@@ -35,26 +35,10 @@ runs:
 
     # TypeScript
 
-    - name: 📥 Download Base TypeScript Config File
-      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
+    - name: 📥 Download TypeScript Config Files
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/frontend/download-typescript-configs@main
       with:
-        branch: ${{ inputs.download-branch }}
-        path: configs/frontend/tsconfig.base.json
-        save-to: .workspace/tsconfig.base.json
-
-    - name: 📥 Download App TypeScript Config File
-      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
-      with:
-        branch: ${{ inputs.download-branch }}
-        path: configs/frontend/tsconfig.app.json
-        save-to: .workspace/tsconfig.app.json
-
-    - name: 📥 Download Node TypeScript Config File
-      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
-      with:
-        branch: ${{ inputs.download-branch }}
-        path: configs/frontend/tsconfig.node.json
-        save-to: .workspace/tsconfig.node.json
+        download-branch: ${{ inputs.download-branch }}
 
     # ESLint
 

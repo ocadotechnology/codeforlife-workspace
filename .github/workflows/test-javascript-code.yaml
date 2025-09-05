@@ -48,7 +48,7 @@ jobs:
           install-args: --production=false
 
       - name: 📥 Download Workspace Frontend Files
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-frontend-files@main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/frontend/download-files@main
         with:
           download-branch: ${{ inputs.download-branch }}
 
