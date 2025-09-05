@@ -1,4 +1,5 @@
 .workspace
+dist
 **/*.yaml
 **/*.yml
 **/*.md
