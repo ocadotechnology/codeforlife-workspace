@@ -3,7 +3,8 @@ description: "Download all the TypeScript config files that are reused across th
 inputs:
   download-branch:
     description: "The branch of the workspace repo to download the files from."
-    required: true
+    required: false
+    default: "main"
 runs:
   using: composite
   steps:
