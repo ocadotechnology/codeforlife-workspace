@@ -1,0 +1,16 @@
+name: "Code for Life - Workspace - Frontend - Download Vite Configs"
+description: "Download the Vite config file that is reused across the workspace."
+inputs:
+  download-branch:
+    description: "The branch of the workspace repo to download the files from."
+    required: false
+    default: "main"
+runs:
+  using: composite
+  steps:
+    - name: 📥 Download Vite Config File
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
+      with:
+        branch: ${{ inputs.download-branch }}
+        path: configs/frontend/vite.config.ts
+        save-to: .workspace/vite.config.ts
