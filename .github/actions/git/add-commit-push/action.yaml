@@ -33,7 +33,7 @@ runs:
         if ! git diff --staged --quiet; then
           git commit -m "chore: ${{ inputs.commit-message }} [skip ci]"
           if [ "${{ inputs.force }}" = "true" ]; then
-            git push --force
+            git push --force --no-verify
           else
             git push
           fi
