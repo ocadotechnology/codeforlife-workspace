@@ -11,6 +11,10 @@ inputs:
     description: "A flag designating whether to set up cfl-bot as the git user."
     required: false
     default: "true"
+  force:
+    description: "A flag designating whether to force push."
+    required: false
+    default: "false"
 runs:
   using: composite
   steps:
@@ -28,5 +32,9 @@ runs:
         # Only commit and push if there are differences.
         if ! git diff --staged --quiet; then
           git commit -m "chore: ${{ inputs.commit-message }} [skip ci]"
-          git push
+          if [ "${{ inputs.force }}" = "true" ]; then
+            git push --force
+          else
+            git push
+          fi
         fi
