@@ -24,12 +24,18 @@ inputs:
     description: "The branch to download the package.json from the workspace repo."
     required: false
     default: "main"
+  gh-token:
+    description: "The Personal access token (PAT) used to checkout the repository."
+    required: false
+    default: ${{ github.token }}
 runs:
   using: composite
   steps:
     - name: 🛫 Checkout
       if: inputs.checkout == 'true'
       uses: actions/checkout@v4
+      with:
+        token: ${{ inputs.gh-token }}
 
     - name: 📥 Download package.json from Workspace
       if: inputs.workspace-package == 'true'
