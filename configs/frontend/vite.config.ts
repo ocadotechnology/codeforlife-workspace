@@ -9,7 +9,10 @@ import { defineConfig } from "vitest/config"
 import react from "@vitejs/plugin-react"
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    // @ts-expect-error is a valid plugin option
+    react(),
+  ],
   envDir: "env",
   server: {
     open: true,
