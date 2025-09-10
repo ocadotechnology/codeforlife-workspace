@@ -4,8 +4,6 @@
 #  - The 1st arg is the name of the function.
 #  - All the remaining args are the arguments of the function.
 
-set -e
-
 # ------------------------------------------------------------------------------
 # Variables
 # ------------------------------------------------------------------------------
@@ -24,9 +22,78 @@ workspace_configs_dir="$(
   fi
 )"
 
+# A global array to keep track of the step number at each level of nesting.
+declare -ga step_counters=()
+
+# A global variable to track the current depth of nesting.
+declare -gi step_depth=0
+
 # ------------------------------------------------------------------------------
 # Private/Utility Functions
 # ------------------------------------------------------------------------------
+
+function _handle_exit() {
+  local output
+  local status
+
+  output="$($@)"
+  status=$?
+
+  if [ "$status" -ne 0 ]; then
+    ${on_error:-echo} "$output"
+    exit "$status"
+  fi
+
+  ${on_success:-on_success} "$output"
+}
+
+function _step() {
+  # Increment the current nesting depth.
+  ((step_depth++))
+
+  # Initialize the counter for the new depth if it doesn't exist.
+  if [[ -z "${step_counters[step_depth - 1]}" ]]; then
+    step_counters[step_depth - 1]=0
+  fi
+
+  # Increment the counter for the current depth.
+  ((step_counters[step_depth - 1]++))
+
+  # Remove any counters for deeper levels, as we're not in a nested call from a previous run.
+  # This is important to reset the state correctly for a new sequence of calls.
+  if [[ step_depth -lt ${#step_counters[@]} ]]; then
+    for ((i = step_depth; i < ${#step_counters[@]}; i++)); do
+      unset step_counters[$i]
+    done
+  fi
+
+  # Build the step number string (e.g., "1", "1.1", "1.1.1").
+  local step_string
+  local delimiter=""
+  for ((i = 0; i < step_depth; i++)); do
+    step_string+="$delimiter${step_counters[$i]}"
+    delimiter="."
+  done
+
+  # Print the current step number.
+  echo "-----------------------------------------------------------------------"
+  echo "$step_string. $@"
+  echo "-----------------------------------------------------------------------"
+
+  # Call the provided function (the callback).
+  ${callback:-callback}
+
+  # Decrement the depth as we exit this call.
+  ((step_depth--))
+}
+
+function _vite() { yarn run vite $@; }
+
+function _vitest() { yarn run vitest $@; }
+
+function _eslint() { yarn run eslint $@; }
+
+function _typescript() { yarn run tsc $@; }
 
 function _prettier() {
   local options="$@"
@@ -73,51 +140,84 @@ function _make_vite_options() {
   echo "$options"
 }
 
-function _vite() {
-  yarn run vite $(_make_vite_options "$@")
+function _vite:build() { _vite build $@; }
+
+function _vite:build:ssr() {
+  if [ "${make_options:-1}" -eq 1 ]; then
+    on_success="_vite:build" _handle_exit _make_vite_options "$@"
+  else
+    _vite:build "$@"
+  fi
 }
 
-function _vitest() {
-  yarn run vitest $(_make_vite_options "$@")
-}
+function _run() { NODE_ENV="$1" node server; }
 
 # ------------------------------------------------------------------------------
 # Public/Callable Functions
 # ------------------------------------------------------------------------------
 
-function dev:server() {
-  # Launch dev server with server-side rendering.
-  node server
+function setup() {
+  # Setup your local environment.
+  yarn install --production=false
 }
 
-function dev:client() {
-  # Launch dev server with client-side rendering.
-  # https://vite.dev/guide/cli
-  _vite "$@"
+function hard-install() {
+  # Delete the existing node_modules and yarn.lock and install all dependencies.
+  if [ ! -e "node_modules" ]; then
+    echo "node_modules not found"
+    exit 1
+  fi
+  rm -f yarn.lock
+  rm -rf node_modules
+  yarn cache clean codeforlife
+  setup
 }
 
 function build:client() {
   # Build production-ready, client-side entry-point.
   # https://vite.dev/guide/cli
-  _vite build --outDir dist/client "$@"
+  _vite:build:ssr --outDir dist/client "$@"
 }
 
 function build:server() {
   # Build production-ready, server-side entry-point.
   # https://vite.dev/guide/cli
-  _vite build --ssr src/entry-server.tsx --outDir dist/server "$@"
+  _vite:build:ssr --ssr src/entry-server.tsx --outDir dist/server "$@"
 }
 
 function build() {
   # Build production-ready, client-side and server-side entry-point.
-  build:client $@
-  build:server $@
+  function on_success() {
+    local options="$@"
+
+    function callback() { make_options=0 build:client "$options"; }
+    _step Building client-side code
+
+    function callback() { make_options=0 build:server "$options"; }
+    _step Building server-side code
+  }
+  _handle_exit _make_vite_options "$@"
 }
 
-function start() {
-  # Run production-ready node server.
-  # NOTE: Make sure to run build() first!
-  NODE_ENV=production node server
+function run:dev() {
+  # Launch dev server with server-side rendering.
+  callback="setup" _step Setting up JS environment
+
+  function callback() { _run development; }
+  _step Running server in Node.js development environment
+}
+
+function run:prod() {
+  # Run server in production environment.
+  callback="setup" _step Setting up JS environment
+
+  if [ "${build:-1}" -eq 1 ]; then
+    function callback() { build --mode="production"; }
+    _step Building app in Vite production mode
+  fi
+
+  function callback() { _run production; }
+  _step Running server in Node production environment
 }
 
 function test() {
@@ -173,54 +273,33 @@ function format:check() {
 function code:check() {
   # Find linting issues.
   # https://eslint.org/docs/latest/use/command-line-interface
-  yarn run eslint --max-warnings=0 "${@:-.}"
+  _eslint --max-warnings=0 "${@:-.}"
 }
 
 function code:fix() {
   # Auto-fix known linting issues.
   # https://eslint.org/docs/latest/use/command-line-interface
-  yarn run eslint --fix "${@:-.}"
+  _eslint --fix "${@:-.}"
 }
 
 function types:check() {
   # Check static types.
   # https://www.typescriptlang.org/docs/handbook/compiler-options.html
-  yarn run tsc --build tsconfig.json
-}
-
-function setup() {
-  # Setup your local environment.
-  yarn install --production=false
-}
-
-function run:server() {
-  # Run a local server-side Vite server.
-  setup $@
-  dev:server $@
-}
-
-function run:client() {
-  # Run a local client-side Vite server.
-  setup $@
-  dev:client $@
-}
-
-function hard-install() {
-  # Delete the existing node_modules and yarn.lock and install all dependencies.
-  if [ ! -e "node_modules" ]; then
-    echo "node_modules not found"
-    exit 1
-  fi
-  rm -f yarn.lock
-  rm -rf node_modules
-  yarn cache clean codeforlife
-  yarn install --production=false
+  _typescript --build tsconfig.json
 }
 
 # ------------------------------------------------------------------------------
 # Entrypoint
 # ------------------------------------------------------------------------------
 
-func=$1  # Get function name.
-shift    # Remove 1st argument.
-$func $@ # Call function with remaining arguments.
+if [ $# -eq 0 ]; then
+  echo "Expected call signature: {func_name*} {...options?}"
+  exit 1
+fi
+
+if [[ "$1" =~ ^_ ]]; then
+  echo "You cannot call a private function."
+  exit 1
+fi
+
+$1 ${@:2} # Call function by name and pass the remaining arguments.
