@@ -284,7 +284,7 @@
     "tasks": [
       {
         "label": "scripts:backend",
-        "command": "sudo chmod +x /workspace/scripts/backend && /workspace/scripts/backend ${input:args}",
+        "command": "sudo chmod +x /workspace/backend/scripts && /workspace/backend/scripts ${input:args}",
         "type": "shell",
         "problemMatcher": [],
         "options": {
