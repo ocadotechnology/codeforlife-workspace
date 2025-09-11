@@ -17,8 +17,6 @@
       "path": "frontend/contributor",
       "name": "/workspace/frontend/contributor"
     },
-    // { "path": "codeforlife-deploy-appengine" },
-    { "path": "codeforlife-portal" },
     {
       "path": "backend/portal",
       "name": "/workspace/backend/portal"
@@ -55,7 +53,18 @@
       "path": "backend/scheduler",
       "name": "/workspace/backend/scheduler"
     },
-    { "path": "rapid-router" }
+    {
+      "path": "legacy/portal",
+      "name": "/workspace/legacy/portal"
+    },
+    {
+      "path": "legacy/rapid-router",
+      "name": "/workspace/legacy/rapid-router"
+    },
+    {
+      "path": "legacy/deploy-appengine",
+      "name": "/workspace/legacy/deploy-appengine"
+    }
   ],
   "settings": {
     // General

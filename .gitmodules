@@ -1,12 +1,3 @@
-[submodule "codeforlife-portal"]
-	path = codeforlife-portal
-	url = https://github.com/ocadotechnology/codeforlife-portal.git
-[submodule "rapid-router"]
-	path = rapid-router
-	url = https://github.com/ocadotechnology/rapid-router.git
-[submodule "codeforlife-deploy-appengine"]
-	path = codeforlife-deploy-appengine
-	url = https://github.com/ocadotechnology/codeforlife-deploy-appengine.git
 [submodule "frontend/contributor"]
 	path = frontend/contributor
 	url = https://github.com/ocadotechnology/codeforlife-contributor-frontend.git
@@ -46,3 +37,12 @@
 [submodule "backend/scheduler"]
 	path = backend/scheduler
 	url = https://github.com/ocadotechnology/codeforlife-scheduler-backend.git
+[submodule "legacy/portal"]
+	path = legacy/portal
+	url = https://github.com/ocadotechnology/codeforlife-portal.git
+[submodule "legacy/deploy-appengine"]
+	path = legacy/deploy-appengine
+	url = https://github.com/ocadotechnology/codeforlife-deploy-appengine.git
+[submodule "legacy/rapid-router"]
+	path = legacy/rapid-router
+	url = https://github.com/ocadotechnology/rapid-router.git
