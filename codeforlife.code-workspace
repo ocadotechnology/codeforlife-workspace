@@ -1,8 +1,14 @@
 {
   "folders": [
     { "path": ".", "name": "/workspace" },
-    { "path": "codeforlife-contributor-backend" },
-    { "path": "codeforlife-contributor-frontend" },
+    {
+      "path": "frontend/contributor",
+      "name": "/workspace/backend/contributor/"
+    },
+    {
+      "path": "frontend/contributor",
+      "name": "/workspace/frontend/contributor/"
+    },
     // { "path": "codeforlife-deploy-appengine" },
     { "path": "codeforlife-package-javascript" },
     { "path": "codeforlife-package-python" },
@@ -92,17 +98,13 @@
       "/workspace/configs/backend/pyproject.toml"
     ],
     "black-formatter.path": [".venv/bin/python", "-m", "black"],
-    "isort.args": [
-      "--settings-file=/workspace/configs/backend/pyproject.toml"
-    ],
+    "isort.args": ["--settings-file=/workspace/configs/backend/pyproject.toml"],
     "isort.path": [".venv/bin/python", "-m", "isort"],
     "mypy-type-checker.args": [
       "--config-file=/workspace/configs/backend/pyproject.toml"
     ],
     "mypy-type-checker.path": [".venv/bin/python", "-m", "mypy"],
-    "pylint.args": [
-      "--rcfile=/workspace/configs/backend/pyproject.toml"
-    ],
+    "pylint.args": ["--rcfile=/workspace/configs/backend/pyproject.toml"],
     "pylint.path": [".venv/bin/python", "-m", "pylint"],
     // Database
     // TODO: create workflow to update sql connections for each BE service.
