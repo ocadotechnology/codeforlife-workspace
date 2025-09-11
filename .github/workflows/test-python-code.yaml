@@ -180,7 +180,7 @@ jobs:
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
         with:
           branch: ${{ inputs.pyproject-toml-download-branch }}
-          path: configs/backend/pyproject.toml
+          path: backend/pyproject.toml
           save-to: ${{ inputs.pyproject-toml-path }}
 
       - name: 📥 Download CLI Script File
