@@ -105,7 +105,7 @@ def print_optional_steps_instructions():
         "If you have any concerns about logging into your personal GitHub"
         + " account, rest assured we don't perform any malicious actions with"
         " it. You're welcome to read the source code of this script here: "
-        + "/codeforlife-workspace/.submodules/setup/__main__.py.\n"
+        + "/workspace/.devcontainer/setup/__main__.py.\n"
     )
     pprint.warn("👆👀👆 PLEASE READ INSTRUCTIONS 👆👀👆")
     input(
