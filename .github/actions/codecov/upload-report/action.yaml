@@ -17,7 +17,7 @@ runs:
       uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
         branch: ${{ inputs.config-download-branch }}
-        path: configs/codecov.yml
+        path: codecov.yml
         save-to: .workspace/codecov.yml
 
     - name: 📈 Upload Coverage Reports to Codecov
