@@ -38,8 +38,14 @@
       "path": "frontend/sso",
       "name": "/workspace/frontend/sso"
     },
-    { "path": "codeforlife-template-backend" },
-    { "path": "codeforlife-template-frontend" },
+    {
+      "path": "backend/template",
+      "name": "/workspace/backend/template"
+    },
+    {
+      "path": "frontend/template",
+      "name": "/workspace/frontend/template"
+    },
     { "path": "rapid-router" }
   ],
   "settings": {
