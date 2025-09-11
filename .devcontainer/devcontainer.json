@@ -42,9 +42,7 @@
       ]
     }
   },
-  "dockerComposeFile": [
-    "./docker-compose.yml"
-  ],
+  "dockerComposeFile": ["./docker-compose.yml"],
   "features": {
     "ghcr.io/devcontainers/features/aws-cli:1": {
       "version": "2.26.1"
@@ -64,8 +62,13 @@
     8000, // Django
     5432, // PostgreSQL
     6379, // Redis
-    4566 // LocalStack
+    4566, // LocalStack
+    5173, // Vite
+    8080 // OTP
   ],
+  "remoteEnv": {
+    "LOCAL_WORKSPACE_PATH": "${localWorkspaceFolder}"
+  },
   "postCreateCommand": "sudo chmod +x scripts/workspace/setup && scripts/workspace/setup",
   "remoteUser": "root",
   "service": "app",
