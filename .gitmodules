@@ -13,12 +13,6 @@
 [submodule "codeforlife-package-javascript"]
 	path = codeforlife-package-javascript
 	url = https://github.com/ocadotechnology/codeforlife-package-javascript.git
-[submodule "codeforlife-portal-frontend"]
-	path = codeforlife-portal-frontend
-	url = https://github.com/ocadotechnology/codeforlife-portal-frontend.git
-[submodule "codeforlife-portal-backend"]
-	path = codeforlife-portal-backend
-	url = https://github.com/ocadotechnology/codeforlife-portal-backend.git
 [submodule "codeforlife-template-backend"]
 	path = codeforlife-template-backend
 	url = https://github.com/ocadotechnology/codeforlife-template-backend.git
@@ -31,12 +25,6 @@
 [submodule "codeforlife-sso-frontend"]
 	path = codeforlife-sso-frontend
 	url = https://github.com/ocadotechnology/codeforlife-sso-frontend.git
-[submodule "codeforlife-rapid-router-backend"]
-	path = codeforlife-rapid-router-backend
-	url = https://github.com/ocadotechnology/codeforlife-rapid-router-backend.git
-[submodule "codeforlife-rapid-router-frontend"]
-	path = codeforlife-rapid-router-frontend
-	url = https://github.com/ocadotechnology/codeforlife-rapid-router-frontend.git
 [submodule "codeforlife-scheduler-backend"]
 	path = codeforlife-scheduler-backend
 	url = https://github.com/ocadotechnology/codeforlife-scheduler-backend.git
@@ -46,3 +34,12 @@
 [submodule "backend/contributor"]
 	path = backend/contributor
 	url = https://github.com/ocadotechnology/codeforlife-contributor-backend.git
+[submodule "frontend/portal"]
+	path = frontend/portal
+	url = https://github.com/ocadotechnology/codeforlife-portal-frontend.git
+[submodule "backend/portal"]
+	path = backend/portal
+	url = https://github.com/ocadotechnology/codeforlife-portal-backend.git
+[submodule "frontend/rapid-router"]
+	path = frontend/rapid-router
+	url = https://github.com/ocadotechnology/codeforlife-rapid-router-frontend.git

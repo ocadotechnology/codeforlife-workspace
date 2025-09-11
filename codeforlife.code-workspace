@@ -13,11 +13,22 @@
     { "path": "codeforlife-package-javascript" },
     { "path": "codeforlife-package-python" },
     { "path": "codeforlife-portal" },
-    { "path": "codeforlife-portal-backend" },
-    { "path": "codeforlife-portal-frontend" },
-    // TODO: uncomment these as we begin restructuring them.
-    // { "path": "codeforlife-rapid-router-backend" },
-    // { "path": "codeforlife-rapid-router-frontend" },
+    {
+      "path": "backend/portal",
+      "name": "/workspace/backend/portal"
+    },
+    {
+      "path": "frontend/portal",
+      "name": "/workspace/frontend/portal"
+    },
+    {
+      "path": "backend/rapid-router",
+      "name": "/workspace/backend/rapid-router"
+    },
+    {
+      "path": "frontend/rapid-router",
+      "name": "/workspace/frontend/rapid-router"
+    },
     { "path": "codeforlife-scheduler-backend" },
     // { "path": "codeforlife-sso-backend" },
     // { "path": "codeforlife-sso-frontend" },
