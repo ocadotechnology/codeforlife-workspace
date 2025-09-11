@@ -2,6 +2,14 @@
   "folders": [
     { "path": ".", "name": "/workspace" },
     {
+      "path": "backend/package",
+      "name": "/workspace/backend/package"
+    },
+    {
+      "path": "frontend/package",
+      "name": "/workspace/frontend/package"
+    },
+    {
       "path": "backend/contributor",
       "name": "/workspace/backend/contributor"
     },
@@ -10,8 +18,6 @@
       "name": "/workspace/frontend/contributor"
     },
     // { "path": "codeforlife-deploy-appengine" },
-    { "path": "codeforlife-package-javascript" },
-    { "path": "codeforlife-package-python" },
     { "path": "codeforlife-portal" },
     {
       "path": "backend/portal",

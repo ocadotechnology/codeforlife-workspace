@@ -7,12 +7,6 @@
 [submodule "codeforlife-deploy-appengine"]
 	path = codeforlife-deploy-appengine
 	url = https://github.com/ocadotechnology/codeforlife-deploy-appengine.git
-[submodule "codeforlife-package-python"]
-	path = codeforlife-package-python
-	url = https://github.com/ocadotechnology/codeforlife-package-python.git
-[submodule "codeforlife-package-javascript"]
-	path = codeforlife-package-javascript
-	url = https://github.com/ocadotechnology/codeforlife-package-javascript.git
 [submodule "codeforlife-scheduler-backend"]
 	path = codeforlife-scheduler-backend
 	url = https://github.com/ocadotechnology/codeforlife-scheduler-backend.git
@@ -46,3 +40,9 @@
 [submodule "backend/template"]
 	path = backend/template
 	url = https://github.com/ocadotechnology/codeforlife-template-backend.git
+[submodule "backend/package"]
+	path = backend/package
+	url = https://github.com/ocadotechnology/codeforlife-package-python.git
+[submodule "frontend/package"]
+	path = frontend/package
+	url = https://github.com/ocadotechnology/codeforlife-package-javascript.git
