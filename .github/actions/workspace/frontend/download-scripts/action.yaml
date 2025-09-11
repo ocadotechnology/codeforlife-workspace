@@ -12,6 +12,6 @@ runs:
       uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
         branch: ${{ inputs.download-branch }}
-        path: scripts/frontend
+        path: frontend/scripts
         save-to: .workspace/scripts
         type: bash

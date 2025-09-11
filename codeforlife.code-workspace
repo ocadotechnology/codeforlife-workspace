@@ -275,10 +275,10 @@
         "description": "Expected Format: \"{func} {arg1} {arg2} ...\"."
       },
       {
-        "id": "scripts:frontend:run:client:terminate",
+        "id": "frontend:scripts:run:dev:terminate",
         "type": "command",
         "command": "workbench.action.tasks.terminate",
-        "args": "scripts:frontend:run:client"
+        "args": "frontend:scripts:run:dev"
       }
     ],
     "tasks": [
@@ -293,7 +293,7 @@
       },
       {
         "label": "scripts:frontend",
-        "command": "sudo chmod +x /workspace/scripts/frontend && /workspace/scripts/frontend ${input:args}",
+        "command": "sudo chmod +x /workspace/frontend/scripts && /workspace/frontend/scripts ${input:args}",
         "type": "shell",
         "problemMatcher": [],
         "options": {
@@ -301,8 +301,8 @@
         }
       },
       {
-        "label": "scripts:frontend:run:client",
-        "command": "sudo chmod +x /workspace/scripts/frontend && /workspace/scripts/frontend run:client",
+        "label": "frontend:scripts:run:dev",
+        "command": "sudo chmod +x /workspace/frontend/scripts && /workspace/frontend/scripts run:dev",
         "type": "shell",
         "problemMatcher": [],
         "isBackground": true,
@@ -314,8 +314,8 @@
         }
       },
       {
-        "label": "scripts:frontend:run:client:terminate",
-        "command": "echo ${input:scripts:frontend:run:client:terminate}",
+        "label": "frontend:scripts:run:dev:terminate",
+        "command": "echo ${input:frontend:scripts:run:dev:terminate}",
         "type": "shell",
         "problemMatcher": []
       }
@@ -414,8 +414,8 @@
       },
       {
         "name": "Vite Server",
-        "preLaunchTask": "scripts:frontend:run:client",
-        "postDebugTask": "scripts:frontend:run:client:terminate",
+        "preLaunchTask": "frontend:scripts:run:dev",
+        "postDebugTask": "frontend:scripts:run:dev:terminate",
         "request": "launch",
         "type": "chrome",
         "url": "http://localhost:5173",
