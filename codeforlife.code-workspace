@@ -2,7 +2,7 @@
   "folders": [
     { "path": ".", "name": "/workspace" },
     {
-      "path": "frontend/contributor",
+      "path": "backend/contributor",
       "name": "/workspace/backend/contributor/"
     },
     {
