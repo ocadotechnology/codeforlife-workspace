@@ -40,3 +40,6 @@
 [submodule "backend/rapid-router"]
 	path = backend/rapid-router
 	url = https://github.com/ocadotechnology/codeforlife-rapid-router-backend.git
+[submodule "frontend/sso"]
+	path = frontend/sso
+	url = https://github.com/ocadotechnology/codeforlife-sso-frontend.git
