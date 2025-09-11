@@ -1,6 +1,6 @@
 {
   "folders": [
-    { "path": "." },
+    { "path": ".", "name": "/workspace" },
     { "path": "codeforlife-contributor-backend" },
     { "path": "codeforlife-contributor-frontend" },
     // { "path": "codeforlife-deploy-appengine" },

@@ -72,5 +72,5 @@
   "postCreateCommand": "sudo chmod +x scripts/workspace/setup && scripts/workspace/setup",
   "remoteUser": "root",
   "service": "app",
-  "workspaceFolder": "/codeforlife-workspace"
+  "workspaceFolder": "/workspace"
 }
