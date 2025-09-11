@@ -73,35 +73,35 @@
       "-n=auto",
       "--cov=src",
       "--cov-report=html",
-      "-c=/codeforlife-workspace/configs/backend/pyproject.toml",
+      "-c=/workspace/configs/backend/pyproject.toml",
       "src"
     ],
     "python.testing.pytestEnabled": true,
     "python.testing.unittestEnabled": false,
     "python.analysis.extraPaths": [
       // Uncomment if installing locally in editable mode.
-      // "/codeforlife-workspace/codeforlife-package-python"
+      // "/workspace/codeforlife-package-python"
     ],
     "[python]": {
       "editor.defaultFormatter": "ms-python.black-formatter",
       "editor.tabSize": 4
     },
-    "autoDocstring.customTemplatePath": "/codeforlife-workspace/configs/backend/python-docstring.mustache",
+    "autoDocstring.customTemplatePath": "/workspace/configs/backend/python-docstring.mustache",
     "black-formatter.args": [
       "--config",
-      "/codeforlife-workspace/configs/backend/pyproject.toml"
+      "/workspace/configs/backend/pyproject.toml"
     ],
     "black-formatter.path": [".venv/bin/python", "-m", "black"],
     "isort.args": [
-      "--settings-file=/codeforlife-workspace/configs/backend/pyproject.toml"
+      "--settings-file=/workspace/configs/backend/pyproject.toml"
     ],
     "isort.path": [".venv/bin/python", "-m", "isort"],
     "mypy-type-checker.args": [
-      "--config-file=/codeforlife-workspace/configs/backend/pyproject.toml"
+      "--config-file=/workspace/configs/backend/pyproject.toml"
     ],
     "mypy-type-checker.path": [".venv/bin/python", "-m", "mypy"],
     "pylint.args": [
-      "--rcfile=/codeforlife-workspace/configs/backend/pyproject.toml"
+      "--rcfile=/workspace/configs/backend/pyproject.toml"
     ],
     "pylint.path": [".venv/bin/python", "-m", "pylint"],
     // Database
@@ -181,8 +181,8 @@
         "source.organizeImports": "never"
       }
     },
-    "prettier.configPath": "/codeforlife-workspace/configs/frontend/.prettierrc.json",
-    "prettier.ignorePath": "/codeforlife-workspace/configs/frontend/.prettierignore",
+    "prettier.configPath": "/workspace/configs/frontend/.prettierrc.json",
+    "prettier.ignorePath": "/workspace/configs/frontend/.prettierignore",
     "eslint.useFlatConfig": true,
     // JSON
     "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
@@ -244,30 +244,30 @@
     "tasks": [
       {
         "label": "scripts:backend",
-        "command": "sudo chmod +x /codeforlife-workspace/scripts/backend && /codeforlife-workspace/scripts/backend ${input:args}",
+        "command": "sudo chmod +x /workspace/scripts/backend && /workspace/scripts/backend ${input:args}",
         "type": "shell",
         "problemMatcher": [],
         "options": {
-          "cwd": "/codeforlife-workspace/${input:backend-folder}"
+          "cwd": "/workspace/${input:backend-folder}"
         }
       },
       {
         "label": "scripts:frontend",
-        "command": "sudo chmod +x /codeforlife-workspace/scripts/frontend && /codeforlife-workspace/scripts/frontend ${input:args}",
+        "command": "sudo chmod +x /workspace/scripts/frontend && /workspace/scripts/frontend ${input:args}",
         "type": "shell",
         "problemMatcher": [],
         "options": {
-          "cwd": "/codeforlife-workspace/${input:frontend-folder}"
+          "cwd": "/workspace/${input:frontend-folder}"
         }
       },
       {
         "label": "scripts:frontend:run:client",
-        "command": "sudo chmod +x /codeforlife-workspace/scripts/frontend && /codeforlife-workspace/scripts/frontend run:client",
+        "command": "sudo chmod +x /workspace/scripts/frontend && /workspace/scripts/frontend run:client",
         "type": "shell",
         "problemMatcher": [],
         "isBackground": true,
         "options": {
-          "cwd": "/codeforlife-workspace/${input:remember-frontend-service}",
+          "cwd": "/workspace/${input:remember-frontend-service}",
           "env": {
             "BROWSER": "none"
           }
@@ -345,7 +345,7 @@
         "program": "manage.py",
         "request": "launch",
         "type": "debugpy",
-        "cwd": "/codeforlife-workspace/${input:backend-service}"
+        "cwd": "/workspace/${input:backend-service}"
       },
       {
         "env": {
@@ -356,7 +356,7 @@
         "program": "application.py",
         "request": "launch",
         "type": "debugpy",
-        "cwd": "/codeforlife-workspace/${input:backend-service}"
+        "cwd": "/workspace/${input:backend-service}"
       },
       // https://code.visualstudio.com/docs/python/testing
       {
@@ -379,7 +379,7 @@
         "request": "launch",
         "type": "chrome",
         "url": "http://localhost:5173",
-        "webRoot": "/codeforlife-workspace/${input:frontend-service}"
+        "webRoot": "/workspace/${input:frontend-service}"
       }
       // TODO: Vitest Debug
       // https://vitest.dev/guide/debugging.html#vs-code
