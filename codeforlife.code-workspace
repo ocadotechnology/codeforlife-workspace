@@ -221,8 +221,8 @@
         "source.organizeImports": "never"
       }
     },
-    "prettier.configPath": "/workspace/configs/frontend/.prettierrc.json",
-    "prettier.ignorePath": "/workspace/configs/frontend/.prettierignore",
+    "prettier.configPath": "/workspace/frontend/.prettierrc.json",
+    "prettier.ignorePath": "/workspace/frontend/.prettierignore",
     "eslint.useFlatConfig": true,
     // JSON
     "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },

@@ -42,7 +42,7 @@ runs:
       uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
         branch: ${{ inputs.workspace-package-download-branch }}
-        path: configs/frontend/package.json
+        path: frontend/package.json
         save-to: .workspace/package.json
 
     - name: 📥 Download yarn.lock from Workspace
@@ -50,7 +50,7 @@ runs:
       uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
         branch: ${{ inputs.workspace-package-download-branch }}
-        path: configs/frontend/yarn.lock
+        path: frontend/yarn.lock
         save-to: .workspace/yarn.lock
 
     - name: ✏️ Write Path to package.json in Workspace
