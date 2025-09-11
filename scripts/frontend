@@ -223,19 +223,20 @@ function run:prod() {
 function test() {
   # Run tests.
   # https://vitest.dev/guide/cli
-  _vitest run "$@"
+  function on_success() { _vitest run "$@"; }
+  _handle_exit _make_vite_options "$@"
 }
 
 function test:coverage:report() {
   # Run tests and generate coverage report.
   # https://vitest.dev/guide/cli
-  _vitest run --coverage "$@"
+  test --coverage "$@"
 }
 
 function test:coverage:check() {
   # Run tests and check coverage thresholds.
   # https://vitest.dev/guide/cli
-  _vitest run \
+  test \
     --reporter=verbose \
     --coverage.thresholds.lines=90 \
     --coverage.thresholds.functions=90 \
@@ -255,7 +256,8 @@ function test:coverage() {
 function test:ui() {
   # Launch text explorer UI.
   # https://vitest.dev/guide/cli
-  _vitest --ui "$@"
+  function on_success() { _vitest --ui "$@"; }
+  _handle_exit _make_vite_options "$@"
 }
 
 function format() {
@@ -286,6 +288,15 @@ function types:check() {
   # Check static types.
   # https://www.typescriptlang.org/docs/handbook/compiler-options.html
   _typescript --build tsconfig.json
+}
+
+function check() {
+  # Run all checks.
+  callback="setup" _step Setting up JS environment
+  callback="format:check" _step Checking format
+  callback="code:check" _step Checking code
+  callback="types:check" _step Checking types
+  callback="test" _step Running tests
 }
 
 # ------------------------------------------------------------------------------
