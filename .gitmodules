@@ -22,15 +22,9 @@
 [submodule "codeforlife-template-backend"]
 	path = codeforlife-template-backend
 	url = https://github.com/ocadotechnology/codeforlife-template-backend.git
-[submodule "codeforlife-contributor-backend"]
-	path = codeforlife-contributor-backend
-	url = https://github.com/ocadotechnology/codeforlife-contributor-backend.git
 [submodule "codeforlife-template-frontend"]
 	path = codeforlife-template-frontend
 	url = https://github.com/ocadotechnology/codeforlife-template-frontend.git
-[submodule "codeforlife-contributor-frontend"]
-	path = codeforlife-contributor-frontend
-	url = https://github.com/ocadotechnology/codeforlife-contributor-frontend.git
 [submodule "codeforlife-sso-backend"]
 	path = codeforlife-sso-backend
 	url = https://github.com/ocadotechnology/codeforlife-sso-backend.git
@@ -46,3 +40,9 @@
 [submodule "codeforlife-scheduler-backend"]
 	path = codeforlife-scheduler-backend
 	url = https://github.com/ocadotechnology/codeforlife-scheduler-backend.git
+[submodule "frontend/contributor"]
+	path = frontend/contributor
+	url = https://github.com/ocadotechnology/codeforlife-contributor-frontend.git
+[submodule "backend/contributor"]
+	path = backend/contributor
+	url = https://github.com/ocadotechnology/codeforlife-contributor-backend.git
