@@ -1,6 +1,9 @@
 {
   "folders": [
     { "path": ".", "name": "/workspace" },
+    { "path": "backend", "name": "/workspace/backend" },
+    { "path": "frontend", "name": "/workspace/frontend" },
+    { "path": "legacy", "name": "/workspace/legacy" },
     {
       "path": "backend/package",
       "name": "/workspace/backend/package"
