@@ -35,7 +35,6 @@
       "path": "frontend/rapid-router",
       "name": "/workspace/frontend/rapid-router"
     },
-    { "path": "codeforlife-scheduler-backend" },
     {
       "path": "backend/sso",
       "name": "/workspace/backend/sso"
@@ -51,6 +50,10 @@
     {
       "path": "frontend/template",
       "name": "/workspace/frontend/template"
+    },
+    {
+      "path": "backend/scheduler",
+      "name": "/workspace/backend/scheduler"
     },
     { "path": "rapid-router" }
   ],
