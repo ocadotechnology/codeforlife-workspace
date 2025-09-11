@@ -18,7 +18,7 @@ workspace_configs_dir="$(
   if [ "$CI" = "true" ]; then
     echo ".workspace"
   else
-    echo "/codeforlife-workspace/configs/frontend"
+    echo "/workspace/configs/frontend"
   fi
 )"
 
