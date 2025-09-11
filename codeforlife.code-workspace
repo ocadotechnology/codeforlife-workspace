@@ -3,11 +3,11 @@
     { "path": ".", "name": "/workspace" },
     {
       "path": "backend/contributor",
-      "name": "/workspace/backend/contributor/"
+      "name": "/workspace/backend/contributor"
     },
     {
       "path": "frontend/contributor",
-      "name": "/workspace/frontend/contributor/"
+      "name": "/workspace/frontend/contributor"
     },
     // { "path": "codeforlife-deploy-appengine" },
     { "path": "codeforlife-package-javascript" },
