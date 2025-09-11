@@ -43,3 +43,6 @@
 [submodule "frontend/sso"]
 	path = frontend/sso
 	url = https://github.com/ocadotechnology/codeforlife-sso-frontend.git
+[submodule "backend/sso"]
+	path = backend/sso
+	url = https://github.com/ocadotechnology/codeforlife-sso-backend.git
