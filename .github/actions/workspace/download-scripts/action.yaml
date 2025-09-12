@@ -12,7 +12,7 @@ runs:
       uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
         branch: ${{ inputs.branch }}
-        path: scripts/main
+        path: .scripts/main
         save-to: .workspace/.scripts/main
         type: bash
 
@@ -20,7 +20,7 @@ runs:
       uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
         branch: ${{ inputs.branch }}
-        path: scripts/ansi
+        path: .scripts/ansi
         save-to: .workspace/.scripts/ansi
         type: bash
 
@@ -28,7 +28,7 @@ runs:
       uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
         branch: ${{ inputs.branch }}
-        path: scripts/general
+        path: .scripts/general
         save-to: .workspace/.scripts/general
         type: bash
 
@@ -36,7 +36,7 @@ runs:
       uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
         branch: ${{ inputs.branch }}
-        path: scripts/github
+        path: .scripts/github
         save-to: .workspace/.scripts/github
         type: bash
 
@@ -44,6 +44,6 @@ runs:
       uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
         branch: ${{ inputs.branch }}
-        path: scripts/run
+        path: .scripts/run
         save-to: .workspace/.scripts/run
         type: bash
