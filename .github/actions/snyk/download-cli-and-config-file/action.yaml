@@ -28,5 +28,5 @@ runs:
       if: hashFiles(inputs.config-save-to) == ''
       uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
-        path: configs/${{ inputs.config-path }}
+        path: ${{ inputs.config-path }}
         save-to: ${{ inputs.config-save-to }}
