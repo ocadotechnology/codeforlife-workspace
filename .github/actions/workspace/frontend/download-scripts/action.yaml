@@ -9,7 +9,7 @@ runs:
   using: composite
   steps:
     - name: 📥 Download Workspace Scripts
-      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-scripts@workspace-278 # TODO: set to @main
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-scripts@main
       with:
         branch: ${{ inputs.download-branch }}
 

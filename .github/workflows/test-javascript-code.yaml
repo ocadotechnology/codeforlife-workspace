@@ -41,34 +41,34 @@ jobs:
       OCADO_TECH_ORG_ID: 2088731
     steps:
       - name: 🌐 Set up JavaScript ${{ inputs.node-version }} Environment
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/javascript/setup-environment@workspace-278 # TODO: set to @main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/javascript/setup-environment@main
         with:
           node-version: ${{ inputs.node-version }}
           workspace-package-download-branch: ${{ inputs.download-branch }}
           install-args: --production=false
 
       - name: 📥 Download Scripts File from Workspace
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/frontend/download-scripts@workspace-278 # TODO: set to @main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/frontend/download-scripts@main
         with:
           download-branch: ${{ inputs.download-branch }}
 
       - name: 📥 Download Prettier Config Files from Workspace
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/frontend/download-prettier-configs@workspace-278 # TODO: set to @main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/frontend/download-prettier-configs@main
         with:
           download-branch: ${{ inputs.download-branch }}
 
       - name: 📥 Download TypeScript Config Files from Workspace
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/frontend/download-typescript-configs@workspace-278 # TODO: set to @main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/frontend/download-typescript-configs@main
         with:
           download-branch: ${{ inputs.download-branch }}
 
       - name: 📥 Download ESLint Config File from Workspace
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/frontend/download-eslint-config@workspace-278 # TODO: set to @main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/frontend/download-eslint-config@main
         with:
           download-branch: ${{ inputs.download-branch }}
 
       - name: 📥 Download Vite Config File from Workspace
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/frontend/download-vite-config@workspace-278 # TODO: set to @main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/frontend/download-vite-config@main
         with:
           download-branch: ${{ inputs.download-branch }}
 
