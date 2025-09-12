@@ -47,7 +47,7 @@ jobs:
           workspace-package-download-branch: ${{ inputs.download-branch }}
           install-args: --production=false
 
-      - name: 📥 Download Scripts File from Workspace
+      - name: 📥 Download Script Files from Workspace
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/frontend/download-scripts@main
         with:
           download-branch: ${{ inputs.download-branch }}
