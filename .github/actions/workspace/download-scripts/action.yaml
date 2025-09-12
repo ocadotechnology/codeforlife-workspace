@@ -1,7 +1,7 @@
 name: "Code for Life - Workspace - Download Scripts"
 description: "Download the scripts that are reused across the workspace."
 inputs:
-  download-branch:
+  branch:
     description: "The branch of the workspace repo to download the files from."
     required: false
     default: "main"
@@ -11,7 +11,7 @@ runs:
     - name: 📥 Download Main File
       uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
-        branch: ${{ inputs.download-branch }}
+        branch: ${{ inputs.branch }}
         path: scripts/main
         save-to: .workspace/scripts/main
         type: bash
@@ -19,7 +19,7 @@ runs:
     - name: 📥 Download ANSI File
       uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
-        branch: ${{ inputs.download-branch }}
+        branch: ${{ inputs.branch }}
         path: scripts/ansi
         save-to: .workspace/scripts/ansi
         type: bash
@@ -27,7 +27,7 @@ runs:
     - name: 📥 Download General File
       uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
-        branch: ${{ inputs.download-branch }}
+        branch: ${{ inputs.branch }}
         path: scripts/general
         save-to: .workspace/scripts/general
         type: bash
@@ -35,7 +35,7 @@ runs:
     - name: 📥 Download GitHub File
       uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
-        branch: ${{ inputs.download-branch }}
+        branch: ${{ inputs.branch }}
         path: scripts/github
         save-to: .workspace/scripts/github
         type: bash
@@ -43,7 +43,7 @@ runs:
     - name: 📥 Download Run File
       uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
-        branch: ${{ inputs.download-branch }}
+        branch: ${{ inputs.branch }}
         path: scripts/run
         save-to: .workspace/scripts/run
         type: bash
