@@ -6,8 +6,8 @@ ocado_tech_org_id=${OCADO_TECH_ORG_ID:-2088731}
 
 function github_repo_owner_is_ocado_tech() {
   if [ "$GITHUB_REPOSITORY_OWNER_ID" -eq $ocado_tech_org_id ]; then
-    exit 0
+    return 0
   else
-    exit 1
+    return 1
   fi
 }
