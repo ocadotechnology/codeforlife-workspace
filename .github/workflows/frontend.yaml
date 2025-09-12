@@ -33,7 +33,7 @@ jobs:
     uses: ocadotechnology/codeforlife-contributor-backend/.github/workflows/check-pr-authors-signed-latest-agreement.yaml@main
 
   test:
-    uses: ocadotechnology/codeforlife-workspace/.github/workflows/test-javascript-code.yaml@main
+    uses: ocadotechnology/codeforlife-workspace/.github/workflows/test-javascript-code.yaml@workspace-278 # TODO: set to @main
     secrets: inherit
     with:
       node-version: ${{ inputs.node-version }}
