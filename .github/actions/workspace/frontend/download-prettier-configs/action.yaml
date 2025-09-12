@@ -12,12 +12,12 @@ runs:
       uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
         branch: ${{ inputs.download-branch }}
-        path: configs/frontend/.prettierrc.json
+        path: frontend/.prettierrc.json
         save-to: .workspace/.prettierrc.json
 
     - name: 📥 Download Prettier Ignore File
       uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
         branch: ${{ inputs.download-branch }}
-        path: configs/frontend/.prettierignore
+        path: frontend/.prettierignore
         save-to: .workspace/.prettierignore

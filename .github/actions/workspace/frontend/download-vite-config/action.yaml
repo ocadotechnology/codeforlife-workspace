@@ -12,5 +12,5 @@ runs:
       uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
         branch: ${{ inputs.download-branch }}
-        path: configs/frontend/vite.config.ts
+        path: frontend/vite.config.ts
         save-to: .workspace/vite.config.ts

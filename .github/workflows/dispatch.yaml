@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "dispatch.yaml"
+      - "legacy/dispatch.yaml"
   workflow_dispatch:
 
 jobs:
@@ -20,4 +20,4 @@ jobs:
       - name: 🚀 Deploy Routing Rules on GCloud
         uses: ocadotechnology/codeforlife-workspace/.github/actions/gcloud/deploy-app@main
         with:
-          deploy-args: dispatch.yaml
+          deploy-args: legacy/dispatch.yaml

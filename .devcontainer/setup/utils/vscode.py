@@ -31,7 +31,7 @@ def load_code_workspace() -> CodeWorkspace:
         A JSON dict containing the code workspace.
     """
     with open(
-        "/codeforlife-workspace/codeforlife.code-workspace",
+        "/workspace/codeforlife.code-workspace",
         "r",
         encoding="utf-8",
     ) as code_workspace:

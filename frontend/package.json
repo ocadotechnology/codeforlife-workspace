@@ -15,7 +15,7 @@
     "package itself will be listed in the \"devDependencies\" of each",
     "submodule as a symlink, like so:",
     "\"devDependencies\": {",
-    "  \"@codeforlife/workspace\": \"link:../configs/frontend\"",
+    "  \"@codeforlife/workspace\": \"link:..\"",
     "}",
     "",
     "✅ Do add a reason as to why each dependency is needed in our project.",

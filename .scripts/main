@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# General bash utilities to be used across the whole workspace.
+
+# The path to the workspace directory.
+# https://docs.github.com/en/actions/reference/workflows-and-actions/variables#default-environment-variables
+workspace_dir="${workspace_dir:-"$(
+  if [ "$CI" = "true" ]; then
+    echo ".workspace"
+  else
+    echo "/workspace"
+  fi
+)"}"
+
+scripts_dir="$workspace_dir/.scripts"
+
+source $scripts_dir/ansi
+source $scripts_dir/general
+source $scripts_dir/github
+source $scripts_dir/run
+
+$@ # Entrypoint. Must be the last line in the script!

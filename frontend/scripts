@@ -8,84 +8,27 @@
 # Variables
 # ------------------------------------------------------------------------------
 
-# The ID of the Ocado Technology GitHub organization.
-# https://github.com/ocadotechnology
-ocado_tech_org_id=${OCADO_TECH_ORG_ID:-2088731}
-
-# The path of the workspace configs directory.
-# https://docs.github.com/en/actions/reference/workflows-and-actions/variables#default-environment-variables
-workspace_configs_dir="$(
+# The path to the workspace directory.
+workspace_dir="$(
   if [ "$CI" = "true" ]; then
     echo ".workspace"
   else
-    echo "/codeforlife-workspace/configs/frontend"
+    echo "/workspace"
   fi
 )"
 
-# A global array to keep track of the step number at each level of nesting.
-declare -ga step_counters=()
-
-# A global variable to track the current depth of nesting.
-declare -gi step_depth=0
+# The path to the frontend directory in the workspace.
+frontend_dir="$(
+  if [ "$CI" = "true" ]; then
+    echo "$workspace_dir"
+  else
+    echo "$workspace_dir/frontend"
+  fi
+)"
 
 # ------------------------------------------------------------------------------
 # Private/Utility Functions
 # ------------------------------------------------------------------------------
-
-function _handle_exit() {
-  local output
-  local status
-
-  output="$($@)"
-  status=$?
-
-  if [ "$status" -ne 0 ]; then
-    ${on_error:-echo} "$output"
-    exit "$status"
-  fi
-
-  ${on_success:-on_success} "$output"
-}
-
-function _step() {
-  # Increment the current nesting depth.
-  ((step_depth++))
-
-  # Initialize the counter for the new depth if it doesn't exist.
-  if [[ -z "${step_counters[step_depth - 1]}" ]]; then
-    step_counters[step_depth - 1]=0
-  fi
-
-  # Increment the counter for the current depth.
-  ((step_counters[step_depth - 1]++))
-
-  # Remove any counters for deeper levels, as we're not in a nested call from a previous run.
-  # This is important to reset the state correctly for a new sequence of calls.
-  if [[ step_depth -lt ${#step_counters[@]} ]]; then
-    for ((i = step_depth; i < ${#step_counters[@]}; i++)); do
-      unset step_counters[$i]
-    done
-  fi
-
-  # Build the step number string (e.g., "1", "1.1", "1.1.1").
-  local step_string
-  local delimiter=""
-  for ((i = 0; i < step_depth; i++)); do
-    step_string+="$delimiter${step_counters[$i]}"
-    delimiter="."
-  done
-
-  # Print the current step number.
-  echo -------------------------------------------------------------------------
-  echo "👣 Step $step_string: $@"
-  echo -------------------------------------------------------------------------
-
-  # Call the provided function (the callback).
-  ${callback:-callback}
-
-  # Decrement the depth as we exit this call.
-  ((step_depth--))
-}
 
 function _vite() { yarn run vite $@; }
 
@@ -99,16 +42,14 @@ function _prettier() {
   local options="$@"
 
   if [[ "$options" =~ --config ]]; then
-    echo "config cannot be set manually"
-    exit 1
+    exit=1 echo_error "config cannot be set manually"
   fi
-  options+=" --config=$workspace_configs_dir/.prettierrc.json"
+  options+=" --config=$frontend_dir/.prettierrc.json"
 
   if [[ "$options" =~ --ignore-path ]]; then
-    echo "ignore paths cannot be set manually"
-    exit 1
+    exit=1 echo_error "ignore paths cannot be set manually"
   fi
-  options+=" --ignore-path=$workspace_configs_dir/.prettierignore"
+  options+=" --ignore-path=$frontend_dir/.prettierignore"
   if [ -f .prettierignore ]; then options+=" --ignore-path=.prettierignore"; fi
 
   yarn run prettier $options
@@ -121,13 +62,12 @@ function _make_vite_options() {
   if [[ ! "$options" =~ $mode_keys ]]; then
     options+=" --mode ."
   elif [[ ! "$options" =~ $mode_keys(\.|development|staging|production) ]]; then
-    echo "mode must be set to one of: . (local), development, staging, production."
-    exit 1
+    exit=1 echo_error \
+      "mode must be set to one of: . (local), development, staging, production."
   fi
 
   if [[ "$options" =~ (-c|--config)( |=) ]]; then
-    echo "config cannot be set manually"
-    exit 1
+    exit=1 echo_error "config cannot be set manually"
   fi
   options+=" --config $(
     if [ -f vite.config.ts ]; then
@@ -143,8 +83,8 @@ function _make_vite_options() {
 function _vite:build() { _vite build $@; }
 
 function _vite:build:ssr() {
-  if [ "${make_options:-1}" -eq 1 ]; then
-    on_success="_vite:build" _handle_exit _make_vite_options "$@"
+  if eval_bool "${make_options:-1}"; then
+    on_success="_vite:build" handle_exit _make_vite_options "$@"
   else
     _vite:build "$@"
   fi
@@ -164,8 +104,7 @@ function setup() {
 function hard-install() {
   # Delete the existing node_modules and yarn.lock and install all dependencies.
   if [ ! -e "node_modules" ]; then
-    echo "node_modules not found"
-    exit 1
+    exit=1 echo_error "node_modules not found"
   fi
   rm -f yarn.lock
   rm -rf node_modules
@@ -191,40 +130,40 @@ function build() {
     local options="$@"
 
     function callback() { make_options=0 build:client "$options"; }
-    _step Building client-side code
+    step Building client-side code
 
     function callback() { make_options=0 build:server "$options"; }
-    _step Building server-side code
+    step Building server-side code
   }
-  _handle_exit _make_vite_options "$@"
+  handle_exit _make_vite_options "$@"
 }
 
 function run:dev() {
   # Launch dev server with server-side rendering.
-  callback="setup" _step Setting up JS environment
+  callback="setup" step Setting up JS environment
 
   function callback() { _run development; }
-  _step Running server in Node.js development environment
+  step Running server in Node.js development environment
 }
 
 function run:prod() {
   # Run server in production environment.
-  callback="setup" _step Setting up JS environment
+  callback="setup" step Setting up JS environment
 
-  if [ "${build:-1}" -eq 1 ]; then
+  if eval_bool "${build:-1}"; then
     function callback() { build --mode="production"; }
-    _step Building app in Vite production mode
+    step Building app in Vite production mode
   fi
 
   function callback() { _run production; }
-  _step Running server in Node production environment
+  step Running server in Node production environment
 }
 
 function test() {
   # Run tests.
   # https://vitest.dev/guide/cli
   function on_success() { _vitest run "$@"; }
-  _handle_exit _make_vite_options "$@"
+  handle_exit _make_vite_options "$@"
 }
 
 function test:coverage:report() {
@@ -246,7 +185,7 @@ function test:coverage:check() {
 }
 
 function test:coverage() {
-  if [ "$GITHUB_REPOSITORY_OWNER_ID" -eq $ocado_tech_org_id ]; then
+  if github_repo_owner_is_ocado_tech; then
     test:coverage:report $@
   else
     test:coverage:check $@
@@ -257,7 +196,7 @@ function test:ui() {
   # Launch text explorer UI.
   # https://vitest.dev/guide/cli
   function on_success() { _vitest --ui "$@"; }
-  _handle_exit _make_vite_options "$@"
+  handle_exit _make_vite_options "$@"
 }
 
 function format() {
@@ -292,25 +231,16 @@ function types:check() {
 
 function check() {
   # Run all checks.
-  callback="setup" _step Setting up JS environment
-  callback="format:check" _step Checking format
-  callback="code:check" _step Checking code
-  callback="types:check" _step Checking types
-  callback="test" _step Running tests
+  callback="setup" step Setting up JS environment
+  callback="format:check" step Checking format
+  callback="code:check" step Checking code
+  callback="types:check" step Checking types
+  callback="test" step Running tests
 }
 
 # ------------------------------------------------------------------------------
 # Entrypoint
 # ------------------------------------------------------------------------------
 
-if [ $# -eq 0 ]; then
-  echo "Expected call signature: {func_name*} {...options?}"
-  exit 1
-fi
-
-if [[ "$1" =~ ^_ ]]; then
-  echo "You cannot call a private function."
-  exit 1
-fi
-
-$1 ${@:2} # Call function by name and pass the remaining arguments.
+# Must be the last line in the script!
+eval "$("$workspace_dir/.scripts/main" run_script $(readlink -f "$0") $@)"

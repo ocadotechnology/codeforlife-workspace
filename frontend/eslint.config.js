@@ -14,6 +14,7 @@ export default ts.config(
     // https://eslint.org/docs/latest/use/configure/configuration-files#globally-ignoring-files-with-ignores
     ignores: [
       "dist",
+      "coverage",
       "**/*.d.ts",
       "eslint.config.js",
       "server.js",

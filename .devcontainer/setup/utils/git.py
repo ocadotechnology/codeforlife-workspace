@@ -26,11 +26,7 @@ def read_submodules() -> SubmoduleDict:
         A dict where the key is the name of the submodule and value is an object
         of the submodule's attributes.
     """
-    with open(
-        "/codeforlife-workspace/.gitmodules",
-        "r",
-        encoding="utf-8",
-    ) as gitmodules:
+    with open("/workspace/.gitmodules", "r", encoding="utf-8") as gitmodules:
         gitmodules_str = gitmodules.read()
 
     # [1:] to skip initial blank string.

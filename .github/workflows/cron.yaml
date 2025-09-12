@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "cron.yaml"
+      - "legacy/cron.yaml"
   workflow_dispatch:
 
 jobs:
@@ -20,4 +20,4 @@ jobs:
       - name: 🚀 Deploy Cron Jobs on GCloud
         uses: ocadotechnology/codeforlife-workspace/.github/actions/gcloud/deploy-app@main
         with:
-          deploy-args: cron.yaml
+          deploy-args: legacy/cron.yaml

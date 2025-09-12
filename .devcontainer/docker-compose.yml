@@ -7,7 +7,7 @@ services:
       context: ..
       dockerfile: .devcontainer/Dockerfile
     volumes:
-      - ..:/codeforlife-workspace:cached
+      - ..:/workspace:cached
     # Overrides default so things don't shut down after the process ends
     command: sleep infinity
     depends_on:

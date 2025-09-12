@@ -69,8 +69,8 @@
   "remoteEnv": {
     "LOCAL_WORKSPACE_PATH": "${localWorkspaceFolder}"
   },
-  "postCreateCommand": "sudo chmod +x scripts/workspace/setup && scripts/workspace/setup",
+  "postCreateCommand": "sudo chmod +x .devcontainer/setup/run && .devcontainer/setup/run",
   "remoteUser": "root",
   "service": "app",
-  "workspaceFolder": "/codeforlife-workspace"
+  "workspaceFolder": "/workspace"
 }

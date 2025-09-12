@@ -1,23 +1,73 @@
 {
   "folders": [
-    { "path": "." },
-    { "path": "codeforlife-contributor-backend" },
-    { "path": "codeforlife-contributor-frontend" },
-    // { "path": "codeforlife-deploy-appengine" },
-    { "path": "codeforlife-package-javascript" },
-    { "path": "codeforlife-package-python" },
-    { "path": "codeforlife-portal" },
-    { "path": "codeforlife-portal-backend" },
-    { "path": "codeforlife-portal-frontend" },
-    // TODO: uncomment these as we begin restructuring them.
-    // { "path": "codeforlife-rapid-router-backend" },
-    // { "path": "codeforlife-rapid-router-frontend" },
-    { "path": "codeforlife-scheduler-backend" },
-    // { "path": "codeforlife-sso-backend" },
-    // { "path": "codeforlife-sso-frontend" },
-    { "path": "codeforlife-template-backend" },
-    { "path": "codeforlife-template-frontend" },
-    { "path": "rapid-router" }
+    { "path": ".", "name": "/workspace" },
+    { "path": "backend", "name": "/workspace/backend" },
+    { "path": "frontend", "name": "/workspace/frontend" },
+    { "path": "legacy", "name": "/workspace/legacy" },
+    {
+      "path": "backend/package",
+      "name": "/workspace/backend/package"
+    },
+    {
+      "path": "frontend/package",
+      "name": "/workspace/frontend/package"
+    },
+    {
+      "path": "backend/contributor",
+      "name": "/workspace/backend/contributor"
+    },
+    {
+      "path": "frontend/contributor",
+      "name": "/workspace/frontend/contributor"
+    },
+    {
+      "path": "backend/portal",
+      "name": "/workspace/backend/portal"
+    },
+    {
+      "path": "frontend/portal",
+      "name": "/workspace/frontend/portal"
+    },
+    {
+      "path": "backend/rapid-router",
+      "name": "/workspace/backend/rapid-router"
+    },
+    {
+      "path": "frontend/rapid-router",
+      "name": "/workspace/frontend/rapid-router"
+    },
+    {
+      "path": "backend/sso",
+      "name": "/workspace/backend/sso"
+    },
+    {
+      "path": "frontend/sso",
+      "name": "/workspace/frontend/sso"
+    },
+    {
+      "path": "backend/template",
+      "name": "/workspace/backend/template"
+    },
+    {
+      "path": "frontend/template",
+      "name": "/workspace/frontend/template"
+    },
+    {
+      "path": "backend/scheduler",
+      "name": "/workspace/backend/scheduler"
+    },
+    {
+      "path": "legacy/portal",
+      "name": "/workspace/legacy/portal"
+    },
+    {
+      "path": "legacy/rapid-router",
+      "name": "/workspace/legacy/rapid-router"
+    },
+    {
+      "path": "legacy/deploy-appengine",
+      "name": "/workspace/legacy/deploy-appengine"
+    }
   ],
   "settings": {
     // General
@@ -73,36 +123,29 @@
       "-n=auto",
       "--cov=src",
       "--cov-report=html",
-      "-c=/codeforlife-workspace/configs/backend/pyproject.toml",
+      "-c=/workspace/backend/pyproject.toml",
       "src"
     ],
     "python.testing.pytestEnabled": true,
     "python.testing.unittestEnabled": false,
     "python.analysis.extraPaths": [
       // Uncomment if installing locally in editable mode.
-      // "/codeforlife-workspace/codeforlife-package-python"
+      // "/workspace/codeforlife-package-python"
     ],
     "[python]": {
       "editor.defaultFormatter": "ms-python.black-formatter",
       "editor.tabSize": 4
     },
-    "autoDocstring.customTemplatePath": "/codeforlife-workspace/configs/backend/python-docstring.mustache",
-    "black-formatter.args": [
-      "--config",
-      "/codeforlife-workspace/configs/backend/pyproject.toml"
-    ],
+    "autoDocstring.customTemplatePath": "/workspace/backend/python-docstring.mustache",
+    "black-formatter.args": ["--config", "/workspace/backend/pyproject.toml"],
     "black-formatter.path": [".venv/bin/python", "-m", "black"],
-    "isort.args": [
-      "--settings-file=/codeforlife-workspace/configs/backend/pyproject.toml"
-    ],
+    "isort.args": ["--settings-file=/workspace/backend/pyproject.toml"],
     "isort.path": [".venv/bin/python", "-m", "isort"],
     "mypy-type-checker.args": [
-      "--config-file=/codeforlife-workspace/configs/backend/pyproject.toml"
+      "--config-file=/workspace/backend/pyproject.toml"
     ],
     "mypy-type-checker.path": [".venv/bin/python", "-m", "mypy"],
-    "pylint.args": [
-      "--rcfile=/codeforlife-workspace/configs/backend/pyproject.toml"
-    ],
+    "pylint.args": ["--rcfile=/workspace/backend/pyproject.toml"],
     "pylint.path": [".venv/bin/python", "-m", "pylint"],
     // Database
     // TODO: create workflow to update sql connections for each BE service.
@@ -181,8 +224,8 @@
         "source.organizeImports": "never"
       }
     },
-    "prettier.configPath": "/codeforlife-workspace/configs/frontend/.prettierrc.json",
-    "prettier.ignorePath": "/codeforlife-workspace/configs/frontend/.prettierignore",
+    "prettier.configPath": "/workspace/frontend/.prettierrc.json",
+    "prettier.ignorePath": "/workspace/frontend/.prettierignore",
     "eslint.useFlatConfig": true,
     // JSON
     "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
@@ -235,47 +278,47 @@
         "description": "Expected Format: \"{func} {arg1} {arg2} ...\"."
       },
       {
-        "id": "scripts:frontend:run:client:terminate",
+        "id": "frontend:scripts:run:dev:terminate",
         "type": "command",
         "command": "workbench.action.tasks.terminate",
-        "args": "scripts:frontend:run:client"
+        "args": "frontend:scripts:run:dev"
       }
     ],
     "tasks": [
       {
         "label": "scripts:backend",
-        "command": "sudo chmod +x /codeforlife-workspace/scripts/backend && /codeforlife-workspace/scripts/backend ${input:args}",
+        "command": "sudo chmod +x /workspace/backend/scripts && /workspace/backend/scripts ${input:args}",
         "type": "shell",
         "problemMatcher": [],
         "options": {
-          "cwd": "/codeforlife-workspace/${input:backend-folder}"
+          "cwd": "/workspace/${input:backend-folder}"
         }
       },
       {
         "label": "scripts:frontend",
-        "command": "sudo chmod +x /codeforlife-workspace/scripts/frontend && /codeforlife-workspace/scripts/frontend ${input:args}",
+        "command": "sudo chmod +x /workspace/frontend/scripts && /workspace/frontend/scripts ${input:args}",
         "type": "shell",
         "problemMatcher": [],
         "options": {
-          "cwd": "/codeforlife-workspace/${input:frontend-folder}"
+          "cwd": "/workspace/${input:frontend-folder}"
         }
       },
       {
-        "label": "scripts:frontend:run:client",
-        "command": "sudo chmod +x /codeforlife-workspace/scripts/frontend && /codeforlife-workspace/scripts/frontend run:client",
+        "label": "frontend:scripts:run:dev",
+        "command": "sudo chmod +x /workspace/frontend/scripts && /workspace/frontend/scripts run:dev",
         "type": "shell",
         "problemMatcher": [],
         "isBackground": true,
         "options": {
-          "cwd": "/codeforlife-workspace/${input:remember-frontend-service}",
+          "cwd": "/workspace/${input:remember-frontend-service}",
           "env": {
             "BROWSER": "none"
           }
         }
       },
       {
-        "label": "scripts:frontend:run:client:terminate",
-        "command": "echo ${input:scripts:frontend:run:client:terminate}",
+        "label": "frontend:scripts:run:dev:terminate",
+        "command": "echo ${input:frontend:scripts:run:dev:terminate}",
         "type": "shell",
         "problemMatcher": []
       }
@@ -345,7 +388,7 @@
         "program": "manage.py",
         "request": "launch",
         "type": "debugpy",
-        "cwd": "/codeforlife-workspace/${input:backend-service}"
+        "cwd": "/workspace/${input:backend-service}"
       },
       {
         "env": {
@@ -356,7 +399,7 @@
         "program": "application.py",
         "request": "launch",
         "type": "debugpy",
-        "cwd": "/codeforlife-workspace/${input:backend-service}"
+        "cwd": "/workspace/${input:backend-service}"
       },
       // https://code.visualstudio.com/docs/python/testing
       {
@@ -374,12 +417,12 @@
       },
       {
         "name": "Vite Server",
-        "preLaunchTask": "scripts:frontend:run:client",
-        "postDebugTask": "scripts:frontend:run:client:terminate",
+        "preLaunchTask": "frontend:scripts:run:dev",
+        "postDebugTask": "frontend:scripts:run:dev:terminate",
         "request": "launch",
         "type": "chrome",
         "url": "http://localhost:5173",
-        "webRoot": "/codeforlife-workspace/${input:frontend-service}"
+        "webRoot": "/workspace/${input:frontend-service}"
       }
       // TODO: Vitest Debug
       // https://vitest.dev/guide/debugging.html#vs-code

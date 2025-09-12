@@ -112,7 +112,7 @@ def clone_repo(name: str, path: str):
     # pylint: enable=line-too-long
     pprint.notice("Cloning repo...")
 
-    repo_dir = f"/codeforlife-workspace/{path}"
+    repo_dir = f"/workspace/{path}"
 
     if os.path.isdir(repo_dir) and os.listdir(repo_dir):
         pprint.notice(f"{repo_dir} already exists.")
