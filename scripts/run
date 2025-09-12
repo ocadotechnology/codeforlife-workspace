@@ -1,0 +1,95 @@
+#!/bin/bash
+
+# A global array to keep track of the step number at each level of nesting.
+declare -ga step_counters=()
+
+# A global variable to track the current depth of nesting.
+declare -gi step_depth=0
+
+function run_script() {
+  local workspace_scripts_path="$(readlink -f "$0")"
+  local scripts_path="$1"
+
+  shift
+
+  if [ "$1" = "$workspace_scripts_path" ]; then
+    echo "${@:2}"
+    exit 0
+  fi
+
+  function scripts() { $scripts_path $workspace_scripts_path $@; }
+
+  function exit_with_error() {
+    echo "echo -e \"${RED}${BOLD}$@${RESET}\"; exit 1"
+    exit 1
+  }
+
+  if [ $# -eq 0 ]; then
+    exit_with_error "expected call signature: {name*} {...options?}"
+  fi
+
+  local script_name="$1"
+
+  if [[ "$script_name" =~ ^_ ]]; then
+    exit_with_error "cannot call a private script."
+  fi
+
+  if [ "$(scripts type -t $script_name)" != "function" ]; then
+    exit_with_error "'$script_name' is not a registered script."
+  fi
+
+  echo "source $workspace_scripts_path"
+}
+
+function step() {
+  # Increment the current nesting depth.
+  ((step_depth++))
+
+  # Initialize the counter for the new depth if it doesn't exist.
+  if [[ -z "${step_counters[step_depth - 1]}" ]]; then
+    step_counters[step_depth - 1]=0
+  fi
+
+  # Increment the counter for the current depth.
+  ((step_counters[step_depth - 1]++))
+
+  # Remove any counters for deeper levels, as we're not in a nested call from a previous run.
+  # This is important to reset the state correctly for a new sequence of calls.
+  if [[ step_depth -lt ${#step_counters[@]} ]]; then
+    for ((i = step_depth; i < ${#step_counters[@]}; i++)); do
+      unset step_counters[$i]
+    done
+  fi
+
+  # Build the step number string (e.g., "1", "1.1", "1.1.1").
+  local step_string
+  local delimiter=""
+  for ((i = 0; i < step_depth; i++)); do
+    step_string+="$delimiter${step_counters[$i]}"
+    delimiter="."
+  done
+
+  # Print the current step number.
+  echo_info "\n👣 Step $step_string: $@\n"
+
+  # Call the provided function (the callback).
+  ${callback:-callback}
+
+  # Decrement the depth as we exit this call.
+  ((step_depth--))
+}
+
+function handle_exit() {
+  local output
+  local status
+
+  output="$($@)"
+  status=$?
+
+  if [ "$status" -ne 0 ]; then
+    ${on_error:-echo} "$output"
+    exit "$status"
+  fi
+
+  ${on_success:-on_success} "$output"
+}

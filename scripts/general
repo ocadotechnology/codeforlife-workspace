@@ -1,0 +1,15 @@
+#!/bin/bash
+
+function eval_bool() {
+  local bool="$1"
+
+  bool=$(echo "$bool" | tr '[:upper:]' '[:lower:]')
+
+  if [ "$bool" = "1" ] || [ "$bool" = "true" ] || [ "$bool" = "t" ]; then
+    return 0
+  elif [ "$bool" = "0" ] || [ "$bool" = "false" ] || [ "$bool" = "f" ]; then
+    return 1
+  fi
+
+  exit=1 echo_error "Attempted to evaluate invalid boolean value: \"$bool\"."
+}
