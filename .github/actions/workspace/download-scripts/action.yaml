@@ -13,7 +13,7 @@ runs:
       with:
         branch: ${{ inputs.branch }}
         path: scripts/main
-        save-to: .workspace/scripts/main
+        save-to: .workspace/.scripts/main
         type: bash
 
     - name: 📥 Download ANSI File
@@ -21,7 +21,7 @@ runs:
       with:
         branch: ${{ inputs.branch }}
         path: scripts/ansi
-        save-to: .workspace/scripts/ansi
+        save-to: .workspace/.scripts/ansi
         type: bash
 
     - name: 📥 Download General File
@@ -29,7 +29,7 @@ runs:
       with:
         branch: ${{ inputs.branch }}
         path: scripts/general
-        save-to: .workspace/scripts/general
+        save-to: .workspace/.scripts/general
         type: bash
 
     - name: 📥 Download GitHub File
@@ -37,7 +37,7 @@ runs:
       with:
         branch: ${{ inputs.branch }}
         path: scripts/github
-        save-to: .workspace/scripts/github
+        save-to: .workspace/.scripts/github
         type: bash
 
     - name: 📥 Download Run File
@@ -45,5 +45,5 @@ runs:
       with:
         branch: ${{ inputs.branch }}
         path: scripts/run
-        save-to: .workspace/scripts/run
+        save-to: .workspace/.scripts/run
         type: bash

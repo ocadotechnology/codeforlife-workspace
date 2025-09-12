@@ -12,7 +12,7 @@ workspace_dir="${workspace_dir:-"$(
   fi
 )"}"
 
-scripts_dir="$workspace_dir/scripts"
+scripts_dir="$workspace_dir/.scripts"
 
 source $scripts_dir/ansi
 source $scripts_dir/general
