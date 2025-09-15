@@ -57,7 +57,7 @@ function types:check() {
     $source
 }
 
-function code:check:non-tests {
+function code:check:non_tests {
   # Find linting issues in non-test files.
   # https://pylint.pycqa.org/en/stable/user_guide/configuration/all-options.html
   if ! pipenv run pylint \
@@ -91,7 +91,7 @@ function code:check:tests() {
 function code:check() {
   # Find linting issues.
   echo 'Linting non-test files'
-  code:check:non-tests $@
+  code:check:non_tests $@
   echo 'Linting test files'
   code:check:tests $@
 }
@@ -155,7 +155,7 @@ function run:django() {
     localhost:$service_port
 }
 
-function hard-install() {
+function hard_install() {
   # Delete the existing .venv and Pipfile.lock and install all dependencies.
   if [ ! -e ".venv" ]; then
     echo ".venv not found"
