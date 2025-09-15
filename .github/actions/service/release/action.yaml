@@ -13,7 +13,7 @@ runs:
     - name: 📥 Download Release Candidate Configuration
       uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
-        path: configs/${{ inputs.rc-path }}
+        path: ${{ inputs.rc-path }}
         save-to: .releaserc.json
 
     - name: 🚀 Publish Semantic Release
