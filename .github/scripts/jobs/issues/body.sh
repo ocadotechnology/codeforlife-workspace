@@ -129,10 +129,9 @@ function handle_issues_event() {
 function handle_schedule_event() {
   function process_repo() {
     local repo_name="$1"
+    local repo_url="$3"
 
     echo_h1 "$repo_name"
-
-    local issue_repo="$(make_repo "$repo_name")"
 
     local type_label_filter="$(make_label_filter_from_descriptor_group "type")"
     local cfl_bot_ignore_label_filter="$(
@@ -141,7 +140,7 @@ function handle_schedule_event() {
 
     local issues=$(
       gh issue list \
-        --repo="$issue_repo" \
+        --repo="$repo_url" \
         --limit=10000 \
         --search="is:open $type_label_filter $cfl_bot_ignore_label_filter" \
         --json=body,number,labels
@@ -159,7 +158,7 @@ function handle_schedule_event() {
 
         enforce_issue_body \
           "$issue_number" \
-          "$issue_repo" \
+          "$repo_url" \
           "$issue_labels" \
           "$issue_body"
       }
@@ -176,8 +175,7 @@ function handle_schedule_event() {
     done
   }
 
-  process_repo "$ISSUE_REPO_NAME"
-
+  process_repo "$ISSUE_REPO_NAME" "." "$ISSUE_REPO_URL"
   process_workspace_submodules "process_repo"
 }
 
