@@ -97,8 +97,21 @@ function _run() { NODE_ENV="$1" node server; }
 # ------------------------------------------------------------------------------
 
 function setup() {
-  # Setup your local environment.
-  yarn install --production=false
+  function install_packages() { yarn install --production=false; }
+
+  # Setup your workspace and local environment.
+  if eval_bool "${setup_workspace:-1}"; then
+    function install_workspace_packages() {
+      (
+        cd $frontend_dir
+        install_packages
+      )
+    }
+    callback="install_workspace_packages" step Installing packages in $frontend_dir
+    callback="install_packages" step Installing packages in $(pwd)
+  else
+    install_packages
+  fi
 }
 
 function hard-install() {
