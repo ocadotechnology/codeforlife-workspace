@@ -97,10 +97,10 @@ function _run() { NODE_ENV="$1" node server; }
 # ------------------------------------------------------------------------------
 
 function setup() {
+  # Setup your workspace and local environment.
   function install_packages() { yarn install --production=false; }
 
-  # Setup your workspace and local environment.
-  if eval_bool "${setup_workspace:-1}"; then
+  if eval_bool "${workspace:-1}"; then
     function install_workspace_packages() {
       (
         cd $frontend_dir
@@ -116,15 +116,43 @@ function setup() {
   fi
 }
 
-function hard-install() {
-  # Delete the existing node_modules and yarn.lock and install all dependencies.
-  if [ ! -e "node_modules" ]; then
-    exit=1 echo_error "node_modules not found"
-  fi
-  rm -f yarn.lock
-  rm -rf node_modules
-  yarn cache clean codeforlife
-  setup
+function hard_install() {
+  # Cleanup and setup your workspace and local environment.
+  local workspace="${workspace:-1}"
+
+  function _cleanup() {
+    if [ -f "yarn.lock" ]; then
+      echo "Deleting yarn.lock"
+    fi
+    rm -f yarn.lock
+
+    if [ -e "node_modules" ]; then
+      echo "Deleting node_modules"
+    fi
+    rm -rf node_modules
+  }
+
+  function cleanup() {
+    callback="yarn cache clean codeforlife" step \
+      Clearing codeforlife package from yarn cache
+
+    if eval_bool "$workspace"; then
+      function cleanup_workspace() {
+        (
+          cd $frontend_dir
+          _cleanup
+        )
+      }
+      callback="cleanup_workspace" step \
+        Cleaning up in $frontend_dir
+    fi
+
+    callback="_cleanup" step \
+      Cleaning up in $(pwd)
+  }
+
+  callback="cleanup" step Cleaning up JS environment
+  workspace="$workspace" callback="setup" step Setting up JS environment
 }
 
 function build:client() {
