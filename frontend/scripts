@@ -107,8 +107,10 @@ function setup() {
         install_packages
       )
     }
-    callback="install_workspace_packages" step Installing packages in $frontend_dir
-    callback="install_packages" step Installing packages in $(pwd)
+    callback="install_workspace_packages" step \
+      Installing packages in $frontend_dir
+    callback="install_packages" step \
+      Installing packages in $(pwd)
   else
     install_packages
   fi
