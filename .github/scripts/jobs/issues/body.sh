@@ -70,9 +70,14 @@ function process_issue() {
 # ------------------------------------------------------------------------------
 
 function handle_issues_event() {
-  local issue_body="$@"
-
   local issue_repo="$(make_repo "$ISSUE_REPO_NAME")"
+
+  local issue_body="$(
+    gh issue view "$ISSUE_NUMBER" \
+      --repo="$issue_repo" \
+      --json=body \
+      --jq=.body
+  )"
 
   # Download and read file containing body section from the workspace.
   local cfl_bot_issue_body_section="$(cat ".github/comments/issue/body.md")"
@@ -182,13 +187,4 @@ function handle_workflow_dispatch_event() { handle_schedule_event; }
 # Entrypoint.
 # ------------------------------------------------------------------------------
 
-issue_repo="$(make_repo "$ISSUE_REPO_NAME")"
-
-issue_body="$(
-  gh issue view "$ISSUE_NUMBER" \
-    --repo="$issue_repo" \
-    --json=body \
-    --jq=.body
-)"
-
-handle_event "$issue_body"
+handle_event
