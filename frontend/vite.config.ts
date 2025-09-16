@@ -32,6 +32,12 @@ export const viteConfig = defineViteConfig({
 
 // TODO: investigate browser mode https://vitest.dev/guide/browser/
 export const vitestConfig = defineVitestConfig({
+  server: {
+    fs: {
+      // Allow vitest setup to be served from submodule root.
+      allow: ["../vitest.setup.ts"],
+    },
+  },
   test: {
     // This enables global APIs for your tests. Instead of importing test,
     // expect, vi, and other Vitest functions from vitest, you can use them
@@ -48,7 +54,7 @@ export const vitestConfig = defineVitestConfig({
     // of your mocks from a previous test doesn't affect the next one.
     mockReset: true,
     // Only includes test files that match the expected naming convention.
-    include: ["**/*.test.{j,t}s{x,}"],
+    include: ["src/**/*.test.{j,t}s{x,}"],
     coverage: {
       enabled: true,
       provider: "istanbul",

@@ -99,5 +99,6 @@ Based off of:
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
-  }
+  },
+  "files": ["./vite-env.d.ts"]
 }
