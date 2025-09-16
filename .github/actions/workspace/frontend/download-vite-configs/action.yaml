@@ -1,5 +1,5 @@
 name: "Code for Life - Workspace - Frontend - Download Vite Configs"
-description: "Download the Vite config file that is reused across the workspace."
+description: "Download the Vite config files that are reused across the workspace."
 inputs:
   download-branch:
     description: "The branch of the workspace repo to download the files from."
