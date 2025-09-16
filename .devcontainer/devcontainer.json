@@ -26,6 +26,7 @@
         // javascript
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
+        "vitest.explorer",
         // python
         "ms-python.python",
         "ms-python.debugpy",

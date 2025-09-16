@@ -5,29 +5,16 @@
  * Vitest: https://vitest.dev/config/
  */
 
-import { defineConfig } from "vitest/config"
+import { defineConfig as defineVitestConfig, mergeConfig } from "vitest/config"
+import { defineConfig as defineViteConfig } from "vite"
 import react from "@vitejs/plugin-react"
 
-export default defineConfig({
-  plugins: [
-    // @ts-expect-error is a valid plugin option
-    react(),
-  ],
+export const viteConfig = defineViteConfig({
+  plugins: [react()],
   envDir: "env",
   server: {
     open: true,
     host: true,
-  },
-  test: {
-    globals: true,
-    environment: "jsdom",
-    setupFiles: "src/setupTests",
-    mockReset: true,
-    coverage: {
-      enabled: true,
-      provider: "istanbul",
-      reporter: ["html", "cobertura"],
-    },
   },
   optimizeDeps: {
     // TODO: investigate which of these are needed
@@ -42,3 +29,35 @@ export default defineConfig({
     ],
   },
 })
+
+// TODO: investigate browser mode https://vitest.dev/guide/browser/
+export const vitestConfig = defineVitestConfig({
+  test: {
+    // This enables global APIs for your tests. Instead of importing test,
+    // expect, vi, and other Vitest functions from vitest, you can use them
+    // directly in your test files without an import statement.
+    globals: true,
+    // Creates a mock browser environment, including the document and window
+    // objects, which is essential for testing front-end code that interacts
+    // with the DOM.
+    environment: "jsdom",
+    // Files that will run before each test file is executed.
+    setupFiles: ["./vitest.setup.ts"],
+    // Automatically resets mocks before each test. This means any mock
+    // implementation or mock call history is cleared, ensuring that the state
+    // of your mocks from a previous test doesn't affect the next one.
+    mockReset: true,
+    // Only includes test files that match the expected naming convention.
+    include: ["**/*.test.{j,t}s{x,}"],
+    coverage: {
+      enabled: true,
+      provider: "istanbul",
+      // `html` generates a human-readable website that you can view in your
+      // browser. `cobertura` creates a machine-readable XML file, which is used
+      // by Codecov in our CI/CD pipelines to analyze coverage trends.
+      reporter: ["html", "cobertura"],
+    },
+  },
+})
+
+export default mergeConfig(viteConfig, vitestConfig)

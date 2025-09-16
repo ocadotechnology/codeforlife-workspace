@@ -227,6 +227,7 @@
     "prettier.configPath": "/workspace/frontend/.prettierrc.json",
     "prettier.ignorePath": "/workspace/frontend/.prettierignore",
     "eslint.useFlatConfig": true,
+    "vitest.rootConfig": "/workspace/frontend/vite.config.ts",
     // JSON
     "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
     // GraphQL
