@@ -37,6 +37,9 @@ runs:
         submodules: ${{ inputs.submodules }}
 
     - name: 🔄 Replace Workspace Symlink with Directory
-      if: hashFiles('.workspace') != ''
       shell: bash
-      run: rm -f .workspace && mkdir .workspace
+      run: |
+        if [ -L .workspace ]; then
+          rm .workspace
+          mkdir .workspace
+        fi

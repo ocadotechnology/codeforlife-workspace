@@ -67,7 +67,7 @@ runs:
     - name: 🛠 Install Workspace Dependencies
       if: inputs.workspace-package == 'true'
       shell: bash
-      working-directory: .workspace
+      working-directory: .workspace/frontend
       run: yarn install
 
     - name: 🛠 Install Dependencies
