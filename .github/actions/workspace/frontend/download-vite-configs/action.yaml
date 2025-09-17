@@ -13,11 +13,15 @@ runs:
       with:
         branch: ${{ inputs.download-branch }}
         path: frontend/vite.config.ts
-        save-to: .workspace/vite.config.ts
 
     - name: 📥 Download Vitest Setup File
       uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
         branch: ${{ inputs.download-branch }}
         path: frontend/vitest.setup.ts
-        save-to: .workspace/vitest.setup.ts
+
+    - name: 📥 Download Vite Types File
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
+      with:
+        branch: ${{ inputs.download-branch }}
+        path: frontend/vite-env.d.ts

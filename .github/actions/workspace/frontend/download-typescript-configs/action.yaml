@@ -13,18 +13,15 @@ runs:
       with:
         branch: ${{ inputs.download-branch }}
         path: frontend/tsconfig.base.json
-        save-to: .workspace/tsconfig.base.json
 
     - name: 📥 Download App TypeScript Config File
       uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
         branch: ${{ inputs.download-branch }}
         path: frontend/tsconfig.app.json
-        save-to: .workspace/tsconfig.app.json
 
     - name: 📥 Download Node TypeScript Config File
       uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
         branch: ${{ inputs.download-branch }}
         path: frontend/tsconfig.node.json
-        save-to: .workspace/tsconfig.node.json

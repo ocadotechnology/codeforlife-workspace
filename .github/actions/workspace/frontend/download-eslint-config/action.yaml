@@ -13,4 +13,3 @@ runs:
       with:
         branch: ${{ inputs.download-branch }}
         path: frontend/eslint.config.js
-        save-to: .workspace/eslint.config.js

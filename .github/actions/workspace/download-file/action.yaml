@@ -22,7 +22,9 @@ runs:
       shell: bash
       run: |
         output_path="${{ inputs.save-to }}"
-        if [ -z "$output_path" ]; then output_path="${{ inputs.path }}"; fi
+        if [ -z "$output_path" ]; then
+          output_path=".workspace/${{ inputs.path }}"
+        fi
 
         echo "value=$output_path" >> $GITHUB_OUTPUT
     

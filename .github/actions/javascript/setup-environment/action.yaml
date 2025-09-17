@@ -43,7 +43,6 @@ runs:
       with:
         branch: ${{ inputs.workspace-package-download-branch }}
         path: frontend/package.json
-        save-to: .workspace/package.json
 
     - name: 📥 Download yarn.lock from Workspace
       if: inputs.workspace-package == 'true'
@@ -51,7 +50,6 @@ runs:
       with:
         branch: ${{ inputs.workspace-package-download-branch }}
         path: frontend/yarn.lock
-        save-to: .workspace/yarn.lock
 
     - name: ✏️ Write Path to package.json in Workspace
       if: inputs.workspace-package == 'true'
