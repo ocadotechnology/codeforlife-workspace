@@ -19,9 +19,3 @@ runs:
       with:
         branch: ${{ inputs.download-branch }}
         path: frontend/vitest.setup.ts
-
-    - name: 📥 Download Vite Types File
-      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
-      with:
-        branch: ${{ inputs.download-branch }}
-        path: frontend/vite-env.d.ts

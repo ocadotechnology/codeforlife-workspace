@@ -25,3 +25,9 @@ runs:
       with:
         branch: ${{ inputs.download-branch }}
         path: frontend/tsconfig.node.json
+
+    - name: 📥 Download References File
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
+      with:
+        branch: ${{ inputs.download-branch }}
+        path: frontend/references.d.ts

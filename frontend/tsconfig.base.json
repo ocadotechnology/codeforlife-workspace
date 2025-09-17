@@ -100,5 +100,5 @@ Based off of:
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "files": ["./vite-env.d.ts"]
+  "files": ["./references.d.ts"]
 }
