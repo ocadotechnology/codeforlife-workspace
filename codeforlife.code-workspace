@@ -107,7 +107,9 @@
       "**/htmlcov/**": true,
       // JavaScript
       "**/node_modules/**": true,
-      "**/coverage/**": true
+      "**/coverage/**": true,
+      // Custom
+      "**/.workspace/**": true
     },
     "testing.defaultGutterClickAction": "debug",
     "cSpell.words": ["codeforlife", "klass", "ocado", "kurono", "pipenv"],
