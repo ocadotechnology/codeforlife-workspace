@@ -89,7 +89,9 @@
       "**/__pycache__": true,
       "**/.coverage": true,
       // JavaScript
-      "**/*.tsbuildinfo": true
+      "**/*.tsbuildinfo": true,
+      // Custom
+      "**/.workspace": true
     },
     "files.watcherExclude": {
       // General
