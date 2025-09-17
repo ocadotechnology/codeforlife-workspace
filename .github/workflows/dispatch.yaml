@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: 🛫 Checkout
-        uses: actions/checkout@v4
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/git/checkout@main
 
       - name: 🚀 Deploy Routing Rules on GCloud
         uses: ocadotechnology/codeforlife-workspace/.github/actions/gcloud/deploy-app@main

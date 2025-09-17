@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: 🛫 Checkout
-        uses: actions/checkout@v4
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/git/checkout@main
 
       - name: 🐍 Set up Python 3.12
         uses: actions/setup-python@v5

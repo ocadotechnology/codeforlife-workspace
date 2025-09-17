@@ -16,7 +16,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: actions/checkout@v4
+    - uses: ocadotechnology/codeforlife-workspace/.github/actions/git/checkout@main
       with:
         repository: ocadotechnology/codeforlife-workspace
 
