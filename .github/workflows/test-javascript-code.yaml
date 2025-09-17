@@ -67,8 +67,8 @@ jobs:
         with:
           download-branch: ${{ inputs.download-branch }}
 
-      - name: 📥 Download Vite Config File from Workspace
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/frontend/download-vite-config@main
+      - name: 📥 Download Vite Config Files from Workspace
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/frontend/download-vite-configs@main
         with:
           download-branch: ${{ inputs.download-branch }}
 

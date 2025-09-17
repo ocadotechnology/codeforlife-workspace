@@ -13,11 +13,9 @@ runs:
       with:
         branch: ${{ inputs.download-branch }}
         path: frontend/.prettierrc.json
-        save-to: .workspace/.prettierrc.json
 
     - name: 📥 Download Prettier Ignore File
       uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
         branch: ${{ inputs.download-branch }}
         path: frontend/.prettierignore
-        save-to: .workspace/.prettierignore

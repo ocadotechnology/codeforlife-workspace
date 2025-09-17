@@ -18,8 +18,7 @@ export default ts.config(
       "**/*.d.ts",
       "eslint.config.js",
       "server.js",
-      // A special directory created during the runtime of our pipeline, into
-      // which any necessary files from the workspace are downloaded.
+      "vitest.setup.ts",
       ".workspace",
     ],
   },

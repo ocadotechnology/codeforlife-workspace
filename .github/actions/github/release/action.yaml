@@ -15,14 +15,18 @@ inputs:
   args:
     description: "Arguments passed to `npx semantic-release`."
     required: false
+  ref:
+    description: "The branch, tag or SHA to checkout."
+    required: false
 runs:
   using: composite
   steps:
     - name: 🛫 Checkout
       if: ${{ inputs.checkout == 'true' }}
-      uses: actions/checkout@v4
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/git/checkout@main
       with:
         token: ${{ inputs.cfl-bot-gh-token }}
+        ref: ${{ inputs.ref }}
         fetch-depth: 0
 
     - name: 🌐 Set up Node 22

@@ -18,7 +18,6 @@ runs:
       with:
         branch: ${{ inputs.config-download-branch }}
         path: codecov.yml
-        save-to: .workspace/codecov.yml
 
     - name: 📈 Upload Coverage Reports to Codecov
       uses: codecov/codecov-action@v4

@@ -1,5 +1,5 @@
-name: "Code for Life - Workspace - Frontend - Download TypeScript Configs"
-description: "Download all the TypeScript config files that are reused across the workspace."
+name: "Code for Life - Workspace - Frontend - Download Vite Configs"
+description: "Download the Vite config files that are reused across the workspace."
 inputs:
   download-branch:
     description: "The branch of the workspace repo to download the files from."
@@ -8,20 +8,20 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: 📥 Download Base TypeScript Config File
+    - name: 📥 Download Vite Config File
       uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
         branch: ${{ inputs.download-branch }}
-        path: frontend/tsconfig.base.json
+        path: frontend/vite.config.ts
 
-    - name: 📥 Download App TypeScript Config File
+    - name: 📥 Download Vitest Setup File
       uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
         branch: ${{ inputs.download-branch }}
-        path: frontend/tsconfig.app.json
+        path: frontend/vitest.setup.ts
 
-    - name: 📥 Download Node TypeScript Config File
+    - name: 📥 Download Vite Types File
       uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
       with:
         branch: ${{ inputs.download-branch }}
-        path: frontend/tsconfig.node.json
+        path: frontend/vite-env.d.ts

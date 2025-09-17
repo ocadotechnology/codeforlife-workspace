@@ -11,6 +11,10 @@ inputs:
     description: "A flag designating whether to set up cfl-bot as the git user."
     required: false
     default: "true"
+outputs:
+  sha:
+    description: "The latest commit SHA."
+    value: ${{ steps.commit-and-push.outputs.sha }}
 runs:
   using: composite
   steps:
@@ -23,10 +27,15 @@ runs:
       run: git add ${{ inputs.add }}
 
     - name: 🔄 Git Commit and Push
+      id: commit-and-push
       shell: bash
       run: |
         # Only commit and push if there are differences.
+        sha="$GITHUB_SHA"
         if ! git diff --staged --quiet; then
           git commit -m "chore: ${{ inputs.commit-message }} [skip ci]"
           git push
+          sha="$(git rev-parse HEAD)"
         fi
+
+        echo "sha=$sha" >> $GITHUB_OUTPUT

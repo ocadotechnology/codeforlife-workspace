@@ -8,23 +8,8 @@
 # Variables
 # ------------------------------------------------------------------------------
 
-# The path to the workspace directory.
-workspace_dir="$(
-  if [ "$CI" = "true" ]; then
-    echo ".workspace"
-  else
-    echo "/workspace"
-  fi
-)"
-
 # The path to the frontend directory in the workspace.
-frontend_dir="$(
-  if [ "$CI" = "true" ]; then
-    echo "$workspace_dir"
-  else
-    echo "$workspace_dir/frontend"
-  fi
-)"
+frontend_dir=".workspace/frontend"
 
 # ------------------------------------------------------------------------------
 # Private/Utility Functions
@@ -73,7 +58,7 @@ function _make_vite_options() {
     if [ -f vite.config.ts ]; then
       echo "vite.config.ts"
     else
-      echo "./node_modules/@codeforlife/workspace/vite.config.ts"
+      echo "$frontend_dir/vite.config.ts"
     fi
   )"
 
@@ -286,4 +271,4 @@ function check() {
 # ------------------------------------------------------------------------------
 
 # Must be the last line in the script!
-eval "$("$workspace_dir/.scripts/main" run_script $(readlink -f "$0") $@)"
+eval "$(.workspace/.scripts/main run_script $(readlink -f "$0") $@)"

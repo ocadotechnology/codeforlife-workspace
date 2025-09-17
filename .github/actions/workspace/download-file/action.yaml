@@ -22,10 +22,12 @@ runs:
       shell: bash
       run: |
         output_path="${{ inputs.save-to }}"
-        if [ -z "$output_path" ]; then output_path="${{ inputs.path }}"; fi
+        if [ -z "$output_path" ]; then
+          output_path=".workspace/${{ inputs.path }}"
+        fi
 
         echo "value=$output_path" >> $GITHUB_OUTPUT
-    
+
     - name: Make Parent Directories
       shell: bash
       run: mkdir -p "$(dirname "${{ steps.get-output-path.outputs.value }}")"

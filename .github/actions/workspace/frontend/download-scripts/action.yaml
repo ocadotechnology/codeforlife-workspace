@@ -18,5 +18,4 @@ runs:
       with:
         branch: ${{ inputs.download-branch }}
         path: frontend/scripts
-        save-to: .workspace/scripts
         type: bash
