@@ -73,16 +73,16 @@ jobs:
           download-branch: ${{ inputs.download-branch }}
 
       - name: 🔎 Check Code Format
-        run: .workspace/scripts format:check
+        run: .workspace/frontend/scripts format:check
 
       - name: 🔎 Check Code Types
-        run: .workspace/scripts types:check
+        run: .workspace/frontend/scripts types:check
 
       - name: 🔎 Check Code
-        run: .workspace/scripts code:check
+        run: .workspace/frontend/scripts code:check
 
       - name: 🧪 Test Code
-        run: .workspace/scripts test:coverage
+        run: .workspace/frontend/scripts test:coverage
 
       - name: 📈 Upload Coverage Reports to Codecov
         if: github.repository_owner_id == env.OCADO_TECH_ORG_ID
