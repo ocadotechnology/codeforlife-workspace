@@ -3695,6 +3695,11 @@ vite@7.1.5, "vite@^5.0.0 || ^6.0.0 || ^7.0.0-0":
   optionalDependencies:
     fsevents "~2.3.3"
 
+vitest-fetch-mock@0.4.5:
+  version "0.4.5"
+  resolved "https://registry.yarnpkg.com/vitest-fetch-mock/-/vitest-fetch-mock-0.4.5.tgz#f9cd7d9f05028c56fc307ca8c6a6dc1fe72c2047"
+  integrity sha512-nhWdCQIGtaSEUVl96pMm0WggyDGPDv5FUy/Q9Hx3cs2RGmh3Q/uRsLClGbdG3kXBkJ3br5yTUjB2MeW25TwdOA==
+
 vitest-mock-extended@3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/vitest-mock-extended/-/vitest-mock-extended-3.1.0.tgz#d4e23f4bbc18d07c4ab928b861e74414c942c974"

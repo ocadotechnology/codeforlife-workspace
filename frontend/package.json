@@ -81,6 +81,8 @@
     "Bundles our code. It also provides a local dev server which supports HMR.",
     "📦 vitest",
     "Our testing framework which discovers our test cases and runs them.",
+    "📦 vitest-fetch-mock",
+    "Allows us to mock calls to our API to return the desired responses.",
     "📦 vitest-mock-extended",
     "Provides type-safe mocking with a fluent, jest-like mocking API."
   ],
@@ -114,6 +116,7 @@
     "typescript-eslint": "8.39.1",
     "vite": "7.1.5",
     "vitest": "3.2.4",
+    "vitest-fetch-mock": "0.4.5",
     "vitest-mock-extended": "3.1.0"
   }
 }
