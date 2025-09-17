@@ -28,9 +28,6 @@ inputs:
     description: "The Personal access token (PAT) used to checkout the repository."
     required: false
     default: ${{ github.token }}
-  ref:
-    description: "The branch, tag or SHA to checkout."
-    required: false
 runs:
   using: composite
   steps:
@@ -39,7 +36,6 @@ runs:
       uses: ocadotechnology/codeforlife-workspace/.github/actions/git/checkout@main
       with:
         token: ${{ inputs.gh-token }}
-        ref: ${{ inputs.ref }}
 
     - name: 📥 Download package.json from Workspace
       if: inputs.workspace-package == 'true'

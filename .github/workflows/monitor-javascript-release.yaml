@@ -12,10 +12,6 @@ on:
         type: string
         required: false
         default: "codeforlife-"
-      ref:
-        description: "The branch, tag or SHA to checkout."
-        type: string
-        required: false
     secrets:
       CFL_BOT_GH_TOKEN:
         description: "The CFL-bot's GitHub token. Used to release."
@@ -34,7 +30,6 @@ jobs:
         with:
           node-version: ${{ inputs.node-version }}
           workspace-package: false
-          ref: ${{ inputs.ref }}
 
       - name: 🔎 Monitor Open-Source Vulnerabilities and License Issues
         uses: ocadotechnology/codeforlife-workspace/.github/actions/snyk/monitor-release@main
