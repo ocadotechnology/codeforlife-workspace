@@ -51,17 +51,6 @@ runs:
         branch: ${{ inputs.workspace-package-download-branch }}
         path: frontend/yarn.lock
 
-    - name: ✏️ Write Path to package.json in Workspace
-      if: inputs.workspace-package == 'true'
-      shell: bash
-      working-directory: ${{ inputs.working-directory }}
-      run: |
-        echo "$(
-          jq '
-            .devDependencies["@codeforlife/workspace"] = "link:.workspace"
-          ' package.json
-        )" > package.json
-
     - name: 🌐 Set up Node
       uses: actions/setup-node@v4
       with:
