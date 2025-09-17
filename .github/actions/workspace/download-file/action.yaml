@@ -27,7 +27,7 @@ runs:
         fi
 
         echo "value=$output_path" >> $GITHUB_OUTPUT
-    
+
     - name: Make Parent Directories
       shell: bash
       run: mkdir -p "$(dirname "${{ steps.get-output-path.outputs.value }}")"
