@@ -1,6 +1,11 @@
 [tool.black] # https://black.readthedocs.io/en/stable/usage_and_configuration/the_basics.html
 line-length = 80
-extend-exclude = ".*/migrations/.*py"
+extend-exclude = '''
+(
+  /migrations/
+  | /\.workspace/
+)
+'''
 
 [tool.pytest.ini_options] # https://docs.pytest.org/en/stable/reference/reference.html#ini-options-ref
 env = [ # https://github.com/pytest-dev/pytest-env
@@ -14,7 +19,7 @@ plugins = [
 ]
 check_untyped_defs = true
 disable_error_code = ["dict-item"]
-mypy_path = "../codeforlife-package-python"
+mypy_path = ".workspace/backend/package"
 
 [tool.django-stubs] # https://github.com/typeddjango/django-stubs
 django_settings_module = "settings"
