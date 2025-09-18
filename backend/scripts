@@ -154,6 +154,10 @@ function test:coverage() {
   fi
 }
 
+function packages:check() {
+  snyk:test --command=.venv/bin/python --policy-path="$backend_dir/.snyk"
+}
+
 function run:django() {
   # Run a local Django server.
   setup $@
@@ -169,6 +173,9 @@ function check() {
   callback="code:check" step Checking code
   callback="migrations:check" step Checking Django migrations
   callback="test" step Running tests
+  if eval_bool "${packages:-0}"; then
+    callback="packages:check" step Checking packages
+  fi
 }
 
 # ------------------------------------------------------------------------------

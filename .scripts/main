@@ -2,21 +2,12 @@
 
 # General bash utilities to be used across the whole workspace.
 
-# The path to the workspace directory.
-# https://docs.github.com/en/actions/reference/workflows-and-actions/variables#default-environment-variables
-workspace_dir="${workspace_dir:-"$(
-  if [ "$CI" = "true" ]; then
-    echo ".workspace"
-  else
-    echo "/workspace"
-  fi
-)"}"
+function import_workspace_script() { source .workspace/.scripts/$1; }
 
-scripts_dir="$workspace_dir/.scripts"
-
-source $scripts_dir/ansi
-source $scripts_dir/general
-source $scripts_dir/github
-source $scripts_dir/run
+import_workspace_script ansi
+import_workspace_script general
+import_workspace_script github
+import_workspace_script run
+import_workspace_script snyk
 
 $@ # Entrypoint. Must be the last line in the script!

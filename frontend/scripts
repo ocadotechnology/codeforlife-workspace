@@ -253,6 +253,10 @@ function types:check() {
   _typescript --build tsconfig.json
 }
 
+function packages:check() {
+  snyk:test --package-manager=yarn --policy-path="$frontend_dir/.snyk"
+}
+
 function check() {
   # Run all checks.
   callback="setup" step Setting up JS environment
@@ -260,6 +264,9 @@ function check() {
   callback="code:check" step Checking code
   callback="types:check" step Checking types
   callback="test" step Running tests
+  if eval_bool "${packages:-0}"; then
+    callback="packages:check" step Checking packages
+  fi
 }
 
 # ------------------------------------------------------------------------------
