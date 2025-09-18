@@ -48,7 +48,7 @@ export const vitestConfig = defineVitestConfig({
     // with the DOM.
     environment: "jsdom",
     // Files that will run before each test file is executed.
-    setupFiles: ["./vitest.setup.ts"],
+    setupFiles: [".workspace/frontend/vitest.setup.ts"],
     // Automatically resets mocks before each test. This means any mock
     // implementation or mock call history is cleared, ensuring that the state
     // of your mocks from a previous test doesn't affect the next one.
