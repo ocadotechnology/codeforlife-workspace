@@ -318,7 +318,7 @@
         "problemMatcher": [],
         "isBackground": true,
         "options": {
-          "cwd": "/workspace/${input:remember-frontend-service}",
+          "cwd": "/workspace/frontend/${input:remember-frontend-service}",
           "env": {
             "BROWSER": "none"
           }
@@ -343,12 +343,12 @@
           "key": "backend-service",
           "description": "Select the backend service.",
           "options": [
-            "codeforlife-package-python",
-            "codeforlife-portal-backend",
-            "codeforlife-contributor-backend",
-            "codeforlife-template-backend",
-            "codeforlife-sso-backend",
-            "codeforlife-rapid-router-backend"
+            "package",
+            "portal",
+            "contributor",
+            "template",
+            "sso",
+            "rapid-router"
           ]
         }
       },
@@ -360,12 +360,12 @@
           "key": "frontend-service",
           "description": "Select the frontend service.",
           "options": [
-            "codeforlife-package-javascript",
-            "codeforlife-portal-frontend",
-            "codeforlife-contributor-frontend",
-            "codeforlife-template-frontend",
-            "codeforlife-sso-frontend",
-            "codeforlife-rapid-router-frontend"
+            "package",
+            "portal",
+            "contributor",
+            "template",
+            "sso",
+            "rapid-router"
           ]
         }
       },
@@ -396,7 +396,7 @@
         "program": "manage.py",
         "request": "launch",
         "type": "debugpy",
-        "cwd": "/workspace/${input:backend-service}"
+        "cwd": "/workspace/backend/${input:backend-service}"
       },
       {
         "env": {
@@ -407,7 +407,7 @@
         "program": "application.py",
         "request": "launch",
         "type": "debugpy",
-        "cwd": "/workspace/${input:backend-service}"
+        "cwd": "/workspace/backend/${input:backend-service}"
       },
       // https://code.visualstudio.com/docs/python/testing
       {
@@ -430,7 +430,7 @@
         "request": "launch",
         "type": "chrome",
         "url": "http://localhost:5173",
-        "webRoot": "/workspace/${input:frontend-service}"
+        "webRoot": "/workspace/frontend/${input:frontend-service}"
       }
       // TODO: Vitest Debug
       // https://vitest.dev/guide/debugging.html#vs-code
