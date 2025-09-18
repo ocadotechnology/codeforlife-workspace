@@ -113,6 +113,9 @@
     },
     "testing.defaultGutterClickAction": "debug",
     "cSpell.words": ["codeforlife", "klass", "ocado", "kurono", "pipenv"],
+    // Terminal
+    "terminal.integrated.tabs.title": "${cwd} (${process})",
+    "terminal.integrated.defaultProfile.linux": "bash",
     // Markdown
     "[md]": {
       "editor.tabSize": 4
