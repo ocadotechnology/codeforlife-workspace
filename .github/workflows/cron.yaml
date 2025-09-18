@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: 🛫 Checkout
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/git/checkout@main
+        uses: actions/checkout@v5
 
       - name: 🚀 Deploy Cron Jobs on GCloud
         uses: ocadotechnology/codeforlife-workspace/.github/actions/gcloud/deploy-app@main

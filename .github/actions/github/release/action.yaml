@@ -23,7 +23,7 @@ runs:
   steps:
     - name: 🛫 Checkout
       if: ${{ inputs.checkout == 'true' }}
-      uses: ocadotechnology/codeforlife-workspace/.github/actions/git/checkout@main
+      uses: actions/checkout@v5
       with:
         token: ${{ inputs.cfl-bot-gh-token }}
         ref: ${{ inputs.ref }}

@@ -1,5 +1,5 @@
-name: "Code for Life - Git - Checkout"
-description: "Git checkout a repository."
+name: "Code for Life - Workspace - Checkout Submodule and Workspace"
+description: "Checkout a submodule and replace the .workspace symlink in it with a checkout of the workspace."
 inputs:
   repository:
     description: "Repository name with owner."
@@ -26,7 +26,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: 🛫 Checkout
+    - name: 🛫 Checkout Submodule
       uses: actions/checkout@v5
       with:
         repository: ${{ inputs.repository }}
@@ -36,10 +36,13 @@ runs:
         path: ${{ inputs.path }}
         submodules: ${{ inputs.submodules }}
 
-    - name: 🔄 Replace Workspace Symlink with Directory
+    - name: 🗑️ Remove Workspace Symlink
       shell: bash
-      run: |
-        if [ -L .workspace ]; then
-          rm .workspace
-          mkdir .workspace
-        fi
+      run: if [ -L .workspace ]; then rm .workspace; fi
+
+    - name: 🛫 Checkout Workspace
+      uses: actions/checkout@v5
+      with:
+        repository: ocadotechnology/codeforlife-workspace
+        path: .workspace
+        submodules: false

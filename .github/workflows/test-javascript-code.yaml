@@ -47,31 +47,6 @@ jobs:
           workspace-package-download-branch: ${{ inputs.download-branch }}
           install-args: --production=false
 
-      - name: 📥 Download Script Files from Workspace
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/frontend/download-scripts@main
-        with:
-          download-branch: ${{ inputs.download-branch }}
-
-      - name: 📥 Download Prettier Config Files from Workspace
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/frontend/download-prettier-configs@main
-        with:
-          download-branch: ${{ inputs.download-branch }}
-
-      - name: 📥 Download TypeScript Config Files from Workspace
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/frontend/download-typescript-configs@main
-        with:
-          download-branch: ${{ inputs.download-branch }}
-
-      - name: 📥 Download ESLint Config File from Workspace
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/frontend/download-eslint-config@main
-        with:
-          download-branch: ${{ inputs.download-branch }}
-
-      - name: 📥 Download Vite Config Files from Workspace
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/frontend/download-vite-configs@main
-        with:
-          download-branch: ${{ inputs.download-branch }}
-
       - name: 🔎 Check Code Format
         run: .workspace/frontend/scripts format:check
 

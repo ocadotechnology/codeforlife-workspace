@@ -33,23 +33,9 @@ runs:
   steps:
     - name: 🛫 Checkout
       if: inputs.checkout == 'true'
-      uses: ocadotechnology/codeforlife-workspace/.github/actions/git/checkout@main
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/checkout-submodule-and-workspace@main
       with:
         token: ${{ inputs.gh-token }}
-
-    - name: 📥 Download package.json from Workspace
-      if: inputs.workspace-package == 'true'
-      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
-      with:
-        branch: ${{ inputs.workspace-package-download-branch }}
-        path: frontend/package.json
-
-    - name: 📥 Download yarn.lock from Workspace
-      if: inputs.workspace-package == 'true'
-      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/download-file@main
-      with:
-        branch: ${{ inputs.workspace-package-download-branch }}
-        path: frontend/yarn.lock
 
     - name: 🌐 Set up Node
       uses: actions/setup-node@v4
@@ -70,7 +56,7 @@ runs:
       working-directory: .workspace/frontend
       run: yarn install
 
-    - name: 🛠 Install Dependencies
+    - name: 🛠 Install Submodule Dependencies
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: yarn install ${{ inputs.install-args }}

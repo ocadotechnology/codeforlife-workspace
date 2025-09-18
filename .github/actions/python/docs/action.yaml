@@ -17,7 +17,7 @@ runs:
   using: composite
   steps:
     - name: 🛫 Checkout
-      uses: ocadotechnology/codeforlife-workspace/.github/actions/git/checkout@main
+      uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/checkout-submodule-and-workspace@main
 
     - name: 🐍 Set up Python ${{ inputs.python-version }}
       uses: actions/setup-python@v5

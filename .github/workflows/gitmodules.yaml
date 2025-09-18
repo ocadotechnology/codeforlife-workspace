@@ -31,7 +31,7 @@ jobs:
       )
     steps:
       - name: 🛫 Checkout Workspace
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/git/checkout@main
+        uses: actions/checkout@v5
         with:
           token: ${{ secrets.CFL_BOT_GH_TOKEN }}
           repository: ocadotechnology/codeforlife-workspace
@@ -65,7 +65,7 @@ jobs:
           exit 1
 
       - name: 🛫 Checkout Submodule
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/git/checkout@main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/checkout-submodule-and-workspace@main
         if: steps.get-submodule-path.conclusion == 'success'
         with:
           token: ${{ secrets.CFL_BOT_GH_TOKEN }}
