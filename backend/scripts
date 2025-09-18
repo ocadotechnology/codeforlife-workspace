@@ -21,34 +21,36 @@ source=${SOURCE:-"."}
 # Private/Utility Functions
 # ------------------------------------------------------------------------------
 
+function _pipenv() { PIPENV_VERBOSITY=-1 pipenv $@; }
+
 function _isort() {
   # https://pycqa.github.io/isort/docs/configuration/options.html
-  pipenv run isort --settings-file=$pyproject_toml $@
+  _pipenv run isort --settings-file=$pyproject_toml $@
 }
 
 function _black() {
   # https://black.readthedocs.io/en/stable/usage_and_configuration/the_basics.html
-  pipenv run black --config=$pyproject_toml $@
+  _pipenv run black --config=$pyproject_toml $@
 }
 
 function _mypy() {
   # https://mypy.readthedocs.io/en/stable/command_line.html
-  pipenv run mypy --config-file=$pyproject_toml $@
+  _pipenv run mypy --config-file=$pyproject_toml $@
 }
 
 function _pylint() {
   # https://pylint.pycqa.org/en/stable/user_guide/configuration/all-options.html
-  pipenv run pylint --rcfile=$pyproject_toml $@
+  _pipenv run pylint --rcfile=$pyproject_toml $@
 }
 
-function _django() { pipenv run python manage.py $@; }
+function _django() { _pipenv run python manage.py $@; }
 
 function _pytest() {
   # https://docs.pytest.org/en/8.3.x/reference/reference.html
   # https://pytest-xdist.readthedocs.io/en/stable/distribution.html
   local options=""
   if ! eval_bool "${DJANGO:-1}"; then options+="-p no:django"; fi
-  pipenv run pytest -c=$pyproject_toml -n=auto $options $@
+  _pipenv run pytest -c=$pyproject_toml -n=auto $options $@
 }
 
 function _pytest:coverage() {
@@ -62,7 +64,7 @@ function _pytest:coverage() {
 
 function setup() {
   # Setup your local environment.
-  pipenv install --dev
+  _pipenv install --dev
 }
 
 function hard_install() {
