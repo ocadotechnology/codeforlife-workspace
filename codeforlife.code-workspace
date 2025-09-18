@@ -250,13 +250,13 @@
         "type": "pickString",
         "description": "Select the backend folder.",
         "options": [
-          "codeforlife-scheduler-backend",
-          "codeforlife-package-python",
-          "codeforlife-portal-backend",
-          "codeforlife-contributor-backend",
-          "codeforlife-template-backend",
-          "codeforlife-sso-backend",
-          "codeforlife-rapid-router-backend"
+          "scheduler",
+          "package",
+          "portal",
+          "contributor",
+          "template",
+          "sso",
+          "rapid-router"
         ]
       },
       {
@@ -264,12 +264,12 @@
         "type": "pickString",
         "description": "Select the frontend folder.",
         "options": [
-          "codeforlife-package-javascript",
-          "codeforlife-portal-frontend",
-          "codeforlife-contributor-frontend",
-          "codeforlife-template-frontend",
-          "codeforlife-sso-frontend",
-          "codeforlife-rapid-router-frontend"
+          "package",
+          "portal",
+          "contributor",
+          "template",
+          "sso",
+          "rapid-router"
         ]
       },
       {
@@ -299,7 +299,7 @@
         "type": "shell",
         "problemMatcher": [],
         "options": {
-          "cwd": "/workspace/${input:backend-folder}"
+          "cwd": "/workspace/backend/${input:backend-folder}"
         }
       },
       {
@@ -308,7 +308,7 @@
         "type": "shell",
         "problemMatcher": [],
         "options": {
-          "cwd": "/workspace/${input:frontend-folder}"
+          "cwd": "/workspace/frontend/${input:frontend-folder}"
         }
       },
       {
