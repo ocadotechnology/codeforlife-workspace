@@ -9,25 +9,18 @@ inputs:
     description: "The Node.js version to set up."
     required: true
     default: "22"
-  working-directory:
-    description: "The current working directory."
-    required: true
-    default: "."
-  install-args:
-    description: "Arguments to pass to pipenv install."
-    required: false
-  workspace-package:
-    description: "A flag designating to install the workspace package.json."
+  install-prod:
+    description: "A flag designating whether to install only the production dependencies."
     required: false
     default: "true"
-  workspace-package-download-branch:
-    description: "The branch to download the package.json from the workspace repo."
-    required: false
-    default: "main"
   gh-token:
     description: "The Personal access token (PAT) used to checkout the repository."
     required: false
     default: ${{ github.token }}
+  workspace-ref:
+    description: "The branch, tag or SHA of the workspace to checkout."
+    required: false
+    default: "main"
 runs:
   using: composite
   steps:
@@ -36,6 +29,7 @@ runs:
       uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/checkout-submodule-and-workspace@main
       with:
         token: ${{ inputs.gh-token }}
+        workspace-ref: ${{ inputs.workspace-ref }}
 
     - name: 🌐 Set up Node
       uses: actions/setup-node@v4
@@ -51,12 +45,11 @@ runs:
       run: npm install --global yarn
 
     - name: 🛠 Install Workspace Dependencies
-      if: inputs.workspace-package == 'true'
+      if: inputs.install-prod == 'false'
       shell: bash
       working-directory: .workspace/frontend
       run: yarn install
 
     - name: 🛠 Install Submodule Dependencies
       shell: bash
-      working-directory: ${{ inputs.working-directory }}
-      run: yarn install ${{ inputs.install-args }}
+      run: yarn install --production=${{ inputs.install-prod }}

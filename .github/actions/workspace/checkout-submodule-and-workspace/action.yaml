@@ -1,10 +1,6 @@
 name: "Code for Life - Workspace - Checkout Submodule and Workspace"
 description: "Checkout a submodule and replace the .workspace symlink in it with a checkout of the workspace."
 inputs:
-  repository:
-    description: "Repository name with owner."
-    required: false
-    default: ${{ github.repository }}
   token:
     description: "Personal access token (PAT) used to fetch the repository."
     required: false
@@ -16,25 +12,19 @@ inputs:
   ref:
     description: "The branch, tag or SHA to checkout."
     required: false
-  path:
-    description: "Relative path under $GITHUB_WORKSPACE to place the repository."
+  workspace-ref:
+    description: "The branch, tag or SHA of the workspace to checkout."
     required: false
-  submodules:
-    description: "Whether to checkout submodules."
-    required: false
-    default: "false"
+    default: "main"
 runs:
   using: composite
   steps:
     - name: 🛫 Checkout Submodule
       uses: actions/checkout@v5
       with:
-        repository: ${{ inputs.repository }}
         token: ${{ inputs.token }}
         fetch-depth: ${{ inputs.fetch-depth }}
         ref: ${{ inputs.ref }}
-        path: ${{ inputs.path }}
-        submodules: ${{ inputs.submodules }}
 
     - name: 🗑️ Remove Workspace Symlink
       shell: bash
@@ -46,3 +36,4 @@ runs:
         repository: ocadotechnology/codeforlife-workspace
         path: .workspace
         submodules: false
+        ref: ${{ inputs.workspace-ref }}

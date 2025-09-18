@@ -44,8 +44,8 @@ jobs:
         uses: ocadotechnology/codeforlife-workspace/.github/actions/javascript/setup-environment@main
         with:
           node-version: ${{ inputs.node-version }}
-          workspace-package-download-branch: ${{ inputs.download-branch }}
-          install-args: --production=false
+          workspace-ref: ${{ inputs.download-branch }}
+          install-prod: false
 
       - name: 🔎 Check Code Format
         run: .workspace/frontend/scripts format:check
