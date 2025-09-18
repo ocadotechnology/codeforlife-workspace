@@ -17,6 +17,10 @@ inputs:
     description: "The Personal access token (PAT) used to checkout the repository."
     required: false
     default: ${{ github.token }}
+  checkout-workspace:
+    description: "A flag designating whether to checkout the workspace."
+    required: false
+    default: "true"
   workspace-ref:
     description: "The branch, tag or SHA of the workspace to checkout."
     required: false
@@ -30,6 +34,7 @@ runs:
       with:
         token: ${{ inputs.gh-token }}
         workspace-ref: ${{ inputs.workspace-ref }}
+        workspace: ${{ inputs.checkout-workspace }}
 
     - name: 🌐 Set up Node
       uses: actions/setup-node@v4

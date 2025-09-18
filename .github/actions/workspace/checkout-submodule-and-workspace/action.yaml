@@ -16,6 +16,10 @@ inputs:
     description: "The branch, tag or SHA of the workspace to checkout."
     required: false
     default: "main"
+  workspace:
+    description: "A flag designating whether to checkout the workspace."
+    required: false
+    default: "true"
 runs:
   using: composite
   steps:
@@ -32,6 +36,7 @@ runs:
 
     - name: 🛫 Checkout Workspace
       uses: actions/checkout@v5
+      if: inputs.workspace == 'true'
       with:
         repository: ocadotechnology/codeforlife-workspace
         path: .workspace
