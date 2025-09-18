@@ -35,7 +35,7 @@ export const vitestConfig = defineVitestConfig({
   server: {
     fs: {
       // Allow vitest setup to be served from submodule root.
-      allow: ["../vitest.setup.ts"],
+      allow: ["../vitest.setup.ts", ".workspace/frontend/vitest.setup.ts"],
     },
   },
   test: {
