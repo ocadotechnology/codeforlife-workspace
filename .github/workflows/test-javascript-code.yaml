@@ -47,6 +47,9 @@ jobs:
           workspace-ref: ${{ inputs.download-branch }}
           install-prod: false
 
+      - name: echo pwd
+        run: echo "$(pwd)"
+
       - name: 🔎 Check Code Format
         run: .workspace/frontend/scripts format:check
 
