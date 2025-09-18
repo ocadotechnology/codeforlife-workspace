@@ -132,7 +132,6 @@ jobs:
     needs: [release]
     with:
       python-version: ${{ inputs.python-version }}
-      snyk-config-path: ${{ inputs.snyk-config-path }}
 
   submodule:
     uses: ocadotechnology/codeforlife-workspace/.github/workflows/gitmodules.yaml@main
