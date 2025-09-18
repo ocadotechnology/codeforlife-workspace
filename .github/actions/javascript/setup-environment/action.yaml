@@ -50,7 +50,7 @@ runs:
       run: npm install --global yarn
 
     - name: 🛠 Install Workspace Dependencies
-      if: inputs.install-prod == 'false'
+      if: inputs.checkout-workspace == 'true' && inputs.install-prod == 'false'
       shell: bash
       working-directory: .workspace/frontend
       run: yarn install
