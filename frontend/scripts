@@ -106,14 +106,10 @@ function hard_install() {
   local workspace="${workspace:-1}"
 
   function _cleanup() {
-    if [ -f "yarn.lock" ]; then
-      echo "Deleting yarn.lock"
-    fi
+    if [ -f "yarn.lock" ]; then echo "Deleting yarn.lock"; fi
     rm -f yarn.lock
 
-    if [ -e "node_modules" ]; then
-      echo "Deleting node_modules"
-    fi
+    if [ -e "node_modules" ]; then echo "Deleting node_modules"; fi
     rm -rf node_modules
   }
 

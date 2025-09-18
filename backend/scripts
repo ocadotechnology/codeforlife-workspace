@@ -4,174 +4,176 @@
 #  - The 1st arg is the name of the function.
 #  - All the remaining args are the arguments of the function.
 
-set -e
-
 # ------------------------------------------------------------------------------
 # Variables
 # ------------------------------------------------------------------------------
 
+# The path to the backend directory in the workspace.
+backend_dir=".workspace/backend"
+
 # The path of the pyproject.toml.
-pyproject_toml=${PYPROJECT_TOML:-"/workspace/backend/pyproject.toml"}
+pyproject_toml="$backend_dir/pyproject.toml"
 
 # The path of the source code.
 source=${SOURCE:-"."}
 
-# A flag designating whether Django is being used.
-django=${DJANGO:-"true"}
-
-# Service variables.
-service_port=${SERVICE_PORT:-"8000"}
-
-# The path of the coverage report to generate.
-# NOTE: COVERAGE_FILE is reserved - do not use.
-coverage_report=${COVERAGE_REPORT:-"coverage.xml"}
-
 # ------------------------------------------------------------------------------
-# Functions
+# Private/Utility Functions
 # ------------------------------------------------------------------------------
 
-function imports:check() {
-  # Check imports order.
+function _isort() {
   # https://pycqa.github.io/isort/docs/configuration/options.html
-  pipenv run isort \
-    --settings-file=$pyproject_toml \
-    --check \
-    $source
+  pipenv run isort --settings-file=$pyproject_toml $@
 }
 
-function format:check() {
-  # Check formatting issues.
+function _black() {
   # https://black.readthedocs.io/en/stable/usage_and_configuration/the_basics.html
-  if ! pipenv run black \
-    --config=$pyproject_toml \
-    --check \
-    $source \
-    ; then exit 1; fi
+  pipenv run black --config=$pyproject_toml $@
 }
 
-function types:check() {
-  # Check static types.
+function _mypy() {
   # https://mypy.readthedocs.io/en/stable/command_line.html
-  pipenv run mypy \
-    --config-file=$pyproject_toml \
-    $source
+  pipenv run mypy --config-file=$pyproject_toml $@
 }
 
-function code:check:non_tests {
-  # Find linting issues in non-test files.
+function _pylint() {
   # https://pylint.pycqa.org/en/stable/user_guide/configuration/all-options.html
-  if ! pipenv run pylint \
-    --rcfile=$pyproject_toml \
-    $(
-      git ls-files \
-        $source'/*.py' \
-        $source'/**/*.py' \
-        ':!'$source'/test_*.py' \
-        ':!'$source'/**/test_*.py' \
-        ':!'$source'/*_test.py' \
-        ':!'$source'/**/*_test.py'
-    ); then exit 1; fi
+  pipenv run pylint --rcfile=$pyproject_toml $@
 }
 
-function code:check:tests() {
-  # Find linting issues in test files.
-  # https://pylint.pycqa.org/en/stable/user_guide/configuration/all-options.html
-  if ! pipenv run pylint \
-    --rcfile=$pyproject_toml \
-    --disable=duplicate-code \
-    $(
-      git ls-files \
-        $source'/test_*.py' \
-        $source'/**/test_*.py' \
-        $source'/*_test.py' \
-        $source'/**/*_test.py'
-    ); then exit 1; fi
-}
+function _django() { pipenv run python manage.py $@; }
 
-function code:check() {
-  # Find linting issues.
-  echo 'Linting non-test files'
-  code:check:non_tests $@
-  echo 'Linting test files'
-  code:check:tests $@
-}
-
-function migrations:check() {
-  # Check no pending Django migrations.
-  # https://docs.djangoproject.com/en/4.2/ref/django-admin/#django-admin-makemigrations
-  pipenv run python \
-    manage.py \
-    makemigrations \
-    --check \
-    --dry-run
-}
-
-function test:coverage:report() {
-  # Run tests and generate coverage report.
+function _pytest() {
   # https://docs.pytest.org/en/8.3.x/reference/reference.html
   # https://pytest-xdist.readthedocs.io/en/stable/distribution.html
-  # https://pytest-cov.readthedocs.io/en/latest/config.html
-  local command="
-  pipenv run pytest \
-    -n=auto \
-    --cov=$source \
-    --cov-report=xml:$coverage_report \
-    -c=$pyproject_toml \
-  "
-  if [ $django = "false" ]; then command+="-p no:django "; fi
-  command+=$source
-  $command
+  local options=""
+  if ! eval_bool "${DJANGO:-1}"; then options+="-p no:django"; fi
+  pipenv run pytest -c=$pyproject_toml -n=auto $options $@
 }
 
-function test:coverage:check() {
-  # Run tests and check coverage thresholds.
-  # https://docs.pytest.org/en/8.3.x/reference/reference.html
-  # https://pytest-xdist.readthedocs.io/en/stable/distribution.html
+function _pytest:coverage() {
   # https://pytest-cov.readthedocs.io/en/latest/config.html
-  local command="
-  pipenv run pytest \
-    -n=auto \
-    --cov=$source \
-    --cov-fail-under=90 \
-    -c=$pyproject_toml \
-  "
-  if [ $django = "false" ]; then command+="-p no:django "; fi
-  command+=$source
-  $command
+  _pytest --cov=$source $@
 }
+
+# ------------------------------------------------------------------------------
+# Public/Callable Functions
+# ------------------------------------------------------------------------------
 
 function setup() {
   # Setup your local environment.
   pipenv install --dev
 }
 
+function hard_install() {
+  function cleanup() {
+    if [ -f "Pipfile.lock" ]; then echo "Deleting Pipfile.lock"; fi
+    rm -f Pipfile.lock
+
+    if [ -e ".venv" ]; then echo "Deleting .venv"; fi
+    rm -rf .venv
+    mkdir .venv
+    touch .venv/.gitkeep
+  }
+
+  callback="cleanup" step Cleaning up PY environment
+  callback="setup" step Setting up PY environment
+}
+
+function imports:check() {
+  # Check imports order.
+  _isort --check $source
+}
+
+function format:check() {
+  # Check formatting issues.
+  if ! _black --check $source; then exit 1; fi
+}
+
+function types:check() {
+  # Check static types.
+  _mypy $source
+}
+
+function code:check:non_tests {
+  # Find linting issues in non-test files.
+  if ! _pylint $(
+    git ls-files \
+      $source'/*.py' \
+      $source'/**/*.py' \
+      ':!'$source'/test_*.py' \
+      ':!'$source'/**/test_*.py' \
+      ':!'$source'/*_test.py' \
+      ':!'$source'/**/*_test.py'
+  ); then exit 1; fi
+}
+
+function code:check:tests() {
+  # Find linting issues in test files.
+  if ! _pylint --disable=duplicate-code $(
+    git ls-files \
+      $source'/test_*.py' \
+      $source'/**/test_*.py' \
+      $source'/*_test.py' \
+      $source'/**/*_test.py'
+  ); then exit 1; fi
+}
+
+function code:check() {
+  # Find linting issues.
+  callback="code:check:non_tests" step Linting non-test files
+  callback="code:check:tests" step Linting test files
+}
+
+function migrations:check() {
+  # Check no pending Django migrations.
+  # https://docs.djangoproject.com/en/4.2/ref/django-admin/#django-admin-makemigrations
+  _django makemigrations --check --dry-run
+}
+
+function test() {
+  # Run tests.
+  _pytest $source
+}
+
+function test:coverage:report() {
+  # Run tests and generate coverage report.
+  _pytest:coverage --cov-report=xml:coverage.xml $source
+}
+
+function test:coverage:check() {
+  # Run tests and check coverage thresholds.
+  _pytest:coverage --cov-fail-under=90 $source
+}
+
+function test:coverage() {
+  if github_repo_owner_is_ocado_tech; then
+    test:coverage:report $@
+  else
+    test:coverage:check $@
+  fi
+}
+
 function run:django() {
   # Run a local Django server.
   setup $@
-  SERVER_MODE="django" pipenv run \
-    python \
-    manage.py \
-    runserver \
-    localhost:$service_port
+  SERVER_MODE="django" _django runserver localhost:${SERVICE_PORT:-"8000"}
 }
 
-function hard_install() {
-  # Delete the existing .venv and Pipfile.lock and install all dependencies.
-  if [ ! -e ".venv" ]; then
-    echo ".venv not found"
-    exit 1
-  fi
-  rm -rf .venv
-  mkdir .venv
-  touch .venv/.gitkeep
-  rm -f Pipfile.lock
-  pipenv install --dev
+function check() {
+  # Run all checks.
+  callback="setup" step Setting up PY environment
+  callback="imports:check" step Checking imports
+  callback="format:check" step Checking format
+  callback="types:check" step Checking types
+  callback="code:check" step Checking code
+  callback="migrations:check" step Checking Django migrations
+  callback="test" step Running tests
 }
 
 # ------------------------------------------------------------------------------
-# Script
+# Entrypoint
 # ------------------------------------------------------------------------------
 
-func=$1  # Get function name.
-shift    # Remove 1st argument.
-$func $@ # Call function with remaining arguments.
+# Must be the last line in the script!
+eval "$(.workspace/.scripts/main run_script $(readlink -f "$0") $@)"

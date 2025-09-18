@@ -9,19 +9,21 @@ inputs:
     description: "The python version to set up."
     required: true
     default: "3.12"
-  working-directory:
-    description: "The current working directory."
-    required: true
-    default: "."
   install-args:
     description: "Arguments to pass to pipenv install."
     required: false
+  workspace-ref:
+    description: "The branch, tag or SHA of the workspace to checkout."
+    required: false
+    default: "main"
 runs:
   using: composite
   steps:
     - name: 🛫 Checkout
-      if: ${{ inputs.checkout == 'true' }}
+      if: inputs.checkout == 'true'
       uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/checkout-submodule-and-workspace@main
+      with:
+        workspace-ref: ${{ inputs.workspace-ref }}
 
     - name: 🐍 Set up Python ${{ inputs.python-version }}
       uses: actions/setup-python@v5
@@ -38,5 +40,4 @@ runs:
 
     - name: 🛠 Install Dependencies
       shell: bash
-      working-directory: ${{ inputs.working-directory }}
       run: pipenv install ${{ inputs.install-args }}
