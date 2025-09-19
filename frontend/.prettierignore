@@ -1,6 +1,6 @@
 dist
 coverage
-**/.*
+**/.workspace
 **/*.yaml
 **/*.yml
 **/*.md
