@@ -5,16 +5,40 @@
  * Vitest: https://vitest.dev/config/
  */
 
-import { defineConfig as defineVitestConfig, mergeConfig } from "vitest/config"
+import {
+  defineConfig as defineVitestConfig,
+  mergeConfig,
+  defaultExclude as defaultTestExclude,
+} from "vitest/config"
 import { defineConfig as defineViteConfig } from "vite"
 import react from "@vitejs/plugin-react"
+import { readFile } from "node:fs/promises"
+import stripJsonComments from "strip-json-comments"
+
+const cwd = process.cwd()
+const workspaceDir = cwd.startsWith("/workspace") ? "/workspace" : ".workspace"
+const vitestSetupPath = `${workspaceDir}/frontend/vitest.setup.ts`
+const serverFsAllow = [cwd]
+
+const codeWorkspace = JSON.parse(
+  stripJsonComments(
+    await readFile(`${workspaceDir}/codeforlife.code-workspace`, "utf-8"),
+  ),
+) as Record<string, any>
 
 export const viteConfig = defineViteConfig({
   plugins: [react()],
   envDir: "env",
   server: {
+    // Automatically open the app in the browser on server start.
     open: true,
+    // Listen on all addresses, including LAN and public addresses.
     host: true,
+    watch: {
+      // Don't watch for changes in unnecessary files.
+      ignored: Object.keys(codeWorkspace.settings["files.watcherExclude"]),
+    },
+    fs: { allow: serverFsAllow },
   },
   optimizeDeps: {
     // TODO: investigate which of these are needed
@@ -32,12 +56,7 @@ export const viteConfig = defineViteConfig({
 
 // TODO: investigate browser mode https://vitest.dev/guide/browser/
 export const vitestConfig = defineVitestConfig({
-  server: {
-    fs: {
-      // Allow vitest setup to be served from submodule root.
-      allow: ["../vitest.setup.ts", ".workspace/frontend/vitest.setup.ts"],
-    },
-  },
+  server: { fs: { allow: [...serverFsAllow, vitestSetupPath] } },
   test: {
     // This enables global APIs for your tests. Instead of importing test,
     // expect, vi, and other Vitest functions from vitest, you can use them
@@ -48,13 +67,14 @@ export const vitestConfig = defineVitestConfig({
     // with the DOM.
     environment: "jsdom",
     // Files that will run before each test file is executed.
-    setupFiles: [".workspace/frontend/vitest.setup.ts"],
+    setupFiles: [vitestSetupPath],
     // Automatically resets mocks before each test. This means any mock
     // implementation or mock call history is cleared, ensuring that the state
     // of your mocks from a previous test doesn't affect the next one.
     mockReset: true,
     // Only includes test files that match the expected naming convention.
-    include: ["src/**/*.test.{j,t}s{x,}"],
+    include: ["**/src/**/*.test.{j,t}s{x,}"],
+    exclude: [...defaultTestExclude, "**/.workspace/**"],
     coverage: {
       enabled: true,
       provider: "istanbul",
