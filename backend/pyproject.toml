@@ -1,11 +1,5 @@
 [tool.black] # https://black.readthedocs.io/en/stable/usage_and_configuration/the_basics.html
 line-length = 80
-extend-exclude = '''
-(
-  /migrations/
-  | /\.workspace/
-)
-'''
 
 [tool.pytest.ini_options] # https://docs.pytest.org/en/stable/reference/reference.html#ini-options-ref
 env = [ # https://github.com/pytest-dev/pytest-env
@@ -32,14 +26,12 @@ disable = ["fixme"]
 max-line-length = 80
 
 [tool.pylint.MASTER]
-ignore-paths = [".*/migrations/.*.py"]
 load-plugins = "pylint_django" # https://github.com/pylint-dev/pylint-django
 django-settings-module = "settings" # https://github.com/pylint-dev/pylint-django
 
 [tool.isort] # https://pycqa.github.io/isort/docs/configuration/options.html
 profile = "black"
 line_length = 80
-skip_glob = ["**/migrations/*.py", "**/.workspace/**/*.py"]
 
 [tool.coverage.run]
 omit = [ # https://coverage.readthedocs.io/en/latest/config.html#run-omit

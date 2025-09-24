@@ -1,5 +1,5 @@
 #!/bin/bash
 
 function snyk:test() {
-  snyk test --severity-threshold=medium --fail-on=all $@
+  echo_and_run_cmd snyk test --severity-threshold=medium --fail-on=all $@
 }
