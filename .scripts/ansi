@@ -1,5 +1,6 @@
 #!/bin/bash
 
+BLACK='\e[30m'
 RED='\e[31m'
 GREEN='\e[32m'
 YELLOW='\e[33m'
@@ -30,6 +31,10 @@ function echo_warning() {
 
 function echo_info() {
   _echo "${BLUE}${BOLD}$@"
+}
+
+function echo_debug() {
+  _echo "${BLACK}${BOLD}$@"
 }
 
 function echo_intro() {
