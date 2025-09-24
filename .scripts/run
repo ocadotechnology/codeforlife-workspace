@@ -6,6 +6,9 @@ declare -ga step_counters=()
 # A global variable to track the current depth of nesting.
 declare -gi step_depth=0
 
+# A global variable to track the exit code of script.
+exit_code=0
+
 function run_script() {
   local workspace_scripts_path="$(readlink -f "$0")"
   local scripts_path="$1"
@@ -74,9 +77,13 @@ function step() {
 
   # Call the provided function (the callback).
   ${callback:-callback}
+  local callback_exit_code=$?
+  if [ "$callback_exit_code" -ne 0 ]; then exit_code=1; fi
 
   # Decrement the depth as we exit this call.
   ((step_depth--))
+
+  return $callback_exit_code
 }
 
 function handle_exit() {

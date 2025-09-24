@@ -116,6 +116,7 @@ function hard_install() {
 
   callback="cleanup" step Cleaning up PY environment
   callback="setup" step Setting up PY environment
+  return $exit_code
 }
 
 function imports:check() {
@@ -152,6 +153,7 @@ function code:check() {
   # Find linting issues.
   callback="code:check:non_tests" step Linting non-test files
   callback="code:check:tests" step Linting test files
+  return $exit_code
 }
 
 function migrations:check() {
@@ -190,12 +192,12 @@ function packages:check() {
 function run:django() {
   # Run a local Django server.
   callback="setup" step Setting up PY environment
-
   function callback() {
     SERVER_MODE="django" echo_and_run_cmd \
       $django runserver localhost:${SERVICE_PORT:-"8000"}
   }
   step Running Django development server
+  return $exit_code
 }
 
 function check() {
@@ -210,6 +212,7 @@ function check() {
   if eval_bool "${packages:-0}"; then
     callback="packages:check" step Checking packages
   fi
+  return $exit_code
 }
 
 # ------------------------------------------------------------------------------

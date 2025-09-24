@@ -96,6 +96,7 @@ function setup() {
       Installing packages in $frontend_dir
     callback="install_packages" step \
       Installing packages in $(pwd)
+    return $exit_code
   else
     install_packages
   fi
@@ -134,6 +135,7 @@ function hard_install() {
 
   callback="cleanup" step Cleaning up JS environment
   workspace="$workspace" callback="setup" step Setting up JS environment
+  return $exit_code
 }
 
 function build:client() {
@@ -160,6 +162,7 @@ function build() {
     step Building server-side code
   }
   handle_exit _make_vite_options "$@"
+  return $exit_code
 }
 
 function run:dev() {
@@ -267,6 +270,7 @@ function check() {
   if eval_bool "${packages:-0}"; then
     callback="packages:check" step Checking packages
   fi
+  return $exit_code
 }
 
 # ------------------------------------------------------------------------------
