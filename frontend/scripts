@@ -35,7 +35,7 @@ function _prettier() {
     exit=1 echo_error "ignore paths cannot be set manually"
   fi
   options+=" --ignore-path=$frontend_dir/.prettierignore"
-  if [ -f .prettierignore ]; then options+=" --ignore-path=.prettierignore"; fi
+  # if [ -f .prettierignore ]; then options+=" --ignore-path=.prettierignore"; fi
 
   yarn run prettier $options
 }
