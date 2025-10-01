@@ -112,7 +112,7 @@ function find_files() {
     names_cli+=(-name "$name")
   done
 
-  find "${ROOT_DIR:-"."}" -type f \( "${names_cli[@]}" \) $@
+  find "${ROOT_DIR:-"."}" -type f \( "${names_cli[@]}" \) "$@"
 }
 
 function pipe_files_to_cli() {

@@ -49,38 +49,21 @@ pytest="pipenv run pytest -c=$pyproject_toml -n=auto"
 
 function _count_files() { echo "$@" | wc -l; }
 
-function _pipe_py_files_to_cli() {
-  if [[ ! -v all_py_files ]]; then
-    # Find all the relevant Python files and cache them in a global variable.
-    all_py_files=$(
-      find $source \
-        -type f \
-        -name "*.py" \
-        -not -path "*/.venv/*" \
-        -not -path "*/.workspace/*" \
-        -not -path "*/migrations/*"
-    )
+function _find_all_files() {
+  names="${names:-"*.py"}" find_files \
+    -not -path "*/.venv/*" \
+    -not -path "*/.workspace/*" \
+    -not -path "*/migrations/*" \
+    $@
+}
 
-    # Find the subset of Python files that are and aren't tests and cache them
-    # in global variables.
-    local test_py_file_name="*_test.py"
-    test_py_files=$(find $all_py_files -name "$test_py_file_name")
-    non_test_py_files=$(find $all_py_files -not -name "$test_py_file_name")
-  fi
+function _find_test_files() { names="*_test.py" _find_all_files $@; }
 
-  # Lazy load the desired set of Python files by the set's name.
-  local set_name="${set_name:-"all"}_py_files"
-  local py_files=${!set_name}
+function _find_non_test_files() { _find_all_files -not -name "*_test.py" $@; }
 
-  # Apply additional filtering to the Python files
-  if [[ -v find ]]; then py_files=$(find $py_files $find); fi
-
-  # Echo the number of files and the raw command.
-  echo_debug Piping $(_count_files "$py_files") files to command:
+function _pipe_files_to_cli() {
   echo_cmd "$@"
-
-  # Pipe the files to the command.
-  find $py_files -print0 | xargs -0 $@
+  find_files="_find_${find_files:-"all"}_files" pipe_files_to_cli $@
 }
 
 function _make_pytest_options() {
@@ -121,32 +104,32 @@ function hard_install() {
 
 function imports:check() {
   # Check imports order.
-  _pipe_py_files_to_cli $isort --check
+  _pipe_files_to_cli $isort --check
 }
 
 function format() {
   # Format code.
-  _pipe_py_files_to_cli $black
+  _pipe_files_to_cli $black
 }
 
 function format:check() {
   # Check formatting issues.
-  _pipe_py_files_to_cli $black --check
+  _pipe_files_to_cli $black --check
 }
 
 function types:check() {
   # Check static types.
-  _pipe_py_files_to_cli $mypy
+  _pipe_files_to_cli $mypy
 }
 
 function code:check:non_tests {
   # Find linting issues in non-test files.
-  set_name="non_test" _pipe_py_files_to_cli $pylint
+  find_files="non_test" _pipe_files_to_cli $pylint
 }
 
 function code:check:tests() {
   # Find linting issues in test files.
-  set_name="test" _pipe_py_files_to_cli $pylint --disable=duplicate-code
+  find_files="test" _pipe_files_to_cli $pylint --disable=duplicate-code
 }
 
 function code:check() {
