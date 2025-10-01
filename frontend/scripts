@@ -15,11 +15,25 @@ frontend_dir=".workspace/frontend"
 # Private/Utility Functions
 # ------------------------------------------------------------------------------
 
+function _find_files() {
+  local _file_extensions="js,jsx,ts,tsx"
+  if [[ -n "$file_extensions" ]]; then _file_extensions+=",$file_extensions"; fi
+
+  file_extensions="$_file_extensions" find_files \
+    -not -path "*/.workspace/*" \
+    -not -path "*/node_modules/*" \
+    -not -path "*/coverage/*" \
+    -not -path "*/dist/*" \
+    $@
+}
+
+function _pipe_files_to_cli() { find_files="_find_files" pipe_files_to_cli $@; }
+
 function _vite() { yarn run vite $@; }
 
 function _vitest() { yarn run vitest $@; }
 
-function _eslint() { yarn run eslint $@; }
+function _eslint() { _pipe_files_to_cli yarn run eslint --no-warn-ignored $@; }
 
 function _typescript() { yarn run tsc $@; }
 
@@ -34,10 +48,11 @@ function _prettier() {
   if [[ "$options" =~ --ignore-path ]]; then
     exit=1 echo_error "ignore paths cannot be set manually"
   fi
-  options+=" --ignore-path $frontend_dir/.prettierignore"
-  if [ -f .prettierignore ]; then options+=" .prettierignore"; fi
+  options+=" --ignore-path=$frontend_dir/.prettierignore"
+  if [ -f .prettierignore ]; then options+=" --ignore-path=.prettierignore"; fi
 
-  yarn run prettier $options
+  file_extensions="json,graphql,gql,handlebars,hbs" _pipe_files_to_cli \
+    yarn run prettier $options
 }
 
 function _make_vite_options() {
