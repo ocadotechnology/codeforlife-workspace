@@ -16,10 +16,10 @@ frontend_dir=".workspace/frontend"
 # ------------------------------------------------------------------------------
 
 function _find_files() {
-  local _file_extensions="js,jsx,ts,tsx"
-  if [[ -n "$file_extensions" ]]; then _file_extensions+=",$file_extensions"; fi
+  local _names="*.js,*.jsx,*.ts,*.tsx"
+  if [[ -n "$names" ]]; then _names+=",$names"; fi
 
-  file_extensions="$_file_extensions" find_files \
+  names="$_names" find_files \
     -not -path "*/.workspace/*" \
     -not -path "*/node_modules/*" \
     -not -path "*/coverage/*" \
@@ -51,7 +51,7 @@ function _prettier() {
   options+=" --ignore-path=$frontend_dir/.prettierignore"
   if [ -f .prettierignore ]; then options+=" --ignore-path=.prettierignore"; fi
 
-  file_extensions="json,graphql,gql,handlebars,hbs" _pipe_files_to_cli \
+  names="*.json,*.graphql,*.gql,*.handlebars,*.hbs" _pipe_files_to_cli \
     yarn run prettier $options
 }
 

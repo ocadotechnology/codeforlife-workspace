@@ -102,17 +102,17 @@ function handle_exit() {
 }
 
 function find_files() {
-  local names=()
-  local file_extensions_array
+  local names_cli=()
+  local names_array
 
-  csv_to_array "$file_extensions" file_extensions_array
+  csv_to_array "$names" names_array
 
-  for file_extension in "${file_extensions_array[@]}"; do
-    if [[ ${#names[@]} -gt 0 ]]; then names+=(-or); fi
-    names+=(-name "*.$file_extension")
+  for name in "${names_array[@]}"; do
+    if [[ ${#names_cli[@]} -gt 0 ]]; then names_cli+=(-or); fi
+    names_cli+=(-name "$name")
   done
 
-  find "${ROOT_DIR:-"."}" -type f \( "${names[@]}" \) $@
+  find "${ROOT_DIR:-"."}" -type f \( "${names_cli[@]}" \) $@
 }
 
 function pipe_files_to_cli() {
