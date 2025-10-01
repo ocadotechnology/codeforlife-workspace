@@ -244,25 +244,25 @@ function test:ui() {
 function format() {
   # Auto-fix known formatting issues.
   # https://prettier.io/docs/cli
-  _prettier --write "${@:-.}"
+  _prettier --write
 }
 
 function format:check() {
   # Check formatting issues.
   # https://prettier.io/docs/cli
-  _prettier --check --write=false "${@:-.}"
+  _prettier --check --write=false
 }
 
 function code:check() {
   # Find linting issues.
   # https://eslint.org/docs/latest/use/command-line-interface
-  _eslint --max-warnings=0 "${@:-.}"
+  _eslint --max-warnings=0
 }
 
 function code:fix() {
   # Auto-fix known linting issues.
   # https://eslint.org/docs/latest/use/command-line-interface
-  _eslint --fix "${@:-.}"
+  _eslint --fix
 }
 
 function types:check() {
