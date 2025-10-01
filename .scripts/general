@@ -14,6 +14,23 @@ function eval_bool() {
   exit=1 echo_error "Attempted to evaluate invalid boolean value: \"$bool\"."
 }
 
+function csv_to_array() {
+  local csv="$1"
+  local -n array="$2"
+
+  read -r -a array < <(echo "$csv" | tr "," " ")
+}
+
+function in_array() {
+  local search="$1"
+
+  for item in "${@:2}"; do
+    if [ "$item" = "$search" ]; then return 0; fi
+  done
+
+  return 1
+}
+
 function echo_cmd() { echo -e "${BLACK}$ $@${RESET}"; }
 
 function echo_and_run_cmd() {

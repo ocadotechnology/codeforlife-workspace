@@ -100,3 +100,21 @@ function handle_exit() {
 
   ${on_success:-on_success} "$output"
 }
+
+function find_files() {
+  local names=()
+  local file_extensions_array
+
+  csv_to_array "$file_extensions" file_extensions_array
+
+  for file_extension in "${file_extensions_array[@]}"; do
+    if [[ ${#names[@]} -gt 0 ]]; then names+=(-or); fi
+    names+=(-name "*.$file_extension")
+  done
+
+  find "${ROOT_DIR:-"."}" -type f \( "${names[@]}" \) $@
+}
+
+function pipe_files_to_cli() {
+  ${find_files:-"find_files"} -print0 | xargs -0 $@
+}
