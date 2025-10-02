@@ -31,7 +31,14 @@ function in_array() {
   return 1
 }
 
-function echo_cmd() { echo -e "${BLACK}$ $@${RESET}"; }
+function echo_cmd() {
+  local cmd="$ $@"
+  if [ "$CI" = "true" ]; then
+    echo "$cmd"
+  else
+    echo -e "${BLACK}$cmd${RESET}"
+  fi
+}
 
 function echo_and_run_cmd() {
   echo_cmd "$@"
