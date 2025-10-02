@@ -115,6 +115,8 @@ function find_files() {
   find "${ROOT_DIR:-"."}" -type f \( "${names_cli[@]}" \) "$@"
 }
 
-function pipe_files_to_cli() {
-  ${find_files:-"find_files"} -print0 | xargs -0 $@
+function pass_files_to_cli() {
+  readarray -d '' file_array < <(${find_files:-"find_files"} -print0)
+
+  $@ "${file_array[@]}"
 }

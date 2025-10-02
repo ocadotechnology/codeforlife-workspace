@@ -27,13 +27,13 @@ function _find_files() {
     $@
 }
 
-function _pipe_files_to_cli() { find_files="_find_files" pipe_files_to_cli $@; }
+function _pass_files_to_cli() { find_files="_find_files" pass_files_to_cli $@; }
 
 function _vite() { yarn run vite $@; }
 
 function _vitest() { yarn run vitest $@; }
 
-function _eslint() { _pipe_files_to_cli yarn run eslint --no-warn-ignored $@; }
+function _eslint() { _pass_files_to_cli yarn run eslint --no-warn-ignored $@; }
 
 function _typescript() { yarn run tsc $@; }
 
@@ -51,7 +51,7 @@ function _prettier() {
   options+=" --ignore-path=$frontend_dir/.prettierignore"
   if [ -f .prettierignore ]; then options+=" --ignore-path=.prettierignore"; fi
 
-  names="*.json,*.graphql,*.gql,*.handlebars,*.hbs" _pipe_files_to_cli \
+  names="*.json,*.graphql,*.gql,*.handlebars,*.hbs" _pass_files_to_cli \
     yarn run prettier $options
 }
 

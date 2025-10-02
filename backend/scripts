@@ -19,35 +19,9 @@ source=${SOURCE:-"."}
 
 export PIPENV_VERBOSITY="${PIPENV_VERBOSITY:--1}"
 
-# Shorthand for the mypy CLI.
-# https://mypy.readthedocs.io/en/stable/command_line.html
-mypy="pipenv run mypy --config-file=$pyproject_toml"
-
-# Shorthand for the isort CLI.
-# https://pycqa.github.io/isort/docs/configuration/options.html
-isort="pipenv run isort --settings-file=$pyproject_toml"
-
-# Shorthand for the black CLI.
-# https://black.readthedocs.io/en/stable/usage_and_configuration/the_basics.html
-black="pipenv run black --config=$pyproject_toml"
-
-# Shorthand for the pylint CLI.
-# https://pylint.pycqa.org/en/stable/user_guide/configuration/all-options.html
-pylint="pipenv run pylint --rcfile=$pyproject_toml"
-
-# Shorthand for the django CLI.
-django="pipenv run python manage.py"
-
-# Shorthand for the pytest CLI.
-# https://docs.pytest.org/en/8.3.x/reference/reference.html
-# https://pytest-xdist.readthedocs.io/en/stable/distribution.html
-pytest="pipenv run pytest -c=$pyproject_toml -n=auto"
-
 # ------------------------------------------------------------------------------
 # Private/Utility Functions
 # ------------------------------------------------------------------------------
-
-function _count_files() { echo "$@" | wc -l; }
 
 function _find_all_files() {
   names="${names:-"*.py"}" find_files \
@@ -57,16 +31,50 @@ function _find_all_files() {
     $@
 }
 
-function _find_test_files() { names="*_test.py" _find_all_files $@; }
+function _find_test_files() { names="*_test.py,test_*.py" _find_all_files $@; }
 
-function _find_non_test_files() { _find_all_files -not -name "*_test.py" $@; }
-
-function _pipe_files_to_cli() {
-  echo_cmd "$@"
-  find_files="_find_${find_files:-"all"}_files" pipe_files_to_cli $@
+function _find_non_test_files() {
+  _find_all_files -not -name "*_test.py" -not -name "test_*.py" $@
 }
 
-function _make_pytest_options() {
+function _pass_files_to_cli() {
+  find_files="_find_${find_files:-"all"}_files" pass_files_to_cli \
+    echo_and_run_cmd $@
+}
+
+function _mypy() {
+  # Shorthand for the mypy CLI.
+  # https://mypy.readthedocs.io/en/stable/command_line.html
+  _pass_files_to_cli pipenv run mypy --config-file=$pyproject_toml $@
+}
+
+function _isort() {
+  # Shorthand for the isort CLI.
+  # https://pycqa.github.io/isort/docs/configuration/options.html
+  _pass_files_to_cli pipenv run isort --settings-file=$pyproject_toml $@
+}
+
+function _black() {
+  # Shorthand for the black CLI.
+  # https://black.readthedocs.io/en/stable/usage_and_configuration/the_basics.html
+  _pass_files_to_cli pipenv run black --config=$pyproject_toml $@
+}
+
+function _pylint() {
+  # Shorthand for the pylint CLI.
+  # https://pylint.pycqa.org/en/stable/user_guide/configuration/all-options.html
+  _pass_files_to_cli pipenv run pylint --rcfile=$pyproject_toml $@
+}
+
+function _django() {
+  # Shorthand for the django CLI.
+  echo_and_run_cmd pipenv run python manage.py $@
+}
+
+function _pytest() {
+  # Shorthand for the pytest CLI.
+  # https://docs.pytest.org/en/8.3.x/reference/reference.html
+  # https://pytest-xdist.readthedocs.io/en/stable/distribution.html
   local options="$@"
 
   if ! eval_bool "${DJANGO:-1}"; then options+=" -p no:django"; fi
@@ -74,7 +82,8 @@ function _make_pytest_options() {
   # https://pytest-cov.readthedocs.io/en/latest/config.html
   if eval_bool "${coverage:-0}"; then options+=" --cov=$source"; fi
 
-  echo "$options"
+  find_files="test" _pass_files_to_cli \
+    pipenv run pytest -c=$pyproject_toml -n=auto $options
 }
 
 # ------------------------------------------------------------------------------
@@ -104,32 +113,32 @@ function hard_install() {
 
 function imports:check() {
   # Check imports order.
-  _pipe_files_to_cli $isort --check
+  _isort --check
 }
 
 function format() {
   # Format code.
-  _pipe_files_to_cli $black
+  _black
 }
 
 function format:check() {
   # Check formatting issues.
-  _pipe_files_to_cli $black --check
+  _black --check
 }
 
 function types:check() {
   # Check static types.
-  _pipe_files_to_cli $mypy
+  _mypy
 }
 
 function code:check:non_tests {
   # Find linting issues in non-test files.
-  find_files="non_test" _pipe_files_to_cli $pylint
+  find_files="non_test" _pylint
 }
 
 function code:check:tests() {
   # Find linting issues in test files.
-  find_files="test" _pipe_files_to_cli $pylint --disable=duplicate-code
+  find_files="test" _pylint --disable=duplicate-code
 }
 
 function code:check() {
@@ -142,29 +151,29 @@ function code:check() {
 function migrations:check() {
   # Check no pending Django migrations.
   # https://docs.djangoproject.com/en/4.2/ref/django-admin/#django-admin-makemigrations
-  echo_and_run_cmd $django makemigrations --check --dry-run
+  _django makemigrations --check --dry-run
 }
 
 function test() {
   # Run tests.
-  echo_and_run_cmd $pytest $(_make_pytest_options "$@ $source")
+  _pytest
 }
 
 function test:coverage:report() {
   # Run tests and generate coverage report.
-  coverage=1 test --cov-report=xml:coverage.xml
+  coverage=1 _pytest --cov-report=xml:coverage.xml
 }
 
 function test:coverage:check() {
   # Run tests and check coverage thresholds.
-  coverage=1 test --cov-fail-under=90
+  coverage=1 _pytest --cov-fail-under=90
 }
 
 function test:coverage() {
   if github_repo_owner_is_ocado_tech; then
-    test:coverage:report $@
+    test:coverage:report
   else
-    test:coverage:check $@
+    test:coverage:check
   fi
 }
 
@@ -176,8 +185,7 @@ function run:django() {
   # Run a local Django server.
   callback="setup" step Setting up PY environment
   function callback() {
-    SERVER_MODE="django" echo_and_run_cmd \
-      $django runserver localhost:${SERVICE_PORT:-"8000"}
+    SERVER_MODE="django" _django runserver localhost:${SERVICE_PORT:-"8000"}
   }
   step Running Django development server
   return $exit_code
