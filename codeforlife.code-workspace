@@ -72,14 +72,10 @@
   "settings": {
     // General
     "editor.tabSize": 2,
-    "editor.codeActionsOnSave": {
-      "source.organizeImports": "explicit"
-    },
+    "editor.codeActionsOnSave": { "source.organizeImports": "explicit" },
     "editor.formatOnSave": true,
     "editor.rulers": [80],
-    "workbench.colorCustomizations": {
-      "editorRuler.foreground": "#008000"
-    },
+    "workbench.colorCustomizations": { "editorRuler.foreground": "#008000" },
     "files.eol": "\n",
     "files.exclude": {
       // Python
@@ -113,17 +109,14 @@
     },
     "testing.defaultGutterClickAction": "debug",
     "cSpell.words": ["codeforlife", "klass", "ocado", "kurono", "pipenv"],
+    "liveServer.settings.multiRootWorkspaceName": "/workspace",
     // Terminal
     "terminal.integrated.tabs.title": "${cwd} (${process})",
     "terminal.integrated.defaultProfile.linux": "bash",
     // Markdown
-    "[md]": {
-      "editor.tabSize": 4
-    },
+    "[md]": { "editor.tabSize": 4 },
     // Shell
-    "[shellscript]": {
-      "editor.defaultFormatter": "foxundermoon.shell-format"
-    },
+    "[shellscript]": { "editor.defaultFormatter": "foxundermoon.shell-format" },
     // Python
     "python.defaultInterpreterPath": ".venv/bin/python",
     "python.testing.pytestArgs": [
@@ -137,7 +130,7 @@
     "python.testing.unittestEnabled": false,
     "python.analysis.extraPaths": [
       // Uncomment if installing locally in editable mode.
-      // "/workspace/codeforlife-package-python"
+      // "/workspace/backend/package"
     ],
     "[python]": {
       "editor.defaultFormatter": "ms-python.black-formatter",
@@ -276,9 +269,7 @@
         "id": "remember-frontend-service",
         "type": "command",
         "command": "extension.commandvariable.transform",
-        "args": {
-          "text": "${remember:frontend-service}"
-        }
+        "args": { "text": "${remember:frontend-service}" }
       },
       {
         "id": "args",
@@ -298,18 +289,14 @@
         "command": "sudo chmod +x /workspace/backend/scripts && /workspace/backend/scripts ${input:args}",
         "type": "shell",
         "problemMatcher": [],
-        "options": {
-          "cwd": "/workspace/backend/${input:backend-folder}"
-        }
+        "options": { "cwd": "/workspace/backend/${input:backend-folder}" }
       },
       {
         "label": "scripts:frontend",
         "command": "sudo chmod +x /workspace/frontend/scripts && /workspace/frontend/scripts ${input:args}",
         "type": "shell",
         "problemMatcher": [],
-        "options": {
-          "cwd": "/workspace/frontend/${input:frontend-folder}"
-        }
+        "options": { "cwd": "/workspace/frontend/${input:frontend-folder}" }
       },
       {
         "label": "frontend:scripts:run:dev",
@@ -319,9 +306,7 @@
         "isBackground": true,
         "options": {
           "cwd": "/workspace/frontend/${input:remember-frontend-service}",
-          "env": {
-            "BROWSER": "none"
-          }
+          "env": { "BROWSER": "none" }
         }
       },
       {
@@ -387,9 +372,7 @@
       },
       {
         "args": ["runserver", "${input:django-network}"],
-        "env": {
-          "SERVER_MODE": "django"
-        },
+        "env": { "SERVER_MODE": "django" },
         "django": true,
         "justMyCode": false,
         "name": "Django Server",
@@ -399,9 +382,7 @@
         "cwd": "/workspace/backend/${input:backend-service}"
       },
       {
-        "env": {
-          "SERVER_MODE": "celery"
-        },
+        "env": { "SERVER_MODE": "celery" },
         "justMyCode": false,
         "name": "Celery Server",
         "program": "application.py",
@@ -411,14 +392,10 @@
       },
       // https://code.visualstudio.com/docs/python/testing
       {
-        "env": {
-          "PYTEST_ADDOPTS": "--no-cov"
-        },
+        "env": { "PYTEST_ADDOPTS": "--no-cov" },
         "justMyCode": false,
         "name": "Pytest",
-        "presentation": {
-          "hidden": true
-        },
+        "presentation": { "hidden": true },
         "request": "launch",
         "type": "debugpy",
         "purpose": ["debug-test"]
@@ -436,7 +413,5 @@
       // https://vitest.dev/guide/debugging.html#vs-code
     ]
   },
-  "extensions": {
-    "unwantedRecommendations": ["ms-azuretools.vscode-docker"]
-  }
+  "extensions": { "unwantedRecommendations": ["ms-azuretools.vscode-docker"] }
 }
