@@ -15,32 +15,10 @@
     }
   },
   "group": {
-    "type": {
-      "labels": {
-        "dev": {
-          "description": "This issue involves development."
-        },
-        "ui": {
-          "description": "This issue involves user interface."
-        },
-        "ux": {
-          "description": "This issue involves user experience."
-        },
-        "edu": {
-          "description": "This issue involves educational resources."
-        }
-      },
-      "colour": "#fbca04",
-      "select": "single",
-      "required": true
-    },
     "subtype": {
       "labels": {
         "admin": {
           "description": "This issue involves administration."
-        },
-        "research": {
-          "description": "This issue involves research."
         },
         "data": {
           "description": "This issue involves data."
@@ -77,28 +55,6 @@
       "colour": "#800080",
       "select": "multi",
       "required": false
-    },
-    "size": {
-      "labels": {
-        "XS": {
-          "description": "An extra small issue (approx. ~2hrs)."
-        },
-        "S": {
-          "description": "A small issue (approx. ~4hrs)."
-        },
-        "M": {
-          "description": "A medium issue (approx. ~8hrs)."
-        },
-        "L": {
-          "description": "A large issue (approx. ~16hrs)."
-        },
-        "XL": {
-          "description": "An extra large issue (approx. ~24hrs)."
-        }
-      },
-      "colour": "#ff69b4",
-      "select": "single",
-      "required": true
     },
     "2025": {
       "labels": {
