@@ -8,10 +8,6 @@
     "good first issue": {
       "description": "A good issue to work on if it's your first.",
       "colour": "#0e8a16"
-    },
-    "ready for review": {
-      "description": "This issue is ready to be reviewed by a CFL team member.",
-      "colour": "#ff4d00"
     }
   },
   "group": {

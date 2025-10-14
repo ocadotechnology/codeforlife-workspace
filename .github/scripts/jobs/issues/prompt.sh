@@ -93,7 +93,7 @@ function handle_assign_me_prompt() {
         get_issue_project_item_id "$ISSUE_REPO_NAME" "$ISSUE_NUMBER"
       )"
 
-      set_project_status "$issue_project_item_id" "In Progress"
+      set_project_item_status "$issue_project_item_id" "In Progress"
     fi
   fi
 }
@@ -114,19 +114,16 @@ function handle_ready_for_review_prompt() {
   elif ! eval_bool "$ISSUE_HAS_COMMENTER_ASSIGNED"; then
     comment_on_issue "not-assigned" \
       "contributor=@$USER_LOGIN"
-  elif issue_has_label "$ISSUE_NUMBER" "$ISSUE_REPO_NAME" \
-    "$ready_for_review_label"; then
-    comment_on_issue "already-labelled" \
-      "contributor=@$USER_LOGIN"
-  elif issue_status_is_one_of "$ISSUE_NUMBER" "$ISSUE_REPO_NAME" \
-    "Reviewing"; then
-    comment_on_issue "already-reviewing" \
+  elif ! issue_status_is_one_of "$ISSUE_NUMBER" "$ISSUE_REPO_NAME" \
+    "In Progress"; then
+    comment_on_issue "not-in-progress" \
       "contributor=@$USER_LOGIN"
   else
-    color="#fbca04" \
-      description="This issue is awaiting review by a CFL team member." \
-      add_issue_label "$ISSUE_NUMBER" "$ISSUE_REPO_NAME" \
-      "$ready_for_review_label"
+    issue_project_item_id="$(
+      get_issue_project_item_id "$ISSUE_REPO_NAME" "$ISSUE_NUMBER"
+    )"
+
+    set_project_item_status "$issue_project_item_id" "Ready For Review"
   fi
 }
 
@@ -137,13 +134,16 @@ function handle_requires_changes_prompt() {
   elif ! eval_bool "$ISSUE_HAS_COMMENTER_ASSIGNED"; then
     comment_on_issue "not-assigned" \
       "contributor=@$USER_LOGIN"
-  elif ! issue_has_label "$ISSUE_NUMBER" "$ISSUE_REPO_NAME" \
-    "$ready_for_review_label"; then
-    comment_on_issue "not-labelled" \
+  elif ! issue_status_is_one_of "$ISSUE_NUMBER" "$ISSUE_REPO_NAME" \
+    "Ready For Review"; then
+    comment_on_issue "not-pending-review" \
       "contributor=@$USER_LOGIN"
   else
-    remove_issue_label "$ISSUE_NUMBER" "$ISSUE_REPO_NAME" \
-      "$ready_for_review_label"
+    issue_project_item_id="$(
+      get_issue_project_item_id "$ISSUE_REPO_NAME" "$ISSUE_NUMBER"
+    )"
+
+    set_project_item_status "$issue_project_item_id" "In Progress"
   fi
 }
 

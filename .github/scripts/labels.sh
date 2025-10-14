@@ -4,7 +4,6 @@ source .github/scripts/general.sh
 
 labels_descriptor=".github/descriptors/labels.json"
 
-ready_for_review_label="ready for review"
 cfl_bot_ignore_label="bot ignore"
 
 # Auto-collect all labels into an array if not already done so.
