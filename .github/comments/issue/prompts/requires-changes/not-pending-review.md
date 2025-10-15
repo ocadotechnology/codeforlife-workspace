@@ -1,1 +1,1 @@
-{{contributor}}, this issue is not pending review.
+{{contributor}}, you cannot make changes to this issue as it's not pending review.
