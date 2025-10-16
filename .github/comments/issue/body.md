@@ -19,4 +19,4 @@ If you would like to work on this issue, you can instruct @cfl-bot by commenting
 
 ---
 
-[Our Site](https://www.codeforlife.education/) | [Our Docs](https://docs.codeforlife.education/) | [Our Code](https://github.com/ocadotechnology/codeforlife-workspace)
+[Our Site](https://www.codeforlife.education/) | [Our Docs](https://docs.codeforlife.education/) | [Our Code](https://github.com/ocadotechnology/codeforlife-workspace) | [Formatting Text on GitHub](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax)
