@@ -81,10 +81,10 @@
     },
     "blocked": {
       "labels": {
-        "blocked": {
+        ":stop_sign:": {
           "description": "This issue is blocked until another issue inside of Ocado is resolved."
         },
-        "externally blocked": {
+        ":earth_africa::stop_sign:": {
           "description": "This issue is blocked until another issue outside of Ocado is resolved."
         }
       },
