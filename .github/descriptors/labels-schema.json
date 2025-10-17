@@ -2,11 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "Labels shared across all GitHub repositories.",
   "type": "object",
-  "required": [
-    "$schema",
-    "individual",
-    "group"
-  ],
+  "required": ["$schema", "individual", "group"],
   "properties": {
     "$schema": {
       "type": "string",
@@ -16,12 +12,9 @@
       "type": "object",
       "description": "A label not in a group.",
       "patternProperties": {
-        "^[a-zA-Z0-9 ]{1,}$": {
+        "^:?[a-zA-Z0-9 ]{1,}:?$": {
           "type": "object",
-          "required": [
-            "description",
-            "colour"
-          ],
+          "required": ["description", "colour"],
           "properties": {
             "description": {
               "$ref": "#/$defs/label/description"
@@ -41,12 +34,7 @@
       "patternProperties": {
         "^[a-z0-9-]{1,}$": {
           "type": "object",
-          "required": [
-            "labels",
-            "colour",
-            "select",
-            "required"
-          ],
+          "required": ["labels", "colour", "select", "required"],
           "properties": {
             "labels": {
               "type": "object",
@@ -54,9 +42,7 @@
               "patternProperties": {
                 "^[a-zA-Z0-9: ]{1,}$": {
                   "type": "object",
-                  "required": [
-                    "description"
-                  ],
+                  "required": ["description"],
                   "properties": {
                     "description": {
                       "$ref": "#/$defs/label/description"
@@ -74,10 +60,7 @@
             "select": {
               "type": "string",
               "description": "Whether only one or multiple labels from the group may assigned at a time.",
-              "enum": [
-                "single",
-                "multi"
-              ]
+              "enum": ["single", "multi"]
             },
             "required": {
               "type": "boolean",

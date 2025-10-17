@@ -1,11 +1,19 @@
 {
   "$schema": "./labels-schema.json",
   "individual": {
-    "bot ignore": {
+    ":soap:": {
+      "description": "Requires cleaning. Remove this label once cleaned.",
+      "colour": "#ff0000"
+    },
+    ":wastebasket:": {
+      "description": "Scheduled to be removed. Remove this label to keep this issue.",
+      "colour": "#ff0000"
+    },
+    ":robot:": {
       "description": "Instructs @cfl-bot to ignore this issue.",
       "colour": "#000000"
     },
-    "good first issue": {
+    ":seedling:": {
       "description": "A good issue to work on if it's your first.",
       "colour": "#0e8a16"
     }
