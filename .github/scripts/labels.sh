@@ -4,7 +4,7 @@ source .github/scripts/general.sh
 
 labels_descriptor=".github/descriptors/labels.json"
 
-cfl_bot_ignore_label="bot ignore"
+cfl_bot_ignore_label=":robot:"
 
 # Auto-collect all labels into an array if not already done so.
 declare -a labels
