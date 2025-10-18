@@ -31,6 +31,12 @@ function in_array() {
   return 1
 }
 
+function trim_spaces() {
+  echo -n "$@" |
+    sed --expression ':a;N;$!ba;s/^\n*//;s/\n*$//' |
+    sed --regexp-extended 's/^[[:space:]]*|[[:space:]]*$//g'
+}
+
 function echo_cmd() {
   local cmd="$ $@"
   if [ "$CI" = "true" ]; then

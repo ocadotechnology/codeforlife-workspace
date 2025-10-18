@@ -1,0 +1,15 @@
+#!/bin/bash
+
+function import_github() { import "github/$1"; }
+
+import_github actions
+import_github assignees
+import_github bodies
+import_github issues
+import_github labels
+import_github project
+import_github pull_requests
+import_github repositories
+import_github teams
+import_github templates
+import_github workspace

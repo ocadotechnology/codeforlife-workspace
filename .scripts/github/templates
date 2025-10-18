@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source .github/scripts/general.sh
-
 comment_path_prefix='.github/comments/'
 
 function make_comment() {
