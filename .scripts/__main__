@@ -5,7 +5,12 @@
 function import() {
   local import_path=".workspace/.scripts/$1"
 
-  if [[ -d "$import_path" ]]; then import_path+="/__main__"; fi
+  if [[ -v GITHUB_WORKSPACE ]]; then
+    import_path="$GITHUB_WORKSPACE/$import_path"
+  fi
+  if [[ -d "$import_path" ]]; then
+    import_path="$import_path/__main__"
+  fi
 
   source "$import_path"
 }
