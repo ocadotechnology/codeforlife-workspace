@@ -19,3 +19,24 @@ function handle_event() {
 
   "handle_${EVENT_NAME}_event" "$@"
 }
+
+function run_workflow_job_script() {
+  local workflow="$1"
+  local job="$2"
+  local args="${@:3}"
+
+  workflow="$(
+    echo "$workflow" |
+      sed -E 's/^.+\/.github\/workflows\/(.+)\.(yml|yaml)@.+$/\1/'
+  )"
+  job="$(echo "$job" | sed 's/-/_/g')"
+
+  local script_path=".github/workflows/scripts/$workflow/$job"
+  if [ ! -f "$script_path" ]; then
+    exit=1 echo_error "Job script not found at path: \"$script_path\"."
+  fi
+
+  echo_intro
+
+  $script_path "$args"
+}
