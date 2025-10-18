@@ -52,7 +52,7 @@ jobs:
       ISSUE_NUMBER: "${{ github.event.issue.number }}"
     steps:
       - name: 🏃 Download and Run Job Script
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/run-job-script@main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/run-job-script@clean-up-scripts # TODO: set to @main
         with:
           workflow: "${{ env.WORKFLOW_REF }}"
           job: "body"
