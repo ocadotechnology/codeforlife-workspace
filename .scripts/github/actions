@@ -12,14 +12,6 @@ function github_repo_owner_is_ocado_tech() {
   fi
 }
 
-function handle_event() {
-  if [ -z "$EVENT_NAME" ]; then
-    exit=1 echo_error "Event name not defined."
-  fi
-
-  "handle_${EVENT_NAME}_event" "$@"
-}
-
 function run_workflow_job_script() {
   local workflow="$1"
   local job="$2"
@@ -38,5 +30,7 @@ function run_workflow_job_script() {
 
   echo_intro
 
-  $script_path "$args"
+  source "$script_path"
+
+  "handle_${GITHUB_EVENT_NAME}_event" "$args"
 }

@@ -2,6 +2,10 @@
 
 set -e
 
+# ------------------------------------------------------------------------------
+# Utility Functions.
+# ------------------------------------------------------------------------------
+
 function configure_labels() {
   local repo_name="$1"
 
@@ -38,17 +42,28 @@ function configure_labels() {
   done < <(echo "$labels" | jq -c 'to_entries | .[]')
 }
 
-exit_code=0
+# ------------------------------------------------------------------------------
+# Event handlers.
+# Must follow the naming convention "handle_{event_name}_event".
+# ------------------------------------------------------------------------------
 
-check_labels_descriptor
+function handle_push_event() {
+  local exit_code=0
 
-labels="$(get_labels_from_descriptor)"
-labels_length="$(echo "$labels" | jq 'length')"
-echo_info "Discoverd $labels_length labels."
+  check_labels_descriptor
 
-if [ "$labels_length" -gt 0 ]; then
-  configure_labels "$REPO_NAME"
-  process_workspace_submodules "configure_labels"
-fi
+  local labels="$(get_labels_from_descriptor)"
+  local labels_length="$(echo "$labels" | jq 'length')"
+  echo_info "Discoverd $labels_length labels."
 
-exit $exit_code
+  if [ "$labels_length" -gt 0 ]; then
+    configure_labels "$REPO_NAME"
+    process_workspace_submodules "configure_labels"
+  fi
+
+  exit $exit_code
+}
+
+function handle_schedule_event() { handle_push_event; }
+
+function handle_workflow_dispatch_event() { handle_push_event; }
