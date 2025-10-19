@@ -126,7 +126,7 @@ function handle_schedule_event() {
 
     local issue_repo="$(make_repo "$repo_name")"
 
-    local type_label_filter="$(make_label_filter_from_descriptor_group "type")"
+    local soap_label_filter="$(make_label_filter ":soap:")"
     local cfl_bot_ignore_label_filter="$(
       exclude="true" make_label_filter "$cfl_bot_ignore_label"
     )"
@@ -135,7 +135,7 @@ function handle_schedule_event() {
       gh issue list \
         --repo="$issue_repo" \
         --limit=10000 \
-        --search="is:open $type_label_filter $cfl_bot_ignore_label_filter" \
+        --search="is:open $soap_label_filter $cfl_bot_ignore_label_filter" \
         --json=body,number,labels
     )
 
