@@ -16,8 +16,11 @@ inputs:
 runs:
   using: composite
   steps:
+    - uses: actions/checkout@v5
+      with:
+        repository: ocadotechnology/codeforlife-workspace
+
     - shell: bash
-      run: |
-        scripts_path=".scripts/__main__"
-        if [[ -d .workspace ]]; then scripts_path=".workspace/$scripts_path"; fi
-        $scripts_path run_workflow_job_script "${{ inputs.workflow }} ${{ inputs.job }} ${{ inputs.args }}"
+      run: .scripts/__main__ run_workflow_job_script "${{ inputs.workflow }} ${{ inputs.job }} ${{ inputs.args }}"
+
+        
