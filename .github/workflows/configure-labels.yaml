@@ -25,4 +25,4 @@ jobs:
           python-version: "3.12"
 
       - name: 🏃 Download and Run Job Script
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/run-job-script@main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/run-job-script@clean-up-scripts # TODO: set to @main
