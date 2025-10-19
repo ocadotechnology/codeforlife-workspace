@@ -22,5 +22,3 @@ runs:
 
     - shell: bash
       run: .scripts/__main__ run_workflow_job_script "${{ inputs.workflow }} ${{ inputs.job }} ${{ inputs.args }}"
-
-        
