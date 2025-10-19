@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source .github/scripts/general.sh
-
 cfl_bot_body_section_name='cfl-bot'
 cfl_bot_body_section_start='<!-- '$cfl_bot_body_section_name':start -->'
 cfl_bot_body_section_end='<!-- '$cfl_bot_body_section_name':end -->'

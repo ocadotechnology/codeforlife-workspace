@@ -21,20 +21,4 @@ runs:
         repository: ocadotechnology/codeforlife-workspace
 
     - shell: bash
-      run: |
-        source .github/scripts/general.sh
-
-        echo_cfl_ascii_art
-
-        script_path=".github/scripts/jobs/$(
-          echo "${{ inputs.workflow }}" |
-            sed -E 's/^.+\/.github\/workflows\/(.+)\.(yml|yaml)@.+$/\1/'
-        )/$(
-          echo "${{ inputs.job }}" | sed 's/-/_/g'
-        ).sh"
-
-        if [ ! -f "$script_path" ]; then
-          exit=1 echo_error "Job script not found at path: \"$script_path\"."
-        fi
-
-        $script_path ${{ inputs.args }}
+      run: .scripts/__main__ run_workflow_job_script "${{ inputs.workflow }} ${{ inputs.job }} ${{ inputs.args }}"

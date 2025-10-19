@@ -14,6 +14,11 @@ function eval_bool() {
   exit=1 echo_error "Attempted to evaluate invalid boolean value: \"$bool\"."
 }
 
+function to_csv() {
+  local IFS=","
+  echo "${*}"
+}
+
 function csv_to_array() {
   local csv="$1"
   local -n array="$2"
@@ -29,6 +34,12 @@ function in_array() {
   done
 
   return 1
+}
+
+function trim_spaces() {
+  echo -n "$@" |
+    sed --expression ':a;N;$!ba;s/^\n*//;s/\n*$//' |
+    sed --regexp-extended 's/^[[:space:]]*|[[:space:]]*$//g'
 }
 
 function echo_cmd() {

@@ -15,6 +15,14 @@ declare -A project_status_option_ids=(
   ["Closed"]="98236657"
 )
 
+declare -A project_category_option_names=(
+  ["dev"]="💻"
+  ["design"]="🎨"
+  ["research"]="🔍"
+  ["edu"]="📚"
+  ["ops"]="⚙️"
+)
+
 function set_project_item_status() {
   local id="$1"
   local option_name="${@:2}"

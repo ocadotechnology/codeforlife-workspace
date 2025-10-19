@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# The ID of the Ocado Technology GitHub organization.
+# https://github.com/ocadotechnology
+ocado_tech_org_id=${OCADO_TECH_ORG_ID:-2088731}
+
+function github_repo_owner_is_ocado_tech() {
+  if [ "$GITHUB_REPOSITORY_OWNER_ID" -eq $ocado_tech_org_id ]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+function run_workflow_job_script() {
+  local workflow="$1"
+  local job="$2"
+  local args="${@:3}"
+
+  workflow="$(
+    echo "$workflow" |
+      sed -E 's/^.+\/.github\/workflows\/(.+)\.(yml|yaml)@.+$/\1/'
+  )"
+  job="$(echo "$job" | sed 's/-/_/g')"
+
+  local script_path=".github/workflows/scripts/$workflow/$job"
+  if [ ! -f "$script_path" ]; then
+    exit=1 echo_error "Job script not found at path: \"$script_path\"."
+  fi
+
+  echo_intro
+
+  source "$script_path"
+
+  "handle_${GITHUB_EVENT_NAME}_event" "$args"
+}

@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# General bash utilities to be used across the whole workspace.
+
+function import() {
+  local import_path=".scripts/$1"
+
+  if [[ -d .workspace ]]; then import_path=".workspace/$import_path"; fi
+  if [[ -d "$import_path" ]]; then import_path="$import_path/__main__"; fi
+
+  source "$import_path"
+}
+
+import ansi
+import general
+import github
+import run
+import snyk
+
+$@ # Entrypoint. Must be the last line in the script!

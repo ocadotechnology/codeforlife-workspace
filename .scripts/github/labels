@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source .github/scripts/general.sh
-
 labels_descriptor=".github/descriptors/labels.json"
 
 cfl_bot_ignore_label=":robot:"

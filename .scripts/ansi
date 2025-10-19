@@ -9,32 +9,38 @@ MAGENTA='\e[35m'
 CYAN='\e[36m'
 WHITE='\e[37m'
 BOLD='\e[1m'
+UNDERLINE='\e[4m'
+OVERLINE='\e[53m'
 RESET='\e[0m'
 
 function _echo() {
-  echo -e "$@${RESET}"
+  echo -e $options "$@${RESET}"
+}
+
+function echo_bold() {
+  _echo "${BOLD}$@"
 }
 
 function echo_success() {
-  _echo "${GREEN}${BOLD}$@"
+  echo_bold "${GREEN}$@"
 }
 
 function echo_error() {
-  _echo "${RED}${BOLD}$@"
+  echo_bold "${RED}$@"
 
   if [[ -v exit ]]; then exit $exit; fi
 }
 
 function echo_warning() {
-  _echo "${YELLOW}${BOLD}$@"
+  echo_bold "${YELLOW}$@"
 }
 
 function echo_info() {
-  _echo "${BLUE}${BOLD}$@"
+  echo_bold "${BLUE}$@"
 }
 
 function echo_debug() {
-  _echo "${BLACK}${BOLD}$@"
+  echo_bold "${BLACK}$@"
 }
 
 function echo_intro() {
@@ -51,4 +57,18 @@ ${M}| |    ${C}/ _ \\ ${Y}/ _\` |${M}/ _ \\ ${Y}|  __${M}/ _ \\"
 ${M}| |___${C}| (_) | ${Y}(_| |  ${M}__/ ${Y}| | ${M}| (_) ${C}| |    ${Y}| |____${M}| | ${C}|${Y}|  __/
  ${M}\\_____${C}\\___/ ${Y}\\__,_|${M}\\___| ${Y}|_|  ${M}\\___/${C}|_|    ${Y}|______${M}|_|${C}_| ${Y}\\___|
 ${RESET}"
+}
+
+function echo_divider() {
+  printf "${BOLD}%*s${RESET}\n" "${COLUMNS:-80}" '' | tr ' ' '-'
+}
+
+function echo_h1() {
+  echo_divider
+  echo_bold "$@"
+  echo_divider
+}
+
+function echo_h2() {
+  echo_bold "${UNDERLINE}${OVERLINE}$@"
 }

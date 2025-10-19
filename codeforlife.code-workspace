@@ -77,6 +77,10 @@
     "editor.rulers": [80],
     "workbench.colorCustomizations": { "editorRuler.foreground": "#008000" },
     "files.eol": "\n",
+    "files.associations": {
+      "/workspace/.scripts/**": "shellscript",
+      "/workspace/.github/workflows/scripts/**": "shellscript"
+    },
     "files.exclude": {
       // Python
       "**/.hypothesis": true,

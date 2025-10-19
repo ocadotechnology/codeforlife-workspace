@@ -24,7 +24,6 @@ on:
 
 env:
   GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
-  EVENT_NAME: ${{ github.event_name }}
   REPO_NAME: ${{ github.event.repository.name }}
   WORKFLOW_REF: ocadotechnology/codeforlife-workspace/.github/workflows/issues.yaml@refs/heads/main
 
