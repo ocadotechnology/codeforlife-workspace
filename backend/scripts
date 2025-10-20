@@ -211,4 +211,4 @@ function check() {
 # ------------------------------------------------------------------------------
 
 # Must be the last line in the script!
-eval "$(.workspace/.scripts/main run_script $(readlink -f "$0") $@)"
+eval "$(.workspace/.scripts/__main__ run_script $(readlink -f "$0") $@)"
