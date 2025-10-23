@@ -55,7 +55,7 @@
       "version": "22"
     },
     "ghcr.io/devcontainers/features/python:1": {
-      "toolsToInstall": "pipenv==2024.0.2",
+      "toolsToInstall": "pipenv==2025.0.4",
       "version": "3.12"
     }
   },
