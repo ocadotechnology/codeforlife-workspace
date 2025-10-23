@@ -36,7 +36,14 @@ runs:
 
     - name: 🛠 Install pipenv
       shell: bash
-      run: python -m pip install pipenv
+      run: |
+        python -m pip install "$(
+          cat .workspace/.devcontainer/devcontainer.json |
+          npx strip-json-comments-cli |
+          jq -r '
+            .features["ghcr.io/devcontainers/features/python:1"].toolsToInstall
+          '
+        )"
 
     - name: 🛠 Install Dependencies
       shell: bash
