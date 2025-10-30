@@ -26,6 +26,26 @@ const codeWorkspace = JSON.parse(
   ),
 ) as Record<string, any>
 
+// Read the service's package.json (not /workspace/frontend/package.json).
+const packageJson = JSON.parse(await readFile("./package.json", "utf-8"))
+
+const SERVICE_NAME = packageJson.name as string
+const SERVICE_TITLE = SERVICE_NAME.replace(/(\s|_|-)+/g, " ")
+  .trim()
+  .split(" ")
+  .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+  .join(" ")
+
+function defineEnv(env: Record<string, string>) {
+  return Object.entries(env).reduce(
+    (vite_env, [key, value]) => {
+      vite_env[`import.meta.env.VITE_${key}`] = value
+      return vite_env
+    },
+    {} as Record<string, string>,
+  )
+}
+
 export const viteConfig = defineViteConfig({
   plugins: [react()],
   envDir: "env",
@@ -52,6 +72,7 @@ export const viteConfig = defineViteConfig({
       "formik",
     ],
   },
+  define: defineEnv({ SERVICE_NAME, SERVICE_TITLE }),
 })
 
 // TODO: investigate browser mode https://vitest.dev/guide/browser/
