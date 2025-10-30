@@ -17,7 +17,8 @@ import stripJsonComments from "strip-json-comments"
 
 const cwd = process.cwd()
 const workspaceDir = cwd.startsWith("/workspace") ? "/workspace" : ".workspace"
-const vitestSetupPath = `${workspaceDir}/frontend/vitest.setup.ts`
+const frontendDir = `${workspaceDir}/frontend`
+const vitestSetupPath = `${frontendDir}/vitest.setup.ts`
 const serverFsAllow = [cwd]
 
 const codeWorkspace = JSON.parse(
@@ -29,19 +30,10 @@ const codeWorkspace = JSON.parse(
 // Read the service's package.json (not /workspace/frontend/package.json).
 const packageJson = JSON.parse(await readFile("./package.json", "utf-8"))
 
-const SERVICE_NAME = packageJson.name as string
-const SERVICE_TITLE =
-  "Code for Life | " +
-  SERVICE_NAME.replace(/(\s|_|-)+/g, " ")
-    .trim()
-    .split(" ")
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(" ")
-
 function defineEnv(env: Record<string, string>) {
   return Object.entries(env).reduce(
     (vite_env, [key, value]) => {
-      vite_env[`import.meta.env.VITE_${key}`] = value
+      vite_env[`import.meta.env.VITE_${key}`] = JSON.stringify(value)
       return vite_env
     },
     {} as Record<string, string>,
@@ -74,7 +66,18 @@ export const viteConfig = defineViteConfig({
       "formik",
     ],
   },
-  define: defineEnv({ SERVICE_NAME, SERVICE_TITLE }),
+  define: defineEnv({
+    SERVICE_NAME: packageJson.name,
+    SERVICE_TITLE:
+      "Code for Life | " +
+      (packageJson.name as string)
+        .replace(/(\s|_|-)+/g, " ")
+        .trim()
+        .split(" ")
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(" "),
+    SERVICE_FAVICON: `${frontendDir}/favicon.ico`,
+  }),
 })
 
 // TODO: investigate browser mode https://vitest.dev/guide/browser/
