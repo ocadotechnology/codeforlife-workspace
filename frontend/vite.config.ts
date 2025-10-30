@@ -30,11 +30,13 @@ const codeWorkspace = JSON.parse(
 const packageJson = JSON.parse(await readFile("./package.json", "utf-8"))
 
 const SERVICE_NAME = packageJson.name as string
-const SERVICE_TITLE = SERVICE_NAME.replace(/(\s|_|-)+/g, " ")
-  .trim()
-  .split(" ")
-  .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-  .join(" ")
+const SERVICE_TITLE =
+  "Code for Life | " +
+  SERVICE_NAME.replace(/(\s|_|-)+/g, " ")
+    .trim()
+    .split(" ")
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ")
 
 function defineEnv(env: Record<string, string>) {
   return Object.entries(env).reduce(
