@@ -1,0 +1,30 @@
+name: Deploy GCloud Functions
+
+on:
+  push:
+    # branches:
+    #   - main
+    paths:
+      - ".gcloud/functions/**"
+  workflow_dispatch:
+    inputs:
+      function:
+        description: Select the function you want to deploy.
+        required: true
+        type: choice
+        options:
+          - __all__
+          - load_data_into_bigquery
+
+env:
+  FUNCS_DIR: .gcloud/functions
+
+jobs:
+  functions:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: 🛫 Checkout Code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 2 # Required to compare diffs
+          persist-credentials: true
