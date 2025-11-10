@@ -58,7 +58,7 @@ jobs:
           changed_files="${{ toJson(steps.changed-files.outputs) }}"
 
           declare -A deploy_args=(
-            ["load_data_into_bigquery"]="--runtime=python312 --trigger_bucket=LOL" # ${ secrets.LOAD_DATA_INTO_BQ_BUCKET_NAME }}
+            ["load_data_into_bigquery"]="--runtime=python312 --trigger_bucket=SECRET_HERE"
           )
 
           matrix='{"include":[]}'
