@@ -1,4 +1,3 @@
-# https://docs.cloud.google.com/functions/docs/deploy
 name: Deploy GCloud Functions
 
 on:
@@ -94,6 +93,7 @@ jobs:
       - name: echo
         run: echo "functions deploy ${{ matrix.function }} --region=europe-west2 --source=${{ env.FUNCS_DIR }}/${{ matrix.function }} --entry-point=main ${{ matrix.deploy_args }}"
 
+      # https://docs.cloud.google.com/functions/docs/deploy
       # - name: "🚀 Deploy Function: ${{ matrix.function }}"
       #   uses: ocadotechnology/codeforlife-workspace/.github/actions/gcloud/run@main
       #   with:
