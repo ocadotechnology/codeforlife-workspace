@@ -77,7 +77,7 @@ jobs:
             #     '.include += [{ "function": $func, "deploy_args": $args }]'
             #   )"
             # fi
-          done < <(echo "${{ steps.list.outputs.functions }}" | jq -r .[])
+          done < <(echo "${{ steps.list.outputs.functions }}" | jq -r '.[]')
           # echo "matrix=$matrix" >> $GITHUB_OUTPUT
 
   deploy:
