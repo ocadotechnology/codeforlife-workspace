@@ -61,24 +61,24 @@ jobs:
             ["load_data_into_bigquery"]="--runtime=python312 --trigger_bucket=SECRET_HERE"
           )
 
-          matrix='{"include":[]}'
-          while IFS= read -r function; do
-            echo "$function"
-            if (
-              ${{ inputs.function == '__all__' }} ||
-              [ "${{ inputs.function }}" = "$function" ] ||
-              $(echo "$changed_files" | jq ".${function}_any_changed")
-            ); then
-              echo "> Adding \"$function\" to the deploy-matrix."
+          # matrix='{"include":[]}'
+          # while IFS= read -r function; do
+          #   echo "$function"
+          #   if (
+          #     ${{ inputs.function == '__all__' }} ||
+          #     [ "${{ inputs.function }}" = "$function" ] ||
+          #     $(echo "$changed_files" | jq ".${function}_any_changed")
+          #   ); then
+          #     echo "> Adding \"$function\" to the deploy-matrix."
 
-              matrix="$(echo "$matrix" | jq -c \
-                --arg func "$function" \
-                --arg args "${deploy_args["$function"]}" \
-                '.include += [{ "function": $func, "deploy_args": $args }]'
-              )"
-            fi
-          done < <(echo "${{ steps.list.outputs.functions }}" | jq -r .[])
-          echo "matrix=$matrix" >> $GITHUB_OUTPUT
+          #     matrix="$(echo "$matrix" | jq -c \
+          #       --arg func "$function" \
+          #       --arg args "${deploy_args["$function"]}" \
+          #       '.include += [{ "function": $func, "deploy_args": $args }]'
+          #     )"
+          #   fi
+          # done < <(echo "${{ steps.list.outputs.functions }}" | jq -r .[])
+          # echo "matrix=$matrix" >> $GITHUB_OUTPUT
 
   deploy:
     needs: [functions]
