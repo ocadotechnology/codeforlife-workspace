@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       function:
-        description: Select the function you want to deploy.
+        description: Select the function to deploy.
         required: true
         type: choice
         options:
@@ -61,7 +61,7 @@ jobs:
             ["load_data_into_bigquery"]="--runtime=python312 --trigger_bucket=SECRET_HERE"
           )
 
-          matrix='{"include":[]}'
+          # matrix='{"include":[]}'
           while IFS= read -r function; do
             echo "$function"
             # if (
