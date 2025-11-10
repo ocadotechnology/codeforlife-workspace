@@ -71,12 +71,11 @@ jobs:
             ); then
               echo "> Adding \"$function\" to the deploy-matrix."
 
-              matrix="$(echo "$matrix" | jq -c '
-                .include += [{
-                  "function": "'"$function"'",
-                  "deploy_args": "'"${deploy_args["$function"]}"'"
-                }]
-              ')"
+              matrix="$(echo "$matrix" | jq -c \
+                --arg func "$function" \
+                --arg args "${deploy_args["$function"]}" \
+                '.include += [{ "function": $func, "deploy_args": $args }]'
+              )"
             fi
           done < <(echo "${{ steps.list.outputs.functions }}" | jq -r .[])
           echo "matrix=$matrix" >> $GITHUB_OUTPUT
