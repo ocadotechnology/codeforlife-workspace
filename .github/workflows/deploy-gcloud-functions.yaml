@@ -67,7 +67,7 @@ jobs:
             if (
               ${{ inputs.function == '__all__' }} ||
               [ "${{ inputs.function }}" = "$function" ] ||
-              $(echo "$changed_files" | jq "${function}_any_changed")
+              $(echo "$changed_files" | jq ".${function}_any_changed")
             ); then
               echo "> Adding \"$function\" to the deploy-matrix."
 
