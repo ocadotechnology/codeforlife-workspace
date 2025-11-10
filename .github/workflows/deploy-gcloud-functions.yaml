@@ -1,5 +1,5 @@
 # https://docs.cloud.google.com/functions/docs/deploy
-name: Deploy GCloud Function
+name: Deploy GCloud Functions
 
 on:
   push:
