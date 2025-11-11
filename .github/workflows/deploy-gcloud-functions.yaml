@@ -20,7 +20,7 @@ env:
   FUNCS_DIR: .gcloud/functions
 
 jobs:
-  functions:
+  setup:
     runs-on: ubuntu-22.04
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
@@ -55,45 +55,45 @@ jobs:
       - name: 🔎 Set Matrix
         id: set-matrix
         run: |
-          changed_files="${{ toJson(steps.changed-files.outputs) }}"
-
-          declare -A deploy_args=(
-            ["load_data_into_bigquery"]="--runtime=python312 --trigger_bucket=SECRET_HERE"
-          )
+          changed_files='${{ toJson(steps.changed-files.outputs) }}'
 
           matrix='{"include":[]}'
           while IFS= read -r function; do
-            echo "$function"
             if (
               ${{ inputs.function == '__all__' }} ||
               [ "${{ inputs.function }}" = "$function" ] ||
               $(echo "$changed_files" | jq ".${function}_any_changed")
             ); then
-              echo "> Adding \"$function\" to the deploy-matrix."
-
               matrix="$(echo "$matrix" | jq -c \
-                --arg func "$function" \
-                --arg args "${deploy_args["$function"]}" \
-                '.include += [{ "function": $func, "deploy_args": $args }]'
+                --arg function "$function" \
+                '.include += [{ "function": $function }]'
               )"
             fi
           done < <(echo '${{ steps.list.outputs.functions }}' | jq -r '.[]')
           echo "matrix=$matrix" >> $GITHUB_OUTPUT
 
   deploy:
-    needs: [functions]
+    needs: [setup]
     runs-on: ubuntu-22.04
     strategy:
-      matrix: ${{ fromJson(needs.functions.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
     steps:
       - name: 🛫 Checkout code
         uses: actions/checkout@v5
 
+      - name: Get Flags
+        id: flags
+        run: |
+          declare -A flags=(
+            ["load_data_into_bigquery"]="--runtime=python312 --trigger-bucket=SECRET_HERE"
+          )
+          echo "flags=${flags["${{ matrix.function }}"]}" >> $GITHUB_OUTPUT
+
       - name: echo
-        run: echo "functions deploy ${{ matrix.function }} --region=europe-west2 --source=${{ env.FUNCS_DIR }}/${{ matrix.function }} --entry-point=main ${{ matrix.deploy_args }}"
+        run: echo "functions deploy ${{ matrix.function }} --region=europe-west2 --source=${{ env.FUNCS_DIR }}/${{ matrix.function }} --entry-point=main ${{ steps.flags.outputs.flags }}"
 
       # https://docs.cloud.google.com/functions/docs/deploy
       # - name: "🚀 Deploy Function: ${{ matrix.function }}"
       #   uses: ocadotechnology/codeforlife-workspace/.github/actions/gcloud/run@main
       #   with:
-      #     args: functions deploy ${{ matrix.function }} --region=europe-west2 --source=${{ env.FUNCS_DIR }}/${{ matrix.function }} --entry-point=main ${{ matrix.deploy_args }}
+      #     args: functions deploy ${{ matrix.function }} --region=europe-west2 --source=${{ env.FUNCS_DIR }}/${{ matrix.function }} --entry-point=main ${{ steps.flags.outputs.flags }}
