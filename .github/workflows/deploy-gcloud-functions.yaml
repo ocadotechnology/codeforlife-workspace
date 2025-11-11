@@ -93,7 +93,7 @@ jobs:
         working-directory: ${{ env.FUNCS_DIR }}/${{ matrix.function }}
         run: |
           declare -A flags=(
-            ["load_data_into_bigquery"]="--runtime=python312 --trigger-bucket=SECRET_HERE"
+            ["load_data_into_bigquery"]="--runtime=python312 --trigger-bucket=${{ secrets.GOOGLE_BQ_BUCKET_NAME }}"
           )
 
           gcloud functions deploy ${{ matrix.function }} \
