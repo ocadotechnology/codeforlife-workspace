@@ -31,11 +31,12 @@ jobs:
           fetch-depth: 2 # Required to compare diffs
           persist-credentials: true
 
-      - name: List Functions
+      - name: 🕵️ List Functions
         id: list
         working-directory: ${{ env.FUNCS_DIR }}
         run: |
           readarray -t func_dirs < <(ls -d1 *)
+          printf "%s\n" "${func_dirs[@]}"
 
           functions="$(jq -n -c --args '$ARGS.positional' "${func_dirs[@]}")"
           echo "functions=$functions" >> $GITHUB_OUTPUT
@@ -52,7 +53,7 @@ jobs:
         with:
           files_yaml: ${{ steps.list.outputs.files_yaml }}
 
-      - name: 🔎 Set Matrix
+      - name: ⚙️ Set Matrix
         id: set-matrix
         run: |
           changed_files='${{ toJson(steps.changed-files.outputs) }}'
@@ -78,22 +79,22 @@ jobs:
     strategy:
       matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
     steps:
-      - name: 🛫 Checkout code
+      - name: 🛫 Checkout Code
         uses: actions/checkout@v5
 
-      - name: Get Flags
-        id: flags
+      - name: ☁️ Setup GCloud
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/gcloud/setup@workspace_236 # TODO: set to @main
+
+      # https://docs.cloud.google.com/functions/docs/deploy
+      - name: 🚀 Deploy Function on GCloud
+        working-directory: ${{ env.FUNCS_DIR }}/${{ matrix.function }}
         run: |
           declare -A flags=(
             ["load_data_into_bigquery"]="--runtime=python312 --trigger-bucket=SECRET_HERE"
           )
-          echo "flags=${flags["${{ matrix.function }}"]}" >> $GITHUB_OUTPUT
 
-      - name: echo
-        run: echo "functions deploy ${{ matrix.function }} --region=europe-west2 --source=${{ env.FUNCS_DIR }}/${{ matrix.function }} --entry-point=main ${{ steps.flags.outputs.flags }}"
-
-      # https://docs.cloud.google.com/functions/docs/deploy
-      # - name: "🚀 Deploy Function: ${{ matrix.function }}"
-      #   uses: ocadotechnology/codeforlife-workspace/.github/actions/gcloud/run@main
-      #   with:
-      #     args: functions deploy ${{ matrix.function }} --region=europe-west2 --source=${{ env.FUNCS_DIR }}/${{ matrix.function }} --entry-point=main ${{ steps.flags.outputs.flags }}
+          gcloud functions deploy ${{ matrix.function }} \
+            --region=europe-west2 \
+            --source=. \
+            --entry-point=main \
+            ${flags["${{ matrix.function }}"]}

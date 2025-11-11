@@ -1,9 +1,5 @@
-name: "Code for Life - GCloud - Deploy App"
-description: "Deploy an app to Google Cloud."
-inputs:
-  deploy-args:
-    description: "Arguments to pass to `gcloud app deploy`."
-    required: false
+name: "Code for Life - GCloud - Setup"
+description: "Set up the GCloud CLI."
 runs:
   using: composite
   steps:
@@ -15,8 +11,4 @@ runs:
         service_account: 'github-actions-34@decent-digit-629.iam.gserviceaccount.com'
 
     - name: 🤖 Set up GCloud SDK
-      uses: google-github-actions/setup-gcloud@v2
-
-    - name: 🚀 Deploy App on GCloud
-      shell: bash
-      run: gcloud app deploy ${{ inputs.deploy-args }}
+      uses: google-github-actions/setup-gcloud@v3
