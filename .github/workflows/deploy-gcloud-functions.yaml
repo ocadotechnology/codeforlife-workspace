@@ -35,7 +35,8 @@ jobs:
         id: list
         working-directory: ${{ env.FUNCS_DIR }}
         run: |
-          readarray -t func_dirs < <(ls -d1 *)
+          readarray -t func_dirs < <(ls -d1 */)
+          func_dirs=("${func_dirs[@]%/}")
           printf "%s\n" "${func_dirs[@]}"
 
           functions="$(jq -n -c --args '$ARGS.positional' "${func_dirs[@]}")"
