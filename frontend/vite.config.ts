@@ -30,6 +30,9 @@ const codeWorkspace = JSON.parse(
 // Read the service's package.json (not /workspace/frontend/package.json).
 const packageJson = JSON.parse(await readFile("./package.json", "utf-8"))
 
+// Read the favicon shared across all services.
+const favicon = await readFile(`${frontendDir}/favicon.ico`)
+
 function defineEnv(env: Record<string, string>) {
   return Object.entries(env).reduce(
     (vite_env, [key, value]) => {
@@ -76,7 +79,7 @@ export const viteConfig = defineViteConfig({
         .split(" ")
         .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
         .join(" "),
-    SERVICE_FAVICON: `${frontendDir}/favicon.ico`,
+    SERVICE_FAVICON: `data:image/x-icon;base64,${favicon.toString("base64")}`,
   }),
 })
 
