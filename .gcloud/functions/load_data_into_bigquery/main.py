@@ -17,6 +17,16 @@ Note that the data is 'chunked' into multiple CSV files. It doesn't matter which
 order these CSVs are imported in.
 
 --------------
+State Tracking
+--------------
+Given that this function is stateless, we're using Firestore to track the state.
+When importing a chunk, we first check if that chunk is from the current
+timestamp and if so, we count how many chunks from that timestamp have been
+successfully imported. In the case, were the BQ table's write-mode is
+"overwrite", we do NOT import the data from previous chunks and just simply
+delete them.
+
+--------------
 Error Handling
 --------------
 Known errors SHOULD be caught and logged without re-raising the error so that
@@ -55,8 +65,26 @@ from google.cloud import bigquery, firestore, storage
 # --- Configuration ---
 PROJECT_ID = "decent-digit-629"
 DATASET_ID = "cfl_prod_copy"
-FIRESTORE_COLLECTION = "load_data_into_bigquery_state"
 # ---------------------
+
+
+@dataclass(frozen=True)
+class Blob:
+    """The blob that triggered the event."""
+
+    bucket: str
+    name: str
+
+    def delete(self):
+        """Deletes the blob from the bucket."""
+
+        print(f"Deleting blob: {self.name}...")
+
+        storage.Client(project=PROJECT_ID).bucket(self.bucket).blob(
+            self.name
+        ).delete()
+
+        print(f"Successfully deleted {self.name}.")
 
 
 BqTableWriteMode = t.Literal["overwrite", "append"]
@@ -124,8 +152,11 @@ class ChunkMetadata:
         if not bq_table_name:
             return handle_error("Table name is blank.")
 
-        if not bq_table_write_mode in ("overwrite", "append"):
-            return handle_error("")
+        bq_table_write_mode_values = ("overwrite", "append")
+        if not bq_table_write_mode in bq_table_write_mode_values:
+            return handle_error(
+                f"Table write-mode must be one of {bq_table_write_mode_values}."
+            )
         bq_table_write_mode = t.cast(BqTableWriteMode, bq_table_write_mode)
 
         file_name_suffix = ".csv"
@@ -187,72 +218,103 @@ class ChunkMetadata:
         )
 
 
-TrackChunkReturn = t.Tuple[bool, int]
+class OverwriteState:
+    """The state when overwriting the BigQuery table."""
 
+    firestore_collection = "load_data_into_bigquery_state"
 
-def track_chunk(chunk_metadata: ChunkMetadata) -> TrackChunkReturn:
-    """
-    Atomically checks and updates the latest timestamp for a table.
-    Returns True if the function should proceed (file is newer).
-    Returns False if the file is a duplicate or out-of-order.
-    """
-    client = firestore.Client(project=PROJECT_ID)
-    doc_ref = client.collection(FIRESTORE_COLLECTION).document(
-        chunk_metadata.bq_table_name
-    )
+    class Data(t.TypedDict):
+        """The data stored in the Firestore document."""
 
-    @firestore.transactional
-    def update_in_transaction(
-        transaction: firestore.Transaction, doc_ref: firestore.DocumentReference
-    ) -> TrackChunkReturn:
-        snapshot = doc_ref.get(transaction=transaction)
-        if snapshot.exists:
-            latest_timestamp: datetime = snapshot.get("latest_timestamp")
-            chunk_count: int = snapshot.get("chunk_count")
+        latest_timestamp: datetime
+        loaded_first_chunk: bool
 
-            if chunk_metadata.timestamp < latest_timestamp:
-                is_latest_timestamp = False
-            else:
-                is_latest_timestamp = True
-                if latest_timestamp < chunk_metadata.timestamp:
-                    latest_timestamp = chunk_metadata.timestamp
-                    chunk_count = 1
-                else:  # latest_timestamp == chunk_metadata.timestamp
-                    chunk_count += 1
-        else:
-            is_latest_timestamp = True
-            latest_timestamp = chunk_metadata.timestamp
-            chunk_count = 1
+    _data: Data
 
-        transaction.set(
-            doc_ref,
-            {
-                "latest_timestamp": latest_timestamp,
-                "chunk_count": chunk_count,
-            },
-        )
+    @property
+    def latest_timestamp(self):
+        return self._data["latest_timestamp"]
 
-        return is_latest_timestamp, chunk_count
+    @property
+    def loaded_first_chunk(self):
+        return self._data["loaded_first_chunk"]
 
-    return update_in_transaction(client.transaction(), doc_ref)
+    def __init__(self, chunk_metadata: ChunkMetadata):
+        """
+        Use the Firestore document to track the latest timestamp and whether the
+        current chunk is the first to be loaded into BigQuery.
+        """
+
+        self.chunk_metadata = chunk_metadata
+
+        self.firestore_client = firestore.Client(project=PROJECT_ID)
+        self.firestore_doc_ref = self.firestore_client.collection(
+            self.firestore_collection
+        ).document(chunk_metadata.bq_table_name)
+
+        @firestore.transactional
+        def update_in_transaction(transaction: firestore.Transaction):
+            doc_snapshot = self.firestore_doc_ref.get(transaction=transaction)
+
+            data: OverwriteState.Data = (
+                t.cast(OverwriteState.Data, doc_snapshot.to_dict())
+                if doc_snapshot.exists
+                else {
+                    "latest_timestamp": datetime.min.replace(
+                        tzinfo=timezone.utc
+                    ),
+                    "loaded_first_chunk": False,
+                }
+            )
+
+            # Check if this is a new export.
+            if self.chunk_metadata.timestamp > data["latest_timestamp"]:
+                print("New export timestamp detected.")
+                data = {
+                    "latest_timestamp": self.chunk_metadata.timestamp,
+                    "loaded_first_chunk": False,
+                }
+
+            transaction.set(self.firestore_doc_ref, data)
+
+            return data
+
+        self._data = update_in_transaction(self.firestore_client.transaction())
+
+    def loaded_data(self):
+        """
+        Use the Firestore document to track if we have finished loading the data
+        from the first chunk.
+        """
+
+        if self._data["loaded_first_chunk"]:
+            return
+        self._data["loaded_first_chunk"] = True
+
+        @firestore.transactional
+        def update_in_transaction(transaction: firestore.Transaction):
+            transaction.set(self.firestore_doc_ref, self._data)
+
+        update_in_transaction(self.firestore_client.transaction())
 
 
 def load_data_into_bigquery(
-    bucket_name: str,
-    blob_name: str,
-    table_id: str,
+    blob: Blob,
+    chunk_metadata: ChunkMetadata,
     write_disposition: str,
 ):
     """Loads the date from the CSV file into BQ."""
 
     client = bigquery.Client(project=PROJECT_ID)
-    full_table_id = ".".join([PROJECT_ID, DATASET_ID, table_id])
+    full_table_id = ".".join(
+        [PROJECT_ID, DATASET_ID, chunk_metadata.bq_table_name]
+    )
 
     try:
         print("Starting BigQuery load job.")
 
         load_job = client.load_table_from_uri(
-            source_uris=f"gs://{bucket_name}/{blob_name}",
+            source_uris=f"gs://{blob.bucket}/{blob.name}",
             destination=full_table_id,
             job_config=bigquery.LoadJobConfig(
                 source_format=bigquery.SourceFormat.CSV,
@@ -272,66 +334,53 @@ def load_data_into_bigquery(
     except google_exceptions.NotFound:
         print(f"Error: Table {full_table_id} not found.")
 
+    # TODO: move to blob to a 'failed' subdirectory for manual review.
+
     return False
-
-
-def delete_blob_from_bucket(bucket_name: str, blob_name: str):
-    """Deletes the blob from the bucket.
-
-    If an exception is raised during the deletion, we catch it to avoid retrying
-    the entire workflow and subsequently writing the data to the BQ table again.
-    """
-    try:
-        print(f"Deleting file: {blob_name}...")
-
-        client = storage.Client(project=PROJECT_ID)
-        bucket = client.bucket(bucket_name)
-        blob = bucket.blob(blob_name)
-        blob.delete()
-
-        print(f"Successfully deleted {blob_name}.")
-
-    # pylint: disable-next=broad-exception-caught
-    except Exception as ex:
-        print(f"Error during GCS file deletion: {ex}")
 
 
 @cloudevent
 def main(event: CloudEvent):
     """The entrypoint."""
 
-    bucket_name: str = event.data["bucket"]
-    blob_name: str = event.data["name"]
+    blob = Blob(bucket=event.data["bucket"], name=event.data["name"])
 
-    if not blob_name.endswith(".csv"):
-        print(f"File {blob_name} is not a CSV. Ignoring.")
-        return
+    print(f"Processing blob: {blob.name}")
 
-    print(f"Processing file: {blob_name}")
+    # Transform the blob's name to chunk metadata.
+    chunk_metadata = ChunkMetadata.from_blob_name(blob.name)
 
-    chunk_metadata = ChunkMetadata.from_blob_name(blob_name)
-    if chunk_metadata:
-        is_latest_timestamp, chunk_count = track_chunk(chunk_metadata)
+    # Check if the blob does not conform to the expected naming convention.
+    if not chunk_metadata:
+        blob.delete()
 
-        if not is_latest_timestamp:
-            print(f"File {blob_name} is from a previous timestamp. Ignoring.")
-            # Note: We do NOT delete the file, as it's an old one.
-            # You could add logic here to delete it if you want.
-            return
+    # Else check if the chunk's data is to be loaded into BQ in overwrite mode.
+    elif chunk_metadata.bq_table_write_mode == "overwrite":
+        # Track the overwrite's state.
+        state = OverwriteState(chunk_metadata)
 
-        data_was_loaded_into_bigquery = load_data_into_bigquery(
-            bucket_name=bucket_name,
-            blob_name=blob_name,
-            table_id=chunk_metadata.bq_table_name,
+        # Check if this chunk is from a previous timestamp.
+        if chunk_metadata.timestamp < state.latest_timestamp:
+            print("Chunk is from an old export. Skipping.")
+            blob.delete()
+
+        # Else check if the chunk's data was successfully loaded into BQ.
+        elif load_data_into_bigquery(
+            blob,
+            chunk_metadata,
             write_disposition=(
                 bigquery.WriteDisposition.WRITE_APPEND
-                if chunk_metadata.bq_table_write_mode == "append"
-                or chunk_count == 1
+                if state.loaded_first_chunk
                 else bigquery.WriteDisposition.WRITE_TRUNCATE
             ),
-        )
+        ):
+            state.loaded_data()
+            blob.delete()
 
-        if not data_was_loaded_into_bigquery:
-            return
-
-    delete_blob_from_bucket(bucket_name=bucket_name, blob_name=blob_name)
+    # Else check if the chunk's data was successfully loaded into BQ.
+    elif load_data_into_bigquery(  # bq_table_write_mode == "append"
+        blob,
+        chunk_metadata,
+        write_disposition=bigquery.WriteDisposition.WRITE_APPEND,
+    ):
+        blob.delete()
