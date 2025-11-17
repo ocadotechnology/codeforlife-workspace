@@ -58,7 +58,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 
 from cloudevents.http import CloudEvent
-from functions_framework import cloudevent
+from functions_framework import cloud_event
 from google.api_core import exceptions as google_exceptions
 from google.cloud import bigquery, firestore, storage
 
@@ -339,7 +339,7 @@ def load_data_into_bigquery(
     return False
 
 
-@cloudevent
+@cloud_event
 def main(event: CloudEvent):
     """The entrypoint."""
 

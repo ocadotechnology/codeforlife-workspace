@@ -95,7 +95,7 @@ jobs:
           declare -A flags=(
             ["load_data_into_bigquery"]="--runtime=python312 \
             --trigger-event=google.storage.object.finalize \
-            --trigger-resource=projects/_/buckets/${{ secrets.GOOGLE_BQ_BUCKET_NAME }} \
+            --trigger-resource=${{ secrets.GOOGLE_BQ_BUCKET_NAME }} \
             --gen2"
           )
 
