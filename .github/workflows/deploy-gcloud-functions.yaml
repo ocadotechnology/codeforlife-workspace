@@ -103,4 +103,5 @@ jobs:
             --region=europe-west2 \
             --source=. \
             --entry-point=main \
+            --ignore-file=../../.gcloudignore \
             ${flags["${{ matrix.function }}"]}
