@@ -14,6 +14,14 @@ RUN echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg ma
 RUN curl --output localstack-cli.tar.gz --location https://github.com/localstack/localstack-cli/releases/download/v4.3.0/localstack-cli-4.3.0-linux-amd64-onefile.tar.gz && \
   tar xvzf localstack-cli.tar.gz -C /usr/local/bin
 
+# Install GCloud CLI.
+# https://docs.cloud.google.com/sdk/docs/install#deb
+RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg && \
+  echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee /etc/apt/sources.list.d/google-cloud-sdk.list && \
+  apt-get update && \
+  export DEBIAN_FRONTEND=noninteractive && \
+  apt-get install -y google-cloud-cli=547.0.0-0
+
 # Install Snyk CLI.
 # https://docs.snyk.io/snyk-cli/install-or-update-the-snyk-cli#install-with-standalone-executables
 RUN curl --compressed https://downloads.snyk.io/cli/stable/snyk-linux -o snyk && \
