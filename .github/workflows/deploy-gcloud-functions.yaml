@@ -96,7 +96,8 @@ jobs:
             ["load_data_into_bigquery"]="--runtime=python312 \
             --trigger-event=google.storage.object.finalize \
             --trigger-resource=${{ secrets.GOOGLE_BQ_BUCKET_NAME }} \
-            --gen2"
+            --gen2 \
+            --serve-all-traffic-latest-revision"
           )
 
           gcloud functions deploy ${{ matrix.function }} \
