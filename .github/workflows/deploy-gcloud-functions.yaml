@@ -97,7 +97,8 @@ jobs:
             --trigger-event=google.storage.object.finalize \
             --trigger-resource=${{ secrets.GOOGLE_BQ_BUCKET_NAME }} \
             --gen2 \
-            --serve-all-traffic-latest-revision"
+            --serve-all-traffic-latest-revision \
+            --set-env-vars=FIRESTORE_DB_ID=${{ secrets.GOOGLE_FIRESTORE_DB_ID }}"
           )
 
           gcloud functions deploy ${{ matrix.function }} \

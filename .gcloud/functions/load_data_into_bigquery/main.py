@@ -53,6 +53,7 @@ For example: "user__append/2025-01-01_00:00:00__0001_1000.csv"
 - obj_i_end: the data is to row/object 1000.
 """
 
+import os
 import typing as t
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -65,6 +66,7 @@ from google.cloud import bigquery, firestore, storage
 # --- Configuration ---
 PROJECT_ID = "decent-digit-629"
 DATASET_ID = "cfl_prod_copy"
+FIRESTORE_DB_ID = os.environ["FIRESTORE_DB_ID"]
 # ---------------------
 
 
@@ -232,7 +234,7 @@ def track_chunk(chunk_metadata: ChunkMetadata) -> t.Optional[str]:
     This is idempotent and safe for retries.
     """
 
-    client = firestore.Client(project=PROJECT_ID)
+    client = firestore.Client(project=PROJECT_ID, database=FIRESTORE_DB_ID)
     doc_ref = client.collection("load_data_into_bigquery_state").document(
         chunk_metadata.bq_table_name
     )
