@@ -70,6 +70,15 @@ FIRESTORE_DB_ID = os.environ["FIRESTORE_DB_ID"]
 MAX_EVENT_AGE_SECONDS = 60 * 60
 # ---------------------
 
+# --- Global Clients (Performance Optimization) ---
+# Initialized once per "cold start" to reuse connections.
+STORAGE_CLIENT = storage.Client(project=PROJECT_ID)
+FIRESTORE_CLIENT = firestore.Client(
+    project=PROJECT_ID, database=FIRESTORE_DB_ID
+)
+BIGQUERY_CLIENT = bigquery.Client(project=PROJECT_ID)
+# ---------------------
+
 
 class Blob:
     """The blob that triggered the event."""
@@ -80,13 +89,18 @@ class Blob:
         processed_status: t.NotRequired[t.Literal["failed"]]
 
     def __init__(self, data: t.Dict[str, t.Any]):
-        self._client = storage.Client(project=PROJECT_ID)
-        self._bucket = self._client.bucket(bucket_name=data["bucket"])
+        self._bucket = STORAGE_CLIENT.bucket(bucket_name=data["bucket"])
         self._blob = self._bucket.blob(blob_name=data["name"])
+
+        self._metadata_loaded = False  # Track lazy loading.
 
     @property
     def metadata(self):
         """The metadata of the blob."""
+
+        if not self._metadata_loaded:
+            self._blob.reload()
+            self._metadata_loaded = True
 
         return t.cast(t.Optional[Blob.Metadata], self._blob.metadata)
 
@@ -112,7 +126,6 @@ class Blob:
     def set_processed_status_to_failed(self):
         """Moves the blob to the failed subdirectory for manual inspection."""
 
-        self._blob.reload()
         metadata = self.metadata or {}
         metadata["processed_status"] = "failed"
         self._blob.metadata = metadata
@@ -267,10 +280,9 @@ def track_chunk(chunk_metadata: ChunkMetadata) -> t.Optional[str]:
     This is idempotent and safe for retries.
     """
 
-    client = firestore.Client(project=PROJECT_ID, database=FIRESTORE_DB_ID)
-    doc_ref = client.collection("load_data_into_bigquery_state").document(
-        chunk_metadata.bq_table_name
-    )
+    doc_ref = FIRESTORE_CLIENT.collection(
+        "load_data_into_bigquery_state"
+    ).document(chunk_metadata.bq_table_name)
 
     chunk_id = f"{chunk_metadata.obj_i_start}_{chunk_metadata.obj_i_end}"
 
@@ -322,7 +334,7 @@ def track_chunk(chunk_metadata: ChunkMetadata) -> t.Optional[str]:
 
         return write_disposition
 
-    return update_in_transaction(client.transaction())
+    return update_in_transaction(FIRESTORE_CLIENT.transaction())
 
 
 def load_data_into_bigquery(
@@ -332,7 +344,6 @@ def load_data_into_bigquery(
 ):
     """Loads the date from the CSV file into BQ."""
 
-    client = bigquery.Client(project=PROJECT_ID)
     full_table_id = ".".join(
         [PROJECT_ID, DATASET_ID, chunk_metadata.bq_table_name]
     )
@@ -340,7 +351,7 @@ def load_data_into_bigquery(
     try:
         print("Starting BigQuery load job.")
 
-        load_job = client.load_table_from_uri(
+        load_job = BIGQUERY_CLIENT.load_table_from_uri(
             source_uris=f"gs://{blob.bucket_name}/{blob.name}",
             destination=full_table_id,
             job_config=bigquery.LoadJobConfig(
@@ -380,18 +391,7 @@ def event_is_too_old(event: CloudEvent):
 def main(event: CloudEvent):
     """The entrypoint."""
 
-    if event_is_too_old(event):
-        print("Event is too old. Dropping to prevent more retries.")
-        return
-
     blob = Blob(event.data)
-
-    # If the function was triggered by a failed blob,
-    if blob.metadata and blob.metadata.get("processed_status") == "failed":
-        print(f"Failed blob: {blob.name}. Skipping.")
-        return
-
-    print(f"Processing blob: {blob.name}")
 
     # Transform the blob's name to chunk metadata.
     chunk_metadata = ChunkMetadata.from_blob_name(blob.name)
@@ -399,6 +399,23 @@ def main(event: CloudEvent):
     if not chunk_metadata:
         blob.delete()
         return
+
+    # If the event was first triggered too long ago, mark it as failed and stop.
+    if event_is_too_old(event):
+        print("Event is too old. Dropping to prevent more retries.")
+        if (
+            not blob.metadata
+            or blob.metadata.get("processed_status") != "failed"
+        ):
+            blob.set_processed_status_to_failed()
+        return
+
+    # If the function was triggered by a failed blob,
+    if blob.metadata and blob.metadata.get("processed_status") == "failed":
+        print(f"Failed blob: {blob.name}. Skipping.")
+        return
+
+    print(f"Processing blob: {blob.name}")
 
     # Track the chunk's state.
     write_disposition = track_chunk(chunk_metadata)
