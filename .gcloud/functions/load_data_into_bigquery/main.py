@@ -67,26 +67,59 @@ from google.cloud import bigquery, firestore, storage
 PROJECT_ID = "decent-digit-629"
 DATASET_ID = "cfl_prod_copy"
 FIRESTORE_DB_ID = os.environ["FIRESTORE_DB_ID"]
+MAX_EVENT_AGE_SECONDS = 60 * 60
 # ---------------------
 
 
-@dataclass(frozen=True)
 class Blob:
     """The blob that triggered the event."""
 
-    bucket: str
-    name: str
+    class Metadata(t.TypedDict):
+        """The metadata of a blob."""
+
+        processed_status: t.NotRequired[t.Literal["failed"]]
+
+    def __init__(self, data: t.Dict[str, t.Any]):
+        self._client = storage.Client(project=PROJECT_ID)
+        self._bucket = self._client.bucket(bucket_name=data["bucket"])
+        self._blob = self._bucket.blob(blob_name=data["name"])
+
+    @property
+    def metadata(self):
+        """The metadata of the blob."""
+
+        return t.cast(t.Optional[Blob.Metadata], self._blob.metadata)
+
+    @property
+    def bucket_name(self):
+        """The name of the bucket."""
+
+        return t.cast(str, self._bucket.name)
+
+    @property
+    def name(self):
+        """The name of the blob."""
+
+        return t.cast(str, self._blob.name)
 
     def delete(self):
         """Deletes the blob from the bucket."""
 
         print(f"Deleting blob: {self.name}...")
-
-        storage.Client(project=PROJECT_ID).bucket(self.bucket).blob(
-            self.name
-        ).delete()
-
+        self._blob.delete()
         print(f"Successfully deleted {self.name}.")
+
+    def set_processed_status_to_failed(self):
+        """Moves the blob to the failed subdirectory for manual inspection."""
+
+        self._blob.reload()
+        metadata = self.metadata or {}
+        metadata["processed_status"] = "failed"
+        self._blob.metadata = metadata
+
+        print(f"Updating blob metadata: {self.name}...")
+        self._blob.patch()
+        print(f"Updated blob metadata: {self.name}...")
 
 
 BqTableWriteMode = t.Literal["overwrite", "append"]
@@ -308,7 +341,7 @@ def load_data_into_bigquery(
         print("Starting BigQuery load job.")
 
         load_job = client.load_table_from_uri(
-            source_uris=f"gs://{blob.bucket}/{blob.name}",
+            source_uris=f"gs://{blob.bucket_name}/{blob.name}",
             destination=full_table_id,
             job_config=bigquery.LoadJobConfig(
                 source_format=bigquery.SourceFormat.CSV,
@@ -331,11 +364,32 @@ def load_data_into_bigquery(
     return False
 
 
+def event_is_too_old(event: CloudEvent):
+    """Check if the event is too old to be processed."""
+
+    event_time: datetime = event["time"]
+    if event_time.tzinfo is None:
+        event_time = event_time.replace(tzinfo=timezone.utc)
+
+    now = datetime.now(timezone.utc)
+    event_age = (now - event_time).total_seconds()
+    return event_age > MAX_EVENT_AGE_SECONDS
+
+
 @cloud_event
 def main(event: CloudEvent):
     """The entrypoint."""
 
-    blob = Blob(bucket=event.data["bucket"], name=event.data["name"])
+    if event_is_too_old(event):
+        print("Event is too old. Dropping to prevent more retries.")
+        return
+
+    blob = Blob(event.data)
+
+    # If the function was triggered by a failed blob,
+    if blob.metadata and blob.metadata.get("processed_status") == "failed":
+        print(f"Failed blob: {blob.name}. Skipping.")
+        return
 
     print(f"Processing blob: {blob.name}")
 
@@ -357,5 +411,4 @@ def main(event: CloudEvent):
     if load_data_into_bigquery(blob, chunk_metadata, write_disposition):
         blob.delete()
     else:
-        # TODO: move to blob to a 'failed' subdirectory for manual review.
-        pass
+        blob.set_processed_status_to_failed()

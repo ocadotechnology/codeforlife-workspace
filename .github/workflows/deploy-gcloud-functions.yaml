@@ -97,6 +97,7 @@ jobs:
             --trigger-event=google.storage.object.finalize \
             --trigger-resource=${{ secrets.GOOGLE_BQ_BUCKET_NAME }} \
             --gen2 \
+            --retry \
             --serve-all-traffic-latest-revision \
             --set-env-vars=FIRESTORE_DB_ID=${{ secrets.GOOGLE_FIRESTORE_DB_ID }}"
           )
