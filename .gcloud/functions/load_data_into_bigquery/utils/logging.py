@@ -44,8 +44,10 @@ class JsonFormatter(logging.Formatter):
 
 
 # Configure the root logger once
+root_logger = logging.getLogger()
+for handler in root_logger.handlers.copy():
+    root_logger.removeHandler(handler)
 handler = logging.StreamHandler(sys.stdout)
 handler.setFormatter(JsonFormatter())
-root_logger = logging.getLogger()
 root_logger.addHandler(handler)
 root_logger.setLevel(logging.INFO)
