@@ -2,8 +2,8 @@ name: Deploy GCloud Functions
 
 on:
   push:
-    # branches:
-    #   - main
+    branches:
+      - main
     paths:
       - ".gcloud/functions/**"
   workflow_dispatch:
@@ -86,7 +86,7 @@ jobs:
         uses: actions/checkout@v5
 
       - name: ☁️ Setup GCloud
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/gcloud/setup@workspace_236 # TODO: set to @main
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/gcloud/setup@main
 
       # https://docs.cloud.google.com/functions/docs/deploy
       - name: 🚀 Deploy Function on GCloud
