@@ -60,11 +60,15 @@ class TableOverwriteState:
 
         self._doc_ref = COLLECTION.document(chunk_metadata.bq_table_name)
 
-        self._data: TableOverwriteState.Data = {
+        # What we WANT the state to be if this is the first chunk.
+        first_data: TableOverwriteState.Data = {
             "latest_timestamp": chunk_metadata.timestamp,
             "first_chunk_id": chunk_metadata.timestamp_id,
             "was_first_chunk_loaded": False,
         }
+
+        # Initialize the local state to this (in case doc doesn't exist).
+        self._data = first_data
 
         @transactional
         def update_in_transaction(transaction: Transaction):
@@ -73,7 +77,15 @@ class TableOverwriteState:
                 # Check if the chunk is from a new timestamp.
                 if chunk_metadata.timestamp > self.latest_timestamp:
                     logging.info("New timestamp detected. Resetting state.")
-                    self._data = default_data
+                    self._data = first_data
+                # Check if the chunk is the first in the current timestamp.
+                elif (
+                    chunk_metadata.timestamp == self.latest_timestamp
+                    and self.first_chunk_id is None
+                ):
+                    logging.info("Claiming first spot.")
+                    self._data["first_chunk_id"] = chunk_metadata.timestamp_id
+                    self._data["was_first_chunk_loaded"] = False
 
             self._set_data(transaction)
 

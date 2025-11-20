@@ -57,9 +57,13 @@ def event_is_too_old(event: CloudEvent):
     """Check if the event is too old to be processed."""
 
     tz = timezone.utc
-    event_time = datetime.fromisoformat(
-        t.cast(str, event["time"]).replace("Z", "+00:00")
-    ).replace(tzinfo=tz)
+    event_time: t.Union[str, datetime] = event["time"]
+    if isinstance(event_time, str):
+        event_time = datetime.fromisoformat(
+            event_time.replace("Z", "+00:00")
+        ).replace(tzinfo=tz)
+    elif event_time.tzinfo is None:
+        event_time = event_time.replace(tzinfo=tz)
 
     now = datetime.now(tz)
     event_age = (now - event_time).total_seconds()
@@ -108,7 +112,7 @@ def process_blob(blob: Blob):
                 # Track if the first chunk was loaded.
                 if not table_overwrite_state.was_first_chunk_loaded:
                     print("The first chunk has overwritten the table.")
-                    TableOverwriteState.was_first_chunk_loaded = True
+                    table_overwrite_state.was_first_chunk_loaded = True
 
                 blob.delete()
             else:
