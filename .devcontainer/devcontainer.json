@@ -3,7 +3,6 @@
     "vscode": {
       "extensions": [
         // general
-        "visualstudioexptteam.vscodeintellicode",
         "redhat.vscode-yaml",
         "davidanson.vscode-markdownlint",
         "bierner.markdown-mermaid",
@@ -19,7 +18,8 @@
         "rioj7.command-variable",
         // bash/shell
         "foxundermoon.shell-format",
-        // git
+        // git & github
+        "github.copilot-chat",
         "github.vscode-pull-request-github",
         "github.vscode-github-actions",
         "eamodio.gitlens",
