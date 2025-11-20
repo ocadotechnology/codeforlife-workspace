@@ -29,9 +29,7 @@ class TableOverwriteState:
     We achieve state tracking across multiple function calls using
     Firestore (FS), where a document is created per BQ table to track its state.
 
-    Tracks if the latest timestamp received by the chunk's table.
-
-    This is necessary to know if a BQ table should be overwritten or
+    State tracking is necessary to know if a BQ table should be overwritten or
     appended to. The data should be overwritten if the current chunk is the
     first chunk received from a more recent timestamp. The data should be
     should be appended if the current chunk is the 2nd+ chunk received from
@@ -40,13 +38,14 @@ class TableOverwriteState:
     Using an atomic transaction with FS, we avoid this race condition:
     1. 2 chunks are created and trigger the function at the same time.
     2. both function calls read `was_first_chunk_loaded=False`;
-    3. both function calls write `was_first_chunk_loaded=True`;
-    4. both function calls overwrite the data in the BQ table;
+    3. both function calls overwrite the data in the BQ table;
+    4. both function calls write `was_first_chunk_loaded=True`;
     5. only the data from the last chunk loaded into BQ is saved.
 
-    Instead, FS detects that the document has been written to (it will have a
-    new version) and fails the transaction. It then retries the transaction from
-    the start, reads the latest document and tries to write again.
+    The race condition is avoided because if FS detects that the document has
+    been written to (it will have a new version), it fails the transaction. It
+    then retries the transaction from the start, reads the latest document and
+    tries to write again.
     """
 
     class Data(t.TypedDict):

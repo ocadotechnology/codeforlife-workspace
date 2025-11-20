@@ -5,20 +5,31 @@ Created on 13/11/2025 at 09:07:12(+00:00).
 --------
 Overview
 --------
+
 This function is called whenever a blob is uploaded to the dedicated data-export
-bucket. The purpose of this bucket is to temporarily save CSV files that contain
-the exported data from the database. This function's job is to import the data
-from the CSVs into their respective BigQuery (BQ) tables and delete the CSVs.
+bucket. The purpose of this function is to load the data from the CSVs (that are
+uploaded into the bucket) into their destined BigQuery (BQ) tables and delete
+the CSVs.
 
 These CSVs are created by our custom celery-task:
 https://github.com/ocadotechnology/codeforlife-package-python/blob/main/codeforlife/tasks/data_warehouse.py
 
-Note that the data is 'chunked' into multiple CSV files. It doesn't matter which
-order these CSVs are imported in as they can always be ordered when querying BQ.
+Each CSV file is a data-chunk of a data-export. That is, a subset of rows from a
+queryset that was first triggered in a job whose purpose it is to export the
+data.
+
+-------------
+Data Ordering
+-------------
+
+CSVs are not guaranteed to be imported in any particular order. It's
+assumed that the data contains the necessary fields to order it when querying a
+BQ table.
 
 --------------
 Error Handling
 --------------
+
 Known errors SHOULD be caught and logged without re-raising the error so that
 the function can return early to avoid the retry policy from kicking in. For
 example: if a BQ table does not exist, retrying the function will not change

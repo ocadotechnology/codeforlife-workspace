@@ -8,31 +8,33 @@ import typing as t
 from dataclasses import dataclass
 from datetime import datetime, timezone
 
+_BqTableWriteMode = t.Literal["overwrite", "append"]
+
 
 @dataclass(frozen=True)
 class ChunkMetadata:
-    """All of the metadata used to track a chunk.
+    """All of the metadata used to identify a chunk.
 
-    The CSVs follow a naming convention which affects the way this function runs.
-        "{table_id}__{table_write_mode}/{timestamp}__{obj_i_start}_{obj_i_end}.csv"
-    - table_id: the table in BigQuery where this data is to be imported
+    The CSVs follow a naming convention which identifies the chunks and affects
+    the way it should be processed.
+
+    "{table_id}__{table_write_mode}/{timestamp}__{obj_i_start}_{obj_i_end}.csv"
+    - table_id: the table in BigQuery where this data is to be imported.
     - table_write_mode: whether to overwrite or append to the BQ table.
     - timestamp: when the export was triggered.
     - obj_i_start: The start of the object-index range.
     - obj_i_end: The end of the object-index range.
 
-    For example: "user__append/2025-01-01_00:00:00__0001_1000.csv"
+    For example: "user__append/2025-01-01_00:00:00__1_1000.csv"
     - table_id: the data is to imported into the "user" table in BQ.
     - table_write_mode: the data is to be appended to the end of the BQ table.
     - timestamp: the export was triggered on 2025-01-01 at 00:00:00.
-    - obj_i_start: the data is from row/object 1.
-    - obj_i_end: the data is to row/object 1000.
+    - obj_i_start: the data-chunk is from row/object 1.
+    - obj_i_end: the data-chunk is to row/object 1000.
     """
 
-    BqTableWriteMode = t.Literal["overwrite", "append"]
-
     bq_table_name: str  # name of BigQuery table
-    bq_table_write_mode: BqTableWriteMode  # write mode for BigQuery table
+    bq_table_write_mode: _BqTableWriteMode  # write mode for BigQuery table
     timestamp: datetime  # when the data export began
     obj_i_start: int  # object index span start
     obj_i_end: int  # object index span end
@@ -67,7 +69,7 @@ class ChunkMetadata:
 
             return parts
 
-        # E.g. "user__append/2025-01-01_00:00:00__0001_1000.csv"
+        # E.g. "user__append/2025-01-01_00:00:00__1_1000.csv"
         blob_name_parts = handle_split(
             blob_name,
             sep="/",
@@ -76,7 +78,7 @@ class ChunkMetadata:
         )
         if not blob_name_parts:
             return None
-        # "user__append", "2025-01-01_00:00:00__0001_1000.csv"
+        # "user__append", "2025-01-01_00:00:00__1_1000.csv"
         folder_name, file_name = blob_name_parts
 
         folder_name_parts = handle_split(
@@ -98,16 +100,14 @@ class ChunkMetadata:
             return handle_error(
                 f"Table write-mode must be one of {bq_table_write_mode_values}."
             )
-        bq_table_write_mode = t.cast(
-            ChunkMetadata.BqTableWriteMode, bq_table_write_mode
-        )
+        bq_table_write_mode = t.cast(_BqTableWriteMode, bq_table_write_mode)
 
         file_name_suffix = ".csv"
         if not file_name.endswith(file_name_suffix):
             return handle_error(
                 f'File name should end with "{file_name_suffix}".'
             )
-        # "2025-01-01_00:00:00__0001_1000"
+        # "2025-01-01_00:00:00__1_1000"
         file_name = file_name.removesuffix(file_name_suffix)
 
         file_name_parts = handle_split(
@@ -118,7 +118,7 @@ class ChunkMetadata:
         )
         if not file_name_parts:
             return None
-        # "2025-01-01_00:00:00", "0001_1000"
+        # "2025-01-01_00:00:00", "1_1000"
         timestamp_fstr, obj_i_span_fstr = file_name_parts
 
         try:
@@ -137,7 +137,7 @@ class ChunkMetadata:
         )
         if not obj_i_span_fstr_parts:
             return None
-        # "0001", "1000"
+        # "1", "1000"
         obj_i_start_fstr, obj_i_end_fstr = obj_i_span_fstr_parts
 
         try:

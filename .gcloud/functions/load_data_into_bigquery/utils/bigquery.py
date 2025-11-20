@@ -24,7 +24,19 @@ def load_data_into_bigquery_table(
     chunk_metadata: "ChunkMetadata",
     write_disposition: str,
 ):
-    """Loads the date from the CSV file into BQ."""
+    """Loads the data from the CSV file into BigQuery.
+
+    Args:
+        blob: The blob to load the data from.
+        chunk_metadata: The metadata of the chunk.
+        write_disposition: The write-mode for the current chunk.
+
+    Returns:
+        A flag designating whether the flag was successfully processed. False
+        will be returned if a known error occurred which makes it impossible to
+        load the data (e.g. the BQ table does not exist) to avoid pointlessly
+        retries.
+    """
 
     full_table_id = ".".join(
         [PROJECT_ID, BIGQUERY_DATASET_ID, chunk_metadata.bq_table_name]
