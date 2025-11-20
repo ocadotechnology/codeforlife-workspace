@@ -10,7 +10,23 @@ from datetime import datetime, timezone
 
 @dataclass(frozen=True)
 class ChunkMetadata:
-    """All of the metadata used to track a chunk."""
+    """All of the metadata used to track a chunk.
+
+    The CSVs follow a naming convention which affects the way this function runs.
+        "{table_id}__{table_write_mode}/{timestamp}__{obj_i_start}_{obj_i_end}.csv"
+    - table_id: the table in BigQuery where this data is to be imported
+    - table_write_mode: whether to overwrite or append to the BQ table.
+    - timestamp: when the export was triggered.
+    - obj_i_start: The start of the object-index range.
+    - obj_i_end: The end of the object-index range.
+
+    For example: "user__append/2025-01-01_00:00:00__0001_1000.csv"
+    - table_id: the data is to imported into the "user" table in BQ.
+    - table_write_mode: the data is to be appended to the end of the BQ table.
+    - timestamp: the export was triggered on 2025-01-01 at 00:00:00.
+    - obj_i_start: the data is from row/object 1.
+    - obj_i_end: the data is to row/object 1000.
+    """
 
     BqTableWriteMode = t.Literal["overwrite", "append"]
 
@@ -19,6 +35,12 @@ class ChunkMetadata:
     timestamp: datetime  # when the data export began
     obj_i_start: int  # object index span start
     obj_i_end: int  # object index span end
+
+    @property
+    def timestamp_id(self):
+        """The ID of this chunk relative to its timestamp."""
+
+        return f"{self.obj_i_start}_{self.obj_i_end}"
 
     @classmethod
     # pylint: disable-next=too-many-locals,too-many-return-statements

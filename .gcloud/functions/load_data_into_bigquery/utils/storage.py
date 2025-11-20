@@ -11,6 +11,8 @@ from .settings import PROJECT_ID
 
 CLIENT = Client(project=PROJECT_ID)
 
+_ProcessedStatus = t.Literal["failed"]
+
 
 class Blob:
     """The blob that triggered the event."""
@@ -18,7 +20,7 @@ class Blob:
     class Metadata(t.TypedDict):
         """The metadata of a blob."""
 
-        processed_status: t.NotRequired[t.Literal["failed"]]
+        processed_status: t.NotRequired[_ProcessedStatus]
 
     def __init__(self, data: t.Dict[str, t.Any]):
         self._bucket = CLIENT.bucket(bucket_name=data["bucket"])
@@ -36,6 +38,16 @@ class Blob:
 
         return t.cast(t.Optional[Blob.Metadata], self._blob.metadata)
 
+    @metadata.setter
+    def metadata(self, value: Metadata):
+        """Sets the metadata of the blob."""
+
+        self._blob.metadata = value
+
+        print(f"Updating blob metadata: {self.name}...")
+        self._blob.patch()
+        print(f"Updated blob metadata: {self.name}...")
+
     @property
     def bucket_name(self):
         """The name of the bucket."""
@@ -48,20 +60,25 @@ class Blob:
 
         return t.cast(str, self._blob.name)
 
+    @property
+    def processed_status(self):
+        return (self.metadata or {}).get("processed_status")
+
+    @processed_status.setter
+    def processed_status(self, value: _ProcessedStatus):
+        """Moves the blob to the failed subdirectory for manual inspection."""
+
+        # Check value has changed.
+        if self.processed_status == value:
+            return
+
+        metadata = self.metadata or {}
+        metadata["processed_status"] = value
+        self.metadata = metadata
+
     def delete(self):
         """Deletes the blob from the bucket."""
 
         print(f"Deleting blob: {self.name}...")
         self._blob.delete()
         print(f"Successfully deleted {self.name}.")
-
-    def set_processed_status_to_failed(self):
-        """Moves the blob to the failed subdirectory for manual inspection."""
-
-        metadata = self.metadata or {}
-        metadata["processed_status"] = "failed"
-        self._blob.metadata = metadata
-
-        print(f"Updating blob metadata: {self.name}...")
-        self._blob.patch()
-        print(f"Updated blob metadata: {self.name}...")

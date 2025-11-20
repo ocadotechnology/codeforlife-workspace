@@ -4,9 +4,8 @@ Created on 18/11/2025 at 15:08:50(+00:00).
 """
 
 import typing as t
-from datetime import datetime, timezone
+from datetime import datetime
 
-from google.cloud.bigquery import WriteDisposition
 from google.cloud.firestore import (  # type: ignore[import-untyped]
     Client,
     Transaction,
@@ -20,74 +19,149 @@ if t.TYPE_CHECKING:
 
 
 CLIENT = Client(project=PROJECT_ID, database=FIRESTORE_DB_ID)
+COLLECTION = CLIENT.collection("load_data_into_bigquery_state")
 
 
-class ChunkLoadState(t.TypedDict):
-    """The data stored in the Firestore document."""
+class TableOverwriteState:
+    """The state when overwriting a table in BQ.
 
-    latest_timestamp: datetime
-    processed_chunks: t.Dict[str, bool]
-    is_first_chunk_loaded: bool
+    We achieve state tracking across multiple function calls using
+    Firestore (FS), where a document is created per BQ table to track its state.
 
+    Tracks if the latest timestamp received by the chunk's table.
 
-def track_chunk(chunk_metadata: "ChunkMetadata") -> t.Optional[str]:
+    This is necessary to know if a BQ table should be overwritten or
+    appended to. The data should be overwritten if the current chunk is the
+    first chunk received from a more recent timestamp. The data should be
+    should be appended if the current chunk is the 2nd+ chunk received from
+    the latest timestamp.
+
+    Using an atomic transaction with FS, we avoid this race condition:
+    1. 2 chunks are created and trigger the function at the same time.
+    2. both function calls read `was_first_chunk_loaded=False`;
+    3. both function calls write `was_first_chunk_loaded=True`;
+    4. both function calls overwrite the data in the BQ table;
+    5. only the data from the last chunk loaded into BQ is saved.
+
+    Instead, FS detects that the document has been written to (it will have a
+    new version) and fails the transaction. It then retries the transaction from
+    the start, reads the latest document and tries to write again.
     """
-    Atomically checks and updates the state for a table.
-    This is idempotent and safe for retries.
-    """
 
-    doc_ref = CLIENT.collection("load_data_into_bigquery_state").document(
-        chunk_metadata.bq_table_name
-    )
+    class Data(t.TypedDict):
+        """The data stored in the Firebase document."""
 
-    chunk_id = f"{chunk_metadata.obj_i_start}_{chunk_metadata.obj_i_end}"
+        latest_timestamp: datetime
+        first_chunk_id: t.Optional[str]
+        was_first_chunk_loaded: bool
 
-    @transactional
-    def update_in_transaction(transaction: Transaction):
-        snapshot = doc_ref.get(transaction=transaction)
+    def __init__(self, chunk_metadata: "ChunkMetadata"):
+        self._chunk_metadata = chunk_metadata
 
-        # Get current state or create a default one.
-        data: ChunkLoadState = (
-            t.cast(ChunkLoadState, snapshot.to_dict())
-            if snapshot.exists
-            else {
-                "latest_timestamp": datetime.min.replace(tzinfo=timezone.utc),
-                "processed_chunks": {},
-                "is_first_chunk_loaded": False,
-            }
-        )
+        self._doc_ref = COLLECTION.document(chunk_metadata.bq_table_name)
 
-        # Check for new export timestamp.
-        if chunk_metadata.timestamp > data["latest_timestamp"]:
-            print("New export timestamp detected. Resetting state.")
-            data = {
-                "latest_timestamp": chunk_metadata.timestamp,
-                "processed_chunks": {},
-                "is_first_chunk_loaded": False,
-            }
-        # Check for old export.
-        elif chunk_metadata.timestamp < data["latest_timestamp"]:
-            print("Chunk is from an old export. Skipping.")
-            return None
-        # Check for duplicate chunk (idempotency).
-        elif chunk_id in data["processed_chunks"]:
-            print(f"Chunk {chunk_id} has already been processed. Skipping.")
-            return None
+        self._data: TableOverwriteState.Data = {
+            "latest_timestamp": chunk_metadata.timestamp,
+            "first_chunk_id": chunk_metadata.timestamp_id,
+            "was_first_chunk_loaded": False,
+        }
 
-        write_disposition = WriteDisposition.WRITE_APPEND
-        if (
-            chunk_metadata.bq_table_write_mode == "overwrite"
-            and not data["is_first_chunk_loaded"]
-        ):
-            print("This is the first chunk for an 'overwrite' job.")
-            write_disposition = WriteDisposition.WRITE_TRUNCATE
-            data["is_first_chunk_loaded"] = True
+        @transactional
+        def update_in_transaction(transaction: Transaction):
+            default_data = self._data
+            if self._get_data(transaction):
+                # Check if the chunk is from a new timestamp.
+                if chunk_metadata.timestamp > self.latest_timestamp:
+                    print("New export timestamp detected. Resetting state.")
+                    self._data = default_data
 
-        # Mark this chunk as processed and save the state,
-        data["processed_chunks"][chunk_id] = True
+            self._set_data(transaction)
 
-        transaction.set(doc_ref, data)
+        update_in_transaction(CLIENT.transaction())
 
-        return write_disposition
+    def _get_data(self, transaction: Transaction):
+        """Gets the data from the latest snapshot of the document."""
 
-    return update_in_transaction(CLIENT.transaction())
+        snapshot = self._doc_ref.get(transaction=transaction)
+        if not snapshot.exists:
+            return False
+
+        self._data = t.cast(TableOverwriteState.Data, snapshot.to_dict())
+        return True
+
+    def _set_data(self, transaction: Transaction):
+        """Sets the data in the document."""
+
+        transaction.set(self._doc_ref, self._data)
+
+    @property
+    def latest_timestamp(self):
+        """The latest timestamp from all received chunks."""
+
+        return self._data["latest_timestamp"]
+
+    @property
+    def first_chunk_id(self):
+        """The ID of the first chunk received for the latest timestamp."""
+
+        return self._data["first_chunk_id"]
+
+    @first_chunk_id.setter
+    def first_chunk_id(self, value: t.Optional[str]):
+        """Update the value in the Firestore document."""
+
+        # Check value has changed.
+        if self.first_chunk_id == value:
+            return
+
+        @transactional
+        def update_in_transaction(transaction: Transaction):
+            self._get_data(transaction)  # NOTE: snapshot should exist!
+
+            self._data["first_chunk_id"] = value
+
+            self._set_data(transaction)
+
+        update_in_transaction(CLIENT.transaction())
+
+    @property
+    def was_first_chunk_loaded(self):
+        """A flag designating whether the first chunk has been loaded yet."""
+
+        return self._data["was_first_chunk_loaded"]
+
+    @was_first_chunk_loaded.setter
+    def was_first_chunk_loaded(self, value: bool):
+        """Update the value in the Firestore document."""
+
+        # Check value has changed.
+        if self.was_first_chunk_loaded == value:
+            return
+
+        @transactional
+        def update_in_transaction(transaction: Transaction):
+            self._get_data(transaction)  # NOTE: snapshot should exist!
+
+            self._data["was_first_chunk_loaded"] = value
+
+            self._set_data(transaction)
+
+        update_in_transaction(CLIENT.transaction())
+
+    @property
+    def chunk_is_old(self):
+        """Check if the chunk is from a previous timestamp."""
+
+        return self._chunk_metadata.timestamp < self.latest_timestamp
+
+    @property
+    def first_chunk_is_loading(self):
+        """Check if the first chunk is still loading."""
+
+        return not self.was_first_chunk_loaded and self.first_chunk_id != None
+
+    @property
+    def chunk_is_first(self):
+        """Checks if the chunk is first to be loaded."""
+
+        return self.first_chunk_id == self._chunk_metadata.timestamp_id
