@@ -37,6 +37,7 @@ that. Unknown errors SHOULD NOT be caught so the retry policy can kick in.
 """
 
 import logging
+import typing as t
 from datetime import datetime, timezone
 
 from cloudevents.http import CloudEvent
@@ -55,11 +56,12 @@ from utils import (
 def event_is_too_old(event: CloudEvent):
     """Check if the event is too old to be processed."""
 
-    event_time: datetime = event["time"]
-    if event_time.tzinfo is None:
-        event_time = event_time.replace(tzinfo=timezone.utc)
+    tz = timezone.utc
+    event_time = datetime.fromisoformat(
+        t.cast(str, event["time"]).replace("Z", "+00:00")
+    ).replace(tzinfo=tz)
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(tz)
     event_age = (now - event_time).total_seconds()
     return event_age > MAX_EVENT_AGE_SECONDS
 
