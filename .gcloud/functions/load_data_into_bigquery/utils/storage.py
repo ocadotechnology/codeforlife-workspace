@@ -3,6 +3,7 @@
 Created on 18/11/2025 at 15:03:33(+00:00).
 """
 
+import logging
 import typing as t
 
 from google.cloud.storage import Client  # type: ignore[import-untyped]
@@ -44,9 +45,9 @@ class Blob:
 
         self._blob.metadata = value
 
-        print(f"Updating blob metadata: {self.name}...")
+        logging.info("Updating blob metadata...")
         self._blob.patch()
-        print(f"Updated blob metadata: {self.name}...")
+        logging.info("Updated blob metadata.")
 
     @property
     def bucket_name(self):
@@ -79,6 +80,6 @@ class Blob:
     def delete(self):
         """Deletes the blob from the bucket."""
 
-        print(f"Deleting blob: {self.name}...")
+        logging.info("Deleting blob.")
         self._blob.delete()
-        print(f"Successfully deleted {self.name}.")
+        logging.info("Deleted blob.")

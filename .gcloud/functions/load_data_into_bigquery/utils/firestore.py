@@ -3,6 +3,7 @@
 Created on 18/11/2025 at 15:08:50(+00:00).
 """
 
+import logging
 import typing as t
 from datetime import datetime
 
@@ -72,7 +73,7 @@ class TableOverwriteState:
             if self._get_data(transaction):
                 # Check if the chunk is from a new timestamp.
                 if chunk_metadata.timestamp > self.latest_timestamp:
-                    print("New export timestamp detected. Resetting state.")
+                    logging.info("New timestamp detected. Resetting state.")
                     self._data = default_data
 
             self._set_data(transaction)

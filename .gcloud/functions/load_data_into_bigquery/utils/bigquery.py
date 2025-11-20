@@ -3,6 +3,7 @@
 Created on 18/11/2025 at 15:11:10(+00:00).
 """
 
+import logging
 import typing as t
 
 from google.api_core import exceptions as google_exceptions
@@ -18,7 +19,7 @@ if t.TYPE_CHECKING:
 CLIENT = Client(project=PROJECT_ID)
 
 
-def load_data_into_bigquery(
+def load_data_into_bigquery_table(
     blob: "Blob",
     chunk_metadata: "ChunkMetadata",
     write_disposition: str,
@@ -30,7 +31,7 @@ def load_data_into_bigquery(
     )
 
     try:
-        print("Starting BigQuery load job.")
+        logging.info("Starting BigQuery load job.")
 
         load_job = CLIENT.load_table_from_uri(
             source_uris=f"gs://{blob.bucket_name}/{blob.name}",
@@ -47,10 +48,12 @@ def load_data_into_bigquery(
         )
 
         load_job.result()
-        print(f"BigQuery load successful. Loaded {load_job.output_rows} rows.")
+        logging.info(
+            f"BigQuery load successful. Loaded {load_job.output_rows} rows."
+        )
 
         return True
     except google_exceptions.NotFound:
-        print(f"Error: Table {full_table_id} not found.")
+        logging.error("Table %s not found. Unable to proceed.", full_table_id)
 
     return False

@@ -3,6 +3,7 @@
 Created on 18/11/2025 at 15:07:02(+00:00).
 """
 
+import logging
 import typing as t
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -48,9 +49,7 @@ class ChunkMetadata:
         """Extract the chunk metadata from a blob name."""
 
         def handle_error(msg: str):
-            print(
-                f'Skipping blob with invalid name: "{blob_name}". Reason: {msg}'
-            )
+            logging.info("Skipping blob with invalid name. Reason: %s", msg)
 
         def handle_split(
             value: str,

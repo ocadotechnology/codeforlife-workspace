@@ -25,18 +25,19 @@ example: if a BQ table does not exist, retrying the function will not change
 that. Unknown errors SHOULD NOT be caught so the retry policy can kick in.
 """
 
-import typing as t
+import logging
 from datetime import datetime, timezone
 
 from cloudevents.http import CloudEvent
 from functions_framework import cloud_event
 from google.cloud import bigquery
 from utils import (
+    LOG_CONTEXT,
     MAX_EVENT_AGE_SECONDS,
     Blob,
     ChunkMetadata,
     TableOverwriteState,
-    load_data_into_bigquery,
+    load_data_into_bigquery_table,
 )
 
 
@@ -52,39 +53,22 @@ def event_is_too_old(event: CloudEvent):
     return event_age > MAX_EVENT_AGE_SECONDS
 
 
-@cloud_event
-def main(event: CloudEvent):
-    """The entrypoint."""
-
-    blob = Blob(event.data)
+def process_blob(blob: Blob):
+    """Process the blob."""
 
     # Transform the blob's name to chunk metadata.
     chunk_metadata = ChunkMetadata.from_blob_name(blob.name)
-    # If the blob does not conform to the expected naming convention, delete it.
+    # Check if blob conforms to the naming convention.
     if not chunk_metadata:
         blob.delete()
         return
-
-    # Check if event is too old to keep processing.
-    if event_is_too_old(event):
-        print("Event is too old. Dropping to prevent more retries.")
-        if blob.processed_status != "failed":
-            blob.processed_status = "failed"
-        return
-
-    # Check if blob has already been marked as failed.
-    if blob.processed_status == "failed":
-        print(f"Failed blob: {blob.name}. Skipping.")
-        return
-
-    print(f"Processing blob: {blob.name}")
 
     if chunk_metadata.bq_table_write_mode == "overwrite":
         table_overwrite_state = TableOverwriteState(chunk_metadata)
 
         # Check if the chunk is from a previous timestamp.
         if table_overwrite_state.chunk_is_old:
-            print("Chunk is from a previous timestamp. Deleting.")
+            logging.info("Chunk is from a previous timestamp. Deleting.")
             blob.delete()
             return
 
@@ -99,7 +83,7 @@ def main(event: CloudEvent):
 
         try:
             # Check if the data-chunk was successfully loaded into BQ.
-            if load_data_into_bigquery(
+            if load_data_into_bigquery_table(
                 blob,
                 chunk_metadata,
                 write_disposition=(
@@ -110,11 +94,7 @@ def main(event: CloudEvent):
             ):
                 # Track if the first chunk was loaded.
                 if not table_overwrite_state.was_first_chunk_loaded:
-                    print(
-                        "Loaded the first chunk in"
-                        f" {chunk_metadata.bq_table_name} for timestamp"
-                        f" {chunk_metadata.timestamp}."
-                    )
+                    print("The first chunk has overwritten the table.")
                     TableOverwriteState.was_first_chunk_loaded = True
 
                 blob.delete()
@@ -126,13 +106,14 @@ def main(event: CloudEvent):
                 table_overwrite_state.first_chunk_is_loading
                 and table_overwrite_state.chunk_is_first
             ):
+                logging.info("Releasing claim on first spot and retrying.")
                 table_overwrite_state.first_chunk_id = None
 
             raise ex  # Reraise exception so it can retry.
 
     else:  # chunk_metadata.bq_table_write_mode == "append"
         # Check if the data-chunk was successfully loaded into BQ.
-        if load_data_into_bigquery(
+        if load_data_into_bigquery_table(
             blob,
             chunk_metadata,
             write_disposition=bigquery.WriteDisposition.WRITE_APPEND,
@@ -140,3 +121,36 @@ def main(event: CloudEvent):
             blob.delete()
         else:
             blob.processed_status = "failed"
+
+
+@cloud_event
+def main(event: CloudEvent):
+    """The entrypoint."""
+
+    blob = Blob(event.data)
+
+    # Provide context for each log.
+    token = LOG_CONTEXT.set(
+        {
+            "event_id": event["id"],
+            "bucket_name": blob.bucket_name,
+            "blob_name": blob.name,
+        }
+    )
+
+    try:
+        # Check if event is too old to be processed.
+        if event_is_too_old(event):
+            logging.info("Event is tool old. Dropping to prevent more retries.")
+            if blob.processed_status != "failed":
+                blob.processed_status = "failed"
+            return
+
+        # Check if blob has already been marked as failed.
+        if blob.processed_status == "failed":
+            logging.info("Blob's processed-status is 'failed'. Skipping.")
+            return
+
+        process_blob(blob)
+    finally:
+        LOG_CONTEXT.reset(token)
