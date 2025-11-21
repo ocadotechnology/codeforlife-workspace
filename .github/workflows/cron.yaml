@@ -17,7 +17,8 @@ jobs:
       - name: 🛫 Checkout
         uses: actions/checkout@v5
 
-      - name: 🚀 Deploy Cron Jobs on GCloud
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/gcloud/deploy-app@main
-        with:
-          deploy-args: legacy/cron.yaml
+      - name: ☁️ Setup GCloud
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/gcloud/setup@main
+
+      - name: 🚀 Deploy CRON Jobs on GCloud
+        run: gcloud app deploy legacy/cron.yaml

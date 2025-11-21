@@ -17,7 +17,8 @@ jobs:
       - name: 🛫 Checkout
         uses: actions/checkout@v5
 
+      - name: ☁️ Setup GCloud
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/gcloud/setup@main
+
       - name: 🚀 Deploy Routing Rules on GCloud
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/gcloud/deploy-app@main
-        with:
-          deploy-args: legacy/dispatch.yaml
+        run: gcloud app deploy legacy/dispatch.yaml
