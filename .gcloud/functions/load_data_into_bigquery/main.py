@@ -158,7 +158,7 @@ def main(event: CloudEvent):
     try:
         # Check if event is too old to be processed.
         if event_is_too_old(event):
-            logging.info("Event is tool old. Dropping to prevent more retries.")
+            logging.info("Event is too old. Dropping to prevent more retries.")
             if blob.processed_status != "failed":
                 blob.processed_status = "failed"
             return
