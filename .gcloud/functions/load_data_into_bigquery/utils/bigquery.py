@@ -25,7 +25,7 @@ def load_data_into_bigquery_table(
     write_disposition: str,
 ):
     """Loads the data from the CSV file into BigQuery.
-    
+
     https://docs.cloud.google.com/bigquery/docs/loading-data-cloud-storage-csv#python
 
     Args:
