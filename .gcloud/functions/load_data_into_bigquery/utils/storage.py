@@ -80,6 +80,6 @@ class Blob:
     def delete(self):
         """Deletes the blob from the bucket."""
 
-        logging.info("Deleting blob.")
+        logging.info("Deleting blob...")
         self._blob.delete()
         logging.info("Deleted blob.")
