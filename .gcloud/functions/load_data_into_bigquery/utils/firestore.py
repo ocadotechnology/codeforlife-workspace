@@ -72,7 +72,6 @@ class TableOverwriteState:
 
         @transactional
         def update_in_transaction(transaction: Transaction):
-            default_data = self._data
             if self._get_data(transaction):
                 # Check if the chunk is from a new timestamp.
                 if chunk_metadata.timestamp > self.latest_timestamp:

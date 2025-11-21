@@ -51,7 +51,7 @@ class ChunkMetadata:
         """Extract the chunk metadata from a blob name."""
 
         def handle_error(msg: str):
-            logging.info("Skipping blob with invalid name. Reason: %s", msg)
+            logging.error("Skipping blob with invalid name. Reason: %s", msg)
 
         def handle_split(
             value: str,
