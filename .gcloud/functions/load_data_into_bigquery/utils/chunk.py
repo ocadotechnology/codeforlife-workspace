@@ -68,7 +68,7 @@ class ChunkMetadata:
                 )
 
             return parts
-        
+
         # E.g. "user__append/2025-01-01_00:00:00__1_1000.csv"
         blob_name_suffix = ".csv"
         if not blob_name.endswith(blob_name_suffix):
