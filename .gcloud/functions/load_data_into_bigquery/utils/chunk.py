@@ -1,0 +1,161 @@
+"""
+© Ocado Group
+Created on 18/11/2025 at 15:07:02(+00:00).
+"""
+
+import logging
+import typing as t
+from dataclasses import dataclass
+from datetime import datetime, timezone
+
+_BqTableWriteMode = t.Literal["overwrite", "append"]
+
+
+@dataclass(frozen=True)
+class ChunkMetadata:
+    """All of the metadata used to identify a chunk.
+
+    The CSVs follow a naming convention which identifies the chunks and affects
+    the way it should be processed.
+
+    "{table_id}__{table_write_mode}/{timestamp}__{obj_i_start}_{obj_i_end}.csv"
+    - table_id: the table in BigQuery where this data is to be imported.
+    - table_write_mode: whether to overwrite or append to the BQ table.
+    - timestamp: when the export was triggered.
+    - obj_i_start: The start of the object-index range.
+    - obj_i_end: The end of the object-index range.
+
+    For example: "user__append/2025-01-01_00:00:00__1_1000.csv"
+    - table_id: the data is to imported into the "user" table in BQ.
+    - table_write_mode: the data is to be appended to the end of the BQ table.
+    - timestamp: the export was triggered on 2025-01-01 at 00:00:00.
+    - obj_i_start: the data-chunk is from row/object 1.
+    - obj_i_end: the data-chunk is to row/object 1000.
+    """
+
+    bq_table_name: str
+    bq_table_write_mode: _BqTableWriteMode
+    timestamp: datetime
+    obj_i_start: int
+    obj_i_end: int
+
+    @property
+    def timestamp_id(self):
+        """The ID of this chunk relative to its timestamp."""
+
+        return f"{self.obj_i_start}_{self.obj_i_end}"
+
+    @classmethod
+    # pylint: disable-next=too-many-locals,too-many-return-statements
+    def from_blob_name(cls, blob_name: str):
+        """Extract the chunk metadata from a blob name."""
+
+        def handle_error(msg: str):
+            logging.error("Skipping blob with invalid name. Reason: %s", msg)
+
+        def handle_split(
+            value: str,
+            sep: str,
+            parts_name: str,
+            expected_part_count: int,
+        ):
+            parts = value.split(sep)
+            if len(parts) != expected_part_count:
+                return handle_error(
+                    f"{parts_name} should have"
+                    f" {expected_part_count} parts when split with"
+                    f' "{sep}".'
+                )
+
+            return parts
+
+        # E.g. "user__append/2025-01-01_00:00:00__1_1000.csv"
+        blob_name_suffix = ".csv"
+        if not blob_name.endswith(blob_name_suffix):
+            return handle_error(
+                f'Blob name should end with "{blob_name_suffix}".'
+            )
+        # "user__append/2025-01-01_00:00:00__1_1000"
+        blob_name = blob_name.removesuffix(blob_name_suffix)
+
+        blob_name_parts = handle_split(
+            blob_name,
+            sep="/",
+            parts_name="blob name",
+            expected_part_count=2,
+        )
+        if not blob_name_parts:
+            return None
+        # "user__append", "2025-01-01_00:00:00__1_1000"
+        folder_name, file_name = blob_name_parts
+
+        folder_name_parts = handle_split(
+            folder_name,
+            sep="__",
+            parts_name="folder name",
+            expected_part_count=2,
+        )
+        if not folder_name_parts:
+            return None
+        # "user", "append"
+        bq_table_name, bq_table_write_mode = folder_name_parts
+
+        if not bq_table_name:
+            return handle_error("Table name is blank.")
+
+        bq_table_write_mode_values = ("overwrite", "append")
+        if not bq_table_write_mode in bq_table_write_mode_values:
+            return handle_error(
+                f"Table write-mode must be one of {bq_table_write_mode_values}."
+            )
+        bq_table_write_mode = t.cast(_BqTableWriteMode, bq_table_write_mode)
+
+        file_name_parts = handle_split(
+            file_name,
+            sep="__",
+            parts_name="file name",
+            expected_part_count=2,
+        )
+        if not file_name_parts:
+            return None
+        # "2025-01-01_00:00:00", "1_1000"
+        timestamp_fstr, obj_i_span_fstr = file_name_parts
+
+        try:
+            # datetime(2025, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
+            timestamp = datetime.strptime(
+                timestamp_fstr, "%Y-%m-%d_%H:%M:%S"
+            ).replace(tzinfo=timezone.utc)
+        except ValueError as error:
+            return handle_error(str(error))
+
+        obj_i_span_fstr_parts = handle_split(
+            obj_i_span_fstr,
+            sep="_",
+            parts_name="object-index span",
+            expected_part_count=2,
+        )
+        if not obj_i_span_fstr_parts:
+            return None
+        # "1", "1000"
+        obj_i_start_fstr, obj_i_end_fstr = obj_i_span_fstr_parts
+
+        try:
+            # 1, 1000
+            obj_i_start, obj_i_end = int(obj_i_start_fstr), int(obj_i_end_fstr)
+        except ValueError as error:
+            return handle_error(str(error))
+
+        if obj_i_start < 1:
+            return handle_error("Object start-index is less than 1.")
+
+        if obj_i_end < obj_i_start:
+            return handle_error("Object end-index is less than the start.")
+
+        return cls(
+            bq_table_name=bq_table_name,
+            bq_table_write_mode=bq_table_write_mode,
+            timestamp=timestamp,
+            obj_i_start=obj_i_start,
+            obj_i_end=obj_i_end,
+        )

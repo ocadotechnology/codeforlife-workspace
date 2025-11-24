@@ -2,14 +2,14 @@ name: Deploy GCloud Functions
 
 on:
   push:
-    # branches:
-    #   - main
+    branches:
+      - main
     paths:
       - ".gcloud/functions/**"
   workflow_dispatch:
     inputs:
       function:
-        description: Select the function you want to deploy.
+        description: Select the function to deploy.
         required: true
         type: choice
         options:
@@ -20,11 +20,91 @@ env:
   FUNCS_DIR: .gcloud/functions
 
 jobs:
-  functions:
+  setup:
     runs-on: ubuntu-22.04
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - name: 🛫 Checkout Code
         uses: actions/checkout@v5
         with:
           fetch-depth: 2 # Required to compare diffs
           persist-credentials: true
+
+      - name: 🕵️ List Functions
+        id: list
+        working-directory: ${{ env.FUNCS_DIR }}
+        run: |
+          readarray -t func_dirs < <(ls -d1 */)
+          func_dirs=("${func_dirs[@]%/}")
+          printf "%s\n" "${func_dirs[@]}"
+
+          functions="$(jq -n -c --args '$ARGS.positional' "${func_dirs[@]}")"
+          echo "functions=$functions" >> $GITHUB_OUTPUT
+
+          files_yaml="$(echo "$functions" | jq -c '
+            map({(.) : ["${{ env.FUNCS_DIR }}/\(.)/**"]}) | add
+          ')"
+          echo "files_yaml=$files_yaml" >> $GITHUB_OUTPUT
+
+      - name: 🔎 Check for File Changes
+        id: changed-files
+        if: github.event_name == 'push'
+        uses: tj-actions/changed-files@24d32ffd492484c1d75e0c0b894501ddb9d30d62 # v47 (SHA is safer than the version tag!)
+        with:
+          files_yaml: ${{ steps.list.outputs.files_yaml }}
+
+      - name: ⚙️ Set Matrix
+        id: set-matrix
+        run: |
+          changed_files='${{ toJson(steps.changed-files.outputs) }}'
+
+          matrix='{"include":[]}'
+          while IFS= read -r function; do
+            if (
+              ${{ inputs.function == '__all__' }} ||
+              [ "${{ inputs.function }}" = "$function" ] ||
+              $(echo "$changed_files" | jq -r ".${function}_any_changed")
+            ); then
+              matrix="$(echo "$matrix" | jq -c \
+                --arg function "$function" \
+                '.include += [{ "function": $function }]'
+              )"
+            fi
+          done < <(echo '${{ steps.list.outputs.functions }}' | jq -r '.[]')
+          echo "matrix=$matrix" >> $GITHUB_OUTPUT
+
+  deploy:
+    needs: [setup]
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+    permissions:
+      id-token: write
+    steps:
+      - name: 🛫 Checkout Code
+        uses: actions/checkout@v5
+
+      - name: ☁️ Setup GCloud
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/gcloud/setup@main
+
+      # https://docs.cloud.google.com/functions/docs/deploy
+      - name: 🚀 Deploy Function on GCloud
+        working-directory: ${{ env.FUNCS_DIR }}/${{ matrix.function }}
+        run: |
+          declare -A flags=(
+            ["load_data_into_bigquery"]="--runtime=python312 \
+            --trigger-event=google.storage.object.finalize \
+            --trigger-resource=${{ secrets.GOOGLE_BIGQUERY_BUCKET_NAME }} \
+            --gen2 \
+            --retry \
+            --serve-all-traffic-latest-revision \
+            --set-env-vars=FIRESTORE_DB_ID=${{ secrets.GOOGLE_FIRESTORE_DB_ID }},BIGQUERY_DATASET_ID=${{ secrets.GOOGLE_BIGQUERY_DATASET_ID }}"
+          )
+
+          gcloud functions deploy ${{ matrix.function }} \
+            --region=europe-west2 \
+            --source=. \
+            --entry-point=main \
+            --ignore-file=../../.gcloudignore \
+            ${flags["${{ matrix.function }}"]}
