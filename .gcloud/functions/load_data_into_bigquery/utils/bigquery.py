@@ -34,9 +34,9 @@ def load_data_into_bigquery_table(
         write_disposition: The write-mode for the current chunk.
 
     Returns:
-        A flag designating whether the flag was successfully processed. False
+        A flag designating whether the blob was successfully processed. False
         will be returned if a known error occurred which makes it impossible to
-        load the data (e.g. the BQ table does not exist) to avoid pointlessly
+        load the data (e.g. the BQ table does not exist) to avoid pointless
         retries.
     """
 

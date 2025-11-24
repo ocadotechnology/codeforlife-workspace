@@ -36,7 +36,7 @@ class JsonFormatter(logging.Formatter):
         context = LOG_CONTEXT.get()
         log_obj.update(context)
 
-        # If the log call passed extra={"foo": "bar"}, add that too
+        # Add any extra props (e.g. extra={"foo": "bar"}) passed in the log call
         if hasattr(record, "props"):
             log_obj.update(record.props)
 

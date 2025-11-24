@@ -33,11 +33,11 @@ class ChunkMetadata:
     - obj_i_end: the data-chunk is to row/object 1000.
     """
 
-    bq_table_name: str  # name of BigQuery table
-    bq_table_write_mode: _BqTableWriteMode  # write mode for BigQuery table
-    timestamp: datetime  # when the data export began
-    obj_i_start: int  # object index span start
-    obj_i_end: int  # object index span end
+    bq_table_name: str
+    bq_table_write_mode: _BqTableWriteMode
+    timestamp: datetime
+    obj_i_start: int
+    obj_i_end: int
 
     @property
     def timestamp_id(self):
@@ -68,8 +68,16 @@ class ChunkMetadata:
                 )
 
             return parts
-
+        
         # E.g. "user__append/2025-01-01_00:00:00__1_1000.csv"
+        blob_name_suffix = ".csv"
+        if not blob_name.endswith(blob_name_suffix):
+            return handle_error(
+                f'Blob name should end with "{blob_name_suffix}".'
+            )
+        # "user__append/2025-01-01_00:00:00__1_1000"
+        blob_name = blob_name.removesuffix(blob_name_suffix)
+
         blob_name_parts = handle_split(
             blob_name,
             sep="/",
@@ -78,7 +86,7 @@ class ChunkMetadata:
         )
         if not blob_name_parts:
             return None
-        # "user__append", "2025-01-01_00:00:00__1_1000.csv"
+        # "user__append", "2025-01-01_00:00:00__1_1000"
         folder_name, file_name = blob_name_parts
 
         folder_name_parts = handle_split(
@@ -101,14 +109,6 @@ class ChunkMetadata:
                 f"Table write-mode must be one of {bq_table_write_mode_values}."
             )
         bq_table_write_mode = t.cast(_BqTableWriteMode, bq_table_write_mode)
-
-        file_name_suffix = ".csv"
-        if not file_name.endswith(file_name_suffix):
-            return handle_error(
-                f'File name should end with "{file_name_suffix}".'
-            )
-        # "2025-01-01_00:00:00__1_1000"
-        file_name = file_name.removesuffix(file_name_suffix)
 
         file_name_parts = handle_split(
             file_name,

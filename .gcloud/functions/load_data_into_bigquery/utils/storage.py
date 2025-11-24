@@ -63,11 +63,12 @@ class Blob:
 
     @property
     def processed_status(self):
+        """The status of the blob in the metadata."""
         return (self.metadata or {}).get("processed_status")
 
     @processed_status.setter
     def processed_status(self, value: _ProcessedStatus):
-        """Moves the blob to the failed subdirectory for manual inspection."""
+        """Set the status of the blob in the metadata."""
 
         # Check value has changed.
         if self.processed_status == value:
