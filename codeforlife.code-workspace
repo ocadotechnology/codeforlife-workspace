@@ -112,7 +112,14 @@
       "**/.workspace/**": true
     },
     "testing.defaultGutterClickAction": "debug",
-    "cSpell.words": ["codeforlife", "klass", "ocado", "kurono", "pipenv"],
+    "cSpell.words": [
+      "codeforlife",
+      "klass",
+      "ocado",
+      "kurono",
+      "pipenv",
+      "blockly"
+    ],
     "liveServer.settings.multiRootWorkspaceName": "/workspace",
     // Terminal
     "terminal.integrated.tabs.title": "${cwd} (${process})",
