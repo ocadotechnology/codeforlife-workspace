@@ -4,10 +4,6 @@ inputs:
   cfl-bot-gh-token:
     description: "The GitHub token of the CFL bot."
     required: true
-  npm-token:
-    description: "The NPM token which gives write permissions to the package."
-    required: true
-    default: ""
   checkout:
     description: "A flag to designate if the code should be checked out."
     required: true
@@ -39,14 +35,14 @@ runs:
       run: |
         npm install --global npm
         npm install --global \
-          semantic-release@^20.1.1 \
+          semantic-release@^25.0.2 \
           @semantic-release/git@^10.0.1 \
-          @semantic-release/changelog@^6.0.2
+          @semantic-release/changelog@^6.0.3
 
     - name: 🚀 Publish Semantic Release
       shell: bash
       env:
-        NPM_TOKEN: ${{ inputs.npm-token }}
+        # NOTE: do not use NPM_TOKEN! Use GitHub OIDC instead for npm authentication.
         GH_TOKEN: ${{ inputs.cfl-bot-gh-token }}
         GIT_AUTHOR_NAME: cfl-bot
         GIT_AUTHOR_EMAIL: codeforlife-bot@ocado.com
