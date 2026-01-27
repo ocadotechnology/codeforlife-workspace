@@ -150,8 +150,14 @@ function code:check() {
 
 function migrations:check() {
   # Check no pending Django migrations.
-  # https://docs.djangoproject.com/en/4.2/ref/django-admin/#django-admin-makemigrations
+  # https://docs.djangoproject.com/en/5.1/ref/django-admin/#makemigrations
   _django makemigrations --check --dry-run
+}
+
+function project:check() {
+  # Check Django project is valid.
+  # https://docs.djangoproject.com/en/5.1/ref/django-admin/#check
+  _django check
 }
 
 function test() {
@@ -198,6 +204,7 @@ function check() {
   callback="format:check" step Checking format
   callback="types:check" step Checking types
   callback="code:check" step Checking code
+  callback="project:check" step Checking Django project
   callback="migrations:check" step Checking Django migrations
   callback="test" step Running tests
   if eval_bool "${packages:-0}"; then

@@ -161,6 +161,9 @@ jobs:
       - name: 🔎 Check Static Code
         run: .workspace/backend/scripts code:check
 
+      - name: 🔎 Check Django Project
+        run: .workspace/backend/scripts project:check
+
       - name: 🔎 Check Django Migrations
         run: .workspace/backend/scripts migrations:check
 
