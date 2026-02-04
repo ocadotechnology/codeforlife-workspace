@@ -200,6 +200,26 @@
         "database": "template",
         "username": "root",
         "password": "password"
+      },
+      {
+        "previewLimit": 50,
+        "server": "db",
+        "port": 5432,
+        "driver": "PostgreSQL",
+        "name": "legacy_portal",
+        "database": "legacy_portal",
+        "username": "root",
+        "password": "password"
+      },
+      {
+        "previewLimit": 50,
+        "server": "db",
+        "port": 5432,
+        "driver": "PostgreSQL",
+        "name": "legacy_rapid_router",
+        "database": "legacy_rapid_router",
+        "username": "root",
+        "password": "password"
       }
     ],
     // JavaScript, JavaScript React, TypeScript, TypeScript React
