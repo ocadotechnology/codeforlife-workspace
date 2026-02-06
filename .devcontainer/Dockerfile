@@ -82,11 +82,11 @@ RUN apt-get update && \
   # 3. Download and Install Google Chrome
   wget -q -O /tmp/chrome.zip "$CHROME_URL" && \
   unzip /tmp/chrome.zip -d /opt/ && \
-  ln -s /opt/chrome-linux64/chrome /usr/bin/google-chrome && \
+  ln -s /opt/chrome-linux64/chrome /usr/local/bin/google-chrome && \
   # 4. Download and Install ChromeDriver
   wget -q -O /tmp/chromedriver.zip "$DRIVER_URL" && \
   unzip /tmp/chromedriver.zip -d /opt/ && \
-  ln -s /opt/chromedriver-linux64/chromedriver /usr/bin/chromedriver && \
+  ln -s /opt/chromedriver-linux64/chromedriver /usr/local/bin/chromedriver && \
   # 5. Cleanup
   rm /tmp/chrome.zip /tmp/chromedriver.zip && \
   apt-get clean && \
