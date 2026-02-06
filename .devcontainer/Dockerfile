@@ -27,3 +27,67 @@ RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dear
 RUN curl --compressed https://downloads.snyk.io/cli/stable/snyk-linux -o snyk && \
   chmod +x ./snyk && \
   mv ./snyk /usr/local/bin/
+
+# Install Google Chrome and ChromeDriver.
+# https://googlechromelabs.github.io/chrome-for-testing/
+RUN apt-get update && \
+  export DEBIAN_FRONTEND=noninteractive && \
+  # 1. Install dependencies for Google Chrome
+  # https://pptr.dev/troubleshooting#chrome-doesnt-launch-on-linux
+  # https://source.chromium.org/chromium/chromium/src/+/main:chrome/installer/linux/debian/dist_package_versions.json
+  apt-get install -y --no-install-recommends \
+    ca-certificates \
+    fonts-liberation \
+    libasound2 \
+    libatk-bridge2.0-0 \
+    libatk1.0-0 \
+    libc6 \
+    libcairo2 \
+    libcups2 \
+    libdbus-1-3 \
+    libexpat1 \
+    libfontconfig1 \
+    libgbm1 \
+    libgcc1 \
+    libglib2.0-0 \
+    libgtk-3-0 \
+    libnspr4 \
+    libnss3 \
+    libpango-1.0-0 \
+    libpangocairo-1.0-0 \
+    libstdc++6 \
+    libx11-6 \
+    libx11-xcb1 \
+    libxcb1 \
+    libxcomposite1 \
+    libxcursor1 \
+    libxdamage1 \
+    libxext6 \
+    libxfixes3 \
+    libxi6 \
+    libxrandr2 \
+    libxrender1 \
+    libxss1 \
+    libxtst6 \
+    lsb-release \
+    wget \
+    xdg-utils \
+    curl \
+    unzip \
+    jq && \
+  # 2. Fetch URLs for Stable Google Chrome and ChromeDriver
+  JSON_URL="https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json" && \
+  CHROME_URL=$(curl -s "$JSON_URL" | jq -r '.channels.Stable.downloads.chrome[] | select(.platform=="linux64") | .url') && \
+  DRIVER_URL=$(curl -s "$JSON_URL" | jq -r '.channels.Stable.downloads.chromedriver[] | select(.platform=="linux64") | .url') && \
+  # 3. Download and Install Google Chrome
+  wget -q -O /tmp/chrome.zip "$CHROME_URL" && \
+  unzip /tmp/chrome.zip -d /opt/ && \
+  ln -s /opt/chrome-linux64/chrome /usr/bin/google-chrome && \
+  # 4. Download and Install ChromeDriver
+  wget -q -O /tmp/chromedriver.zip "$DRIVER_URL" && \
+  unzip /tmp/chromedriver.zip -d /opt/ && \
+  ln -s /opt/chromedriver-linux64/chromedriver /usr/bin/chromedriver && \
+  # 5. Cleanup
+  rm /tmp/chrome.zip /tmp/chromedriver.zip && \
+  apt-get clean && \
+  rm -rf /var/lib/apt/lists/*
