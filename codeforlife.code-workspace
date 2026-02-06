@@ -6,68 +6,68 @@
     { "path": "legacy", "name": "/workspace/legacy" },
     {
       "path": "backend/package",
-      "name": "/workspace/backend/package"
+      "name": "/workspace/backend/package",
     },
     {
       "path": "frontend/package",
-      "name": "/workspace/frontend/package"
+      "name": "/workspace/frontend/package",
     },
     {
       "path": "backend/contributor",
-      "name": "/workspace/backend/contributor"
+      "name": "/workspace/backend/contributor",
     },
     {
       "path": "frontend/contributor",
-      "name": "/workspace/frontend/contributor"
+      "name": "/workspace/frontend/contributor",
     },
     {
       "path": "backend/portal",
-      "name": "/workspace/backend/portal"
+      "name": "/workspace/backend/portal",
     },
     {
       "path": "frontend/portal",
-      "name": "/workspace/frontend/portal"
+      "name": "/workspace/frontend/portal",
     },
     {
       "path": "backend/rapid-router",
-      "name": "/workspace/backend/rapid-router"
+      "name": "/workspace/backend/rapid-router",
     },
     {
       "path": "frontend/rapid-router",
-      "name": "/workspace/frontend/rapid-router"
+      "name": "/workspace/frontend/rapid-router",
     },
     {
       "path": "backend/sso",
-      "name": "/workspace/backend/sso"
+      "name": "/workspace/backend/sso",
     },
     {
       "path": "frontend/sso",
-      "name": "/workspace/frontend/sso"
+      "name": "/workspace/frontend/sso",
     },
     {
       "path": "backend/template",
-      "name": "/workspace/backend/template"
+      "name": "/workspace/backend/template",
     },
     {
       "path": "frontend/template",
-      "name": "/workspace/frontend/template"
+      "name": "/workspace/frontend/template",
     },
     {
       "path": "backend/scheduler",
-      "name": "/workspace/backend/scheduler"
+      "name": "/workspace/backend/scheduler",
     },
     {
       "path": "legacy/portal",
-      "name": "/workspace/legacy/portal"
+      "name": "/workspace/legacy/portal",
     },
     {
       "path": "legacy/rapid-router",
-      "name": "/workspace/legacy/rapid-router"
+      "name": "/workspace/legacy/rapid-router",
     },
     {
       "path": "legacy/deploy-appengine",
-      "name": "/workspace/legacy/deploy-appengine"
-    }
+      "name": "/workspace/legacy/deploy-appengine",
+    },
   ],
   "settings": {
     // General
@@ -79,7 +79,7 @@
     "files.eol": "\n",
     "files.associations": {
       "/workspace/.scripts/**": "shellscript",
-      "/workspace/.github/workflows/scripts/**": "shellscript"
+      "/workspace/.github/workflows/scripts/**": "shellscript",
     },
     "files.exclude": {
       // Python
@@ -91,7 +91,7 @@
       // JavaScript
       "**/*.tsbuildinfo": true,
       // Custom
-      "**/.workspace": true
+      "**/.workspace": true,
     },
     "files.watcherExclude": {
       // General
@@ -109,7 +109,7 @@
       "**/node_modules/**": true,
       "**/coverage/**": true,
       // Custom
-      "**/.workspace/**": true
+      "**/.workspace/**": true,
     },
     "testing.defaultGutterClickAction": "debug",
     "cSpell.words": [
@@ -118,7 +118,7 @@
       "ocado",
       "kurono",
       "pipenv",
-      "blockly"
+      "blockly",
     ],
     "liveServer.settings.multiRootWorkspaceName": "/workspace",
     // Terminal
@@ -135,7 +135,7 @@
       "--cov=src",
       "--cov-report=html",
       "-c=/workspace/backend/pyproject.toml",
-      "src"
+      "src",
     ],
     "python.testing.pytestEnabled": true,
     "python.testing.unittestEnabled": false,
@@ -145,7 +145,7 @@
     ],
     "[python]": {
       "editor.defaultFormatter": "ms-python.black-formatter",
-      "editor.tabSize": 4
+      "editor.tabSize": 4,
     },
     "autoDocstring.customTemplatePath": "/workspace/backend/python-docstring.mustache",
     "black-formatter.args": ["--config", "/workspace/backend/pyproject.toml"],
@@ -153,7 +153,7 @@
     "isort.args": ["--settings-file=/workspace/backend/pyproject.toml"],
     "isort.path": [".venv/bin/python", "-m", "isort"],
     "mypy-type-checker.args": [
-      "--config-file=/workspace/backend/pyproject.toml"
+      "--config-file=/workspace/backend/pyproject.toml",
     ],
     "mypy-type-checker.path": [".venv/bin/python", "-m", "mypy"],
     "pylint.args": ["--rcfile=/workspace/backend/pyproject.toml"],
@@ -169,7 +169,7 @@
         "name": "contributor",
         "database": "contributor",
         "username": "root",
-        "password": "password"
+        "password": "password",
       },
       {
         "previewLimit": 50,
@@ -179,7 +179,7 @@
         "name": "portal",
         "database": "portal",
         "username": "root",
-        "password": "password"
+        "password": "password",
       },
       {
         "previewLimit": 50,
@@ -189,7 +189,7 @@
         "name": "sso",
         "database": "sso",
         "username": "root",
-        "password": "password"
+        "password": "password",
       },
       {
         "previewLimit": 50,
@@ -199,7 +199,7 @@
         "name": "template",
         "database": "template",
         "username": "root",
-        "password": "password"
+        "password": "password",
       },
       {
         "previewLimit": 50,
@@ -209,7 +209,7 @@
         "name": "legacy_portal",
         "database": "legacy_portal",
         "username": "root",
-        "password": "password"
+        "password": "password",
       },
       {
         "previewLimit": 50,
@@ -219,8 +219,8 @@
         "name": "legacy_rapid_router",
         "database": "legacy_rapid_router",
         "username": "root",
-        "password": "password"
-      }
+        "password": "password",
+      },
     ],
     // JavaScript, JavaScript React, TypeScript, TypeScript React
     "javascript.format.semicolons": "remove",
@@ -231,29 +231,29 @@
       "editor.defaultFormatter": "esbenp.prettier-vscode",
       "editor.codeActionsOnSave": {
         "source.fixAll.eslint": "always",
-        "source.organizeImports": "never"
-      }
+        "source.organizeImports": "never",
+      },
     },
     "[javascriptreact]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode",
       "editor.codeActionsOnSave": {
         "source.fixAll.eslint": "always",
-        "source.organizeImports": "never"
-      }
+        "source.organizeImports": "never",
+      },
     },
     "[typescript]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode",
       "editor.codeActionsOnSave": {
         "source.fixAll.eslint": "always",
-        "source.organizeImports": "never"
-      }
+        "source.organizeImports": "never",
+      },
     },
     "[typescriptreact]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode",
       "editor.codeActionsOnSave": {
         "source.fixAll.eslint": "always",
-        "source.organizeImports": "never"
-      }
+        "source.organizeImports": "never",
+      },
     },
     "prettier.configPath": "/workspace/frontend/.prettierrc.json",
     "prettier.ignorePath": "/workspace/frontend/.prettierignore",
@@ -264,7 +264,7 @@
     // GraphQL
     "[graphql]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
     // Handlebars
-    "[handlebars]": { "editor.defaultFormatter": "esbenp.prettier-vscode" }
+    "[handlebars]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
   },
   "tasks": {
     "version": "2.0.0",
@@ -280,8 +280,8 @@
           "contributor",
           "template",
           "sso",
-          "rapid-router"
-        ]
+          "rapid-router",
+        ],
       },
       {
         "id": "frontend-folder",
@@ -293,26 +293,26 @@
           "contributor",
           "template",
           "sso",
-          "rapid-router"
-        ]
+          "rapid-router",
+        ],
       },
       {
         "id": "remember-frontend-service",
         "type": "command",
         "command": "extension.commandvariable.transform",
-        "args": { "text": "${remember:frontend-service}" }
+        "args": { "text": "${remember:frontend-service}" },
       },
       {
         "id": "args",
         "type": "promptString",
-        "description": "Expected Format: \"{func} {arg1} {arg2} ...\"."
+        "description": "Expected Format: \"{func} {arg1} {arg2} ...\".",
       },
       {
         "id": "frontend:scripts:run:dev:terminate",
         "type": "command",
         "command": "workbench.action.tasks.terminate",
-        "args": "frontend:scripts:run:dev"
-      }
+        "args": "frontend:scripts:run:dev",
+      },
     ],
     "tasks": [
       {
@@ -320,14 +320,14 @@
         "command": "sudo chmod +x /workspace/backend/scripts && /workspace/backend/scripts ${input:args}",
         "type": "shell",
         "problemMatcher": [],
-        "options": { "cwd": "/workspace/backend/${input:backend-folder}" }
+        "options": { "cwd": "/workspace/backend/${input:backend-folder}" },
       },
       {
         "label": "scripts:frontend",
         "command": "sudo chmod +x /workspace/frontend/scripts && /workspace/frontend/scripts ${input:args}",
         "type": "shell",
         "problemMatcher": [],
-        "options": { "cwd": "/workspace/frontend/${input:frontend-folder}" }
+        "options": { "cwd": "/workspace/frontend/${input:frontend-folder}" },
       },
       {
         "label": "frontend:scripts:run:dev",
@@ -337,16 +337,16 @@
         "isBackground": true,
         "options": {
           "cwd": "/workspace/frontend/${input:remember-frontend-service}",
-          "env": { "BROWSER": "none" }
-        }
+          "env": { "BROWSER": "none" },
+        },
       },
       {
         "label": "frontend:scripts:run:dev:terminate",
         "command": "echo ${input:frontend:scripts:run:dev:terminate}",
         "type": "shell",
-        "problemMatcher": []
-      }
-    ]
+        "problemMatcher": [],
+      },
+    ],
   },
   "launch": {
     "version": "0.2.0",
@@ -364,9 +364,9 @@
             "contributor",
             "template",
             "sso",
-            "rapid-router"
-          ]
-        }
+            "rapid-router",
+          ],
+        },
       },
       {
         "id": "frontend-service",
@@ -381,16 +381,16 @@
             "contributor",
             "template",
             "sso",
-            "rapid-router"
-          ]
-        }
+            "rapid-router",
+          ],
+        },
       },
       {
         "id": "django-network",
         "type": "promptString",
         "description": "Expected Format: \"{host}:{port}\".",
-        "default": "localhost:8000"
-      }
+        "default": "localhost:8000",
+      },
     ],
     "configurations": [
       {
@@ -399,7 +399,7 @@
         "name": "Python: Current File",
         "program": "${file}",
         "request": "launch",
-        "type": "debugpy"
+        "type": "debugpy",
       },
       {
         "args": ["runserver", "${input:django-network}"],
@@ -410,7 +410,7 @@
         "program": "manage.py",
         "request": "launch",
         "type": "debugpy",
-        "cwd": "/workspace/backend/${input:backend-service}"
+        "cwd": "/workspace/backend/${input:backend-service}",
       },
       {
         "env": { "SERVER_MODE": "celery" },
@@ -419,7 +419,7 @@
         "program": "application.py",
         "request": "launch",
         "type": "debugpy",
-        "cwd": "/workspace/backend/${input:backend-service}"
+        "cwd": "/workspace/backend/${input:backend-service}",
       },
       // https://code.visualstudio.com/docs/python/testing
       {
@@ -429,7 +429,7 @@
         "presentation": { "hidden": true },
         "request": "launch",
         "type": "debugpy",
-        "purpose": ["debug-test"]
+        "purpose": ["debug-test"],
       },
       {
         "name": "Vite Server",
@@ -438,11 +438,11 @@
         "request": "launch",
         "type": "chrome",
         "url": "http://localhost:5173",
-        "webRoot": "/workspace/frontend/${input:frontend-service}"
-      }
+        "webRoot": "/workspace/frontend/${input:frontend-service}",
+      },
       // TODO: Vitest Debug
       // https://vitest.dev/guide/debugging.html#vs-code
-    ]
+    ],
   },
-  "extensions": { "unwantedRecommendations": ["ms-azuretools.vscode-docker"] }
+  "extensions": { "unwantedRecommendations": ["ms-azuretools.vscode-docker"] },
 }
