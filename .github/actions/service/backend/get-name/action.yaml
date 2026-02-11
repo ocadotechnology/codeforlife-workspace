@@ -16,6 +16,7 @@ runs:
             python \
             manage.py \
             shell \
+            --verbosity 0 \
             -c "from django.conf import settings; print(settings.SERVICE_NAME)"
         )
 
