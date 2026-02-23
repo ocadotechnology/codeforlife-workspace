@@ -150,37 +150,67 @@ jobs:
           s3-buckets: ${{ steps.get-aws-resource-names.outputs.s3_buckets }}
 
       - name: 🔎 Check Import Sort
+        id: check-imports
+        continue-on-error: true
         run: .workspace/backend/scripts imports:check
 
       - name: 🔎 Check Code Format
+        id: check-format
+        continue-on-error: true
         run: .workspace/backend/scripts format:check
 
       - name: 🔎 Check Static Type Hints
+        id: check-types
+        continue-on-error: true
         run: .workspace/backend/scripts types:check
 
       - name: 🔎 Check Static Code
+        id: check-code
+        continue-on-error: true
         run: .workspace/backend/scripts code:check
 
       - name: 🔎 Check Django Project
+        id: check-project
+        continue-on-error: true
         run: .workspace/backend/scripts project:check
 
       - name: 🔎 Check Django Migrations
+        id: check-migrations
+        continue-on-error: true
         run: .workspace/backend/scripts migrations:check
 
       - name: 🧪 Test Code Units
+        id: test-code
+        continue-on-error: true
         run: .workspace/backend/scripts test:coverage
 
       - name: 📈 Upload Coverage Reports to Codecov
-        if: github.repository_owner_id == env.OCADO_TECH_ORG_ID
+        if: >-
+          github.repository_owner_id == env.OCADO_TECH_ORG_ID &&
+          steps.test-code.outcome == 'success'
         uses: ocadotechnology/codeforlife-workspace/.github/actions/codecov/upload-report@main
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage.xml
 
       - name: 🐶 Run Snyk Tests
+        id: check-packages
+        continue-on-error: true
         if: github.repository_owner_id == env.OCADO_TECH_ORG_ID
         uses: ocadotechnology/codeforlife-workspace/.github/actions/snyk/run-tests@main
         with:
           snyk-token: ${{ secrets.SNYK_TOKEN }}
           config-path: backend/.snyk
           add-test-args: --command=.venv/bin/python
+
+      - name: 🚦 Check for Failures
+        if: >-
+          steps.check-imports.outcome == 'failure' ||
+          steps.check-format.outcome == 'failure' ||
+          steps.check-types.outcome == 'failure' ||
+          steps.check-code.outcome == 'failure' ||
+          steps.check-project.outcome == 'failure' ||
+          steps.check-migrations.outcome == 'failure' ||
+          steps.test-code.outcome == 'failure' ||
+          steps.check-packages.outcome == 'failure'
+        run: exit 1
