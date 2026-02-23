@@ -204,7 +204,15 @@ jobs:
           add-test-args: --command=.venv/bin/python
 
       - name: 🚦 Check for Failures
-        if: failure()
+        if: >-
+          steps.check-imports.outcome == 'failure' ||
+          steps.check-format.outcome == 'failure' ||
+          steps.check-types.outcome == 'failure' ||
+          steps.check-code.outcome == 'failure' ||
+          steps.check-project.outcome == 'failure' ||
+          steps.check-migrations.outcome == 'failure' ||
+          steps.test-code.outcome == 'failure' ||
+          steps.check-packages.outcome == 'failure'
         run: |
           echo "::error::One or more of the previous steps have failed. Please check the logs for more details."
           exit 1
