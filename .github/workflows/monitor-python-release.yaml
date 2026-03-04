@@ -18,8 +18,8 @@ on:
         required: false
         default: "codeforlife-"
     secrets:
-      CFL_BOT_GH_TOKEN:
-        description: "The CFL-bot's GitHub token. Used to release."
+      CFL_APP_PRIVATE_KEY:
+        description: "The private key of CFL's GitHub App."
         required: true
       SNYK_TOKEN:
         description: "The token used to authenticate with Snyk API."
@@ -30,6 +30,12 @@ jobs:
     concurrency: release
     runs-on: ubuntu-22.04
     steps:
+      - name: 🤖 Set up CFL bot
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/bot/setup@main
+        id: setup-bot
+        with:
+          cfl-app-private-key: ${{ secrets.CFL_APP_PRIVATE_KEY }}
+
       - name: 🐍 Set up Python ${{ inputs.python-version }} Environment
         uses: ocadotechnology/codeforlife-workspace/.github/actions/python/setup-environment@main
         with:
@@ -38,7 +44,7 @@ jobs:
       - name: 🔎 Monitor Open-Source Vulnerabilities and License Issues
         uses: ocadotechnology/codeforlife-workspace/.github/actions/snyk/monitor-release@main
         with:
-          gh-token: ${{ secrets.CFL_BOT_GH_TOKEN }}
+          gh-token: ${{ steps.setup-bot.outputs.token }}
           snyk-token: ${{ secrets.SNYK_TOKEN }}
           snyk-config-path: ${{ inputs.snyk-config-path }}
           snyk-project-environment: backend
