@@ -47,17 +47,6 @@ on:
         type: number
         required: false
         default: 7.4
-      # AWS
-      aws-sqs-queues:
-        description: "A CSV of AWS SQS queues to create. If using Django, this will default to the service's name."
-        type: string
-        required: false
-        default: ""
-      aws-s3-buckets:
-        description: "A CSV of AWS S3 buckets to create. If using Django, this will default to the service's name."
-        type: string
-        required: false
-        default: ""
     secrets: # All secrets should not be required to support contributors.
       CODECOV_TOKEN:
         description: "The token used to gain access to Codecov."
@@ -118,36 +107,6 @@ jobs:
         with:
           python-version: ${{ inputs.python-version }}
           install-args: --dev
-
-      - name: 🗂️ Get Service Name
-        if: inputs.aws-sqs-queues == '' || inputs.aws-s3-buckets == ''
-        id: get-service-name
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/service/backend/get-name@main
-
-      - name: 🗂️ Get AWS Resource Names
-        id: get-aws-resource-names
-        run: |
-          function get_names() {
-            local names="$1"
-            if [ "$names" = "" ]; then
-              names="${{ steps.get-service-name.outputs.service-name }}"
-            fi
-
-            echo "$2=$names" >> $GITHUB_OUTPUT
-          }
-
-          get_names "${{ inputs.aws-sqs-queues }}" "sqs_queues"
-          get_names "${{ inputs.aws-s3-buckets }}" "s3_buckets"
-
-      - name: 🏗️ Create AWS Resources
-        if: |
-          steps.get-aws-resource-names.outputs.sqs_queues != '' ||
-          steps.get-aws-resource-names.outputs.s3_buckets != ''
-        uses: ocadotechnology/codeforlife-workspace/.github/actions/aws/create-resources@main
-        with:
-          region: ${{ env.AWS_REGION }}
-          sqs-queues: ${{ steps.get-aws-resource-names.outputs.sqs_queues }}
-          s3-buckets: ${{ steps.get-aws-resource-names.outputs.s3_buckets }}
 
       - name: 🔎 Check Import Sort
         id: check-imports

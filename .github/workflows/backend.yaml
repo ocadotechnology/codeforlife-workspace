@@ -26,17 +26,6 @@ on:
         type: boolean
         required: false
         default: true
-      # AWS
-      aws-sqs-queues:
-        description: "A CSV of AWS SQS queues to create. If using Django, this will default to the service's name."
-        type: string
-        required: false
-        default: ""
-      aws-s3-buckets:
-        description: "A CSV of AWS S3 buckets to create. If using Django, this will default to the service's name."
-        type: string
-        required: false
-        default: ""
     secrets: # All secrets should not be required to support contributors.
       CODECOV_TOKEN:
         description: "The token used to gain access to Codecov."
@@ -64,8 +53,6 @@ jobs:
       python-version: ${{ inputs.python-version }}
       postgres-db: ${{ inputs.postgres-db }}
       postgres-version: ${{ inputs.postgres-version }}
-      aws-sqs-queues: ${{ inputs.aws-sqs-queues }}
-      aws-s3-buckets: ${{ inputs.aws-s3-buckets }}
 
   build:
     runs-on: ubuntu-22.04
