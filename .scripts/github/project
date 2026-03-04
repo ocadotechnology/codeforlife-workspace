@@ -5,7 +5,7 @@ project_id="PVT_kwDOAB_fG84AmfxN"
 project_number="3"
 project_status_field_id="PVTSSF_lADOAB_fG84AmfxNzgeYqqQ"
 
-declare -A project_status_option_ids=(
+declare -gA project_status_option_ids=(
   ["To Do"]="f75ad846"
   ["In Progress"]="47fc9ee4"
   ["Ready For Review"]="13caf9e3"
@@ -15,7 +15,7 @@ declare -A project_status_option_ids=(
   ["Closed"]="98236657"
 )
 
-declare -A project_category_option_names=(
+declare -gA project_category_option_names=(
   ["dev"]="💻"
   ["design"]="🎨"
   ["research"]="🔍"
@@ -26,6 +26,7 @@ declare -A project_category_option_names=(
 function set_project_item_status() {
   local id="$1"
   local option_name="${@:2}"
+  echo "${project_status_option_ids[$option_name]}"
 
   gh project item-edit "$project_number" \
     --id="$id" \
