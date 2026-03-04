@@ -12,17 +12,24 @@ on:
   workflow_dispatch:
 
 env:
-  GH_TOKEN: ${{ secrets.CFL_BOT_GH_TOKEN }}
   REPO_NAME: ${{ github.event.repository.name }}
 
 jobs:
   main:
     runs-on: ubuntu-22.04
     steps:
+      - name: 🤖 Set up CFL bot
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/bot/setup@main
+        id: setup-bot
+        with:
+          cfl-app-private-key: ${{ secrets.CFL_APP_PRIVATE_KEY }}
+
       - name: 🐍 Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
       - name: 🏃 Download and Run Job Script
+        env:
+          GH_TOKEN: ${{ steps.setup-bot.outputs.token }}
         uses: ocadotechnology/codeforlife-workspace/.github/actions/workspace/run-job-script@main
