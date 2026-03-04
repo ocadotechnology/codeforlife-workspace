@@ -26,7 +26,6 @@ declare -gA project_category_option_names=(
 function set_project_item_status() {
   local id="$1"
   local option_name="${@:2}"
-  echo "${project_status_option_ids[$option_name]}"
 
   gh project item-edit "$project_number" \
     --id="$id" \
