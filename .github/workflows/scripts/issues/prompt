@@ -205,6 +205,8 @@ function handle_unlink_pr_prompt() {
 # Script.
 # ------------------------------------------------------------------------------
 
+if [ "$ISSUE_ASSIGNEES_LENGTH" = "" ]; then ISSUE_ASSIGNEES_LENGTH=0; fi
+
 repo="$(make_repo "$ISSUE_REPO_NAME")"
 
 # Utility to write a prompt's comment on an issue.
