@@ -34,9 +34,6 @@
 [submodule "codeforlife-package-javascript"]
 	path = frontend/package
 	url = https://github.com/ocadotechnology/codeforlife-package-javascript.git
-[submodule "codeforlife-scheduler-backend"]
-	path = backend/scheduler
-	url = https://github.com/ocadotechnology/codeforlife-scheduler-backend.git
 [submodule "codeforlife-portal"]
 	path = legacy/portal
 	url = https://github.com/ocadotechnology/codeforlife-portal.git

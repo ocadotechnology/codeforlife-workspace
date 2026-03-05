@@ -53,10 +53,6 @@
       "name": "/workspace/frontend/template",
     },
     {
-      "path": "backend/scheduler",
-      "name": "/workspace/backend/scheduler",
-    },
-    {
       "path": "legacy/portal",
       "name": "/workspace/legacy/portal",
     },
