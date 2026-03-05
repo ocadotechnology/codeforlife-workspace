@@ -17,8 +17,8 @@ on:
       CODECOV_TOKEN:
         description: "The token used to gain access to Codecov."
         required: false
-      CFL_BOT_GH_TOKEN:
-        description: "The CFL-bot's GitHub token. Used to release."
+      CFL_APP_PRIVATE_KEY:
+        description: "The private key of CFL's GitHub App."
         required: false
       SNYK_TOKEN:
         description: "The token used to authenticate with Snyk API."
@@ -52,15 +52,21 @@ jobs:
       github.repository_id != 841979065 &&
       github.ref_name == github.event.repository.default_branch
     steps:
+      - name: 🤖 Set up CFL bot
+        uses: ocadotechnology/codeforlife-workspace/.github/actions/bot/setup@main
+        id: setup-bot
+        with:
+          cfl-app-private-key: ${{ secrets.CFL_APP_PRIVATE_KEY }}
+
       - name: 🛫 Set up Release
         uses: ocadotechnology/codeforlife-workspace/.github/actions/service/setup-release@main
         with:
-          cfl-bot-gh-token: ${{ secrets.CFL_BOT_GH_TOKEN }}
+          cfl-bot-gh-token: ${{ steps.setup-bot.outputs.token }}
 
       - name: 🚀 Publish Semantic Release
         uses: ocadotechnology/codeforlife-workspace/.github/actions/service/release@main
         with:
-          cfl-bot-gh-token: ${{ secrets.CFL_BOT_GH_TOKEN }}
+          cfl-bot-gh-token: ${{ steps.setup-bot.outputs.token }}
           rc-path: frontend/.releaserc.json
 
   monitor:
