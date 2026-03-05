@@ -92,15 +92,7 @@ jobs:
       - name: 🚀 Deploy Function on GCloud
         working-directory: ${{ env.FUNCS_DIR }}/${{ matrix.function }}
         run: |
-          declare -A flags=(
-            ["load_data_into_bigquery"]="--runtime=python312 \
-            --trigger-event=google.storage.object.finalize \
-            --trigger-resource=${{ secrets.GOOGLE_BIGQUERY_BUCKET_NAME }} \
-            --gen2 \
-            --retry \
-            --serve-all-traffic-latest-revision \
-            --set-env-vars=FIRESTORE_DB_ID=${{ secrets.GOOGLE_FIRESTORE_DB_ID }},BIGQUERY_DATASET_ID=${{ secrets.GOOGLE_BIGQUERY_DATASET_ID }}"
-          )
+          declare -A flags=()
 
           gcloud functions deploy ${{ matrix.function }} \
             --region=europe-west2 \
