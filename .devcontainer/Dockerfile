@@ -22,6 +22,13 @@ RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dear
   export DEBIAN_FRONTEND=noninteractive && \
   apt-get install -y google-cloud-cli=547.0.0-0
 
+# Install Cloud SQL Auth Proxy.
+# https://docs.cloud.google.com/sql/docs/postgres/sql-proxy#linux-64-bit
+RUN curl --fail --location --silent --show-error \
+  "https://storage.googleapis.com/cloud-sql-connectors/cloud-sql-proxy/v2.21.1/cloud-sql-proxy.linux.amd64" \
+  --output /usr/local/bin/cloud-sql-proxy && \
+  chmod +x /usr/local/bin/cloud-sql-proxy
+
 # Install Snyk CLI.
 # https://docs.snyk.io/snyk-cli/install-or-update-the-snyk-cli#install-with-standalone-executables
 RUN curl --compressed https://downloads.snyk.io/cli/stable/snyk-linux -o snyk && \
