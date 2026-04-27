@@ -125,7 +125,9 @@
     // Shell
     "[shellscript]": { "editor.defaultFormatter": "foxundermoon.shell-format" },
     // Python
-    "python.defaultInterpreterPath": ".venv/bin/python",
+    "python-envs.defaultEnvManager": "ms-python.python:pipenv",
+    "python-envs.defaultPackageManager": "ms-python.python:pip",
+    "python.defaultInterpreterPath": "/usr/local/python/current/bin/python",
     "python.testing.pytestArgs": [
       "-n=auto",
       "--cov=src",
@@ -145,15 +147,11 @@
     },
     "autoDocstring.customTemplatePath": "/workspace/backend/python-docstring.mustache",
     "black-formatter.args": ["--config", "/workspace/backend/pyproject.toml"],
-    "black-formatter.path": [".venv/bin/python", "-m", "black"],
     "isort.args": ["--settings-file=/workspace/backend/pyproject.toml"],
-    "isort.path": [".venv/bin/python", "-m", "isort"],
     "mypy-type-checker.args": [
       "--config-file=/workspace/backend/pyproject.toml",
     ],
-    "mypy-type-checker.path": [".venv/bin/python", "-m", "mypy"],
     "pylint.args": ["--rcfile=/workspace/backend/pyproject.toml"],
-    "pylint.path": [".venv/bin/python", "-m", "pylint"],
     // Database
     // TODO: create workflow to update sql connections for each BE service.
     "sqltools.connections": [
