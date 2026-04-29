@@ -147,11 +147,15 @@
     },
     "autoDocstring.customTemplatePath": "/workspace/backend/python-docstring.mustache",
     "black-formatter.args": ["--config", "/workspace/backend/pyproject.toml"],
+    "black-formatter.path": [".venv/bin/python", "-m", "black"],
     "isort.args": ["--settings-file=/workspace/backend/pyproject.toml"],
+    "isort.path": [".venv/bin/python", "-m", "isort"],
     "mypy-type-checker.args": [
       "--config-file=/workspace/backend/pyproject.toml",
     ],
+    "mypy-type-checker.path": [".venv/bin/python", "-m", "mypy"],
     "pylint.args": ["--rcfile=/workspace/backend/pyproject.toml"],
+    "pylint.path": [".venv/bin/python", "-m", "pylint"],
     // Database
     // TODO: create workflow to update sql connections for each BE service.
     "sqltools.connections": [
@@ -253,6 +257,7 @@
     "vitest.rootConfig": "/workspace/frontend/vite.config.ts",
     // JSON
     "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+    "[jsonc]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
     // GraphQL
     "[graphql]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
     // Handlebars
