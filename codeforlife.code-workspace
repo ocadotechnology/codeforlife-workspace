@@ -217,10 +217,8 @@
       },
     ],
     // JavaScript, JavaScript React, TypeScript, TypeScript React
-    "javascript.format.semicolons": "remove",
-    "javascript.preferences.quoteStyle": "double",
-    "typescript.format.semicolons": "remove",
-    "typescript.preferences.quoteStyle": "double",
+    "js/ts.format.semicolons": "remove",
+    "js/ts.preferences.quoteStyle": "double",
     "[javascript]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode",
       "editor.codeActionsOnSave": {
