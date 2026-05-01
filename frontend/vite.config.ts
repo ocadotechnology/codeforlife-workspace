@@ -24,6 +24,7 @@ const serverFsAllow = [cwd]
 const codeWorkspace = JSON.parse(
   stripJsonComments(
     await readFile(`${workspaceDir}/codeforlife.code-workspace`, "utf-8"),
+    { trailingCommas: true },
   ),
 ) as Record<string, any>
 
