@@ -13,16 +13,9 @@ services:
     depends_on:
       - db
       - cache
-      - aws
     networks:
       - db
       - cache
-      - aws
-    environment:
-      AWS_REGION: us-east-1
-      AWS_ACCESS_KEY_ID: test
-      AWS_SECRET_ACCESS_KEY: test
-      AWS_ENDPOINT_URL: http://aws:4566
 
   db:
     image: postgres:17
@@ -43,31 +36,8 @@ services:
     networks:
       - cache
 
-  # https://docs.localstack.cloud/getting-started/installation/#docker-compose
-  aws:
-    container_name: aws
-    image: localstack/localstack:4.3.0
-    restart: unless-stopped
-    ports:
-      # Main LocalStack port for all services.
-      - "4566:4566"
-      # Optional: Range for specific service ports if needed.
-      - "4510-4559:4510-4559"
-    # https://docs.localstack.cloud/references/configuration/
-    environment:
-      DEBUG: 0
-      SERVICES: s3,sqs
-      DEFAULT_REGION: us-east-1
-    volumes:
-      - ../.data/localstack:/var/lib/localstack
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - aws
-
 networks:
   db:
     driver: bridge
   cache:
-    driver: bridge
-  aws:
     driver: bridge

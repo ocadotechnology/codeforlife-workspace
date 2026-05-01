@@ -11,7 +11,7 @@ import typing as t
 import inquirer  # type: ignore[import-untyped]
 from colorama import Fore, Style
 from colorama import init as colorama_init
-from utils import aws, git, github, postgresql, pprint, vscode
+from utils import git, github, postgresql, pprint, vscode
 
 STEP = 1
 RT = t.TypeVar("RT")
@@ -165,13 +165,6 @@ def main() -> None:
         code_workspace,
     )
 
-    # TODO: load queues from each BE service's settings.
-    queue_error = step(
-        "Creating AWS resources",
-        aws.create_resources,
-        sqs_queue_names={"portal", "contributor", "template"},
-    )
-
     print_optional_steps_instructions()
 
     step("Login to GitHub", github.login)
@@ -182,7 +175,7 @@ def main() -> None:
         submodules,
     )
 
-    print_exit(error=any([db_error, queue_error, repo_error]))
+    print_exit(error=any([db_error, repo_error]))
 
 
 if __name__ == "__main__":

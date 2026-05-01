@@ -9,11 +9,6 @@ RUN echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg ma
   export DEBIAN_FRONTEND=noninteractive && \
   apt-get -y install --no-install-recommends postgresql-client-17
 
-# Install LocalStack CLI.
-# https://docs.localstack.cloud/getting-started/installation/#installing-localstack-cli
-RUN curl --output localstack-cli.tar.gz --location https://github.com/localstack/localstack-cli/releases/download/v4.3.0/localstack-cli-4.3.0-linux-amd64-onefile.tar.gz && \
-  tar xvzf localstack-cli.tar.gz -C /usr/local/bin
-
 # Install GCloud CLI.
 # https://docs.cloud.google.com/sdk/docs/install#deb
 RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg && \

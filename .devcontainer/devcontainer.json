@@ -63,9 +63,7 @@
     8000, // Django
     5432, // PostgreSQL
     6379, // Redis
-    4566, // LocalStack
-    5173, // Vite
-    8080 // OTP
+    5173 // Vite
   ],
   "remoteEnv": {
     "LOCAL_WORKSPACE_PATH": "${localWorkspaceFolder}"
