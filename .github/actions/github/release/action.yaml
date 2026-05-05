@@ -4,6 +4,12 @@ inputs:
   cfl-bot-gh-token:
     description: "The GitHub token of the CFL bot."
     required: true
+  cfl-bot-user-name:
+    description: "The GitHub username of the CFL bot."
+    required: true
+  cfl-bot-user-email:
+    description: "The GitHub user email of the CFL bot."
+    required: true
   checkout:
     description: "A flag to designate if the code should be checked out."
     required: true
@@ -44,8 +50,8 @@ runs:
       env:
         # NOTE: do not use NPM_TOKEN! Use GitHub OIDC instead for npm authentication.
         GH_TOKEN: ${{ inputs.cfl-bot-gh-token }}
-        GIT_AUTHOR_NAME: cfl-bot
-        GIT_AUTHOR_EMAIL: codeforlife-bot@ocado.com
-        GIT_COMMITTER_NAME: cfl-bot
-        GIT_COMMITTER_EMAIL: codeforlife-bot@ocado.com
+        GIT_AUTHOR_NAME: ${{ inputs.cfl-bot-user-name }}
+        GIT_AUTHOR_EMAIL: ${{ inputs.cfl-bot-user-email }}
+        GIT_COMMITTER_NAME: ${{ inputs.cfl-bot-user-name }}
+        GIT_COMMITTER_EMAIL: ${{ inputs.cfl-bot-user-email }}
       run: npx semantic-release ${{ inputs.args }}
