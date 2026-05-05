@@ -32,10 +32,12 @@ runs:
         fetch-depth: 0
 
     - name: 🌐 Set up Node 22
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v6
       with:
         node-version: 22
-        check-latest: true
+        registry-url: 'https://registry.npmjs.org/'
+        node-version-file: '.nvmrc'
+        cache: 'npm'
 
     - name: 🛠 Install Dependencies
       shell: bash
