@@ -40,7 +40,6 @@ runs:
     - name: 🛠 Install Dependencies
       shell: bash
       run: |
-        npm install --global npm
         npm install --global \
           semantic-release@^25.0.2 \
           @semantic-release/git@^10.0.1 \
