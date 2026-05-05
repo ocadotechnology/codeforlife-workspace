@@ -35,6 +35,7 @@ jobs:
         id: setup-bot
         with:
           cfl-app-private-key: ${{ secrets.CFL_APP_PRIVATE_KEY }}
+          repositories: codeforlife-workspace
 
       - name: 🛫 Checkout Workspace
         uses: actions/checkout@v5

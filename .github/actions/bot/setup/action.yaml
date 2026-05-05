@@ -4,6 +4,9 @@ inputs:
   cfl-app-private-key:
     description: "The private key of CFL's GitHub App."
     required: true
+  repositories:
+    description: "The repositories to which the bot should have access. If not specified, the bot will have access to the current repository by default."
+    required: false
 outputs:
   token:
     description: "The GitHub token of the CFL bot."
@@ -28,6 +31,8 @@ runs:
       with:
         app-id: 2998079
         private-key: ${{ inputs.cfl-app-private-key }}
+        owner: ${{ github.repository_owner }}
+        repositories: ${{ inputs.repositories }}
 
     - shell: bash 
       id: get-user-id
