@@ -1,6 +1,13 @@
 name: "Code for Life - Git - Add, Commit and Push"
 description: "Git add and, if there are differences, commit and push."
 inputs:
+  cfl-bot-gh-token:
+    description: "The GitHub token of the CFL bot."
+    required: true
+  repository:
+    description: "The repository to push to, in the format 'owner/repo'."
+    required: true
+    default: ${{ github.repository }}
   add:
     description: "The changes to add."
     required: true
@@ -14,6 +21,9 @@ outputs:
 runs:
   using: composite
   steps:
+    - shell: bash
+      run: git remote set-url origin https://x-access-token:${{ inputs.cfl-bot-gh-token }}@github.com/${{ inputs.repository }}.git
+
     - name: ➕ Git Add
       shell: bash
       run: git add ${{ inputs.add }}
