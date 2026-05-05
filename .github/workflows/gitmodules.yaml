@@ -141,6 +141,7 @@ jobs:
             echo "No submodule HEAD updates to commit in the workspace."
           else
             echo "Committing and pushing workspace's changes..."
+            git remote set-url origin https://x-access-token:${{ steps.setup-bot.outputs.token }}@github.com/ocadotechnology/codeforlife-workspace.git
             git commit -m "chore(submodules): sync [skip ci]"
             git push origin HEAD
           fi
