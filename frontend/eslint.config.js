@@ -78,6 +78,11 @@ export default ts.config(
               group: ["codeforlife/src"],
               message: "Please use `codeforlife` instead of `codeforlife/src`.",
             },
+            {
+              group: ["js-cookie"],
+              message:
+                "Please use `codeforlife/utils/cookies` instead of `js-cookie`.",
+            },
           ],
         },
       ],
