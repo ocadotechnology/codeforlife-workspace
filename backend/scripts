@@ -191,7 +191,7 @@ function run:django() {
   # Run a local Django server.
   callback="setup" step Setting up PY environment
   function callback() {
-    SERVER_MODE="django" _django runserver localhost:${SERVICE_PORT:-"8000"}
+    _django runserver localhost:${SERVICE_PORT:-"8000"}
   }
   step Running Django development server
   return $exit_code
