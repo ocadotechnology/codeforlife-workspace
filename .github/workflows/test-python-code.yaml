@@ -162,7 +162,7 @@ jobs:
           config-path: backend/.snyk
           add-test-args: --command=.venv/bin/python
 
-      - name: 🚦 Check for Failures
+      - name: 🚦 Exit if Any Check Failed
         if: >-
           steps.check-imports.outcome == 'failure' ||
           steps.check-format.outcome == 'failure' ||
