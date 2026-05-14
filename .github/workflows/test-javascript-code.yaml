@@ -48,28 +48,51 @@ jobs:
           install-prod: false
 
       - name: 🔎 Check Code Format
+        id: check-format
+        continue-on-error: true
         run: .workspace/frontend/scripts format:check
 
       - name: 🔎 Check Code Types
+        id: check-types
+        continue-on-error: true
         run: .workspace/frontend/scripts types:check
 
       - name: 🔎 Check Code
+        id: check-code
+        continue-on-error: true
         run: .workspace/frontend/scripts code:check
 
       - name: 🧪 Test Code
+        id: test-code
+        continue-on-error: true
         run: .workspace/frontend/scripts test:coverage
 
       - name: 📈 Upload Coverage Reports to Codecov
-        if: github.repository_owner_id == env.OCADO_TECH_ORG_ID
+        if: >-
+          github.repository_owner_id == env.OCADO_TECH_ORG_ID &&
+          steps.test-code.outcome == 'success'
         uses: ocadotechnology/codeforlife-workspace/.github/actions/codecov/upload-report@main
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage/cobertura-coverage.xml
 
       - name: 🐶 Run Snyk Tests
+        id: check-packages
+        continue-on-error: true
         if: github.repository_owner_id == env.OCADO_TECH_ORG_ID
         uses: ocadotechnology/codeforlife-workspace/.github/actions/snyk/run-tests@main
         with:
           snyk-token: ${{ secrets.SNYK_TOKEN }}
           config-path: frontend/.snyk
           add-test-args: --package-manager=yarn
+
+      - name: 🚦 Exit if Any Check Failed
+        if: >-
+          steps.check-format.outcome == 'failure' ||
+          steps.check-types.outcome == 'failure' ||
+          steps.check-code.outcome == 'failure' ||
+          steps.test-code.outcome == 'failure' ||
+          steps.check-packages.outcome == 'failure'
+        run: |
+          echo "::error::One or more of the previous steps have failed. Please check the logs for more details."
+          exit 1
