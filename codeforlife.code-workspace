@@ -137,9 +137,14 @@
     ],
     "python.testing.pytestEnabled": true,
     "python.testing.unittestEnabled": false,
+    // MyPY is used for type checking instead of Pylance.
+    "python.analysis.typeCheckingMode": "off",
+    "python.analysis.diagnosticSeverityOverrides": {
+      // Disable duplicate reports handled by our Python analyzers.
+    },
     "python.analysis.extraPaths": [
-      // Uncomment if installing locally in editable mode.
-      // "/workspace/backend/package"
+      "./.venv/lib/python3.12/site-packages",
+      "/workspace/backend/package",
     ],
     "[python]": {
       "editor.defaultFormatter": "ms-python.black-formatter",
