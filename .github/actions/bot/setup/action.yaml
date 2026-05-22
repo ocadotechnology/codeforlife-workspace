@@ -7,6 +7,10 @@ inputs:
   repositories:
     description: "The repositories to which the bot should have access. If not specified, the bot will have access to the current repository by default."
     required: false
+  authenticate-with-token:
+    description: "Whether to configure Git to use the bot token for GitHub fetch/pull/push operations."
+    required: false
+    default: "true"
 outputs:
   token:
     description: "The GitHub token of the CFL bot."
@@ -56,3 +60,11 @@ runs:
       run: |
         git config --global user.name '${{ steps.get-user-name.outputs.user-name }}'
         git config --global user.email '${{ steps.get-user-email.outputs.user-email }}'
+
+    - shell: bash
+      if: inputs.authenticate-with-token == 'true'
+      run: |
+          github_url="https://x-access-token:${{ steps.create-token.outputs.token }}@github.com/"
+          git config --global --add url."${github_url}".insteadOf "https://github.com/"
+          git config --global --add url."${github_url}".insteadOf "ssh://git@github.com/"
+          git config --global --add url."${github_url}".insteadOf "git@github.com:"
