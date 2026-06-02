@@ -45,7 +45,20 @@ function defineEnv(env: Record<string, string>) {
 }
 
 export const viteConfig = defineViteConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    // This plugin allows us to import JSON files with comments (JSONC) by
+    // stripping comments during the build process.
+    {
+      name: "jsonc-loader",
+      transform: (code, id) => {
+        if (id.endsWith(".jsonc")) {
+          const json = stripJsonComments(code, { trailingCommas: true })
+          return { code: `export default ${json}`, map: null }
+        }
+      },
+    },
+  ],
   envDir: "env",
   server: {
     // Automatically open the app in the browser on server start.
