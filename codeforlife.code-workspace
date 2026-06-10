@@ -116,7 +116,9 @@
       "pipenv",
       "blockly",
       "tilemap",
+      "tilemaps",
       "tileset",
+      "tilesets",
     ],
     "liveServer.settings.multiRootWorkspaceName": "/workspace",
     // Terminal
