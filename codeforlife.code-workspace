@@ -115,6 +115,8 @@
       "kurono",
       "pipenv",
       "blockly",
+      "tilemap",
+      "tileset",
     ],
     "liveServer.settings.multiRootWorkspaceName": "/workspace",
     // Terminal
